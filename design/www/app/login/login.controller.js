@@ -15,14 +15,15 @@
         $scope.login = function () {
 //            $state.go('app.contacts');
             var query = loginFactory.save({
-                action_type: 'manual',
+                action_type: 'manual_login',
                 social_id: '',
                 platform: 'android',
                 token: 'token',
                 action: 'login_register',
-                device_id: deviceUUID,
+                device_id: 'dsvfdff',
                 email: $scope.data.email,
-                password: $scope.data.password
+                password: $scope.data.password,
+                name:''
             });
             query.$promise.then(function (data) {
                 console.log(data);
