@@ -1,0 +1,41 @@
+[{
+	"image": "lib/images/a3.jpg",
+	"message":"This paragraph contains a very long word: thisisaveryveryveryveryveryverylongword. The long word will break and wrap to the next line.",
+	"messageTime":"2 minutes ago",
+	"css":"left-chat"
+},{
+	"image": "lib/images/a4.jpg",
+	"message":"This paragraph contains a very long word: thisisaveryveryveryveryveryverylongword. The long word will break and wrap to the next line.",
+	"messageTime":"4 minutes ago",
+	"css":"right-chat"
+},{
+	"image": "lib/images/a3.jpg",
+	"message":"This paragraph contains a very long word: thisisaveryveryveryveryveryverylongword. The long word will break and wrap to the next line.",
+	"messageTime":"2 minutes ago",
+	"css":"left-chat"
+},{
+	"image": "lib/images/a4.jpg",
+	"message":"This paragraph contains a very long word: thisisaveryveryveryveryveryverylongword. The long word will break and wrap to the next line.",
+	"messageTime":"4 minutes ago",
+	"css":"right-chat"
+},{
+	"image": "lib/images/a3.jpg",
+	"message":"This paragraph contains a very long word: thisisaveryveryveryveryveryverylongword. The long word will break and wrap to the next line.",
+	"messageTime":"2 minutes ago",
+	"css":"left-chat"
+},{
+	"image": "lib/images/a4.jpg",
+	"message":"This paragraph contains a very long word: thisisaveryveryveryveryveryverylongword. The long word will break and wrap to the next line.",
+	"messageTime":"4 minutes ago",
+	"css":"right-chat"
+},{
+	"image": "lib/images/a3.jpg",
+	"message":"This paragraph contains a very long word: thisisaveryveryveryveryveryverylongword. The long word will break and wrap to the next line.",
+	"messageTime":"2 minutes ago",
+	"css":"left-chat"
+},{
+	"image": "lib/images/a4.jpg",
+	"message":"This paragraph contains a very long word: thisisaveryveryveryveryveryverylongword. The long word will break and wrap to the next line.",
+	"messageTime":"4 minutes ago",
+	"css":"right-chat"
+}]
