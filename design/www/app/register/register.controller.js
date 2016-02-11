@@ -18,7 +18,7 @@
             localStorageService.set('userEmail',$scope.user.email);
             delete $localStorage.fromLoginPage;
             var query = registerFactory.save({
-                action_type:'manual',
+                action_type:'manual_register',
                 social_id:'',
                 platform:'android',
                 token:'AIzaSyCud3Ip685_VAzRB-b5KtTl3CpUKCGdezE',
