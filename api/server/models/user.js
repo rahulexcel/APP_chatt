@@ -14,6 +14,9 @@ module.exports = function(User) {
                 if( action == 'login_register'){
                     if( result.length > 0 ){
                         result = result[0];
+                        
+                        var r_verification_status = result.verification_status;
+                        
                         if( action_type == 'facebook' || action_type == 'google' ){
                             var data = {
                                 user_id : result.id,
@@ -25,10 +28,14 @@ module.exports = function(User) {
                             var exist_password = result.password;
                             GENERIC.match_encode_password( password, exist_password ,function( check ){
                                 if( check == true ){
-                                    var data = {
-                                        user_id : result.id,
+                                    if( r_verification_status == 0 ){
+                                        callback(null, 0, 'Please verify you account first', {} );
+                                    }else{
+                                        var data = {
+                                            user_id : result.id,
+                                        }
+                                        callback(null, 1, 'Success login', data );
                                     }
-                                    callback(null, 1, 'Success login', data );
                                 }else{
                                     callback(null, 0, 'Invalid Login', data );
                                 }
@@ -72,7 +79,9 @@ module.exports = function(User) {
                                     var data = {
                                         user_id : user_id,
                                     }
-                                    data['show_verification'] = 1;
+                                    if( action_type != 'facebook' && action_type != 'google' ){
+                                        data['show_verification'] = 1;
+                                    }
                                     User.app.models.email.send_email( 'new_registration', { email : email_id, name : name, verification_code : verification_code }, function(){
                                         callback(null, 1, 'Successful Registration', data );
                                     });
@@ -81,42 +90,6 @@ module.exports = function(User) {
                         });
                     }
                 }
-//                else if( action == "login" ){
-//                    if( result.length == 0 ){
-//                        callback(null, 0, 'Email id not exists', {} );
-//                    }else{
-//                        result = result[0];
-//                        if( action_type == 'manual' ){
-//                            verification_status = result['verification_status'];
-//                            if( verification_status == 0 ){
-//                                callback(null, 0, 'Please verify your account first', {} );
-//                            }else{
-//                                exist_password = result['password'];
-//                                GENERIC.match_encode_password( password, exist_password,  function( check ){
-//                                    if( check == false  ){
-//                                        callback(null, 0, 'Invalid login', {} );
-//                                    }else{
-//                                        var data = {
-//                                            user_id : result.id,
-//                                        }
-//                                        callback(null, 1, 'Success login', data );
-//                                    }
-//                                });
-//                            }
-//                        }else{
-//                            
-//                        }
-//                    }
-//                }else{
-//                    //this means action=register
-//                    if( result.length != 0 ){
-//                        callback(null, 0, 'Email Id Already Exists', {} );
-//                    }else{
-//                        GENERIC.encode_password( password, function( hash_password ){
-//                            
-//                        });
-//                    }
-//                }
             }
         })
     }
