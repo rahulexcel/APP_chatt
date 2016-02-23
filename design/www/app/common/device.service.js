@@ -7,6 +7,9 @@
         return {
             getuuid: function() {
                 return device.uuid;
+            },
+            platform: function() {
+                return device.platform;
             }
         }
     };

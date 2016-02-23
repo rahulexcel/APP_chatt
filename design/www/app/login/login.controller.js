@@ -4,24 +4,23 @@
     angular.module('starter')
             .controller('loginController', loginController);
 
-    function loginController($state, loginFactory, localStorageService, $localStorage, tostService, deviceService, googleLogin, facebookLogin) {
+    function loginController($state, loginFactory, timeStorage, $localStorage, tostService, deviceService, googleLogin, facebookLogin) {
         console.log('login');
         this.data = {
             email: '',
             password: ''
         }
-        // var deviceUUID = deviceService.getuuid();
-        var deviceUUID = 'device_id';
+        var deviceUUID = deviceService.getuuid();
+        var devicePlatform = deviceService.platform();
+
         this.login = function () {
-            console.log(this.data.email);
-            console.log(this.data.password);
             var query = loginFactory.save({
                 action_type: 'manual_login',
                 social_id: '',
-                platform: 'android',
-                token: 'token',
+                platform: devicePlatform,
+                token: $localStorage.gcmToken,
                 action: 'login_register',
-                device_id: 'dsvfdff',
+                device_id: deviceUUID,
                 email: this.data.email,
                 password: this.data.password,
                 name:''
@@ -30,7 +29,7 @@
                 console.log(data);
                 if(data.message == 'Please verify you account first'){
                     $state.go('verification');
-                    localStorageService.set('userEmail',this.data.email);
+                    timeStorage.set('userEmail',this.data.email);
                     delete $localStorage.fromLoginPage;
                 }
                 tostService.notify(data.message, 'top');
@@ -44,12 +43,12 @@
             var promise = googleLogin.startLogin();
             promise.then(function(googleData) {
                 console.log(googleData);
-                localStorageService.set('userEmail',googleData.email);
+                timeStorage.set('userEmail',googleData.email);
                     var query = loginFactory.save({
                         action_type:'google',
                         social_id:googleData.google_id,
-                        platform:'android',
-                        token:'AIzaSyCud3Ip685_VAzRB-b5KtTl3CpUKCGdezE',
+                        platform:devicePlatform,
+                        token:$localStorage.gcmToken,
                         action:'login_register',
                         device_id:deviceUUID,
                         email: googleData.email,
@@ -70,12 +69,28 @@
             this.facebookSpinner = true;
             facebookLogin.login().then(function(fbData){
                 console.log(fbData);
-                localStorageService.set('userEmail',fbData.email);
+                if(fbData.id){
+                   loginWithFBApi(fbData);
+                }
+                if(fbData == 'unknown'){
+                    facebookLogin.fbLoginSuccess().then(function(fbData1){
+                    console.log(fbData1);
+                    loginWithFBApi(fbData1);
+                }, function(data) {
+                    console.log(data);
+                });
+                }
+            }, function(data) {
+                console.log(data);
+            });
+        };
+        function loginWithFBApi(fbData){
+                timeStorage.set('userEmail',fbData.email);
                 var query = loginFactory.save({
                         action_type:'facebook',
                         social_id:fbData.id,
-                        platform:'android',
-                        token:'AIzaSyCud3Ip685_VAzRB-b5KtTl3CpUKCGdezE',
+                        platform:devicePlatform,
+                        token:$localStorage.gcmToken,
                         action:'login_register',
                         device_id:deviceUUID,
                         email: fbData.email,
@@ -87,12 +102,9 @@
                         tostService.notify(data.message, 'top');
                         $state.go('app.contacts');
                     });
-            }, function(data) {
-                console.log(data);
-            });
         };
         this.verifyAccount = function () {
-           localStorageService.set('fromLoginPage', 'fromLoginPage');
+           timeStorage.set('fromLoginPage', 'fromLoginPage');
            delete $localStorage.userEmail;
            $state.go('verification');
         };

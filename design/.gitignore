@@ -7,3 +7,8 @@ plugins/
 hooks/
 resources/
 scss/
+hooks/*
+platforms/*
+plugins/*
+resources/*
+.editorconfig

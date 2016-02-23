@@ -1,43 +1,39 @@
-var facebookLoginService = angular.module('facebookLoginService', ['ngStorage']);
+var facebookLoginService = angular.module('facebookLoginService', []);
 
 facebookLoginService.factory('facebookLogin', facebookLogin);
-
 function facebookLogin($http, $q, $state) {
-    return {
-        login: function() {
+var service = {};
+        service.fbLoginSuccess = function() {
             var def = $q.defer();
-            var fbLoginSuccess = function(response) {
+            facebookConnectPlugin.login(['email','user_friends', 'public_profile'], fbLoginSuccess, service.fbLoginError);
+            function fbLoginSuccess(response){
+            
                 if (!response.authResponse) {
                     fbLoginError("Cannot find the authResponse");
                     return;
                 }
-
                 var authResponse = response.authResponse;
-
-                getFacebookProfileInfo(authResponse)
+                service.getFacebookProfileInfo(authResponse)
                     .then(function(profileInfo) {
                         console.log(profileInfo);
+                        profileInfo.accessToken = authResponse.accessToken;
                         def.resolve(profileInfo);
-                        // loginService.setParseUserData(profileInfo.id, profileInfo.email, profileInfo.name, "http://graph.facebook.com/" + authResponse.userID + "/picture?type=large");
-                        // homeService.set('user_id', profileInfo.id);
-                        // homeService.set('user_email', profileInfo.email);
-                        // homeService.set('user_name', profileInfo.name);
-                        // homeService.set('user_picture', "http://graph.facebook.com/" + authResponse.userID + "/picture?type=large");
-                        // $state.go('home.contact');
                     }, function(fail) {
                         console.log('profile info fail', fail);
+                        def.reject(fail);
                     });
+                }
+                return def.promise;
             };
-
-            var fbLoginError = function(error) {
+            service.fbLoginError = function(error) {
                 console.log('fbLoginError', error);
             };
-            var getFacebookProfileInfo = function(authResponse) {
+            service.getFacebookProfileInfo = function(authResponse) {
                 var info = $q.defer();
-
                 facebookConnectPlugin.api('/me?fields=email,name&access_token=' + authResponse.accessToken, null,
                     function(response) {
                         console.log(response);
+                        response.accessToken = authResponse.accessToken;
                         info.resolve(response);
                     },
                     function(response) {
@@ -47,33 +43,25 @@ function facebookLogin($http, $q, $state) {
                 );
                 return info.promise;
             };
-
+             service.login = function() {
+                var def = $q.defer();
             facebookConnectPlugin.getLoginStatus(function(success) {
                 if (success.status === 'connected') {
                     console.log('getLoginStatus', success.status);
-                        getFacebookProfileInfo(success.authResponse)
+                        service.getFacebookProfileInfo(success.authResponse)
                             .then(function(profileInfo) {
                                 console.log(profileInfo);
                                 def.resolve(profileInfo);
-                                // loginService.setParseUserData(profileInfo.id, profileInfo.email, profileInfo.name, "http://graph.facebook.com/" + success.authResponse.userID + "/picture?type=large");
-                                // homeService.set('user_id', profileInfo.id);
-                                // homeService.set('user_email', profileInfo.email);
-                                // homeService.set('user_name', profileInfo.name);
-                                // homeService.set('user_picture', "http://graph.facebook.com/" + success.authResponse.userID + "/picture?type=large");
-                                // $state.go('home.contact');
                             }, function(fail) {
                                 console.log('profile info fail', fail);
+                                def.reject(fail);
                             });
                 } else {
                     console.log('getLoginStatus', success.status);
-                    facebookConnectPlugin.login(['email', 'public_profile'], fbLoginSuccess, fbLoginError);
+                    def.resolve(success.status);
                 }
             });
-                return def.promise;
-        },
-
-
-
-
-    };
-}
+            return def.promise;
+        }
+        return service;
+    }
