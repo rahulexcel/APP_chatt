@@ -5,7 +5,7 @@
     },
     "mongo_db_app_chatt": {
         "host": "127.0.0.1",
-        "port": 8080,
+        "port": 27017,
         "database": "app_chatt",
         "name": "mongo_db_app_chatt",
         "connector": "mongodb"
