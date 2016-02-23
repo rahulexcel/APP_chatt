@@ -1,4 +1,5 @@
 var GENERIC = require('../modules/generic');
+var lodash = require('lodash');
 
 module.exports = function (User) {
     User.register_login = function (action, action_type, social_id, platform, device_id, token, email_id, name, password, callback) {
@@ -9,18 +10,19 @@ module.exports = function (User) {
         };
         User.find({where: where}, function (err, result) {
             if (err) {
-                callback(null, 0, 'Some Error Occurs', {});
+                callback(null, 0, err, {});
             } else {
                 if (action == 'login_register') {
-                    if (result.length > 0) {
+                    var resultSize = lodash.size(result);
+                    if (resultSize > 0) {
                         result = result[0];
 
                         var r_verification_status = result.verification_status;
 
                         if (action_type == 'facebook' || action_type == 'google') {
                             var data = {
-                                user_id: result.id,
-                            }
+                                user_id: result.id
+                            };
                             callback(null, 1, 'Success login', data);
                         } else if (action_type == 'manual_register') {
                             callback(null, 0, 'Email id already exists.', data);
@@ -44,6 +46,7 @@ module.exports = function (User) {
                     } else {
                         if (action_type == "facebook" || action_type == 'google') {
                             password = GENERIC.get_random_number();
+                            console.log(password);
                         }
                         password = password.toString();
                         GENERIC.encode_password(password, function (hash_password) {
@@ -73,7 +76,7 @@ module.exports = function (User) {
                             });
                             newUser.save(function (err, result) {
                                 if (err) {
-                                    callback(null, 0, 'Some Error Occurs', {});
+                                    callback(null, 0, err, {});
                                 } else {
                                     var user_id = result.id;
                                     var data = {
