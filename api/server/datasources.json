@@ -4,7 +4,7 @@
         "connector": "memory"
     },
     "mongo_db_app_chatt": {
-        "host": "144.76.34.244",
+        "host": "127.0.0.1",
         "port": 8080,
         "database": "app_chatt",
         "name": "mongo_db_app_chatt",
