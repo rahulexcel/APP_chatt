@@ -10,7 +10,8 @@ angular.module('starter', ['ionic', 'ngStorage', 'ngResource', 'GoogleLoginServi
     url: '/login',
     cache:false,
     templateUrl: 'app/login/login.html',
-    controller: 'loginController'
+    controller: 'loginController',
+    controllerAs: 'vm'
   });
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/login');

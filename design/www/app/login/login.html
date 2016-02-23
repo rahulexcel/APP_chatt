@@ -13,23 +13,23 @@
       </div>
       <form name="loginForm">
         <div class="md-form-group float-label">
-          <input type="text" class="md-input" ng-model="data.email" ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/" required autocomplete="off" require>
+          <input type="text" class="md-input" ng-model="vm.data.email" ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/" required autocomplete="off" require>
           <label>Email</label>
         </div>
         <div class="md-form-group float-label">
-          <input type="password" class="md-input" ng-model="data.password" required>
+          <input type="password" class="md-input" ng-model="vm.data.password" required>
           <label>Password</label>
         </div>
-        <button md-ink-ripple type="submit" class="md-btn md-raised pink btn-block p-h-md" ng-click="login()">SIGN IN</button>
-        <button type="button" class="md-btn md-raised btn-block p-h-md google-btn" ng-click="googleRegister()"><span ng-show="googleSpinner"><i class="fa fa-spin fa-spinner"></i></span> <span>CONNECT WITH</span> <i class="fa fa-google"></i></button>
-        <button type="button" class="md-btn md-raised btn-block p-h-md facebook-btn" ng-click="facebookRegister()"><span ng-show="facebookSpinner"><i class="fa fa-spin fa-spinner"></i></span> <span>CONNECT WITH</span> <i class="fa fa-facebook"></i></button>
+        <button md-ink-ripple type="submit" class="md-btn md-raised pink btn-block p-h-md" ng-click="vm.login()">SIGN IN</button>
+        <button type="button" class="md-btn md-raised btn-block p-h-md google-btn" ng-click="vm.googleRegister()"><span ng-show="googleSpinner"><i class="fa fa-spin fa-spinner"></i></span> <span>CONNECT WITH</span> <i class="fa fa-google"></i></button>
+        <button type="button" class="md-btn md-raised btn-block p-h-md facebook-btn" ng-click="vm.facebookRegister()"><span ng-show="facebookSpinner"><i class="fa fa-spin fa-spinner"></i></span> <span>CONNECT WITH</span> <i class="fa fa-facebook"></i></button>
         <h5 class="text-center">OR</h5>
         <button md-ink-ripple type="submit" class="md-btn md-raised blue btn-block p-h-md" ui-sref="register">SIGN UP</button>
       </form>
     </div>
 
     <div class="text-center">
-      <button class="md-btn white" ng-click="verifyAccount()">Verify your account</button>
+      <button class="md-btn white" ng-click="vm.verifyAccount()">Verify your account</button>
       <BR>
       <button class="md-btn white" ui-sref="resetPassword">RESET PASSWORD</button>
     </div>

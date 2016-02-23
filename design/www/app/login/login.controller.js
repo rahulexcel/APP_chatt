@@ -4,16 +4,17 @@
     angular.module('starter')
             .controller('loginController', loginController);
 
-    function loginController($scope, $state, loginFactory, localStorageService, $localStorage, tostService, deviceService, googleLogin, facebookLogin) {
+    function loginController($state, loginFactory, localStorageService, $localStorage, tostService, deviceService, googleLogin, facebookLogin) {
         console.log('login');
-        $scope.data = {
+        this.data = {
             email: '',
             password: ''
         }
         // var deviceUUID = deviceService.getuuid();
         var deviceUUID = 'device_id';
-        $scope.login = function () {
-            $state.go('app.contacts');
+        this.login = function () {
+            console.log(this.data.email);
+            console.log(this.data.password);
             var query = loginFactory.save({
                 action_type: 'manual_login',
                 social_id: '',
@@ -21,15 +22,15 @@
                 token: 'token',
                 action: 'login_register',
                 device_id: 'dsvfdff',
-                email: $scope.data.email,
-                password: $scope.data.password,
+                email: this.data.email,
+                password: this.data.password,
                 name:''
             });
             query.$promise.then(function (data) {
                 console.log(data);
                 if(data.message == 'Please verify you account first'){
                     $state.go('verification');
-                    localStorageService.set('userEmail',$scope.data.email);
+                    localStorageService.set('userEmail',this.data.email);
                     delete $localStorage.fromLoginPage;
                 }
                 tostService.notify(data.message, 'top');
@@ -37,8 +38,8 @@
             });
         };
 
-        $scope.googleRegister = function(){
-            $scope.googleSpinner = true;
+        this.googleRegister = function(){
+            this.googleSpinner = true;
             console.log('Attempting Google Login');
             var promise = googleLogin.startLogin();
             promise.then(function(googleData) {
@@ -55,7 +56,7 @@
                         name: googleData.name
                     });
                     query.$promise.then(function(data) {
-                        $scope.googleSpinner = false;
+                        this.googleSpinner = false;
                         console.log(data);
                         tostService.notify(data.message, 'top');
                         $state.go('app.contacts');
@@ -64,9 +65,9 @@
                 console.log(data);
             });
         };
-        $scope.facebookRegister = function() {
+        this.facebookRegister = function() {
             console.log('Attempting Facebook Login');
-            $scope.facebookSpinner = true;
+            this.facebookSpinner = true;
             facebookLogin.login().then(function(fbData){
                 console.log(fbData);
                 localStorageService.set('userEmail',fbData.email);
@@ -81,7 +82,7 @@
                         name: fbData.name
                     });
                     query.$promise.then(function(data) {
-                        $scope.facebookSpinner = false;
+                        this.facebookSpinner = false;
                         console.log(data);
                         tostService.notify(data.message, 'top');
                         $state.go('app.contacts');
@@ -90,12 +91,7 @@
                 console.log(data);
             });
         };
-        $scope.verifyAccount = function () {
-            // if(localStorageService.get('userEmail')){
-            //     $state.go('verification');
-            // } else{
-            //     tostService.notify('Please Sign Up First', 'bottom');
-            // }
+        this.verifyAccount = function () {
            localStorageService.set('fromLoginPage', 'fromLoginPage');
            delete $localStorage.userEmail;
            $state.go('verification');
