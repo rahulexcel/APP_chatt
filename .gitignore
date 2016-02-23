@@ -17,3 +17,7 @@
 coverage
 node_modules
 npm-debug.log
+design/hooks/*
+design/platforms/*
+design/plugins/*
+design/resources/*
