@@ -10,31 +10,36 @@
             email: '',
             password: ''
         }
+        var currentTimestamp = _.now();
         var deviceUUID = deviceService.getuuid();
         var devicePlatform = deviceService.platform();
-
         this.login = function () {
-            var query = loginFactory.save({
-                action_type: 'manual_login',
-                social_id: '',
-                platform: devicePlatform,
-                token: $localStorage.gcmToken,
-                action: 'login_register',
-                device_id: deviceUUID,
-                email: this.data.email,
-                password: this.data.password,
-                name:''
-            });
-            query.$promise.then(function (data) {
-                console.log(data);
-                if(data.message == 'Please verify you account first'){
-                    $state.go('verification');
-                    timeStorage.set('userEmail',this.data.email);
-                    delete $localStorage.fromLoginPage;
-                }
-                tostService.notify(data.message, 'top');
-                // $state.go('app.contacts');
-            });
+            if(_.isEmpty(this.data.email) || _.isEmpty(this.data.password) || !this.data.email){
+                tostService.notify('Please enter your correct email and password', 'top');
+            }else{
+                    var query = loginFactory.save({
+                    action_type: 'manual_login',
+                    social_id: '',
+                    platform: devicePlatform,
+                    token: $localStorage.gcmToken,
+                    action: 'login_register',
+                    device_id: deviceUUID,
+                    email: this.data.email,
+                    password: this.data.password,
+                    name:'',
+                    currentTimestamp:currentTimestamp
+                });
+                query.$promise.then(function (data) {
+                    console.log(data);
+                    if(data.status == 0){
+                        $state.go('verification');
+                        timeStorage.set('userEmail',this.data.email);
+                        delete $localStorage.fromLoginPage;
+                    }
+                    tostService.notify(data.message, 'top');
+                    // $state.go('app.contacts');
+                });
+            }
         };
 
         this.googleRegister = function(){
@@ -52,7 +57,8 @@
                         action:'login_register',
                         device_id:deviceUUID,
                         email: googleData.email,
-                        name: googleData.name
+                        name: googleData.name,
+                        currentTimestamp:currentTimestamp
                     });
                     query.$promise.then(function(data) {
                         this.googleSpinner = false;
@@ -94,7 +100,8 @@
                         action:'login_register',
                         device_id:deviceUUID,
                         email: fbData.email,
-                        name: fbData.name
+                        name: fbData.name,
+                        currentTimestamp:currentTimestamp
                     });
                     query.$promise.then(function(data) {
                         this.facebookSpinner = false;
