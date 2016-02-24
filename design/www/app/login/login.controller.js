@@ -4,20 +4,17 @@
     angular.module('starter')
             .controller('loginController', loginController);
 
-    function loginController($state, loginFactory, timeStorage, $localStorage, tostService, deviceService, googleLogin, facebookLogin, momentService) {
+    function loginController($state, loginFactory, timeStorage, $localStorage, tostService, deviceService, googleLogin, facebookLogin) {
         console.log('login');
         this.data = {
             email: '',
             password: ''
         }
-        var currentTimestamp = momentService.currentTimestamp();
-        var currentDate = momentService.currentDate();
-        var currentDateTimeDay = momentService.currentDateTimeDay();
+        var currentTimestamp = _.now();
         var deviceUUID = deviceService.getuuid();
         var devicePlatform = deviceService.platform();
-
         this.login = function () {
-            if(this.data.email == "" || this.data.password == "" || !this.data.email){
+            if(_.isEmpty(this.data.email) || _.isEmpty(this.data.password) || !this.data.email){
                 tostService.notify('Please enter your correct email and password', 'top');
             }else{
                     var query = loginFactory.save({
@@ -30,9 +27,7 @@
                     email: this.data.email,
                     password: this.data.password,
                     name:'',
-                    currentTimestamp:currentTimestamp,
-                    currentDate:currentDate,
-                    currentDateTimeDay:currentDateTimeDay
+                    currentTimestamp:currentTimestamp
                 });
                 query.$promise.then(function (data) {
                     console.log(data);
@@ -63,9 +58,7 @@
                         device_id:deviceUUID,
                         email: googleData.email,
                         name: googleData.name,
-                        currentTimestamp:currentTimestamp,
-                        currentDate:currentDate,
-                        currentDateTimeDay:currentDateTimeDay
+                        currentTimestamp:currentTimestamp
                     });
                     query.$promise.then(function(data) {
                         this.googleSpinner = false;
@@ -108,9 +101,7 @@
                         device_id:deviceUUID,
                         email: fbData.email,
                         name: fbData.name,
-                        currentTimestamp:currentTimestamp,
-                        currentDate:currentDate,
-                        currentDateTimeDay:currentDateTimeDay
+                        currentTimestamp:currentTimestamp
                     });
                     query.$promise.then(function(data) {
                         this.facebookSpinner = false;

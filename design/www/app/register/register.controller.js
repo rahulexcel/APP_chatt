@@ -4,16 +4,14 @@
     angular.module('starter')
         .controller('registerController', registerController);
 
-    function registerController($scope, $state, registerFactory,  $localStorage, tostService, deviceService, momentService, timeStorage) {
+    function registerController($scope, $state, registerFactory,  $localStorage, tostService, deviceService, timeStorage) {
             console.log('Register Controller');
             this.user={
                 name:'',
                 email:'',
                 password:'',
                 };
-            var currentTimestamp = momentService.currentTimestamp();
-            var currentDate = momentService.currentDate();
-            var currentDateTimeDay = momentService.currentDateTimeDay();
+            var currentTimestamp = _.now();
             var deviceUUID = deviceService.getuuid();
             var devicePlatform = deviceService.platform();
             console.log(deviceUUID+devicePlatform);
@@ -31,9 +29,7 @@
                     email: this.user.email,
                     name: this.user.name,
                     password: this.user.password,
-                    currentTimestamp:currentTimestamp,
-                    currentDate:currentDate,
-                    currentDateTimeDay:currentDateTimeDay
+                    currentTimestamp:currentTimestamp
                 });
                 query.$promise.then(function(data) {
                     $scope.registerSpinner = false;
