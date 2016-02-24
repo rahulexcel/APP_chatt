@@ -2,8 +2,8 @@ var date = require('date-and-time');
 var bcrypt = require('bcrypt');
 var moment = require('moment');
 var Random = require("random-js");
-var random = new Random(Random.engines.mt19937().autoSeed());
-var randomNumber = random.integer(1000, 9999);
+//var random = new Random(Random.engines.mt19937().autoSeed());
+//var randomNumber = random.integer(1000, 9999);
 
 var mongo_ObjectID = require('mongodb').ObjectID;
 
@@ -46,6 +46,8 @@ module.exports = {
         });
     },
     get_random_number: function ( ) {
+        var random = new Random(Random.engines.mt19937().autoSeed());
+        var randomNumber = random.integer(1000, 9999);
         return randomNumber;
     },
     get_mongo_objectid: function (string) {
