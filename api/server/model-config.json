@@ -32,5 +32,9 @@
     "user": {
         "dataSource": "mongo_db_app_chatt",
         "public": true
+    },
+    "email": {
+        "dataSource": "email_data_source",
+        "public": true
     }
 }

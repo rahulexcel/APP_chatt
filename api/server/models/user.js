@@ -2,7 +2,7 @@ var GENERIC = require('../modules/generic');
 var lodash = require('lodash');
 
 module.exports = function (User) {
-    User.register_login = function (action, action_type, social_id, platform, device_id, token, email_id, name, password, callback) {
+    User.register_login = function (action, action_type, social_id, platform, device_id, token, email_id, name, password, currentTimestamp, currentDate, currentDateTimeDay, callback) {
         name = name.toLowerCase();
         email_id = email_id.toLowerCase();
         where = {
@@ -34,7 +34,7 @@ module.exports = function (User) {
                                         callback(null, 0, 'Please verify you account first', {});
                                     } else {
                                         var data = {
-                                            user_id: result.id,
+                                            user_id: result.id
                                         }
                                         callback(null, 1, 'Success login', data);
                                     }
@@ -46,7 +46,6 @@ module.exports = function (User) {
                     } else {
                         if (action_type == "facebook" || action_type == 'google') {
                             password = GENERIC.get_random_number();
-                            console.log(password);
                         }
                         password = password.toString();
                         GENERIC.encode_password(password, function (hash_password) {
@@ -69,9 +68,9 @@ module.exports = function (User) {
                                 name: name,
                                 password: hash_password,
                                 last_seen: '',
-                                registration_time: GENERIC.currentTimestamp(),
-                                registration_date: GENERIC.currentDate(),
-                                registration_date_time: GENERIC.currentDateTimeDay(),
+                                registration_time: currentTimestamp,
+                                registration_date: currentDate,
+                                registration_date_time: currentDateTimeDay,
                                 profile_image: ''
                             });
                             newUser.save(function (err, result) {
@@ -107,7 +106,10 @@ module.exports = function (User) {
                     {arg: 'token', type: 'string'},
                     {arg: 'email', type: 'string'},
                     {arg: 'name', type: 'string'},
-                    {arg: 'password', type: 'string'}
+                    {arg: 'password', type: 'string'},
+                    {arg: 'currentTimestamp', type: 'string'},
+                    {arg: 'currentDate', type: 'string'},
+                    {arg: 'currentDateTimeDay', type: 'string'}
                 ],
                 returns: [
                     {arg: 'status', type: 'number'},

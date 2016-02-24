@@ -16,15 +16,15 @@
         "transports": [
             {
                 "type": "smtp",
-                "host": "smtp.gmail.com",
+                "host": "smtp.mandrillapp.com",
                 "secure": true,
                 "port": 465,
                 "tls": {
                     "rejectUnauthorized": false
                 },
                 "auth": {
-                    "user": "exceltes@gmail.com",
-                    "pass": "java@123"
+                    "user": "manish@excellencetechnologies.in",
+                    "pass": "Ca4nS3QStEcpvZdk9iMh0Q"
                 }
             }
         ]

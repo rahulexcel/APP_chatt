@@ -1,27 +1,28 @@
 var date = require('date-and-time');
 var bcrypt = require('bcrypt');
-var random = require("random-js");
+var moment = require('moment');
+var Random = require("random-js");
+var random = new Random(Random.engines.mt19937().autoSeed());
+var randomNumber = random.integer(1000, 9999);
 
 var mongo_ObjectID = require('mongodb').ObjectID;
 
 module.exports = {
     currentTime: function () {
-        return new Date().getTime();
+        return moment().toDate().getTime();
     },
     currentTimestamp: function () {
-        return Math.floor(Date.now() / 1000);
+        return moment().unix();
     },
     currentDate: function () {
-        var now = new Date();
-        ret = date.format(now, 'YYYY-M-D');
+        ret = moment().format('YYYY-M-D');
         return ret;
     },
     currentDateTimeDay: function () {
-        var now = new Date();
-        return date.format(now, 'E YYYY-MMM-DD HH:mm:ss A');
+        return moment().format('YYYY-MMM-DD HH:mm:ss A');
     },
     currentIsoDate: function () {
-        return new Date();
+        return moment().toDate();
     },
     encode_password: function (password, callback) {
         bcrypt.hash(password, 10, function (err, hash) {
@@ -45,20 +46,7 @@ module.exports = {
         });
     },
     get_random_number: function ( ) {
-        return Math.floor(Math.random() * 9000) + 1000;
-    },
-    get_user_public_view: function (row) {
-        var public_row = {
-            user_id: row.id,
-            name: row.name,
-            profile_image: row.profile_image
-        };
-        //console.log( row );
-        console.log(public_row);
-        console.log('\n');
-        console.log('-------');
-        console.log('\n');
-        return public_row;
+        return randomNumber;
     },
     get_mongo_objectid: function (string) {
         return mongo_ObjectID(string);
