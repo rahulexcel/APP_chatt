@@ -36,7 +36,7 @@
                 });
                 query.$promise.then(function (data) {
                     console.log(data);
-                    if(data.message == 'Please verify you account first'){
+                    if(data.status == 0){
                         $state.go('verification');
                         timeStorage.set('userEmail',this.data.email);
                         delete $localStorage.fromLoginPage;

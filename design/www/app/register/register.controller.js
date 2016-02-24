@@ -16,6 +16,7 @@
             var currentDateTimeDay = momentService.currentDateTimeDay();
             var deviceUUID = deviceService.getuuid();
             var devicePlatform = deviceService.platform();
+            console.log(deviceUUID+devicePlatform);
             this.register = function() {
                 this.registerSpinner = true;
                 timeStorage.set('userEmail',this.user.email);
