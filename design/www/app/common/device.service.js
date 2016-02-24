@@ -6,10 +6,14 @@
     function deviceService() {
         return {
             getuuid: function() {
-                return device.uuid;
+                if(window.plugins && window.plugins.device){
+                    return device.uuid;
+                }
             },
             platform: function() {
-                return device.platform;
+                if(window.plugins && window.plugins.device){
+                    return device.platform;
+                }
             }
         }
     };
