@@ -16,7 +16,7 @@
                 if(window.plugins){
                     return device.platform;
                 } else{
-                    return -1;
+                    return 'desktop';
                 }
             }
         }
