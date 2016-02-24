@@ -4,8 +4,6 @@ var moment = require('moment');
 
 module.exports = function (User) {
     User.register_login = function (action, action_type, social_id, platform, device_id, token, email_id, name, password, currentTimestamp, callback) {
-        var currentDate = moment(currentTimestamp).format('YYYY-M-D');
-        var currentDateTimeDay = moment(currentTimestamp).format('YYYY-MMM-DD HH:mm:ss A');
         if (name && action && action_type && email_id) {
             name = name.toLowerCase();
             email_id = email_id.toLowerCase();
@@ -73,8 +71,8 @@ module.exports = function (User) {
                                     password: hash_password,
                                     last_seen: '',
                                     registration_time: currentTimestamp,
-                                    registration_date: currentDate,
-                                    registration_date_time: currentDateTimeDay,
+                                    registration_date: UTIL.currentDate(currentTimestamp),
+                                    registration_date_time: UTIL.currentDateTimeDay(currentTimestamp),
                                     profile_image: ''
                                 });
                                 newUser.save(function (err, result) {

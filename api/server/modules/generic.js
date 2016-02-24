@@ -14,12 +14,12 @@ module.exports = {
     currentTimestamp: function () {
         return moment().unix();
     },
-    currentDate: function () {
-        ret = moment().format('YYYY-M-D');
+    currentDate: function (currentTimestamp) {
+        ret = moment(currentTimestamp).format('YYYY-M-D');
         return ret;
     },
-    currentDateTimeDay: function () {
-        return moment().format('YYYY-MMM-DD HH:mm:ss A');
+    currentDateTimeDay: function (currentTimestamp) {
+        return  moment(currentTimestamp).format('YYYY-MMM-DD HH:mm:ss A');
     },
     currentIsoDate: function () {
         return moment().toDate();
