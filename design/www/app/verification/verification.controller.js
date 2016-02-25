@@ -4,7 +4,7 @@
      angular.module('starter')
          .controller('verificationController', verificationController);
 
-     function verificationController($state, verificationFactory, tostService, timeStorage) {
+     function verificationController($state, verificationFactory, tostService, timeStorage,resendVerificationCodeFactory) {
          this.data = {
              verificationCode: '',
              email: ''
@@ -28,5 +28,14 @@
                  });
              }
          };
+         this.resendVerification = function(){
+                var query = resendVerificationCodeFactory.save({
+                    email: this.data.email
+                });
+                query.$promise.then(function(data) {
+                    console.log(data);
+                    tostService.notify(data.message, 'top');
+                });
+            };
      }
  })();

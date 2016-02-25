@@ -15,6 +15,9 @@
             var deviceUUID = deviceService.getuuid();
             var devicePlatform = deviceService.platform();
             this.register = function() {
+                if(_.isEmpty(this.user.name) || _.isEmpty(this.user.email) || _.isEmpty(this.user.password) ){
+                tostService.notify('Please fill all fields', 'top');
+            }else{
                 this.registerSpinner = true;
                 timeStorage.set('userEmail',this.user.email,1);
                 var query = registerFactory.save({
@@ -30,13 +33,14 @@
                     currentTimestamp:currentTimestamp
                 });
                 query.$promise.then(function(data) {
-                    $scope.registerSpinner = false;
+                    // this.registerSpinner = false;
                     console.log(data);
                     tostService.notify(data.message, 'top');
                     if(data.data.show_verification == '1'){
                         $state.go('verification');
                     }
                 });
+            }
         };
     }
 })();
