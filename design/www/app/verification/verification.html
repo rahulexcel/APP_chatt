@@ -17,10 +17,10 @@
         </div>
         <div class="md-form-group float-label">
           <input type="text" class="md-input" ng-model="verification.data.verificationCode" required>
-          <label>Verification Code</label>
+          <label>Code</label>
         </div>
         <button md-ink-ripple type="submit" class="md-btn md-raised pink btn-block p-h-md" ng-click="verification.verify()">Submit</button>
-        <a type="submit" class="md-btn md-raised blue btn-block p-h-md" ui-sref="resendVerificationCode">Resend Verification Code</a>
+        <a type="submit" class="md-btn md-raised blue btn-block p-h-md" ng-click="verification.resendVerification()">Resend Verification Code</a>
 
       </form>
     </div>

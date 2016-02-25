@@ -21,8 +21,8 @@
           <label>Password</label>
         </div>
         <button md-ink-ripple type="submit" class="md-btn md-raised pink btn-block p-h-md" ng-click="login.login()">SIGN IN</button>
-        <button type="button" class="md-btn md-raised btn-block p-h-md google-btn" ng-click="login.googleRegister()"><span ng-show="googleSpinner"><i class="fa fa-spin fa-spinner"></i></span> <span>CONNECT WITH</span> <i class="fa fa-google"></i></button>
-        <button type="button" class="md-btn md-raised btn-block p-h-md facebook-btn" ng-click="login.facebookRegister()"><span ng-show="facebookSpinner"><i class="fa fa-spin fa-spinner"></i></span> <span>CONNECT WITH</span> <i class="fa fa-facebook"></i></button>
+        <button type="button" class="md-btn md-raised btn-block p-h-md google-btn" ng-click="login.googleRegister()"><span ng-show="login.googleSpinner"><i class="fa fa-spin fa-spinner"></i></span> <span>CONNECT WITH</span> <i class="fa fa-google"></i></button>
+        <button type="button" class="md-btn md-raised btn-block p-h-md facebook-btn" ng-click="login.facebookRegister()"><span ng-show="login.facebookSpinner"><i class="fa fa-spin fa-spinner"></i></span> <span>CONNECT WITH</span> <i class="fa fa-facebook"></i></button>
         <h5 class="text-center">OR</h5>
         <button md-ink-ripple type="submit" class="md-btn md-raised blue btn-block p-h-md" ui-sref="register">SIGN UP</button>
       </form>
