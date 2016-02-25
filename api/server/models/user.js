@@ -39,13 +39,13 @@ module.exports = function (User) {
                                         } else {
                                             var data = {
                                                 user_id: result.id
-                                            }
+                                            };
                                             callback(null, 1, 'Success login', data);
                                         }
                                     } else {
                                         callback(null, 0, 'Invalid Login', data);
                                     }
-                                })
+                                });
                             }
                         } else {
                             if (action_type == "facebook" || action_type == 'google') {
@@ -88,7 +88,7 @@ module.exports = function (User) {
                                         if (action_type != 'facebook' && action_type != 'google') {
                                             data['show_verification'] = 1;
                                         }
-                                        User.app.models.email.send_email('new_registration', {email: email_id, name: name, verification_code: verification_code}, function () {
+                                        User.app.models.email.newRegisteration({email: email_id, name: name, verification_code: verification_code}, function () {
                                             callback(null, 1, 'Successful Registration', data);
                                         });
                                     }
@@ -115,9 +115,7 @@ module.exports = function (User) {
                     {arg: 'email', type: 'string'},
                     {arg: 'name', type: 'string'},
                     {arg: 'password', type: 'string'},
-                    {arg: 'currentTimestamp', type: 'number'},
-                    {arg: 'currentDate', type: 'number'},
-                    {arg: 'currentDateTimeDay', type: 'string'}
+                    {arg: 'currentTimestamp', type: 'number'}
                 ],
                 returns: [
                     {arg: 'status', type: 'number'},
@@ -138,15 +136,15 @@ module.exports = function (User) {
             if (err) {
                 callback(null, 0, err, {});
             } else {
-                if (result.length === 0) {
+                if (result.length == 0) {
                     callback(null, 0, 'Email Id not exists', {});
                 } else {
                     result = result[0];
                     verification_status = result['verification_status'];
                     exist_code = result['verification_code'];
-                    if (verification_status === 1) {
+                    if (verification_status == 1) {
                         callback(null, 0, 'Already verified.', {});
-                    } else if (exist_code !== code) {
+                    } else if (exist_code != code) {
                         callback(null, 0, 'Verification failed.', {});
                     } else {
                         User.update({email_id: email_id}, {
@@ -189,12 +187,12 @@ module.exports = function (User) {
             if (err) {
                 callback(null, 0, err, {});
             } else {
-                if (result.length === 0) {
+                if (result.length == 0) {
                     callback(null, 0, 'Email Id not exists', {});
                 } else {
                     result = result[0];
                     verification_status = result['verification_status'];
-                    if (verification_status === 1) {
+                    if (verification_status == 1) {
                         callback(null, 0, 'Already verified.', {});
                     } else {
                         new_verification_code = UTIL.get_random_number();
@@ -205,7 +203,7 @@ module.exports = function (User) {
                             if (err) {
                                 callback(null, 0, err, {});
                             } else {
-                                User.app.models.email.send_email('resend_verification_code', {email: email_id, verification_code: new_verification_code}, function () {
+                                User.app.models.email.resendVerification({email: email_id, verification_code: new_verification_code}, function () {
                                     callback(null, 1, 'Check your email for new verification code', {});
                                 });
                             }
@@ -239,12 +237,12 @@ module.exports = function (User) {
             if (err) {
                 callback(null, 0, err, {});
             } else {
-                if (result.length === 0) {
+                if (result.length == 0) {
                     callback(null, 0, 'Email Id not exists', {});
                 } else {
                     result = result[0];
                     verification_status = result['verification_status'];
-                    if (verification_status === 0) {
+                    if (verification_status == 0) {
                         callback(null, 0, 'Please verify your account first.', {});
                     } else {
                         new_password = UTIL.get_random_number();
@@ -256,7 +254,7 @@ module.exports = function (User) {
                                 if (err) {
                                     callback(null, 0, err, {});
                                 } else {
-                                    User.app.models.email.send_email('resend_password', {email: email_id, new_password: new_password}, function () {
+                                    User.app.models.email.resendPassword({email: email_id, new_password: new_password}, function () {
                                         callback(null, 1, 'Check your email for new password', {});
                                     });
                                 }

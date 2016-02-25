@@ -25,14 +25,9 @@
             "required": true
         },
         "currentTimestamp": {
-            "type": "string"
-        },
-        "currentDate": {
-            "type": "string"
-        },
-        "currentDateTimeDay": {
-            "type": "string"
+            "type": "number"
         }
+
     },
     "validations": [],
     "relations": {},
