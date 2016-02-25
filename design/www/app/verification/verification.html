@@ -12,9 +12,8 @@
         Verify your CHATT Account
       </div>
       <form name="form">
-        <div class="md-form-group float-label" ng-show="verification.showEmailInput">
-          <input type="text" class="md-input" ng-model="verification.data.email" required>
-          <label>Email</label>
+        <div class="md-form-group float-label">
+          <p>Email: {{verification.data.email}}</p>
         </div>
         <div class="md-form-group float-label">
           <input type="text" class="md-input" ng-model="verification.data.verificationCode" required>

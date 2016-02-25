@@ -110,10 +110,5 @@
                         $state.go('app.contacts');
                     });
         };
-        this.verifyAccount = function () {
-           timeStorage.set('fromLoginPage', 'fromLoginPage',1);
-           delete $localStorage.userEmail;
-           $state.go('verification');
-        };
     }
 })();

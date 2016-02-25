@@ -28,8 +28,5 @@
                  });
              }
          };
-         if (timeStorage.get('fromLoginPage')) {
-             this.showEmailInput = true;
-         }
      }
  })();
