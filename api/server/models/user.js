@@ -1,6 +1,7 @@
 var UTIL = require('../modules/generic');
 var lodash = require('lodash');
 var moment = require('moment');
+var generatePassword = require('password-generator');
 
 module.exports = function (User) {
 
@@ -279,5 +280,50 @@ module.exports = function (User) {
     );
 //********************************* END RESET PASSWORD **********************************
 
+
+//********************************* START FORGET PASSWORD **********************************
+    User.forget_password = function (email_id, callback) {
+        email_id = email_id.toLowerCase();
+        where = {
+            email_id: email_id
+        };
+        User.find({where: where}, function (err, result) {
+            if (err) {
+                callback(null, 0, err, {});
+            } else {
+                if (result.length == 0) {
+                    callback(null, 'Email Id not exists');
+                } else {
+                    result = result[0];
+                    new_password = generatePassword(8, false);
+                    new_password = new_password.toString();
+                    UTIL.encode_password(new_password, function (hash_password) {
+                        User.update({email_id: email_id}, {
+                            password: hash_password
+                        }, function (err, result) {
+                            if (err) {
+                                callback(null, err);
+                            } else {
+                                User.app.models.email.forgetPassword({email: email_id, new_password: new_password}, function () {
+                                    callback(null, 'You should get a new password on your email address.');
+                                });
+                            }
+                        });
+                    });
+                }
+            }
+        });
+    };
+    User.remoteMethod(
+            'forget_password', {
+                accepts: [
+                    {arg: 'email', type: 'string'}
+                ],
+                returns: [
+                    {arg: 'message', type: 'string'}
+                ]
+            }
+    );
+//********************************* END FORGET PASSWORD **********************************
 
 };
