@@ -6,6 +6,7 @@
 
     function loginController($state, loginFactory, timeStorage, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform) {
         console.log('login');
+        var self = this;
         this.data = {
             email: '',
             password: ''
@@ -42,7 +43,7 @@
         };
 
         this.googleRegister = function() {
-            this.googleSpinner = true;
+            self.googleSpinner = true;
             console.log('Attempting Google Login');
             var promise = googleLogin.startLogin();
             promise.then(function(googleData) {
@@ -60,7 +61,7 @@
                     currentTimestamp: currentTimestamp
                 });
                 query.$promise.then(function(data) {
-                    this.googleSpinner = false;
+                    self.googleSpinner = false;
                     console.log(data);
                     tostService.notify(data.message, 'top');
                     $state.go('app.contacts');
@@ -71,7 +72,7 @@
         };
         this.facebookRegister = function() {
             console.log('Attempting Facebook Login');
-            this.facebookSpinner = true;
+            self.facebookSpinner = true;
             facebookLogin.login().then(function(fbData) {
                 console.log(fbData);
                 if (fbData.id) {
@@ -104,7 +105,7 @@
                 currentTimestamp: currentTimestamp
             });
             query.$promise.then(function(data) {
-                this.facebookSpinner = false;
+                self.facebookSpinner = false;
                 console.log(data);
                 tostService.notify(data.message, 'top');
                 $state.go('app.contacts');
