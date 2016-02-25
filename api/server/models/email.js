@@ -13,7 +13,7 @@ module.exports = function (Email) {
         }
         Email.send({
             to: data.email,
-            from: 'manish@excellencetechnologies.in',
+            from: 'noreply@excellencetechnologies.in',
             subject: subject,
             html: body
         }, function (err, mail) {
@@ -22,14 +22,14 @@ module.exports = function (Email) {
         });
     };
 
-    Email.resendVerification = function (data) {
+    Email.resendVerification = function (data, callback) {
         var subject = '';
         var body = '';
         subject = "Chatt App - Verfication Code";
         body = " Verification code - " + data.verification_code;
         Email.send({
             to: data.email,
-            from: 'manish@excellencetechnologies.in',
+            from: 'noreply@excellencetechnologies.in',
             subject: subject,
             html: body
         }, function (err, mail) {
@@ -45,7 +45,7 @@ module.exports = function (Email) {
         body = "Your new password is :: " + data.new_password;
         Email.send({
             to: data.email,
-            from: 'manish@excellencetechnologies.in',
+            from: 'noreply@excellencetechnologies.in',
             subject: subject,
             html: body
         }, function (err, mail) {
