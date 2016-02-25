@@ -22,7 +22,7 @@ module.exports = function (Email) {
         });
     };
 
-    Email.resendVerification = function (data) {
+    Email.resendVerification = function (data, callback) {
         var subject = '';
         var body = '';
         subject = "Chatt App - Verfication Code";
