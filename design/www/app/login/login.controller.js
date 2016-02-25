@@ -33,7 +33,7 @@
                     console.log(data);
                     if(data.status == 0){
                         $state.go('verification');
-                        timeStorage.set('userEmail',this.data.email);
+                        timeStorage.set('userEmail',this.data.email, 1);
                         delete $localStorage.fromLoginPage;
                     }
                     tostService.notify(data.message, 'top');
@@ -48,7 +48,7 @@
             var promise = googleLogin.startLogin();
             promise.then(function(googleData) {
                 console.log(googleData);
-                timeStorage.set('userEmail',googleData.email);
+                timeStorage.set('userEmail',googleData.email,1);
                     var query = loginFactory.save({
                         action_type:'google',
                         social_id:googleData.google_id,
@@ -91,7 +91,7 @@
             });
         };
         function loginWithFBApi(fbData){
-                timeStorage.set('userEmail',fbData.email);
+                timeStorage.set('userEmail',fbData.email,1);
                 var query = loginFactory.save({
                         action_type:'facebook',
                         social_id:fbData.id,
@@ -109,11 +109,6 @@
                         tostService.notify(data.message, 'top');
                         $state.go('app.contacts');
                     });
-        };
-        this.verifyAccount = function () {
-           timeStorage.set('fromLoginPage', 'fromLoginPage');
-           delete $localStorage.userEmail;
-           $state.go('verification');
         };
     }
 })();

@@ -14,11 +14,9 @@
             var currentTimestamp = _.now();
             var deviceUUID = deviceService.getuuid();
             var devicePlatform = deviceService.platform();
-            console.log(deviceUUID+devicePlatform);
             this.register = function() {
                 this.registerSpinner = true;
-                timeStorage.set('userEmail',this.user.email);
-                delete $localStorage.fromLoginPage;
+                timeStorage.set('userEmail',this.user.email,1);
                 var query = registerFactory.save({
                     action_type:'manual_register',
                     social_id:'',

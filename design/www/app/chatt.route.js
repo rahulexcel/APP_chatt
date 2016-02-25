@@ -19,6 +19,13 @@ angular.module('starter', ['ionic', 'ngStorage', 'ngResource', 'GoogleLoginServi
     templateUrl: 'app/register/register.html',
     controller: 'registerController',
     controllerAs: 'register'
+  })
+  .state('verification', {
+    url: '/verification',
+    cache:false,
+    templateUrl: 'app/verification/verification.html',
+    controller: 'verificationController',
+    controllerAs: 'verification'
   });
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/login');
