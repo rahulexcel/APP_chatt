@@ -1,6 +1,6 @@
 var mandrill = require('mandrill-api/mandrill');
 var mandrill_client = new mandrill.Mandrill('Ca4nS3QStEcpvZdk9iMh0Q');
-var JSON = require('../config');
+var CONFIG = require('../config');
 
 module.exports = function (Email) {
 
@@ -14,7 +14,7 @@ module.exports = function (Email) {
         }
         Email.send({
             to: data.email,
-            from: JSON.sender,
+            from: CONFIG.sender,
             subject: subject,
             html: body
         }, function (err, mail) {
@@ -30,7 +30,7 @@ module.exports = function (Email) {
         body = " Verification code - " + data.verification_code;
         Email.send({
             to: data.email,
-            from: JSON.sender,
+            from: CONFIG.sender,
             subject: subject,
             html: body
         }, function (err, mail) {
@@ -46,7 +46,7 @@ module.exports = function (Email) {
         body = "Your new password is :: " + data.new_password;
         Email.send({
             to: data.email,
-            from: JSON.sender,
+            from: CONFIG.sender,
             subject: subject,
             html: body
         }, function (err, mail) {
