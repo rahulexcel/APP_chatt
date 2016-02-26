@@ -38,7 +38,9 @@
                 url: '/app',
                 cache:false,
                 abstract: true,
-                templateUrl: 'app/menu/menu.html'
+                templateUrl: 'app/menu/menu.html',
+                controller: 'menuController',
+                controllerAs: 'menu'
               })
             .state('app.contacts', {
                 url: '/contacts',
@@ -48,6 +50,17 @@
                     templateUrl: 'app/contacts/contacts.html',
                     controller: 'contactsController',
                     controllerAs: 'contacts'
+                  }
+                }
+              })
+            .state('app.resetpassword', {
+                url: '/resetpassword',
+                cache:false,
+                views: {
+                  'menuContent': {
+                    templateUrl: 'app/resetpassword/resetpassword.html',
+                    controller: 'resetPasswordController',
+                    controllerAs: 'resetpassword'
                   }
                 }
               });
