@@ -305,7 +305,7 @@ module.exports = function (User) {
                                 callback(null, err);
                             } else {
                                 User.app.models.email.forgotPassword({email: email_id, new_password: new_password}, function () {
-                                    callback(null, 1, 'You should get a new password on your email address.');
+                                    callback(null, 1, 'You should get a new password on your email address, if you have an account with us.');
                                 });
                             }
                         });
