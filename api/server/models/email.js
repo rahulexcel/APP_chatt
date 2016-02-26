@@ -55,7 +55,7 @@ module.exports = function (Email) {
         });
     };
 
-    Email.forgetPassword = function (data, callback) {
+    Email.forgotPassword = function (data, callback) {
         var subject = '';
         var body = '';
         subject = "Chatt App - New password";

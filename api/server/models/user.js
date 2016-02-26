@@ -282,17 +282,17 @@ module.exports = function (User) {
 
 
 //********************************* START FORGET PASSWORD **********************************
-    User.forget_password = function (email_id, callback) {
+    User.forgot_password = function (email_id, callback) {
         email_id = email_id.toLowerCase();
         where = {
             email_id: email_id
         };
         User.find({where: where}, function (err, result) {
             if (err) {
-                callback(null, 0, err, {});
+                callback(null, 0, err);
             } else {
                 if (result.length == 0) {
-                    callback(null, 'Email Id not exists');
+                    callback(null, 0, 'You should get a new password on your email address, if you have an account with us.');
                 } else {
                     result = result[0];
                     new_password = generatePassword(8, false);
@@ -304,8 +304,8 @@ module.exports = function (User) {
                             if (err) {
                                 callback(null, err);
                             } else {
-                                User.app.models.email.forgetPassword({email: email_id, new_password: new_password}, function () {
-                                    callback(null, 'You should get a new password on your email address.');
+                                User.app.models.email.forgotPassword({email: email_id, new_password: new_password}, function () {
+                                    callback(null, 1, 'You should get a new password on your email address.');
                                 });
                             }
                         });
@@ -315,11 +315,12 @@ module.exports = function (User) {
         });
     };
     User.remoteMethod(
-            'forget_password', {
+            'forgot_password', {
                 accepts: [
                     {arg: 'email', type: 'string'}
                 ],
                 returns: [
+                    {arg: 'status', type: 'number'},
                     {arg: 'message', type: 'string'}
                 ]
             }
