@@ -311,3 +311,9 @@ span.name input{
 	border-bottom:1px solid #ddd!important;
 	margin-top: 1px;
 }
+.popover{
+	display: block;
+}
+.ion-android-more-vertical{
+	color: #fff!important;
+}

@@ -3,24 +3,23 @@
     <ion-nav-bar class="bar-stable">
       <ion-nav-back-button>
       </ion-nav-back-button>
-      <ion-nav-buttons side="left">
-        <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+      <ion-nav-buttons side="right">
+        <button class="button button-icon ion-android-more-vertical" ng-click="popover.show($event)">
+        </button>
         </button>
       </ion-nav-buttons>
     </ion-nav-bar>
     <ion-nav-view name="menuContent"></ion-nav-view>
   </ion-side-menu-content>
-
-  <ion-side-menu side="left">
-    <ion-header-bar class="bar-stable">
-      <h1 class="title">MENU</h1>
-    </ion-header-bar>
-    <ion-content>
-      <ion-list>
-        <ion-item menu-close href="#/app/login">
-          LOGOUT
-        </ion-item>
-      </ion-list>
-    </ion-content>
-  </ion-side-menu>
 </ion-side-menus>
+<script id="templates/popover.html" type="text/ng-template">
+  <ion-popover-view>
+    <ion-content scroll="false">
+      <div class="list">
+        <a class="item" href="#/app/resetpassword"  ng-click="popover.hide($event)">
+              RESET PASSWORD
+        </a>
+      </div>
+    </ion-content>
+  </ion-popover-view>
+</script>

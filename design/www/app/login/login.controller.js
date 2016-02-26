@@ -38,6 +38,7 @@
                         timeStorage.set('userEmail', self.data.email, 1);
                         $state.go('verification');
                     } else if (data.status == 1) {
+                        timeStorage.set('userEmail', self.data.email, 1);
                         $state.go('app.contacts');
                     }
                 });
