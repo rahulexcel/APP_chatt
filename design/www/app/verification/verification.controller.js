@@ -5,20 +5,21 @@
          .controller('verificationController', verificationController);
 
      function verificationController($state, verificationFactory, tostService, timeStorage,resendVerificationCodeFactory) {
-         this.data = {
+         var self = this;
+         self.data = {
              verificationCode: '',
              email: ''
          }
          if (timeStorage.get('userEmail')) {
-             this.data.email = timeStorage.get('userEmail');
+             self.data.email = timeStorage.get('userEmail');
          }
-         this.verify = function() {
-             if (_.isEmpty(this.data.email) || _.isEmpty(this.data.verificationCode)) {
+         self.verify = function() {
+             if (_.isEmpty(self.data.email) || _.isEmpty(self.data.verificationCode)) {
                  tostService.notify('Please all fill the fields.', 'top');
              } else {
                  var query = verificationFactory.save({
-                     email: this.data.email,
-                     code: this.data.verificationCode
+                     email: self.data.email,
+                     code: self.data.verificationCode
                  });
                  query.$promise.then(function(data) {
                      tostService.notify(data.message, 'top');
@@ -28,9 +29,9 @@
                  });
              }
          };
-         this.resendVerification = function(){
+         self.resendVerification = function(){
                 var query = resendVerificationCodeFactory.save({
-                    email: this.data.email
+                    email: self.data.email
                 });
                 query.$promise.then(function(data) {
                     console.log(data);

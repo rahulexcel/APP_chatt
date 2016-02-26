@@ -20,7 +20,7 @@
           <input type="password" class="md-input" ng-model="login.data.password" required>
           <label>Password</label>
         </div>
-        <button md-ink-ripple type="submit" class="md-btn md-raised pink btn-block p-h-md" ng-click="login.login()">SIGN IN</button>
+        <button md-ink-ripple type="submit" class="md-btn md-raised pink btn-block p-h-md" ng-click="login.login()"> <span ng-show="login.loginSpinner"><i class="fa fa-spin fa-spinner"></i></span>SIGN IN</button>
         <button type="button" class="md-btn md-raised btn-block p-h-md google-btn" ng-click="login.googleRegister()"><span ng-show="login.googleSpinner"><i class="fa fa-spin fa-spinner"></i></span> <span>CONNECT WITH</span> <i class="fa fa-google"></i></button>
         <button type="button" class="md-btn md-raised btn-block p-h-md facebook-btn" ng-click="login.facebookRegister()"><span ng-show="login.facebookSpinner"><i class="fa fa-spin fa-spinner"></i></span> <span>CONNECT WITH</span> <i class="fa fa-facebook"></i></button>
         <h5 class="text-center">OR</h5>
@@ -29,7 +29,7 @@
     </div>
 
     <div class="text-center">
-      <button class="md-btn white" ui-sref="resetPassword">RESET PASSWORD</button>
+      <button class="md-btn white" ui-sref="forgotPassword">FORGOT PASSWORD</button>
     </div>
     </div>
   </div>
