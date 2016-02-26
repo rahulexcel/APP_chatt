@@ -1,6 +1,7 @@
 var UTIL = require('../modules/generic');
 var lodash = require('lodash');
 var moment = require('moment');
+var mongoose = require('mongoose');
 var generatePassword = require('password-generator');
 
 module.exports = function (User) {
@@ -302,7 +303,7 @@ module.exports = function (User) {
                             password: hash_password
                         }, function (err, result) {
                             if (err) {
-                                callback(null, err);
+                                callback(null, 0, err);
                             } else {
                                 User.app.models.email.forgotPassword({email: email_id, new_password: new_password}, function () {
                                     callback(null, 1, 'You should get a new password on your email address, if you have an account with us.');
@@ -326,5 +327,49 @@ module.exports = function (User) {
             }
     );
 //********************************* END FORGET PASSWORD **********************************
+
+//********************************* START LAST SEEN **********************************
+    User.last_seen = function (user_id, currentTimestemp, status, callback) {
+        user_id = user_id.toString();
+        var objectID = new mongoose.Types.ObjectId(user_id);
+        where = {
+            _id: objectID
+        };
+        User.find({where: where}, function (err, result) {
+            if (err) {
+                callback(null, 0, err);
+            } else {
+                if (result.length == 0) {
+                    callback(null, 0, 'User Id not exist.');
+                } else {
+                    result = result[0];
+                    User.update({_id: objectID}, {
+                        status: status,
+                        last_seen: currentTimestemp
+                    }, function (err, res) {
+                        if (err) {
+                            callback(null, 0, err);
+                        } else {
+                            callback(null, 1);
+                        }
+                    });
+                }
+            }
+        });
+    };
+    User.remoteMethod(
+            'last_seen', {
+                accepts: [
+                    {arg: 'user_id', type: 'string'},
+                    {arg: 'currentTimestemp', type: 'number'},
+                    {arg: 'status', type: 'string'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'}
+                ]
+            }
+    );
+//********************************* END LAST SEEN **********************************
 
 };
