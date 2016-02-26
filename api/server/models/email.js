@@ -55,4 +55,20 @@ module.exports = function (Email) {
         });
     };
 
+    Email.forgotPassword = function (data, callback) {
+        var subject = '';
+        var body = '';
+        subject = "Chatt App - New password";
+        body = "Your new password is :: " + data.new_password;
+        Email.send({
+            to: data.email,
+            from: CONFIG.sender,
+            subject: subject,
+            html: body
+        }, function (err, mail) {
+            console.log('email sent!');
+            callback();
+        });
+    };
+
 };
