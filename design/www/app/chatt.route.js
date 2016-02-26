@@ -33,7 +33,24 @@
                 templateUrl: 'app/forgotpassword/forgotpassword.html',
                 controller: 'forgotPasswordController',
                 controllerAs: 'forgotPassword'
-            });
+            })
+            .state('app', {
+                url: '/app',
+                cache:false,
+                abstract: true,
+                templateUrl: 'app/menu/menu.html'
+              })
+            .state('app.contacts', {
+                url: '/contacts',
+                cache:false,
+                views: {
+                  'menuContent': {
+                    templateUrl: 'app/contacts/contacts.html',
+                    controller: 'contactsController',
+                    controllerAs: 'contacts'
+                  }
+                }
+              });
         // if none of the above states are matched, use this as the fallback
         $urlRouterProvider.otherwise('/login');
     });
