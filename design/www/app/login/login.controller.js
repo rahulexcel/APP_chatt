@@ -7,17 +7,18 @@
     function loginController($state, loginFactory, timeStorage, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform) {
         console.log('login');
         var self = this;
-        this.data = {
+        self.data = {
             email: '',
             password: ''
         }
         var currentTimestamp = _.now();
         var deviceUUID = deviceService.getuuid();
         var devicePlatform = deviceService.platform();
-        this.login = function() {
-            if (_.isEmpty(this.data.email) || _.isEmpty(this.data.password) || !this.data.email) {
+        self.login = function() {
+            if (_.isEmpty(self.data.email) || _.isEmpty(self.data.password) || !self.data.email) {
                 tostService.notify('Please enter your correct email and password', 'top');
             } else {
+                self.loginSpinner = true;
                 var query = loginFactory.save({
                     action_type: 'manual_login',
                     social_id: '',
@@ -25,24 +26,25 @@
                     token: $localStorage.gcmToken,
                     action: 'login_register',
                     device_id: deviceUUID,
-                    email: this.data.email,
-                    password: this.data.password,
+                    email: self.data.email,
+                    password: self.data.password,
                     name: '',
                     currentTimestamp: currentTimestamp
                 });
                 query.$promise.then(function(data) {
-                    console.log(data);
+                    self.loginSpinner = false;
                     tostService.notify(data.message, 'top');
                     if (data.status == 0) {
+                        timeStorage.set('userEmail', self.data.email, 1);
                         $state.go('verification');
-                        timeStorage.set('userEmail', this.data.email, 1);
+                    } else if (data.status == 1) {
+                        $state.go('app.contacts');
                     }
-                    // $state.go('app.contacts');
                 });
             }
         };
 
-        this.googleRegister = function() {
+        self.googleRegister = function() {
             self.googleSpinner = true;
             console.log('Attempting Google Login');
             var promise = googleLogin.startLogin();
@@ -70,7 +72,7 @@
                 console.log(data);
             });
         };
-        this.facebookRegister = function() {
+        self.facebookRegister = function() {
             console.log('Attempting Facebook Login');
             self.facebookSpinner = true;
             facebookLogin.login().then(function(fbData) {
