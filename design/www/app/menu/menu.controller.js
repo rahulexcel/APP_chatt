@@ -10,7 +10,7 @@
          $ionicPopover.fromTemplateUrl('templates/popover.html', {
              scope: $scope,
          }).then(function(popover) {
-             $scope.popover = popover;
+             self.popover = popover;
          });
      }
  })();
