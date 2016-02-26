@@ -3,14 +3,13 @@ var lodash = require('lodash');
 var moment = require('moment');
 
 module.exports = function (User) {
-
-//********************************* START REGISTER AND LOGIN **********************************
+    //********************************* START REGISTER AND LOGIN **********************************
     User.register_login = function (action, action_type, social_id, platform, device_id, token, email_id, name, password, currentTimestamp, callback) {
         if (action && action_type && email_id) {
             name = name.toLowerCase();
             email_id = email_id.toLowerCase();
             where = {
-                email_id: email_id
+                email : email_id
             };
             User.find({where: where}, function (err, result) {
                 if (err) {
@@ -37,10 +36,18 @@ module.exports = function (User) {
                                         if (r_verification_status == 0) {
                                             callback(null, 0, 'Please verify you account first', {});
                                         } else {
-                                            var data = {
-                                                user_id: result.id
-                                            };
-                                            callback(null, 1, 'Success login', data);
+                                            //-START--get access token---------
+                                            User.login({
+                                                email:email_id,
+                                                password : password
+                                            },function( err, accessToken ){
+                                                var data = {
+                                                    user_id: result.id,
+                                                    access_token : accessToken.id
+                                                };
+                                                callback(null, 1, 'Success login', data);
+                                            })
+                                            //-END----get access token---------
                                         }
                                     } else {
                                         callback(null, 0, 'Invalid Login', data);
@@ -68,7 +75,7 @@ module.exports = function (User) {
                                     platform: platform,
                                     device_id: device_id,
                                     token: token,
-                                    email_id: email_id,
+                                    email: email_id,
                                     name: name,
                                     password: hash_password,
                                     last_seen: '',
@@ -130,7 +137,7 @@ module.exports = function (User) {
     User.do_user_verification = function (email_id, code, callback) {
         email_id = email_id.toLowerCase();
         where = {
-            email_id: email_id
+            email: email_id
         };
         User.find({where: where}, function (err, result) {
             if (err) {
@@ -181,7 +188,7 @@ module.exports = function (User) {
     User.resend_verification_code = function (email_id, callback) {
         email_id = email_id.toLowerCase();
         where = {
-            email_id: email_id
+            email: email_id
         };
         User.find({where: where}, function (err, result) {
             if (err) {
@@ -197,7 +204,7 @@ module.exports = function (User) {
                     } else {
                         new_verification_code = UTIL.get_random_number();
                         new_verification_code = new_verification_code.toString();
-                        User.update({email_id: email_id}, {
+                        User.update({email: email_id}, {
                             verification_code: new_verification_code
                         }, function (err, result) {
                             if (err) {
@@ -231,7 +238,7 @@ module.exports = function (User) {
     User.reset_password = function (email_id, callback) {
         email_id = email_id.toLowerCase();
         where = {
-            email_id: email_id
+            email: email_id
         };
         User.find({where: where}, function (err, result) {
             if (err) {
@@ -248,7 +255,7 @@ module.exports = function (User) {
                         new_password = UTIL.get_random_number();
                         new_password = new_password.toString();
                         UTIL.encode_password(new_password, function (hash_password) {
-                            User.update({email_id: email_id}, {
+                            User.update({email: email_id}, {
                                 password: hash_password
                             }, function (err, result) {
                                 if (err) {
