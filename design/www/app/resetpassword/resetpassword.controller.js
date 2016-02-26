@@ -16,11 +16,15 @@
              } else {
                  $ionicLoading.show();
                  var query = resetPasswordFactory.save({
-                     email: self.data.email
+                     email: self.data.email,
+                     password:self.password
                  });
                  query.$promise.then(function(data) {
                      $ionicLoading.hide();
                      tostService.notify(data.message);
+                     if(data.status == 1){
+                        $state.go('login');
+                     }
                  });
              }
          };
