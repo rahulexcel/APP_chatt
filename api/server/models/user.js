@@ -24,27 +24,38 @@ module.exports = function (User) {
                                 callback(null, 0, 'Email id already exists.', data);
                             } else if (action_type == 'manual_login' || action_type == 'facebook' || action_type == 'google') {
                                 if (action_type == 'facebook' || action_type == 'google') {
-                                    //password = "";
-                                }
-                                if (r_verification_status == 0) {
-                                    callback(null, 0, 'Please verify you account first', {});
-                                } else {
-                                    //-START--get access token---------
-                                    User.login({
-                                        email:email_id,
-                                        password : password
-                                    },function( err, accessToken ){
-                                        if( err ){
+                                    result.createAccessToken(86400, function(err, accessToken) {
+                                        if (err){
                                             callback(null, 0, 'Invalid login', {});
                                         }else{
                                             var data = {
-                                                user_id: result.id,
+                                                user_id: accessToken.userId,
                                                 access_token : accessToken.id
                                             };
                                             callback(null, 1, 'Success login', data);
                                         }
-                                    })
-                                    //-END----get access token---------
+                                    });
+                                }else{
+                                    if (r_verification_status == 0) {
+                                        callback(null, 0, 'Please verify you account first', {});
+                                    } else {
+                                        //-START--get access token---------
+                                        User.login({
+                                            email:email_id,
+                                            password : password
+                                        },function( err, accessToken ){
+                                            if( err ){
+                                                callback(null, 0, 'Invalid login', {});
+                                            }else{
+                                                var data = {
+                                                    user_id: result.id,
+                                                    access_token : accessToken.id
+                                                };
+                                                callback(null, 1, 'Success login', data);
+                                            }
+                                        })
+                                        //-END----get access token---------
+                                    }
                                 }
                             }
                         } else {
