@@ -1,0 +1,28 @@
+<ion-view hide-nav-bar="true">
+    <ion-header-bar class="bar-stable chatpage-header">
+        <button ng-click="$ionicGoBack()" class="button back-button buttons  button-clear header-item"><i class="icon ion-ios-arrow-back"></i></button>
+        <img class="img-circle" src="http://lorempixel.com/640/480/nature">
+        <p><strong>CHAT 1 </strong><br><span>LAST SEEN TODAY 08:03 PM</span></p>
+        <button class="button button-clear pull-right"><i class="icon ion-android-more-vertical"></i></button>
+    </ion-header-bar>
+    <ion-content>
+        <div class="list">
+            <div class="item {{msg.userName == 'User 1' && 'left-chat' || 'right-chat' }}" ng-repeat="msg in chatPage.displayChatMessages">
+                <img class="avatar" ng-src="{{msg.image}}">
+                <div class="{{msg.userName == 'User 1' && 'bubble-yellow' || 'bubble-blue' }}">
+                    <p>{{msg.message}}</p>
+                </div>
+                <p class="chat-time">{{msg.messageTime}}</p>
+            </div>
+        </div>
+    </ion-content>
+    <ion-footer-bar class="bar bar-stable">
+        <div class="p-h-md footer">
+            <a class="pull-left w-40 m-r"><img src="http://lorempixel.com/640/480/nature" class="w-full img-circle"></a>
+        </div>
+        <input type="text" class="form-control text-box">
+        <button class="button button-positive send-msg">
+      <i class="icon ion-paper-airplane"></i>
+    </button>
+        </ion-fotter-bar>
+</ion-view>

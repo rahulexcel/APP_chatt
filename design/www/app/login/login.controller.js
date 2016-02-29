@@ -39,6 +39,7 @@
                         $state.go('verification');
                     } else if (data.status == 1) {
                         timeStorage.set('userEmail', self.data.email, 1);
+                        timeStorage.set('userData', data, 1);
                         $state.go('app.contacts');
                     }
                 });
@@ -67,6 +68,8 @@
                     self.googleSpinner = false;
                     console.log(data);
                     tostService.notify(data.message, 'top');
+                    timeStorage.set('userEmail', googleData.email, 1);
+                    timeStorage.set('userData', data, 1);
                     $state.go('app.contacts');
                 });
             }, function(data) {
@@ -111,6 +114,8 @@
                 self.facebookSpinner = false;
                 console.log(data);
                 tostService.notify(data.message, 'top');
+                timeStorage.set('userEmail', fbData.email, 1);
+                timeStorage.set('userData', data, 1);
                 $state.go('app.contacts');
             });
         };
