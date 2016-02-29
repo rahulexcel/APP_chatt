@@ -63,7 +63,18 @@
                     controllerAs: 'resetpassword'
                   }
                 }
-              });
+              })
+            .state('app.chatpage', {
+                url: '/chatpage',
+                cache:false,
+                views: {
+                   'menuContent': {
+                      templateUrl: 'app/chatpage/chatpage.html',
+                      controller: 'chatPageController',
+                      controllerAs: 'chatPage'
+                    }
+                }
+            });
         // if none of the above states are matched, use this as the fallback
         $urlRouterProvider.otherwise('/login');
     });

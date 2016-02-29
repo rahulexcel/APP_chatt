@@ -205,28 +205,53 @@ text-decoration: none;
 .bubble-yellow {
     background-color: #A29E39;
     border-color: #A29E39;
-    border-radius: 5px;
+    border-radius: 0px 5px 5px 5px;
     display: inline-block;
     margin: 10px 10px 0px 10px;
-    padding: 10px 18px;
+    padding: 4px 8px;
     vertical-align: top;
+}
+.bubble-yellow::before {
+   background-color: #A29E39 ;
+   /*box-shadow: -2px 2px 2px 0 rgba(178, 178, 178, 0.4);*/
+   content: " ";
+   display: block;
+   height: 10px;
+   right: 246px;
+   position: absolute;
+   top: 11px;
+
+   transform: rotate(29deg) skew(-35deg);
+   width: 12px;
 }
 .bubble-blue {
     background-color: #78C9A7;
     border-color: #78C9A7;
-    border-radius: 5px;
+    border-radius: 5px 0px 5px 5px;
     display: inline-block;
     margin: 10px 10px 0px 10px;
-    padding: 10px 18px;
+    padding: 4px 8px;
     vertical-align: top;
+}
+.bubble-blue::before {
+   background-color: #78C9A7 ;
+   /*box-shadow: -2px 2px 2px 0 rgba(178, 178, 178, 0.4);*/
+   content: " ";
+   display: block;
+   height: 10px;
+   right: 60px;
+   position: absolute;
+   top: 11px;
+   transform: rotate(29deg) skew(-35deg);
+   width: 12px;
 }
 .left-chat p{
 	white-space:pre;
-	max-width: 11em;
+	max-width: 15em;
 }
 .right-chat p{
 	white-space:pre;
-	max-width: 11em;
+	max-width: 15em;
 }
 .left-chat p.chat-time{
 	padding-left: 50px;
@@ -234,6 +259,7 @@ text-decoration: none;
 .right-chat p.chat-time{
 	padding-right: 50px;
 	text-align: right;
+	max-width: 100%;
 }
 .bubble-yellow p{
 	padding-left: 4px;
@@ -257,7 +283,7 @@ text-decoration: none;
     width: 40px;
 }
 .right-chat .bubble-blue p{
-	text-align: right;
+	/*text-align: right;*/
 	padding-right: 4px;
 	color: #fff;
 }
@@ -275,6 +301,21 @@ text-decoration: none;
 	background: #fff;
 	color: #3F51B5;
 	padding-left: 10px;
+}
+.footer{
+	padding:0px;
+	margin-right:4px;
+}
+.footer a img{
+ 	min-height:40px;
+}
+.text-box{
+ 	margin-top:3px;	
+ 	/*width: 6em;*/
+ 	/*height: 2em;*/
+ 	word-wrap: break-word;
+    word-break: break-word;
+    height: 80px;
 }
 
 

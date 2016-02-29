@@ -1,0 +1,19 @@
+<ion-view hide-nav-bar="true">
+<ion-header-bar class='bar-stable chatpage-header'>
+    <chat-Page-Header header="userHeader"></chat-Page-Header>
+</ion-header-bar>
+    <ion-content>
+        <div class="list">
+            <div class="item {{msg.userName == 'User 1' && 'left-chat' || 'right-chat' }}" ng-repeat="msg in chatPage.displayChatMessages">
+                <img class="avatar" ng-src="{{msg.image}}">
+                <div class="{{msg.userName == 'User 1' && 'bubble-yellow' || 'bubble-blue' }}">
+                    <p>{{msg.message}}</p>
+                </div>
+                <p class="chat-time">{{msg.messageTime}}</p>
+            </div>
+        </div>
+    </ion-content>
+    <ion-footer-bar class='bar bar-stable'>
+    <chat-Page-Footer footer="userfooter"></chat-Page-Footer>
+    </ion-footer-bar>
+</ion-view>
