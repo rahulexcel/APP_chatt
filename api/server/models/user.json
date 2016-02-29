@@ -1,6 +1,6 @@
 {
     "name": "user",
-    "base": "PersistedModel",
+    "base": "User",
     "idInjection": true,
     "options": {
         "validateUpsert": true
@@ -8,12 +8,13 @@
     "properties": {
         "verification_status": {
             "type": "number",
-            "required": true
+            "required": false
         },
         "verification_code": {
-            "type": "string"
+            "type": "string",
+            "required": true
         },
-        "email_id": {
+        "email": {
             "type": "string",
             "required": true
         },
@@ -22,7 +23,7 @@
         },
         "name": {
             "type": "string",
-            "required": true
+            "required": false
         },
         "currentTimestamp": {
             "type": "number"
@@ -31,6 +32,31 @@
     },
     "validations": [],
     "relations": {},
-    "acls": [],
+    "acls": [{
+            "permission": "ALLOW",
+            "principalType": "ROLE",
+            "principalId": "$everyone",
+            "property": "register_login"
+        },{
+            "permission": "ALLOW",
+            "principalType": "ROLE",
+            "principalId": "$everyone",
+            "property": "do_user_verification"
+        },{
+            "permission": "ALLOW",
+            "principalType": "ROLE",
+            "principalId": "$everyone",
+            "property": "resend_verification_code"
+        },{
+            "permission": "ALLOW",
+            "principalType": "ROLE",
+            "principalId": "$everyone",
+            "property": "forgot_password"
+        },{
+            "permission": "ALLOW",
+            "principalType": "ROLE",
+            "principalId": "$owner",
+            "property": "reset_password"
+        }],
     "methods": {}
 }
