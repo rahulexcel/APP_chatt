@@ -51,6 +51,11 @@
             "permission": "ALLOW",
             "principalType": "ROLE",
             "principalId": "$everyone",
+            "property": "forgot_password"
+        },{
+            "permission": "ALLOW",
+            "principalType": "ROLE",
+            "principalId": "$owner",
             "property": "reset_password"
         }],
     "methods": {}

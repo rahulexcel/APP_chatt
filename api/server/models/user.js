@@ -19,88 +19,75 @@ module.exports = function (User) {
                         var resultSize = lodash.size(result);
                         if (resultSize > 0) {
                             result = result[0];
-
                             var r_verification_status = result.verification_status;
-
-                            if (action_type == 'facebook' || action_type == 'google') {
-                                var data = {
-                                    user_id: result.id
-                                };
-                                callback(null, 1, 'Success login', data);
-                            } else if (action_type == 'manual_register') {
+                            if (action_type == 'manual_register') {
                                 callback(null, 0, 'Email id already exists.', data);
-                            } else if (action_type == 'manual_login') {
-                                var exist_password = result.password;
-                                UTIL.match_encode_password(password, exist_password, function (check) {
-                                    if (check == true) {
-                                        if (r_verification_status == 0) {
-                                            callback(null, 0, 'Please verify you account first', {});
-                                        } else {
-                                            //-START--get access token---------
-                                            User.login({
-                                                email:email_id,
-                                                password : password
-                                            },function( err, accessToken ){
-                                                var data = {
-                                                    user_id: result.id,
-                                                    access_token : accessToken.id
-                                                };
-                                                callback(null, 1, 'Success login', data);
-                                            })
-                                            //-END----get access token---------
+                            } else if (action_type == 'manual_login' || action_type == 'facebook' || action_type == 'google') {
+                                if (action_type == 'facebook' || action_type == 'google') {
+                                    //password = "";
+                                }
+                                if (r_verification_status == 0) {
+                                    callback(null, 0, 'Please verify you account first', {});
+                                } else {
+                                    //-START--get access token---------
+                                    User.login({
+                                        email:email_id,
+                                        password : password
+                                    },function( err, accessToken ){
+                                        if( err ){
+                                            callback(null, 0, 'Invalid login', {});
+                                        }else{
+                                            var data = {
+                                                user_id: result.id,
+                                                access_token : accessToken.id
+                                            };
+                                            callback(null, 1, 'Success login', data);
                                         }
-                                    } else {
-                                        callback(null, 0, 'Invalid Login', data);
-                                    }
-                                });
+                                    })
+                                    //-END----get access token---------
+                                }
                             }
                         } else {
-                            if (action_type == "facebook" || action_type == 'google') {
-                                password = UTIL.get_random_number();
-                            }
                             password = password.toString();
-                            UTIL.encode_password(password, function (hash_password) {
-                                var verification_status = 0;
-                                var verification_code = UTIL.get_random_number();
-                                verification_code = verification_code.toString();
-                                if (action_type == 'facebook' || action_type == 'google') {
-                                    verification_status = 1;
-                                    verification_code = '';
-                                }
-                                var newUser = new User({
-                                    verification_status: verification_status,
-                                    verification_code: verification_code,
-                                    registration_type: action_type,
-                                    social_id: social_id,
-                                    platform: platform,
-                                    device_id: device_id,
-                                    token: token,
-                                    email: email_id,
-                                    name: name,
-                                    password: hash_password,
-                                    last_seen: '',
-                                    registration_time: currentTimestamp,
-                                    registration_date: UTIL.currentDate(currentTimestamp),
-                                    registration_date_time: UTIL.currentDateTimeDay(currentTimestamp),
-                                    profile_image: ''
-                                });
-                                newUser.save(function (err, result) {
-                                    if (err) {
-                                        callback(null, 0, err, {});
-                                    } else {
-                                        var user_id = result.id;
-                                        var data = {
-                                            user_id: user_id
-                                        };
-                                        if (action_type != 'facebook' && action_type != 'google') {
-                                            data['show_verification'] = 1;
-                                        }
-                                        User.app.models.email.newRegisteration({email: email_id, name: name, verification_code: verification_code}, function () {
-                                            callback(null, 1, 'Successful Registration', data);
-                                        });
+                            var verification_status = 0;
+                            var verification_code = UTIL.get_random_number();
+                            verification_code = verification_code.toString();
+                            if (action_type == 'facebook' || action_type == 'google') {
+                                verification_status = 1;
+                                verification_code = '';
+                            }
+                            User.create({
+                                verification_status: verification_status,
+                                verification_code: verification_code,
+                                registration_type: action_type,
+                                social_id: social_id,
+                                platform: platform,
+                                device_id: device_id,
+                                token: token,
+                                email: email_id,
+                                name: name,
+                                password: password,
+                                last_seen: '',
+                                registration_time: currentTimestamp,
+                                registration_date: UTIL.currentDate(currentTimestamp),
+                                registration_date_time: UTIL.currentDateTimeDay(currentTimestamp),
+                                profile_image: ''
+                            },function( err, user ){
+                                if (err) {
+                                    callback(null, 0, err, {});
+                                } else {
+                                    var user_id = user.id;
+                                    var data = {
+                                        user_id: user_id
+                                    };
+                                    if (action_type != 'facebook' && action_type != 'google') {
+                                        data['show_verification'] = 1;
                                     }
-                                });
-                            });
+                                    User.app.models.email.newRegisteration({email: email_id, name: name, verification_code: verification_code}, function () {
+                                        callback(null, 1, 'Successful Registration', data);
+                                    });
+                                }
+                            })
                         }
                     }
                 }
@@ -285,6 +272,53 @@ module.exports = function (User) {
             }
     );
 //********************************* END RESET PASSWORD **********************************
+
+
+//********************************* START FORGET PASSWORD **********************************
+    User.forgot_password = function (email_id, callback) {
+        email_id = email_id.toLowerCase();
+        where = {
+            email_id: email_id
+        };
+        User.find({where: where}, function (err, result) {
+            if (err) {
+                callback(null, 0, err);
+            } else {
+                if (result.length == 0) {
+                    callback(null, 0, 'You should get a new password on your email address, if you have an account with us.');
+                } else {
+                    result = result[0];
+                    new_password = generatePassword(8, false);
+                    new_password = new_password.toString();
+                    UTIL.encode_password(new_password, function (hash_password) {
+                        User.update({email_id: email_id}, {
+                            password: hash_password
+                        }, function (err, result) {
+                            if (err) {
+                                callback(null, err);
+                            } else {
+                                User.app.models.email.forgotPassword({email: email_id, new_password: new_password}, function () {
+                                    callback(null, 1, 'You should get a new password on your email address, if you have an account with us.');
+                                });
+                            }
+                        });
+                    });
+                }
+            }
+        });
+    };
+    User.remoteMethod(
+            'forgot_password', {
+                accepts: [
+                    {arg: 'email', type: 'string'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'}
+                ]
+            }
+    );
+//********************************* END FORGET PASSWORD **********************************
 
 
 };
