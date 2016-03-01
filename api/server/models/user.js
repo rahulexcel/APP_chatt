@@ -284,11 +284,11 @@ module.exports = function (User) {
 //********************************* START RESET PASSWORD **********************************
     User.reset_password = function ( req, password, callback) {
         var access_token_userid = req.accessToken.userId;
-        User.findById( access_token_userid, function(err, useruser) {
+        User.findById( access_token_userid, function(err, user) {
             if( err ){
-                callback(null, 0, 'Error', {});
+                callback(null, 0, 'UnAuthorized', {});
             }else{
-                useruser.updateAttribute('password', password, function(err, user) {
+                user.updateAttribute('password', password, function(err, user) {
                     if (err) {
                         callback(null, 0, 'Error', {});
                     }else{
