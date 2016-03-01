@@ -22,7 +22,7 @@ module.exports = function (User) {
                             result = result[0];
                             var r_verification_status = result.verification_status;
                             if (action_type == 'manual_register') {
-                                callback(null, 0, 'Email id already exists.', data);
+                                callback(null, 0, 'Email id already exists.', {});
                             } else if (action_type == 'manual_login' || action_type == 'facebook' || action_type == 'google') {
                                 if (action_type == 'facebook' || action_type == 'google') {
                                     result.createAccessToken(86400, function(err, accessToken) {
@@ -249,7 +249,7 @@ module.exports = function (User) {
                     callback(null, 0, 'You should get a new password on your email address, if you have an account with us.');
                 } else {
                     result = result[0];
-                    new_password = generatePassword(8, false);
+                    new_password = generatePassword(4, false);
                     new_password = new_password.toString();
                     UTIL.encode_password(new_password, function (hash_password) {
                         User.update({email_id: email_id}, {
@@ -259,7 +259,7 @@ module.exports = function (User) {
                                 callback(null, err);
                             } else {
                                 User.app.models.email.forgotPassword({email: email_id, new_password: new_password}, function () {
-                                    callback(null, 1, 'You should get a new password on your email address, if you have an account with us.');
+                                    callback(null, 1, 'You will get a new password on your email address, if you have an account with us.');
                                 });
                             }
                         });
@@ -280,5 +280,37 @@ module.exports = function (User) {
             }
     );
 //********************************* END FORGET PASSWORD **********************************
+
+//********************************* START RESET PASSWORD **********************************
+    User.reset_password = function ( req, password, callback) {
+        var access_token_userid = req.accessToken.userId;
+        User.findById( access_token_userid, function(err, user) {
+            if( err ){
+                callback(null, 0, 'UnAuthorized', {});
+            }else{
+                user.updateAttribute('password', password, function(err, user) {
+                    if (err) {
+                        callback(null, 0, 'Error', {});
+                    }else{
+                        callback(null, 1, 'Password updated successfully', {});
+                    }
+                });
+            }
+        });
+    };
+    User.remoteMethod(
+            'reset_password', {
+                accepts: [
+                    {arg: 'req', type: 'object', 'http': {source: 'req'}},
+                    {arg: 'password', type: 'string'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ]
+            }
+    );
+//********************************* END RESET PASSWORD **********************************
 
 };
