@@ -12,7 +12,7 @@
         },
         "verification_code": {
             "type": "string",
-            "required": true
+            "required": false
         },
         "email": {
             "type": "string",
@@ -55,7 +55,7 @@
         },{
             "permission": "ALLOW",
             "principalType": "ROLE",
-            "principalId": "$owner",
+            "principalId": "$authenticated",
             "property": "reset_password"
         }],
     "methods": {}
