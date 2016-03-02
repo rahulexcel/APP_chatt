@@ -64,46 +64,51 @@ module.exports = function (User) {
                                 }
                             }
                         } else {
-                            password = password.toString();
-                            var verification_status = 0;
-                            var verification_code = UTIL.get_random_number();
-                            verification_code = verification_code.toString();
-                            if (action_type == 'facebook' || action_type == 'google') {
-                                verification_status = 1;
-                                verification_code = '';
-                            }
-                            User.create({
-                                verification_status: verification_status,
-                                verification_code: verification_code,
-                                registration_type: action_type,
-                                social_id: social_id,
-                                platform: platform,
-                                device_id: device_id,
-                                token: token,
-                                email: email_id,
-                                name: name,
-                                password: password,
-                                last_seen: '',
-                                registration_time: currentTimestamp,
-                                registration_date: UTIL.currentDate(currentTimestamp),
-                                registration_date_time: UTIL.currentDateTimeDay(currentTimestamp),
-                                profile_image: ''
-                            },function( err, user ){
-                                if (err) {
-                                    callback(null, 0, err, {});
-                                } else {
-                                    var user_id = user.id;
-                                    var data = {
-                                        user_id: user_id
-                                    };
-                                    if (action_type != 'facebook' && action_type != 'google') {
-                                        data['show_verification'] = 1;
-                                    }
-                                    User.app.models.email.newRegisteration({email: email_id, name: name, verification_code: verification_code}, function () {
-                                        callback(null, 1, 'Successful Registration', data);
-                                    });
+                            if( name == '' ){
+                                callback(null, 0, 'Name required', {});
+                            }else if( action_type != 'facebook' && action_type != 'google' && ( typeof password =='undefined' || password == '') ){
+                                callback(null, 0, 'Password required', {});
+                            }else{
+                                var verification_status = 0;
+                                var verification_code = UTIL.get_random_number();
+                                verification_code = verification_code.toString();
+                                if (action_type == 'facebook' || action_type == 'google') {
+                                    verification_status = 1;
+                                    verification_code = '';
                                 }
-                            })
+                                User.create({
+                                    verification_status: verification_status,
+                                    verification_code: verification_code,
+                                    registration_type: action_type,
+                                    social_id: social_id,
+                                    platform: platform,
+                                    device_id: device_id,
+                                    token: token,
+                                    email: email_id,
+                                    name: name,
+                                    password: password,
+                                    last_seen: '',
+                                    registration_time: currentTimestamp,
+                                    registration_date: UTIL.currentDate(currentTimestamp),
+                                    registration_date_time: UTIL.currentDateTimeDay(currentTimestamp),
+                                    profile_image: ''
+                                },function( err, user ){
+                                    if (err) {
+                                        callback(null, 0, err, {});
+                                    } else {
+                                        var user_id = user.id;
+                                        var data = {
+                                            user_id: user_id
+                                        };
+                                        if (action_type != 'facebook' && action_type != 'google') {
+                                            data['show_verification'] = 1;
+                                        }
+                                        User.app.models.email.newRegisteration({email: email_id, name: name, verification_code: verification_code}, function () {
+                                            callback(null, 1, 'Successful Registration', data);
+                                        });
+                                    }
+                                })
+                            }
                         }
                     }
                 }
