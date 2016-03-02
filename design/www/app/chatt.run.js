@@ -22,6 +22,7 @@
         document.addEventListener("deviceready", function() {
             console.log("device uuid: " + deviceService.getuuid());
             pushNotification.push();
+            lastUsesTimeService.updateTimeWithHttp();
             document.addEventListener("pause", onPause, false);
             document.addEventListener("resume", onResume, false);
             function onPause() {
