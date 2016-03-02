@@ -42,7 +42,7 @@ module.exports = function (User) {
                                     });
                                 }else{
                                     if (r_verification_status == 0) {
-                                        callback(null, 0, 'Please verify you account first', {});
+                                        callback(null, 3, 'Please verify you account first', {});
                                     } else {
                                         //-START--get access token---------
                                         User.login({
@@ -64,7 +64,9 @@ module.exports = function (User) {
                                 }
                             }
                         } else {
-                            if( name == '' ){
+                            if( action_type == 'manual_login'){
+                                callback(null, 0, 'Email id not exists', {});
+                            }else if( name == '' ){
                                 callback(null, 0, 'Name required', {});
                             }else if( action_type != 'facebook' && action_type != 'google' && ( typeof password =='undefined' || password == '') ){
                                 callback(null, 0, 'Password required', {});
