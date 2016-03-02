@@ -164,7 +164,7 @@ module.exports = function (User) {
                     } else if (exist_code != code) {
                         callback(null, 0, 'Verification failed.', {});
                     } else {
-                        User.update({email_id: email_id}, {
+                        User.update({email: email_id}, {
                             verification_status: 1,
                             verification_code: ''
                         }, function (err, result) {
@@ -250,7 +250,7 @@ module.exports = function (User) {
     User.forgot_password = function (email_id, callback) {
         email_id = email_id.toLowerCase();
         where = {
-            email_id: email_id
+            email: email_id
         };
         User.find({where: where}, function (err, result) {
             if (err) {
@@ -263,7 +263,7 @@ module.exports = function (User) {
                     new_password = generatePassword(4, false);
                     new_password = new_password.toString();
                     UTIL.encode_password(new_password, function (hash_password) {
-                        User.update({email_id: email_id}, {
+                        User.update({email: email_id}, {
                             password: hash_password
                         }, function (err, result) {
                             if (err) {
