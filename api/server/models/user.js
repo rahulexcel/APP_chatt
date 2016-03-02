@@ -64,7 +64,9 @@ module.exports = function (User) {
                                 }
                             }
                         } else {
-                            if( name == '' ){
+                            if( action_type == 'manual_login'){
+                                callback(null, 0, 'Email id not exists', {});
+                            }else if( name == '' ){
                                 callback(null, 0, 'Name required', {});
                             }else if( action_type != 'facebook' && action_type != 'google' && ( typeof password =='undefined' || password == '') ){
                                 callback(null, 0, 'Password required', {});
