@@ -3,7 +3,7 @@
 
     angular.module('starter')
 
-    .run(function($ionicPlatform, timeStorage, $state, Configurations, deviceService, pushNotification) {
+    .run(function($ionicPlatform, timeStorage, $state, Configurations, deviceService, pushNotification, lastUsesTimeService) {
         $ionicPlatform.ready(function() {
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
             // for form inputs)
@@ -22,6 +22,14 @@
         document.addEventListener("deviceready", function() {
             console.log("device uuid: " + deviceService.getuuid());
             pushNotification.push();
+            document.addEventListener("pause", onPause, false);
+            document.addEventListener("resume", onResume, false);
+            function onPause() {
+                lastUsesTimeService.updateTime();
+            }
+            function onResume() {
+                lastUsesTimeService.updateTime();
+            }
         });
 
 

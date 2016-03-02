@@ -15,9 +15,12 @@
                  self.cpassword = '';
              } else {
                  $ionicLoading.show();
+                 var userData =  timeStorage.get('userData');
+                 var accessToken = userData.data.access_token;
                  var query = resetPasswordFactory.save({
-                     email: self.data.email,
-                     password:self.password
+                     // email: self.data.email,
+                     // password:self.password
+                     access_token:accessToken
                  });
                  query.$promise.then(function(data) {
                      $ionicLoading.hide();

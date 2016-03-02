@@ -4,14 +4,13 @@
     angular.module('starter')
         .controller('loginController', loginController);
 
-    function loginController($state, loginFactory, timeStorage, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform) {
+    function loginController($state, loginFactory, timeStorage, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService) {
         console.log('login');
         var self = this;
         self.data = {
             email: '',
             password: ''
         }
-        var currentTimestamp = _.now();
         var deviceUUID = deviceService.getuuid();
         var devicePlatform = deviceService.platform();
         self.login = function() {
@@ -29,7 +28,7 @@
                     email: self.data.email,
                     password: self.data.password,
                     name: '',
-                    currentTimestamp: currentTimestamp
+                    currentTimestamp: _.now()
                 });
                 query.$promise.then(function(data) {
                     self.loginSpinner = false;
@@ -40,6 +39,7 @@
                     } else if (data.status == 1) {
                         timeStorage.set('userEmail', self.data.email, 1);
                         timeStorage.set('userData', data, 1);
+                        lastUsesTimeService.updateTime(data.data.user_id);
                         $state.go('app.contacts');
                     }
                 });
@@ -62,7 +62,8 @@
                     device_id: deviceUUID,
                     email: googleData.email,
                     name: googleData.name,
-                    currentTimestamp: currentTimestamp
+                    currentTimestamp: _.now(),
+                    password: ''
                 });
                 query.$promise.then(function(data) {
                     self.googleSpinner = false;
@@ -70,6 +71,7 @@
                     tostService.notify(data.message, 'top');
                     timeStorage.set('userEmail', googleData.email, 1);
                     timeStorage.set('userData', data, 1);
+                    lastUsesTimeService.updateTime(data.data.user_id);
                     $state.go('app.contacts');
                 });
             }, function(data) {
@@ -108,7 +110,8 @@
                 device_id: deviceUUID,
                 email: fbData.email,
                 name: fbData.name,
-                currentTimestamp: currentTimestamp
+                currentTimestamp: _.now(),
+                password: ''
             });
             query.$promise.then(function(data) {
                 self.facebookSpinner = false;
@@ -116,6 +119,7 @@
                 tostService.notify(data.message, 'top');
                 timeStorage.set('userEmail', fbData.email, 1);
                 timeStorage.set('userData', data, 1);
+                lastUsesTimeService.updateTime(data.data.user_id);
                 $state.go('app.contacts');
             });
         };
