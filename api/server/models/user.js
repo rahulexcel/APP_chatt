@@ -42,7 +42,7 @@ module.exports = function (User) {
                                     });
                                 }else{
                                     if (r_verification_status == 0) {
-                                        callback(null, 0, 'Please verify you account first', {});
+                                        callback(null, 3, 'Please verify you account first', {});
                                     } else {
                                         //-START--get access token---------
                                         User.login({
