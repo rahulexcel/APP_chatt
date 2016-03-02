@@ -7,7 +7,11 @@ module.exports = function (User) {
     //********************************* START REGISTER AND LOGIN **********************************
     User.register_login = function (action, action_type, social_id, platform, device_id, token, email_id, name, password, currentTimestamp, callback) {
         if (action && action_type && email_id) {
-            name = name.toLowerCase();
+            if( typeof name == 'undefined' || name == ''){
+                name = '';
+            }else{
+                name = name.toLowerCase();
+            }
             email_id = email_id.toLowerCase();
             where = {
                 email : email_id
