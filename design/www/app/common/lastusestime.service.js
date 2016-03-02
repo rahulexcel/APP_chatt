@@ -8,10 +8,10 @@
              updateTime: function(userId) {
                  if (_.isEmpty(userId)) {
                      var userData = timeStorage.get('userData');
-                     if(userData){
-                        if (!_.isEmpty(userData.data.user_id)) {
-                            this.fireApi(userData.data.user_id);
-                        } 
+                     if (userData) {
+                         if (!_.isEmpty(userData.data.user_id)) {
+                             this.fireApi(userData.data.user_id);
+                         }
                      }
                  } else {
                      this.fireApi(userId);
@@ -29,5 +29,4 @@
              }
          }
      };
-
  })();

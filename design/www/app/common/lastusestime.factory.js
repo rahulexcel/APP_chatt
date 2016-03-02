@@ -1,10 +1,10 @@
 (function() {
-   'use strict';
-   angular.module('starter')
-       .factory('lastUsesTimeFactory', lastUsesTimeFactory);
+    'use strict';
+    angular.module('starter')
+        .factory('lastUsesTimeFactory', lastUsesTimeFactory);
 
-   function lastUsesTimeFactory($resource, Configurations) {
-       // return $resource(Configurations.api_url+'/users/contacts', {},{});
-       return $resource('app/mock/contacts.json', {},{});
-   };
+    function lastUsesTimeFactory($resource, Configurations) {
+        // return $resource(Configurations.api_url+'/users/contacts', {},{});
+        return $resource('app/mock/contacts.json', {}, {});
+    };
 })();
