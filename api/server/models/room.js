@@ -25,105 +25,71 @@ module.exports = function (Room) {
     Room.disableRemoteMethod('__get__accessTokens', false);
     Room.disableRemoteMethod('__updateById__accessTokens', false);
     //********************************* START REGISTER AND LOGIN **********************************
-    Room.create_chat_room = function ( req, room_type, room_name, chat_with, currentTimestamp, callback) {
+    Room.create_private_room = function ( req, chat_with, currentTimestamp, callback) {
         if( typeof req.accessToken == 'undefined' || req.accessToken == null || req.accessToken == '' || typeof req.accessToken.userId == 'undefined' || req.accessToken.userId == '' ){
             callback(null, 0, 'UnAuthorized', {});
-        }else if( room_type == 'private' &&  ( typeof chat_with == 'undefined' || chat_with == '') ){
-            callback(null, 0, 'Empty chat with', {});
         }else{
-            if( typeof room_type == 'undefined' || (room_type != 'private' && room_type != 'public' ) ){
-                callback(null, 0, 'Room type must be private or public', {});
-            }else{
-                var access_token_userid = req.accessToken.userId;
-                Room.findById( access_token_userid, function(err, user) {
-                    if( err ){
-                        callback(null, 0, 'UnAuthorized', {});
-                    }else{
-                        var owner_user_id = access_token_userid;
-                        var room_users = [
-                            owner_user_id,
-                            chat_with
-                        ];
-                        var ru = room_users;
-                        for( var k in room_users ){
-                            room_users[k] = new ObjectID( room_users[k]);
+            var access_token_userid = req.accessToken.userId;
+            Room.findById( access_token_userid, function(err, user) {
+                if( err ){
+                    callback(null, 0, 'UnAuthorized 1', {});
+                }else{
+                    var owner_user_id = access_token_userid;
+                    var room_users = [
+                        owner_user_id,
+                        chat_with
+                    ];
+                    var ru = room_users;
+                    for( var k in room_users ){
+                        room_users[k] = new ObjectID( room_users[k]);
+                    }
+                    var check_where = {
+                        where : {
+                            room_users : {'all':room_users}
                         }
-                        if( room_type == 'public'){
-                            room_users = [ new ObjectID( owner_user_id ) ];
-                            var new_room = new Room({
-                                room_owner : new ObjectID( owner_user_id ),
-                                room_type : 'public',
-                                room_name : room_name,
-                                room_users : room_users,
-                                registration_time: currentTimestamp,
-                                registration_date: UTIL.currentDate(currentTimestamp),
-                                registration_date_time: UTIL.currentDateTimeDay(currentTimestamp)
-                            });
-                            new_room.save( function(err){
-                                if( err ){
-                                    callback(null, 0, 'try again', {});
-                                }else{
-                                    var room_id = new_room.id;
-                                    var data = {
-                                        'room_id' : room_id
-                                    };
-                                    callback(null, 1, 'Chat Room Created', data);
-                                }
-                            });
-                        }else if( room_type == 'private'){
-                            var check_where = {
-                                where : {
-                                    room_type : 'private',
-                                    room_users : {'all':room_users}
-                                }
-                            };
-                            Room.find( check_where, function (err, result) {
-                                if( err ){
-                                    callback(null, 0, 'try again', {});
-                                }else{
-                                    if( result.length > 0 ){
-                                        result = result[0];
-                                        var room_id = result.id;
+                    };
+                    Room.find( check_where, function (err, result) {
+                        if( err ){
+                            callback(null, 0, 'try again', {});
+                        }else{
+                            if( result.length > 0 ){
+                                result = result[0];
+                                var room_id = result.id;
+                                var data = {
+                                    'room_id' : room_id
+                                };
+                                callback(null, 1, 'Room already exists', data);
+                            }else{
+                                var new_room = new Room({
+                                    room_owner : new ObjectID( owner_user_id ),
+                                    room_users : room_users,
+                                    registration_time: currentTimestamp,
+                                    registration_date: UTIL.currentDate(currentTimestamp),
+                                    registration_date_time: UTIL.currentDateTimeDay(currentTimestamp)
+                                });
+                                new_room.save( function(err){
+                                    if( err ){
+                                        callback(null, 0, 'try again', {});
+                                    }else{
+                                        var room_id = new_room.id;
                                         var data = {
                                             'room_id' : room_id
                                         };
-                                        callback(null, 1, 'Room already exists', data);
-                                    }else{
-                                        var new_room = new Room({
-                                            room_owner : new ObjectID( owner_user_id ),
-                                            room_type : 'private',
-                                            room_users : room_users,
-                                            registration_time: currentTimestamp,
-                                            registration_date: UTIL.currentDate(currentTimestamp),
-                                            registration_date_time: UTIL.currentDateTimeDay(currentTimestamp)
-                                        });
-                                        new_room.save( function(err){
-                                            if( err ){
-                                                callback(null, 0, 'try again', {});
-                                            }else{
-                                                var room_id = new_room.id;
-                                                var data = {
-                                                    'room_id' : room_id
-                                                };
-                                                callback(null, 1, 'Chat Room Created', data);
-                                            }
-                                        });
+                                        callback(null, 1, 'Chat Room Created', data);
                                     }
-                                }
-                            });
+                                });
+                            }
                         }
-                    }
-                });
-            }
+                    });
+                }
+            });
         }
     };
     Room.remoteMethod(
-            'create_chat_room', {
-                description: 'Create a chat room',
+            'create_private_room', {
+                description: 'Create a private chat room',
                 accepts: [
                     {arg: 'req', type: 'object', 'http': {source: 'req'}},
-                    {arg: 'room_type', type: 'string'}, 
-                    {arg: 'room_name', type: 'string'}, 
                     {arg: 'chat_with', type: 'string'}, 
                     {arg: 'currentTimestamp', type: 'number'}
                 ],
