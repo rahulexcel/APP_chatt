@@ -4,7 +4,7 @@
      angular.module('starter')
          .controller('resetPasswordController', resetPasswordController);
 
-     function resetPasswordController($state, resetPasswordFactory, timeStorage, tostService, $ionicLoading) {
+     function resetPasswordController($state, resetPasswordFactory, timeStorage, tostService, $ionicLoading, $localStorage) {
          console.log('resetPasswordController');
          var self = this;
          self.email = timeStorage.get('userEmail');
@@ -18,14 +18,14 @@
                  var userData =  timeStorage.get('userData');
                  var accessToken = userData.data.access_token;
                  var query = resetPasswordFactory.save({
-                     // email: self.data.email,
-                     // password:self.password
+                     password:self.password,
                      access_token:accessToken
                  });
                  query.$promise.then(function(data) {
                      $ionicLoading.hide();
                      tostService.notify(data.message);
                      if(data.status == 1){
+                        $localStorage.$reset();
                         $state.go('login');
                      }
                  });

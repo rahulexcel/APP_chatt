@@ -4,7 +4,7 @@
     angular.module('starter')
         .controller('loginController', loginController);
 
-    function loginController($state, loginFactory, timeStorage, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService) {
+    function loginController($state, loginFactory, timeStorage, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService, $ionicLoading) {
         console.log('login');
         var self = this;
         self.data = {
@@ -17,7 +17,7 @@
             if (_.isEmpty(self.data.email) || _.isEmpty(self.data.password) || !self.data.email) {
                 tostService.notify('Please enter your correct email and password', 'top');
             } else {
-                self.loginSpinner = true;
+                $ionicLoading.show();
                 var query = loginFactory.save({
                     action_type: 'manual_login',
                     social_id: '',
@@ -31,9 +31,9 @@
                     currentTimestamp: _.now()
                 });
                 query.$promise.then(function(data) {
-                    self.loginSpinner = false;
+                    $ionicLoading.hide();
                     tostService.notify(data.message, 'top');
-                    if (data.status == 0) {
+                    if (data.status == 3) {
                         timeStorage.set('userEmail', self.data.email, 1);
                         $state.go('verification');
                     } else if (data.status == 1) {
@@ -47,7 +47,7 @@
         };
 
         self.googleRegister = function() {
-            self.googleSpinner = true;
+            $ionicLoading.show();
             console.log('Attempting Google Login');
             var promise = googleLogin.startLogin();
             promise.then(function(googleData) {
@@ -66,7 +66,7 @@
                     password: ''
                 });
                 query.$promise.then(function(data) {
-                    self.googleSpinner = false;
+                    $ionicLoading.hide();
                     console.log(data);
                     tostService.notify(data.message, 'top');
                     timeStorage.set('userEmail', googleData.email, 1);
@@ -80,7 +80,7 @@
         };
         self.facebookRegister = function() {
             console.log('Attempting Facebook Login');
-            self.facebookSpinner = true;
+            $ionicLoading.show();
             facebookLogin.login().then(function(fbData) {
                 console.log(fbData);
                 if (fbData.id) {
@@ -114,7 +114,7 @@
                 password: ''
             });
             query.$promise.then(function(data) {
-                self.facebookSpinner = false;
+                $ionicLoading.hide();
                 console.log(data);
                 tostService.notify(data.message, 'top');
                 timeStorage.set('userEmail', fbData.email, 1);
