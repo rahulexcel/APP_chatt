@@ -8,8 +8,8 @@
              updateTime: function() {
                      var userData = timeStorage.get('userData');
                      if (userData) {
-                         if (!_.isEmpty(userData.data.user_id)) {
-                             this.fireApi(userData.data.user_id);
+                         if (!_.isEmpty(userData.data.access_token)) {
+                             this.fireApi(userData.data.access_token);
                          }
                      }
              },
@@ -26,11 +26,11 @@
                      }
                  }, 60000);
              },
-             fireApi: function(userId) {
+             fireApi: function(access_token) {
                  var currentTimestamp = _.now();
                  var query = lastUsesTimeFactory.query({
                      currentTimestamp: currentTimestamp,
-                     userId: userId
+                     access_token: access_token
                  });
                  query.$promise.then(function(data) {
                      console.log(data);
