@@ -325,36 +325,52 @@ module.exports = function (User) {
 //********************************* END RESET PASSWORD **********************************
 
 //********************************* START LIST OF ALL USERS **********************************
-    User.list_users = function (req, page, currentTimestamp, callback) {
+    User.list_users = function (req, page, currentTimestamp, limit, callback) {
         if (typeof req.accessToken == 'undefined' || req.accessToken == null || req.accessToken == '' || typeof req.accessToken.userId == 'undefined' || req.accessToken.userId == '') {
             callback(null, 0, 'UnAuthorized', {});
         } else {
-            var num = 0;
             var access_token_userid = req.accessToken.userId;
-            if (typeof page != 'undefined') {
-                num = page;
-            }
-            User.findById(access_token_userid, function (err, user) {
-                if (err) {
-                    callback(null, 0, err);
-                } else {
-                    User.find({
-                        order: 'last_seen DESC',
-                        skip: num * 10,
-                        limit: 10
-                    }, function (err, result) {
-                        if (err) {
-                            callback(null, 0, err);
-                        }
-                        else {
-                            if (result.length > 0)
-                                callback(null, 1, result);
-                            else
-                                callback(null, 0, {});
-                        }
-                    });
+            if (page && limit) {
+                var num = 0;
+                if (lodash.isNumber(page) === true) {
+                    num = page;
                 }
-            });
+                User.findById(access_token_userid, function (err, user) {
+                    if (err) {
+                        callback(null, 0, 'UnAuthorized 1', err);
+                    } else {
+                        User.find({
+                            order: 'last_seen DESC',
+                            skip: num * 10,
+                            limit: limit
+                        }, function (err, result) {
+                            if (err) {
+                                callback(null, 0, 'Try Again', err);
+                            }
+                            else {
+                                var userInfo = [];
+                                if (result.length > 0) {
+                                    for (var a = 0; a < result.length; a++) {
+                                        var row = result[a];
+                                        var userName = row.name;
+                                        var userId = row._id;
+                                        var pic = row.profile_image;
+                                        var lastSeen = row.last_seen;
+                                        userInfo.push({name: userName, id: userId, pic: pic, lastSeen: lastSeen});
+                                    }
+                                    callback(null, 1, 'Users List', userInfo);
+                                }
+                                else {
+                                    callback(null, 0, 'No Record Found', {});
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+            else{
+                callback(null,0,'Fill all fields',{});
+            }
         }
     };
     User.remoteMethod(
@@ -363,10 +379,12 @@ module.exports = function (User) {
                 accepts: [
                     {arg: 'req', type: 'object', 'http': {source: 'req'}},
                     {arg: 'page', type: 'number'},
+                    {arg: 'limit', type: 'number'},
                     {arg: 'currentTimestamp', type: 'number'}
                 ],
                 returns: [
                     {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
                     {arg: 'data', type: 'array'}
                 ]
             }
