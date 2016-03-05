@@ -4,7 +4,7 @@
      angular.module('starter')
          .controller('forgotPasswordController', forgotPasswordController);
 
-     function forgotPasswordController($state, forgotPasswordFactory, tostService) {
+     function forgotPasswordController($state, forgotPasswordFactory, tostService, $ionicLoading) {
          console.log('forgotPasswordController');
          var self = this;
          self.data = {
@@ -14,13 +14,13 @@
              if (_.isEmpty(self.data.email)) {
                  tostService.notify('Email Address Required', 'top');
              } else {
-                 self.forgotSpinner = true;
+                 $ionicLoading.show();
                  var query = forgotPasswordFactory.save({
                      email: self.data.email
                  });
                  query.$promise.then(function(data) {
                      console.log(data);
-                     self.forgotSpinner = false;
+                     $ionicLoading.hide();
                      tostService.notify(data.message, 'top');
                      if (data.status == 1) {
                          $state.go('login');
