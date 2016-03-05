@@ -132,6 +132,15 @@
 }
 
 /*Contacts page css*/
+.contacts-header{
+	color: #fff!important;
+	margin-left: 37%;
+	padding-top: 4%;
+}
+.contacts-header p{
+	line-height: 16px;
+	display: inline-block;
+}
 .bar {
 	background-color: #3F51B5!important;
 	border-bottom: 1px solid #3F51B5!important;
@@ -190,7 +199,7 @@ text-decoration: none;
 	clear:both; 
 	position:relative;
 	padding-top: 0px!important;
-    padding-bottom: 0px!important;
+    /*padding-bottom: 0px!important;*/
 }
 .left-chat img.avatar {
     border-radius: 50%;
@@ -217,7 +226,8 @@ text-decoration: none;
    content: " ";
    display: block;
    height: 10px;
-   right: 246px;
+   /*right: 246px;*/
+   left: 60px;
    position: absolute;
    top: 11px;
 
@@ -253,13 +263,15 @@ text-decoration: none;
 	white-space:pre;
 	max-width: 15em;
 }
-.left-chat p.chat-time{
-	padding-left: 50px;
+.chat-time{
+	text-align: right;	
 }
-.right-chat p.chat-time{
-	padding-right: 50px;
-	text-align: right;
-	max-width: 100%;
+.chat-time span{
+	font-size: 12px;
+}
+.chat-time .fa{
+	font-size: 8px;
+	color: green;
 }
 .bubble-yellow p{
 	padding-left: 4px;
@@ -270,7 +282,7 @@ text-decoration: none;
 	clear:both; 
 	position:relative;
 	padding-top: 0px!important;
-    padding-bottom: 5px!important;
+    /*padding-bottom: 5px!important;*/
 }
 .right-chat img.avatar {
     border-radius: 50%;
@@ -342,6 +354,13 @@ span.name{
 }
 span.name input{
 	border: 1px solid #3F51B5!important;
+}
+.profile-pic{
+	width: 80px;
+    height: 80px;
+}
+.no-pad-left-right{
+	padding:0;
 }
 
 /*Chats Css*/

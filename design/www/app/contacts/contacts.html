@@ -1,9 +1,13 @@
-<ion-view view-title="CONTACTS" id="background">
+<ion-view view-title="CONTACTS" id="background" hide-nav-bar="true">
+<ion-header-bar class='bar-stable contacts-header'>
+   <p><strong>CONTACTS</strong></p>
+   <button class="button button-icon ion-android-more-vertical" style="position: absolute; top: 5px; left: 56%;" ng-click="menu.popover.show($event)"></button>
+</ion-header-bar>
    <ion-content scroll="true">
       <div class="list">
          <div class="user-container" ng-repeat="contact in contacts.displaycontacts">
-            <a class="item item-avatar hover item-icon-right" href="#/app/chatpage">
-               <img class="avatar" src="{{contact.image}}">
+            <a class="item item-avatar hover item-icon-right" on-tap="contacts.chatWithUser('56d030f946da859a1527d968')">
+               <img class="avatar" ng-src="{{contact.image}}">
                <h3>{{contact.userName}}</h3>
                <p>{{contact.status}}</p>
             </a>

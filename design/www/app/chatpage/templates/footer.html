@@ -4,7 +4,7 @@
 			<img ng-src='{{chatPageFooter.image}}' class='w-full img-circle'>
 		</a>
 	</div>
-	<input type='text' class='form-control text-box' />
+	<input type='text' class='form-control text-box' ng-model="chatPageFooter.message" on-return="chatPageFooter.sendMessage();" on-focus="inputUp()" on-blur="inputDown()" />
 	<button class='button button-positive send-msg' ng-click='chatPageFooter.sendMessage()'>
 		<i class='icon ion-paper-airplane'></i>
 	</button>

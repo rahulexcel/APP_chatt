@@ -4,20 +4,8 @@
          .factory('lastUsesTimeService', lastUsesTimeService);
 
      function lastUsesTimeService(lastUsesTimeFactory, timeStorage, $interval, $localStorage) {
-         return {
-             updateTime: function(userId) {
-                 if (_.isEmpty(userId)) {
-                     var userData = timeStorage.get('userData');
-                     if (userData) {
-                         if (!_.isEmpty(userData.data.user_id)) {
-                             this.fireApi(userData.data.user_id);
-                         }
-                     }
-                 } else {
-                     this.fireApi(userId);
-                 }
-             },
-             updateTimeWithHttp: function() {
+         var service = {};
+         service.updateTimeWithHttp = function() {
                  delete $localStorage.lastTimeStampFireApi;
                  $interval(function() {
                      var LastTimeFireApi = $localStorage.lastTimeStampFireApi;
@@ -25,12 +13,25 @@
                          var currentTimestamp = _.now();
                          var diffrence = currentTimestamp - LastTimeFireApi;
                          if (diffrence > 300000) {
-                             this.updateTime();
+                             service.updateTime();
                          }
                      }
                  }, 60000);
              },
-             fireApi: function(userId) {
+             service.updateTime = function(userId) {
+                 if (_.isEmpty(userId)) {
+                     var userData = timeStorage.get('userData');
+                     if (userData) {
+                         if (!_.isEmpty(userData.data.user_id)) {
+                             service.fireApi(userData.data.user_id);
+                         }
+                     }
+                 } else {
+                     service.fireApi(userId);
+                 }
+             },
+             service.fireApi = function(userId) {
+                console.log('api is firing');
                  var currentTimestamp = _.now();
                  var query = lastUsesTimeFactory.query({
                      currentTimestamp: currentTimestamp,
@@ -40,6 +41,6 @@
                      console.log(data);
                  });
              }
-         }
+         return service;
      };
  })();

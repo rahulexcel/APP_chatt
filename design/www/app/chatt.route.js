@@ -74,9 +74,31 @@
                       controllerAs: 'chatPage'
                     }
                 }
+            })
+            .state('app.setting', {
+                url: '/setting',
+                cache:false,
+                views: {
+                   'menuContent': {
+                      templateUrl: 'app/setting/setting.html',
+                      controller: 'settingController',
+                      controllerAs: 'setting'
+                    }
+                }
+            })
+            .state('app.profile', {
+                url: '/profile',
+                cache:false,
+                views: {
+                   'menuContent': {
+                      templateUrl: 'app/profile/profile.html',
+                      controller: 'profileController',
+                      controllerAs: 'profile'
+                    }
+                }
             });
         // if none of the above states are matched, use this as the fallback
-        $urlRouterProvider.otherwise('/login');
+        // $urlRouterProvider.otherwise('/login');
     });
 
 })();
