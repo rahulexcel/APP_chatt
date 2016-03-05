@@ -4,8 +4,7 @@
      angular.module('starter')
          .controller('chatPageController', chatPageController);
 
-     function chatPageController($scope,$state, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory) {
-         console.log('Chat Page');
+     function chatPageController($scope,$state, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage) {
          var self = this;
          $ionicLoading.show();
          $scope.userHeader ={};
@@ -17,8 +16,27 @@
          }
          $scope.userfooter = {};
          $scope.userfooter.image = 'http://lorempixel.com/640/480/nature';
+         var messageToBeSend = [];
          $scope.userfooter.sendMessage = function(){
+            messageToBeSend.push($scope.userfooter.message);
+            timeStorage.set('messageToBeSend',messageToBeSend,1);
+            self.displayChatMessages.push({
+                    "image": "http://lorempixel.com/640/480/nature",
+                    "message":$scope.userfooter.message,
+                    "messageTime":"2:12",
+                    "userName":"User 12"
+            });
+            $scope.userfooter.message = '';
+            $ionicScrollDelegate.scrollBottom(false);
          }
+         $scope.userfooter.inputUp = function() {
+            $timeout(function() {
+              $ionicScrollDelegate.scrollBottom(true);
+            }, 300);
+          };
+          $scope.userfooter.inputDown = function() {
+            $ionicScrollDelegate.resize();
+          };
          var query = chatPageFactory.query({});
          query.$promise.then(function(data) {
              $ionicLoading.hide();

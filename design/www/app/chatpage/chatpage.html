@@ -8,8 +8,8 @@
                 <img class="avatar" ng-src="{{msg.image}}">
                 <div class="{{msg.userName == 'User 1' && 'bubble-yellow' || 'bubble-blue' }}">
                     <p>{{msg.message}}</p>
+                    <p class="chat-time"><span>{{msg.messageTime}}</span> <i class="fa fa-circle"></i></p>
                 </div>
-                <p class="chat-time">{{msg.messageTime}}</p>
             </div>
         </div>
     </ion-content>
