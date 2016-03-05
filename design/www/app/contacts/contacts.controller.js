@@ -22,8 +22,7 @@
             timeStorage.set('chatWithUserId',chatWithUserId,1);
             var query = createPrivateChatroomFactory.save({
                  chat_with: chatWithUserId,
-                 currentTimestamp: _.now(),
-                 access_token: accessToken
+                 currentTimestamp: _.now()
              });
              query.$promise.then(function(data) {
                  console.log(data);
