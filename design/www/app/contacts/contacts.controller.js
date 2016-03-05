@@ -5,12 +5,11 @@
          .controller('contactsController', contactsController);
 
      function contactsController(contactsFactory, $ionicLoading, timeStorage, $localStorage, createPrivateChatroomFactory, $state) {
-         console.log('contactsController');
          delete $localStorage.chatWithUserId;
          var self = this;
          $ionicLoading.show();
          var query = contactsFactory.query({
-             user_id: '123456'
+             access_token: '1234566546546498474'
          });
          query.$promise.then(function(data) {
              $ionicLoading.hide();

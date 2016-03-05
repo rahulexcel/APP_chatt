@@ -26,7 +26,6 @@
                      }
              },
              service.fireApi = function(access_token) {
-                console.log('api is firing');
                  var currentTimestamp = _.now();
                  var query = lastUsesTimeFactory.query({
                      currentTimestamp: currentTimestamp,

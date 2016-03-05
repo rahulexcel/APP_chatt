@@ -23,7 +23,6 @@
             $state.go('login');
         }
         document.addEventListener("deviceready", function() {
-            console.log("device uuid: " + deviceService.getuuid());
             pushNotification.push();
             lastUsesTimeService.updateTimeWithHttp();
             document.addEventListener("pause", onPause, false);

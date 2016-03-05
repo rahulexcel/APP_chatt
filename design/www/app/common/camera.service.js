@@ -17,7 +17,6 @@
                      cancelText: 'Cancel',
                      cancel: function() {},
                      buttonClicked: function(index) {
-                         console.log(index);
                          service.getPicture(index).then(function(imageData) {
                              q.resolve(imageData);
                          }, function(err) {

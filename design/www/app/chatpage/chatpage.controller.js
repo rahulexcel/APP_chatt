@@ -5,7 +5,6 @@
          .controller('chatPageController', chatPageController);
 
      function chatPageController($scope,$state, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage) {
-         console.log('Chat Page');
          var self = this;
          $ionicLoading.show();
          $scope.userHeader ={};
@@ -20,7 +19,6 @@
          var messageToBeSend = [];
          $scope.userfooter.sendMessage = function(){
             messageToBeSend.push($scope.userfooter.message);
-            console.log(messageToBeSend);
             timeStorage.set('messageToBeSend',messageToBeSend,1);
             self.displayChatMessages.push({
                     "image": "http://lorempixel.com/640/480/nature",
