@@ -230,8 +230,11 @@ text-decoration: none;
    left: 60px;
    position: absolute;
    top: 11px;
-
    transform: rotate(29deg) skew(-35deg);
+   -ms-transform: rotate(29deg) skew(-35deg);
+   -webkit-transform: rotate(29deg) skew(-35deg);
+   -moz-transform: rotate(29deg) skew(-35deg);
+   -webkit-transform: rotate(29deg) skew(-35deg);
    width: 12px;
 }
 .bubble-blue {
@@ -253,6 +256,10 @@ text-decoration: none;
    position: absolute;
    top: 11px;
    transform: rotate(29deg) skew(-35deg);
+   -ms-transform: rotate(29deg) skew(-35deg);
+   -webkit-transform: rotate(29deg) skew(-35deg);
+   -moz-transform: rotate(29deg) skew(-35deg);
+   -webkit-transform: rotate(29deg) skew(-35deg);
    width: 12px;
 }
 .left-chat p{
