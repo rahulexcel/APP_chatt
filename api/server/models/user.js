@@ -7,7 +7,11 @@ module.exports = function (User) {
     //********************************* START REGISTER AND LOGIN **********************************
     User.register_login = function (action, action_type, social_id, platform, device_id, token, email_id, name, password, currentTimestamp, callback) {
         if (action && action_type && email_id) {
-            name = name.toLowerCase();
+            if( typeof name == 'undefined' || name == ''){
+                name = '';
+            }else{
+                name = name.toLowerCase();
+            }
             email_id = email_id.toLowerCase();
             where = {
                 email : email_id
@@ -38,7 +42,7 @@ module.exports = function (User) {
                                     });
                                 }else{
                                     if (r_verification_status == 0) {
-                                        callback(null, 0, 'Please verify you account first', {});
+                                        callback(null, 3, 'Please verify you account first', {});
                                     } else {
                                         //-START--get access token---------
                                         User.login({
@@ -60,46 +64,53 @@ module.exports = function (User) {
                                 }
                             }
                         } else {
-                            password = password.toString();
-                            var verification_status = 0;
-                            var verification_code = UTIL.get_random_number();
-                            verification_code = verification_code.toString();
-                            if (action_type == 'facebook' || action_type == 'google') {
-                                verification_status = 1;
-                                verification_code = '';
-                            }
-                            User.create({
-                                verification_status: verification_status,
-                                verification_code: verification_code,
-                                registration_type: action_type,
-                                social_id: social_id,
-                                platform: platform,
-                                device_id: device_id,
-                                token: token,
-                                email: email_id,
-                                name: name,
-                                password: password,
-                                last_seen: '',
-                                registration_time: currentTimestamp,
-                                registration_date: UTIL.currentDate(currentTimestamp),
-                                registration_date_time: UTIL.currentDateTimeDay(currentTimestamp),
-                                profile_image: ''
-                            },function( err, user ){
-                                if (err) {
-                                    callback(null, 0, err, {});
-                                } else {
-                                    var user_id = user.id;
-                                    var data = {
-                                        user_id: user_id
-                                    };
-                                    if (action_type != 'facebook' && action_type != 'google') {
-                                        data['show_verification'] = 1;
-                                    }
-                                    User.app.models.email.newRegisteration({email: email_id, name: name, verification_code: verification_code}, function () {
-                                        callback(null, 1, 'Successful Registration', data);
-                                    });
+                            if( action_type == 'manual_login'){
+                                callback(null, 0, 'Email id not exists', {});
+                            }else if( name == '' ){
+                                callback(null, 0, 'Name required', {});
+                            }else if( action_type != 'facebook' && action_type != 'google' && ( typeof password =='undefined' || password == '') ){
+                                callback(null, 0, 'Password required', {});
+                            }else{
+                                var verification_status = 0;
+                                var verification_code = UTIL.get_random_number();
+                                verification_code = verification_code.toString();
+                                if (action_type == 'facebook' || action_type == 'google') {
+                                    verification_status = 1;
+                                    verification_code = '';
                                 }
-                            })
+                                User.create({
+                                    verification_status: verification_status,
+                                    verification_code: verification_code,
+                                    registration_type: action_type,
+                                    social_id: social_id,
+                                    platform: platform,
+                                    device_id: device_id,
+                                    token: token,
+                                    email: email_id,
+                                    name: name,
+                                    password: password,
+                                    last_seen: '',
+                                    registration_time: currentTimestamp,
+                                    registration_date: UTIL.currentDate(currentTimestamp),
+                                    registration_date_time: UTIL.currentDateTimeDay(currentTimestamp),
+                                    profile_image: ''
+                                },function( err, user ){
+                                    if (err) {
+                                        callback(null, 0, err, {});
+                                    } else {
+                                        var user_id = user.id;
+                                        var data = {
+                                            user_id: user_id
+                                        };
+                                        if (action_type != 'facebook' && action_type != 'google') {
+                                            data['show_verification'] = 1;
+                                        }
+                                        User.app.models.email.newRegisteration({email: email_id, name: name, verification_code: verification_code}, function () {
+                                            callback(null, 1, 'Successful Registration', data);
+                                        });
+                                    }
+                                })
+                            }
                         }
                     }
                 }
@@ -153,7 +164,7 @@ module.exports = function (User) {
                     } else if (exist_code != code) {
                         callback(null, 0, 'Verification failed.', {});
                     } else {
-                        User.update({email_id: email_id}, {
+                        User.update({email: email_id}, {
                             verification_status: 1,
                             verification_code: ''
                         }, function (err, result) {
@@ -239,7 +250,7 @@ module.exports = function (User) {
     User.forgot_password = function (email_id, callback) {
         email_id = email_id.toLowerCase();
         where = {
-            email_id: email_id
+            email: email_id
         };
         User.find({where: where}, function (err, result) {
             if (err) {
@@ -252,7 +263,7 @@ module.exports = function (User) {
                     new_password = generatePassword(4, false);
                     new_password = new_password.toString();
                     UTIL.encode_password(new_password, function (hash_password) {
-                        User.update({email_id: email_id}, {
+                        User.update({email: email_id}, {
                             password: hash_password
                         }, function (err, result) {
                             if (err) {
