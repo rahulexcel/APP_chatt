@@ -7,14 +7,14 @@ module.exports = function (User) {
     //********************************* START REGISTER AND LOGIN **********************************
     User.register_login = function (action, action_type, social_id, platform, device_id, token, email_id, name, password, currentTimestamp, callback) {
         if (action && action_type && email_id) {
-            if( typeof name == 'undefined' || name == ''){
+            if (typeof name == 'undefined' || name == '') {
                 name = '';
-            }else{
+            } else {
                 name = name.toLowerCase();
             }
             email_id = email_id.toLowerCase();
             where = {
-                email : email_id
+                email: email_id
             };
             User.find({where: where}, function (err, result) {
                 if (err) {
@@ -29,32 +29,32 @@ module.exports = function (User) {
                                 callback(null, 0, 'Email id already exists.', {});
                             } else if (action_type == 'manual_login' || action_type == 'facebook' || action_type == 'google') {
                                 if (action_type == 'facebook' || action_type == 'google') {
-                                    result.createAccessToken(86400, function(err, accessToken) {
-                                        if (err){
+                                    result.createAccessToken(86400, function (err, accessToken) {
+                                        if (err) {
                                             callback(null, 0, 'Invalid login', {});
-                                        }else{
+                                        } else {
                                             var data = {
                                                 user_id: accessToken.userId,
-                                                access_token : accessToken.id
+                                                access_token: accessToken.id
                                             };
                                             callback(null, 1, 'Success login', data);
                                         }
                                     });
-                                }else{
+                                } else {
                                     if (r_verification_status == 0) {
                                         callback(null, 3, 'Please verify you account first', {});
                                     } else {
                                         //-START--get access token---------
                                         User.login({
-                                            email:email_id,
-                                            password : password
-                                        },function( err, accessToken ){
-                                            if( err ){
+                                            email: email_id,
+                                            password: password
+                                        }, function (err, accessToken) {
+                                            if (err) {
                                                 callback(null, 0, 'Invalid login', {});
-                                            }else{
+                                            } else {
                                                 var data = {
                                                     user_id: result.id,
-                                                    access_token : accessToken.id
+                                                    access_token: accessToken.id
                                                 };
                                                 callback(null, 1, 'Success login', data);
                                             }
@@ -64,13 +64,13 @@ module.exports = function (User) {
                                 }
                             }
                         } else {
-                            if( action_type == 'manual_login'){
+                            if (action_type == 'manual_login') {
                                 callback(null, 0, 'Email id not exists', {});
-                            }else if( name == '' ){
+                            } else if (name == '') {
                                 callback(null, 0, 'Name required', {});
-                            }else if( action_type != 'facebook' && action_type != 'google' && ( typeof password =='undefined' || password == '') ){
+                            } else if (action_type != 'facebook' && action_type != 'google' && (typeof password == 'undefined' || password == '')) {
                                 callback(null, 0, 'Password required', {});
-                            }else{
+                            } else {
                                 var verification_status = 0;
                                 var verification_code = UTIL.get_random_number();
                                 verification_code = verification_code.toString();
@@ -94,7 +94,7 @@ module.exports = function (User) {
                                     registration_date: UTIL.currentDate(currentTimestamp),
                                     registration_date_time: UTIL.currentDateTimeDay(currentTimestamp),
                                     profile_image: ''
-                                },function( err, user ){
+                                }, function (err, user) {
                                     if (err) {
                                         callback(null, 0, err, {});
                                     } else {
@@ -293,16 +293,16 @@ module.exports = function (User) {
 //********************************* END FORGET PASSWORD **********************************
 
 //********************************* START RESET PASSWORD **********************************
-    User.reset_password = function ( req, password, callback) {
+    User.reset_password = function (req, password, callback) {
         var access_token_userid = req.accessToken.userId;
-        User.findById( access_token_userid, function(err, user) {
-            if( err ){
+        User.findById(access_token_userid, function (err, user) {
+            if (err) {
                 callback(null, 0, 'UnAuthorized', {});
-            }else{
-                user.updateAttribute('password', password, function(err, user) {
+            } else {
+                user.updateAttribute('password', password, function (err, user) {
                     if (err) {
                         callback(null, 0, 'Error', {});
-                    }else{
+                    } else {
                         callback(null, 1, 'Password updated successfully', {});
                     }
                 });
@@ -323,5 +323,54 @@ module.exports = function (User) {
             }
     );
 //********************************* END RESET PASSWORD **********************************
+
+//********************************* START LIST OF ALL USERS **********************************
+    User.list_users = function (req, page, currentTimestamp, callback) {
+        if (typeof req.accessToken == 'undefined' || req.accessToken == null || req.accessToken == '' || typeof req.accessToken.userId == 'undefined' || req.accessToken.userId == '') {
+            callback(null, 0, 'UnAuthorized', {});
+        } else {
+            var num = 0;
+            var access_token_userid = req.accessToken.userId;
+            if (typeof page != 'undefined') {
+                num = page;
+            }
+            User.findById(access_token_userid, function (err, user) {
+                if (err) {
+                    callback(null, 0, err);
+                } else {
+                    User.find({
+                        order: 'last_seen DESC',
+                        skip: num * 10,
+                        limit: 10
+                    }, function (err, result) {
+                        if (err) {
+                            callback(null, 0, err);
+                        }
+                        else {
+                            if (result.length > 0)
+                                callback(null, 1, result);
+                            else
+                                callback(null, 0, {});
+                        }
+                    });
+                }
+            });
+        }
+    };
+    User.remoteMethod(
+            'list_users', {
+                description: 'Show the list of all Users',
+                accepts: [
+                    {arg: 'req', type: 'object', 'http': {source: 'req'}},
+                    {arg: 'page', type: 'number'},
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'data', type: 'array'}
+                ]
+            }
+    );
+//********************************* END LIST OF ALL USERS ************************************  
 
 };

@@ -40,5 +40,9 @@
     "room": {
         "dataSource": "mongo_db_app_chatt",
         "public": true
+    },
+    "friend": {
+        "dataSource": "mongo_db_app_chatt",
+        "public": true
     }
 }
