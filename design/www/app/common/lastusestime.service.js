@@ -5,17 +5,13 @@
 
      function lastUsesTimeService(lastUsesTimeFactory, timeStorage, $interval, $localStorage) {
          return {
-             updateTime: function(userId) {
-                 if (_.isEmpty(userId)) {
+             updateTime: function() {
                      var userData = timeStorage.get('userData');
                      if (userData) {
                          if (!_.isEmpty(userData.data.user_id)) {
                              this.fireApi(userData.data.user_id);
                          }
                      }
-                 } else {
-                     this.fireApi(userId);
-                 }
              },
              updateTimeWithHttp: function() {
                  delete $localStorage.lastTimeStampFireApi;

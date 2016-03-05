@@ -39,7 +39,7 @@
                     } else if (data.status == 1) {
                         timeStorage.set('userEmail', self.data.email, 1);
                         timeStorage.set('userData', data, 1);
-                        lastUsesTimeService.updateTime(data.data.user_id);
+                        lastUsesTimeService.updateTime();
                         $state.go('app.contacts');
                     }
                 });
@@ -71,7 +71,7 @@
                     tostService.notify(data.message, 'top');
                     timeStorage.set('userEmail', googleData.email, 1);
                     timeStorage.set('userData', data, 1);
-                    lastUsesTimeService.updateTime(data.data.user_id);
+                    lastUsesTimeService.updateTime();
                     $state.go('app.contacts');
                 });
             }, function(data) {
@@ -119,7 +119,7 @@
                 tostService.notify(data.message, 'top');
                 timeStorage.set('userEmail', fbData.email, 1);
                 timeStorage.set('userData', data, 1);
-                lastUsesTimeService.updateTime(data.data.user_id);
+                lastUsesTimeService.updateTime();
                 $state.go('app.contacts');
             });
         };
