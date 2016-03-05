@@ -350,14 +350,13 @@ module.exports = function (User) {
                             else {
                                 var userInfo = [];
                                 if (result.length > 0) {
-                                    for (var a = 0; a < result.length; a++) {
-                                        var row = result[a];
-                                        var userName = row.name;
-                                        var userId = row._id;
-                                        var pic = row.profile_image;
-                                        var lastSeen = row.last_seen;
+                                    lodash.forEach(result, function (value) {
+                                        var userName = value.name;
+                                        var userId = value._id;
+                                        var pic = value.profile_image;
+                                        var lastSeen = value.last_seen;
                                         userInfo.push({name: userName, id: userId, pic: pic, lastSeen: lastSeen});
-                                    }
+                                    });
                                     callback(null, 1, 'Users List', userInfo);
                                 }
                                 else {
@@ -368,8 +367,8 @@ module.exports = function (User) {
                     }
                 });
             }
-            else{
-                callback(null,0,'Fill all fields',{});
+            else {
+                callback(null, 0, 'Invalid Request Parameters', {});
             }
         }
     };
