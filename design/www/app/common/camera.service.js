@@ -9,9 +9,9 @@
                  var q = $q.defer();
                  var hideSheet = $ionicActionSheet.show({
                      buttons: [{
-                         text: '<i class="ion-images"></i> Gallery'
+                         text: '<p class="text-center"><i class="ion-images"></i> Gallery</p>'
                      }, {
-                         text: '<i class="ion-camera"></i> Camera'
+                         text: '<p class="text-center"><i class="ion-camera"></i> Camera</p>'
                      }],
                      titleText: 'Profile photo',
                      cancelText: 'Cancel',
@@ -36,8 +36,8 @@
                      correctOrientation: true,
                      // allowEdit: true,
                      sourceType: index,
-                     targetWidth: 128,
-                     targetHeight: 128
+                     // targetWidth: 128,
+                     // targetHeight: 128
                  });
                  function onSuccess(imageData) {
                      q.resolve(imageData);
