@@ -4,7 +4,7 @@
      angular.module('starter')
          .controller('profileController', profileController);
 
-     function profileController($scope, $rootScope, $interval, $timeout, cameraService, $ionicActionSheet) {
+     function profileController(cameraService) {
          console.log('profileController');
          var self = this;
          self.displayprofile = [{
@@ -12,7 +12,7 @@
              "status": "I am designing something.",
              "userName": "David M."
          }];
-         $scope.editProfilePic = function() {
+         self.editProfilePic = function() {
              cameraService.changePic().then(function(imageData) {
                  self.displayprofile[0].image = "data:image/jpeg;base64," + imageData;
              }, function(err) {
