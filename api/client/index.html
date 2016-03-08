@@ -23,7 +23,7 @@
     <script>
     var socket = io();
     $('form').submit(function(){
-      socket.emit('chat_message', $('#m').val());
+      socket.emit('create_room_message', 'YFhLpEbRsESlPybSwFmzpgsbY7aBkIxtjtvPx2pIjutNh6LwlBcFeRmIK4WFfExE', '56de7192c07293dc1ac74bff', $('#m').val(),'465464654');
       $('#m').val('');
       return false;
     });

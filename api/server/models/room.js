@@ -1,6 +1,8 @@
 var UTIL = require('../modules/generic');
 var ObjectID = require('mongodb').ObjectID;
 
+var loopback = require('loopback');
+
 module.exports = function (Room) {
     Room.disableRemoteMethod("create", true);
     Room.disableRemoteMethod("upsert", true);
@@ -24,6 +26,10 @@ module.exports = function (Room) {
     Room.disableRemoteMethod('__findById__accessTokens', false);
     Room.disableRemoteMethod('__get__accessTokens', false);
     Room.disableRemoteMethod('__updateById__accessTokens', false);
+    //-------------------------------------------------------------
+    
+    
+    
     //********************************* START REGISTER AND LOGIN **********************************
     Room.create_private_room = function ( req, chat_with, currentTimestamp, callback) {
         if( typeof req.accessToken == 'undefined' || req.accessToken == null || req.accessToken == '' || typeof req.accessToken.userId == 'undefined' || req.accessToken.userId == '' ){
@@ -105,34 +111,21 @@ module.exports = function (Room) {
     );
     //********************************* END REGISTER AND LOGIN ************************************   
     
-    //********************************* Start Chat Message ************************************   
-    
-    Room.chat_message = function ( accessToken, room_id, message, callback) {
-        
-        console.log(accessToken);
-        console.log(room_id);
-        console.log(message);
-        
-        if( typeof req.accessToken == 'undefined' || req.accessToken == null || req.accessToken == '' || typeof req.accessToken.userId == 'undefined' || req.accessToken.userId == '' ){
-            callback(null, 0, 'UnAuthorized', {});
-        }else{
-            var access_token_userid = req.accessToken.userId;
-            Room.findById( access_token_userid, function(err, user) {
-                if( err ){
-                    callback(null, 0, 'UnAuthorized 1', {});
+    //********************************* Start create_room_message ************************************   
+    Room.create_room_message = function ( accessToken, room_id, message, currentTimestamp, callback) {
+        var User = Room.app.models.User;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 0, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 0, 'UnAuthorized', {});
                 }else{
-                    var owner_user_id = access_token_userid;
-                    var room_users = [
-                        owner_user_id,
-                        chat_with
-                    ];
-                    var ru = room_users;
-                    for( var k in room_users ){
-                        room_users[k] = new ObjectID( room_users[k]);
-                    }
+                    var Message = Room.app.models.message;
+                    var userId = accessToken.userId
                     var check_where = {
                         where : {
-                            room_users : {'all':room_users}
+                            '_id' : new ObjectID( room_id )
                         }
                     };
                     Room.find( check_where, function (err, result) {
@@ -140,37 +133,52 @@ module.exports = function (Room) {
                             callback(null, 0, 'try again', {});
                         }else{
                             if( result.length > 0 ){
-                                result = result[0];
-                                var room_id = result.id;
-                                var data = {
-                                    'room_id' : room_id
-                                };
-                                callback(null, 1, 'Room already exists', data);
-                            }else{
-                                var new_room = new Room({
-                                    room_owner : new ObjectID( owner_user_id ),
-                                    room_users : room_users,
-                                    registration_time: currentTimestamp,
-                                    registration_date: UTIL.currentDate(currentTimestamp),
-                                    registration_date_time: UTIL.currentDateTimeDay(currentTimestamp)
+                                var new_message = new Message({
+                                    room_id : new ObjectID( room_id ),
+                                    message_owner : new ObjectID( userId ),
+                                    message : {
+                                        'type' : 'text',
+                                        'body' : message
+                                    },
+                                    message_time: currentTimestamp,
+                                    message_date: UTIL.currentDate(currentTimestamp),
+                                    message_date_time: UTIL.currentDateTimeDay(currentTimestamp)
                                 });
-                                new_room.save( function(err){
+                                new_message.save( function(err){
                                     if( err ){
                                         callback(null, 0, 'try again', {});
                                     }else{
-                                        var room_id = new_room.id;
-                                        var data = {
-                                            'room_id' : room_id
-                                        };
-                                        callback(null, 1, 'Chat Room Created', data);
+                                        callback(null, 1, 'Message posted', {});
                                     }
                                 });
+                            }else{
+                                callback(null, 0, 'Room not exists', {});
                             }
                         }
                     });
                 }
-            });
-        }
+            }
+        });
     };
+    Room.remoteMethod(
+            'create_room_message', {
+                description: 'Send a message in room',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'room_id', type: 'string'}, 
+                    {arg: 'message', type: 'string'}, 
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/create_room_message',
+                }
+            }
+    );
+    //********************************* END create_room_message ************************************   
     
 };

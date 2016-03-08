@@ -14,6 +14,11 @@
             "principalType": "ROLE",
             "principalId": "$authenticated",
             "property": "create_private_room"
+        },{
+            "permission": "ALLOW",
+            "principalType": "ROLE",
+            "principalId": "$authenticated",
+            "property": "create_room_message"
         }],
     "methods": {}
 }
