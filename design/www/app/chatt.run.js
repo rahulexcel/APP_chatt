@@ -3,7 +3,7 @@
 
     angular.module('starter')
 
-    .run(function($ionicPlatform, timeStorage, $state, Configurations, deviceService, pushNotification) {
+    .run(function($ionicPlatform, timeStorage, $state, Configurations, deviceService, pushNotification, lastUsesTimeService, $localStorage) {
         $ionicPlatform.ready(function() {
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
             // for form inputs)
@@ -17,11 +17,22 @@
                 StatusBar.styleDefault();
             }
         });
-
-
+        if($localStorage.userData){
+            $state.go('app.contacts');
+        } else{
+            $state.go('login');
+        }
         document.addEventListener("deviceready", function() {
-            console.log("device uuid: " + deviceService.getuuid());
             pushNotification.push();
+            lastUsesTimeService.updateTimeWithHttp();
+            document.addEventListener("pause", onPause, false);
+            document.addEventListener("resume", onResume, false);
+            function onPause() {
+                lastUsesTimeService.updateTime();
+            }
+            function onResume() {
+                lastUsesTimeService.updateTime();
+            }
         });
 
 

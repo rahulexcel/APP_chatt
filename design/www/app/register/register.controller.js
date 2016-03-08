@@ -4,7 +4,7 @@
     angular.module('starter')
         .controller('registerController', registerController);
 
-    function registerController($scope, $state, registerFactory,  $localStorage, tostService, deviceService, timeStorage) {
+    function registerController($scope, $state, registerFactory,  $localStorage, tostService, deviceService, timeStorage, $ionicLoading) {
             console.log('Register Controller');
             var self = this;
             this.user={
@@ -19,7 +19,7 @@
                 if(_.isEmpty(this.user.name) || _.isEmpty(this.user.email) || _.isEmpty(this.user.password) ){
                 tostService.notify('Please fill all fields', 'top');
             }else{
-                self.registerSpinner = true;
+                $ionicLoading.show();
                 timeStorage.set('userEmail',this.user.email,1);
                 var query = registerFactory.save({
                     action_type:'manual_register',
@@ -34,7 +34,7 @@
                     currentTimestamp:currentTimestamp
                 });
                 query.$promise.then(function(data) {
-                    self.registerSpinner = false;
+                    $ionicLoading.hide();
                     console.log(data);
                     tostService.notify(data.message, 'top');
                     if(data.data.show_verification == '1'){

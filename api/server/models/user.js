@@ -71,6 +71,12 @@ module.exports = function (User) {
                             } else if (action_type != 'facebook' && action_type != 'google' && (typeof password == 'undefined' || password == '')) {
                                 callback(null, 0, 'Password required', {});
                             } else {
+                                //random password when regsiter by facebook and google
+                                if (action_type == 'facebook' || action_type == 'google') {
+                                    password = UTIL.get_random_number();
+                                }
+                                password = password.toString();
+
                                 var verification_status = 0;
                                 var verification_code = UTIL.get_random_number();
                                 verification_code = verification_code.toString();
@@ -106,7 +112,22 @@ module.exports = function (User) {
                                             data['show_verification'] = 1;
                                         }
                                         User.app.models.email.newRegisteration({email: email_id, name: name, verification_code: verification_code}, function () {
-                                            callback(null, 1, 'Successful Registration', data);
+                                            //--send access token if register is via facebook or google
+                                            if (action_type == 'facebook' || action_type == 'google') {
+                                                user.createAccessToken(86400, function (err, accessToken) {
+                                                    if (err) {
+                                                        callback(null, 0, 'Invalid login', {});
+                                                    } else {
+                                                        var data = {
+                                                            user_id: accessToken.userId,
+                                                            access_token: accessToken.id
+                                                        };
+                                                        callback(null, 1, 'Success Registration', data);
+                                                    }
+                                                });
+                                            } else {
+                                                callback(null, 1, 'Successful Registration', data);
+                                            }
                                         });
                                     }
                                 })

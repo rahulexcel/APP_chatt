@@ -6,7 +6,6 @@
       <ion-nav-buttons side="right">
         <button class="button button-icon ion-android-more-vertical" ng-click="menu.popover.show($event)">
         </button>
-        </button>
       </ion-nav-buttons>
     </ion-nav-bar>
     <ion-nav-view name="menuContent"></ion-nav-view>
@@ -18,6 +17,9 @@
       <div class="list">
         <a class="item" href="#/app/resetpassword"  ng-click="menu.popover.hide($event)">
               RESET PASSWORD
+        </a>
+        <a class="item"  ng-click="menu.popover.hide($event); menu.logout();">
+              Logout
         </a>
       </div>
     </ion-content>
