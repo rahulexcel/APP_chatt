@@ -96,6 +96,17 @@
                       controllerAs: 'profile'
                     }
                 }
+            })
+            .state('app.chats', {
+                url: '/chats',
+                cache:false,
+                views: {
+                   'menuContent': {
+                      templateUrl: 'app/chats/chats.html',
+                      controller: 'chatsController',
+                      controllerAs: 'chats'
+                    }
+                }
             });
         // if none of the above states are matched, use this as the fallback
         // $urlRouterProvider.otherwise('/login');

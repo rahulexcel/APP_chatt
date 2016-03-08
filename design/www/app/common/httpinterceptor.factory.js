@@ -4,7 +4,6 @@
             .factory('myInterceptor', function($localStorage) {
                 var requestInterceptor = {
                     request: function(config) {
-                        console.log(config);
                         var currentUser = $localStorage.userData;
                         if (currentUser) {
                             var accessToken = currentUser.data.access_token;

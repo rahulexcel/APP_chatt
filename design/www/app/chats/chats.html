@@ -1,0 +1,16 @@
+<ion-view view-title="CHATS" id="background" hide-back-button="true">
+    <ion-content>
+        <div class="list" id="chats">
+            <div class="user-container" ng-repeat="chat in chats.displayChats">
+                <a class="item item-avatar hover" href="#/app/chatpage">
+                    <img class="avatar" ng-src="{{chat.image}}">
+                    <h3>{{chat.user}} <span class="pull-right time">{{chat.messageTime}}</span></h3>
+                    <p>{{chat.message}}</p>
+                </a>
+            </div>
+        </div>
+    </ion-content>
+    <ion-footer-bar class="bar-stable">
+      <chats-Footer></chats-Footer>
+    </ion-fotter-bar>
+</ion-view>

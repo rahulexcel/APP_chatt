@@ -35,8 +35,8 @@
                      correctOrientation: true,
                      // allowEdit: true,
                      sourceType: index,
-                     // targetWidth: 128,
-                     // targetHeight: 128
+                     targetWidth: 128,
+                     targetHeight: 128
                  });
                  function onSuccess(imageData) {
                      q.resolve(imageData);
