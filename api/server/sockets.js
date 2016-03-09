@@ -17,7 +17,18 @@ module.exports.listen = function(app){
                 };
                 socket.emit( 'new_private_room', response );
             })
-        });    
+        });  
+        
+        socket.on('list_my_rooms', function( accessToken, currentTimestamp ){
+            Room.list_my_rooms( accessToken, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+                var response = {
+                    'status' : res_status,
+                    'message' : res_message,
+                    'data' : res_data
+                };
+                socket.emit( 'show_my_rooms', response );
+            })
+        });
         
         socket.on('room_message', function( accessToken, room_id, message, currentTimestamp ){
             socket.join( room_id );

@@ -66,8 +66,6 @@ module.exports = function (Room) {
                                     room_owner : new ObjectID( owner_user_id ),
                                     room_users : room_users,
                                     registration_time: currentTimestamp,
-                                    registration_date: UTIL.currentDate(currentTimestamp),
-                                    registration_date_time: UTIL.currentDateTimeDay(currentTimestamp)
                                 });
                                 new_room.save( function(err){
                                     if( err ){
