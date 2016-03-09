@@ -88,7 +88,6 @@ module.exports = function (Room) {
         });
         
     };
-    
     Room.remoteMethod(
             'create_private_room', {
                 description: 'create private room',
@@ -175,6 +174,72 @@ module.exports = function (Room) {
             }
     );
     ///////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////
+    Room.list_my_rooms = function ( accessToken, currentTimestamp, callback) {
+        var User = Room.app.models.User;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 0, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 0, 'UnAuthorized', {});
+                }else{
+                    var userId = accessToken.userId
+                    userId = new ObjectID( userId );
+                    Room.find({
+                        "where": {room_users : {'in':[userId]}},
+                        "include": [{
+                            relation: 'room_owner', 
+                            scope: {
+                                fields: ['name'],
+                            }
+                        },{
+                            relation: 'room_users', 
+                            scope: {
+                                fields: ['name'],
+                            }
+                        }]
+                    },function (err, result) {
+                        if( err ){
+                            console.log( err );
+                            callback(null, 0, 'try again', {});
+                        }else{
+                            if( result.length > 0 ){
+                                var data = {
+                                    'rooms' : result
+                                };
+                                callback( null, 1, 'Rooms found', data );
+                            }else{
+                                callback( null, 0, 'No rooms found', {} );
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    };
+    Room.remoteMethod(
+            'list_my_rooms', {
+                description: 'List logged user rooms',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/list_my_rooms',
+                }
+            }
+    );
+    
+    
+    
+    
+    
     
 //    //********************************* START REGISTER AND LOGIN **********************************
 //    Room.create_private_room = function ( req, chat_with, currentTimestamp, callback) {

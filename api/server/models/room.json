@@ -8,7 +8,18 @@
     "properties": {
     },
     "validations": [],
-    "relations": {},
+    "relations": {
+        "room_owner": {
+            "type":"belongsTo",
+            "model":"user",
+            "foreignKey":"room_owner"
+        },
+        "room_users": {
+            "type":"referencesMany",
+            "model":"user",
+            "foreignKey":"room_users"
+        }
+    },
     "acls": [{
             "permission": "ALLOW",
             "principalType": "ROLE",
