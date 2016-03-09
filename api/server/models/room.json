@@ -18,7 +18,7 @@
             "permission": "ALLOW",
             "principalType": "ROLE",
             "principalId": "$authenticated",
-            "property": "create_room_message"
+            "property": "room_message"
         }],
     "methods": {}
 }

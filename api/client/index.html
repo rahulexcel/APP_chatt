@@ -15,21 +15,50 @@
   </head>
   <body>
     <ul id="messages"></ul>
+    
+    <div id="1" style="height:50px;background:yellow;">
+        <ul class="messages"></ul>
+    </div>    
+    <hr>
+    <div id="2" style="height:50px;background:yellow;">
+        <ul class="messages"></ul>
+    </div>    
+    <hr>
+    <div id="3" style="height:50px;background:yellow;">
+        <ul class="messages"></ul>
+    </div>    
+    
+    
     <form action="">
       <input id="m" autocomplete="off" /><button>Send</button>
     </form>
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
-    var socket = io();
+        var socket = io();
+        
+        $(document).ready(function(){
+            socket.emit('create_private_room', 'uvkjpHDSzLcppkP0WQ9O3F1fuCqB9bcGPeT6lt2RGxCgLDVGzTzprci8DJDGVn7A', '56de7192c07293dc1ac74bff','4545646' );
+            socket.on('new_private_room',function( data ){
+                console.log(data);
+                console.log('-------------');
+            });
+        });
+        
+    
     $('form').submit(function(){
-      socket.emit('create_room_message', 'YFhLpEbRsESlPybSwFmzpgsbY7aBkIxtjtvPx2pIjutNh6LwlBcFeRmIK4WFfExE', '56de7192c07293dc1ac74bff', $('#m').val(),'465464654');
+      socket.emit('room_message', 'dMinNp5RGDYHpxFOpr7EqBzQzvij3jsGMcEXfhoFwzcKPTKCACpDNSxlSoAd6HJr', '56de7192c07293dc1ac74bff', $('#m').val(),'465464654');
       $('#m').val('');
       return false;
     });
-    socket.on('chat_message', function(msg){
-      $('#messages').append($('<li>').text(msg));
+    //socket.on('emit_room_message', function(msg){
+      //$('#messages').append($('<li>').text(msg));
+    //});
+    socket.on('new_room_message',function( data ){
+        console.log( data );
+        //$('#2').find('.messages').append($('<li>').text(room_id+' -- '+msg));
     });
+    
     </script>
   </body>
 </html>
