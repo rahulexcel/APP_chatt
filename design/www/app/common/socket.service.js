@@ -1,6 +1,6 @@
  (function() {
      'use strict';
-     angular.module('starter')
+     angular.module('chattapp')
          .factory('socketService', socketService);
 
      function socketService($q, timeStorage) {

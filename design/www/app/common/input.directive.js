@@ -1,4 +1,4 @@
-angular.module('starter')
+angular.module('chattapp')
     .directive('input', function($timeout) {
         return {
             restrict: 'E',

@@ -1,7 +1,7 @@
  (function() {
     'use strict';
 
-    angular.module('starter')
+    angular.module('chattapp')
         .controller('registerController', registerController);
 
     function registerController($scope, $state, registerFactory,  $localStorage, tostService, deviceService, timeStorage, $ionicLoading) {

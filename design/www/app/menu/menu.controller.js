@@ -1,7 +1,7 @@
  (function() {
      'use strict';
 
-     angular.module('starter')
+     angular.module('chattapp')
          .controller('menuController', menuController);
 
      function menuController($scope, $ionicPopover, $localStorage, $state) {

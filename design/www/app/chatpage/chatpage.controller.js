@@ -1,15 +1,16 @@
  (function() {
      'use strict';
 
-     angular.module('starter')
+     angular.module('chattapp')
          .controller('chatPageController', chatPageController);
 
      function chatPageController($scope, $state, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams) {
          var self = this;
+         var chatWithUserData = timeStorage.get('chatWithUserData');
          $scope.userHeader = {};
-         $scope.userHeader.name = 'kush';
-         $scope.userHeader.image = 'http://lorempixel.com/640/480/nature';
-         $scope.userHeader.lastSeen = 'LAST SEEN TODAY 08:03 PM';
+         $scope.userHeader.name = chatWithUserData.name;
+         $scope.userHeader.image = chatWithUserData.pic;
+         $scope.userHeader.lastSeen = chatWithUserData.lastSeen;
          $scope.userHeader.goBack = function() {
              $ionicHistory.goBack();
          }
@@ -22,7 +23,7 @@
                  "messageTime": "2:12",
                  "userName": data.name
              });
-             $scope.$apply();
+             $scope.$evalAsync();
              $ionicScrollDelegate.scrollBottom(false);
          });
          var messageToBeSend = [];
@@ -47,11 +48,12 @@
          $scope.userfooter.inputDown = function() {
              $ionicScrollDelegate.resize();
          };
-         var query = chatPageFactory.query({});
-         query.$promise.then(function(data) {
-             $ionicLoading.hide();
-             self.displayChatMessages = data;
-         });
+         self.displayChatMessages = [];
+         // var query = chatPageFactory.query({});
+         // query.$promise.then(function(data) {
+         //     $ionicLoading.hide();
+         //     self.displayChatMessages = data;
+         // });
          $timeout(function() {
              $ionicScrollDelegate.scrollBottom(false);
          });

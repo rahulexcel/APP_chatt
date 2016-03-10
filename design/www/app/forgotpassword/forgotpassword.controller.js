@@ -1,7 +1,7 @@
  (function() {
      'use strict';
 
-     angular.module('starter')
+     angular.module('chattapp')
          .controller('forgotPasswordController', forgotPasswordController);
 
      function forgotPasswordController($state, forgotPasswordFactory, tostService, $ionicLoading) {

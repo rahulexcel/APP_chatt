@@ -1,7 +1,7 @@
  (function() {
     'use strict';
 
-    angular.module('starter')
+    angular.module('chattapp')
         .controller('chatsController', chatsController);
 
     function chatsController(chatsFactory, timeStorage) {

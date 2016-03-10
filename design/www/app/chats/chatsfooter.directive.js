@@ -1,7 +1,7 @@
  (function() {
      'use strict';
 
-     angular.module('starter')
+     angular.module('chattapp')
 
      .directive('chatsFooter', function() {
          var directive = {};

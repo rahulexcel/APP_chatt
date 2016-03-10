@@ -1,6 +1,6 @@
  (function() {
     'use strict';
-    angular.module('starter')
+    angular.module('chattapp')
             .factory('tostService', tostService);
 
     function tostService() {

@@ -1,11 +1,11 @@
  (function() {
      'use strict';
 
-     angular.module('starter')
+     angular.module('chattapp')
          .controller('contactsController', contactsController);
 
-     function contactsController(contactsFactory, $ionicLoading, timeStorage, $localStorage, createPrivateChatroomFactory, $state, socketService) {
-         delete $localStorage.chatWithUserId;
+     function contactsController(contactsFactory, $ionicLoading, timeStorage, $localStorage, $state, socketService) {
+         delete $localStorage.chatWithUserData;
          var self = this;
          $ionicLoading.show();
          var userData =  timeStorage.get('userData');
@@ -20,8 +20,9 @@
              $ionicLoading.hide();
              self.displaycontacts = data.data;
          });
-         self.chatWithUser = function(chatWithUserId){  
-            socketService.create_private_room(chatWithUserId).then(function(data){
+         self.chatWithUser = function(chatWithUser){
+            timeStorage.set('chatWithUserData', chatWithUser, 1);
+            socketService.create_private_room(chatWithUser.id).then(function(data){
                 $state.go('app.chatpage', {roomId:data.data.room_id});
             });
          }

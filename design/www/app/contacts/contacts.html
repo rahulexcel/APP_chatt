@@ -7,7 +7,7 @@
    <ion-content scroll="true">
       <div class="list">
          <div class="user-container" ng-repeat="contact in contacts.displaycontacts">
-            <a class="item item-avatar hover item-icon-right" on-tap="contacts.chatWithUser(contact.id)">
+            <a class="item item-avatar hover item-icon-right" on-tap="contacts.chatWithUser(contact)">
                <img class="avatar" ng-src="{{contact.pic}}">
                <h3>{{contact.name}}</h3>
                <p>{{contact.status}}</p>

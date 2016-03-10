@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    angular.module('starter')
+    angular.module('chattapp')
 
     .run(function($ionicPlatform, timeStorage, $state, Configurations, deviceService, pushNotification, lastUsesTimeService, $localStorage) {
         $ionicPlatform.ready(function() {
@@ -22,7 +22,7 @@
         } else{
             $state.go('login');
         }
-        window.socket = io('http://144.76.34.244:3033');
+        window.socket = io(Configurations.socketApi);
         document.addEventListener("deviceready", function() {
             pushNotification.push();
             lastUsesTimeService.updateTimeWithHttp();

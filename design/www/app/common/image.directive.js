@@ -1,13 +1,12 @@
  (function() {
      'use strict';
 
-     angular.module('starter')
+     angular.module('chattapp')
          .directive('img', function($timeout) {
              return {
                  restrict: 'E',
                  link: function(scope, element, attr) {
                      if (attr.ngSrc == '') {
-                        var firstLetter = 'S';
                          if (scope.contact) {
                              var name = scope.contact.name;
                              var firstLetter = name.charAt(0).toUpperCase();

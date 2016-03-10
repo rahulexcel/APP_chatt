@@ -1,6 +1,6 @@
 (function() {
     'use strict';
-    angular.module('starter')
+    angular.module('chattapp')
             .factory('myInterceptor', function($localStorage) {
                 var requestInterceptor = {
                     request: function(config) {

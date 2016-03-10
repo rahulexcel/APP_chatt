@@ -1,6 +1,6 @@
 (function() {
    'use strict';
-   angular.module('starter')
+   angular.module('chattapp')
        .factory('verificationFactory', verificationFactory);
 
    function verificationFactory($resource, Configurations) {
