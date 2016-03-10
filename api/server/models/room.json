@@ -3,9 +3,12 @@
     "base": "PersistedModel",
     "idInjection": true,
     "options": {
-        "validateUpsert": true
+        "validateUpsert": false
     },
     "properties": {
+        "registration_time": {
+            "type": "number"
+        }
     },
     "validations": [],
     "relations": {

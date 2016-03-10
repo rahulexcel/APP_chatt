@@ -35,7 +35,6 @@ module.exports = function (Room) {
                 if( !accessToken ){
                     callback(null, 0, 'UnAuthorized', {});
                 }else{
-                    
                     var owner_user_id = accessToken.userId;
                     var room_users = [
                         owner_user_id,
@@ -189,17 +188,16 @@ module.exports = function (Room) {
                         "include": [{
                             relation: 'room_owner', 
                             scope: {
-                                fields: ['name'],
+                                fields: ['name','profile_image'],
                             }
                         },{
                             relation: 'room_users', 
                             scope: {
-                                fields: ['name'],
+                                fields: ['name','profile_image'],
                             }
                         }]
                     },function (err, result) {
                         if( err ){
-                            console.log( err );
                             callback(null, 0, 'try again', {});
                         }else{
                             if( result.length > 0 ){
