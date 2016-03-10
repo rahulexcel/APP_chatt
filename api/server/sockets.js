@@ -49,7 +49,21 @@ module.exports.listen = function(app){
         });
         
         socket.on('room_message', function( accessToken, room_id, message, currentTimestamp ){
-            socket.join( room_id );
+            var join_room = true;
+            if( typeof io.sockets.adapter.rooms[room_id] != 'undefined' ){
+                if( typeof io.sockets.adapter.rooms[room_id].sockets != 'undefined'){
+                    var exist_sockets = io.sockets.adapter.rooms[room_id].sockets;
+                    var user_socket_id = socket.id;
+                    for( var k in exist_sockets ){
+                        if( k == user_socket_id ){
+                            join_room = false;
+                        }
+                    }
+                }
+            }
+            if( join_room == true ){
+                socket.join( room_id );
+            }
             console.log('message: ' + message);
             Room.room_message( accessToken, room_id, message, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
                 if( res_status == 1 ){
