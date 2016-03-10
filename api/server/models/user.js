@@ -361,7 +361,7 @@ module.exports = function (User) {
                     } else {
                         User.find({
                             limit: limit,
-                            skip: num * 10,
+                            skip: num * limit,
                             order: 'last_seen DESC'
                         }, function (err, result) {
                             if (err) {
