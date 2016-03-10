@@ -2,7 +2,6 @@ var UTIL = require('../modules/generic');
 var lodash = require('lodash');
 var moment = require('moment');
 var generatePassword = require('password-generator');
-
 module.exports = function (User) {
     //********************************* START REGISTER AND LOGIN **********************************
     User.register_login = function (action, action_type, social_id, platform, device_id, token, email_id, name, password, currentTimestamp, callback) {
@@ -76,7 +75,6 @@ module.exports = function (User) {
                                     password = UTIL.get_random_number();
                                 }
                                 password = password.toString();
-
                                 var verification_status = 0;
                                 var verification_code = UTIL.get_random_number();
                                 verification_code = verification_code.toString();
@@ -357,12 +355,15 @@ module.exports = function (User) {
             else {
                 var num = 0;
                 num = page * 1;
-
                 User.findById(access_token_userid, function (err, user) {
                     if (err) {
                         callback(null, 0, 'UnAuthorized 1', err);
                     } else {
+                        var where = {
+                            id: {neq: access_token_userid}
+                        };
                         User.find({
+                            where: where,
                             limit: limit,
                             skip: num * limit,
                             order: 'last_seen DESC'
@@ -378,9 +379,9 @@ module.exports = function (User) {
                                         var userId = value.id;
                                         var pic = value.profile_image;
                                         var lastSeen = value.last_seen;
-                                        if (access_token_userid != userId) {
-                                            userInfo.push({name: userName, id: userId, pic: pic, lastSeen: lastSeen});
-                                        }
+//                                        if (access_token_userid != userId) {
+                                        userInfo.push({name: userName, id: userId, pic: pic, lastSeen: lastSeen});
+//                                        }
                                     });
                                     callback(null, 1, 'Users List', userInfo);
                                 }
