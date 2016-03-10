@@ -2,6 +2,7 @@ var UTIL = require('../modules/generic');
 var lodash = require('lodash');
 var moment = require('moment');
 var generatePassword = require('password-generator');
+var ObjectID = require('mongodb').ObjectID;
 module.exports = function (User) {
     //********************************* START REGISTER AND LOGIN **********************************
     User.register_login = function (action, action_type, social_id, platform, device_id, token, email_id, name, password, currentTimestamp, callback) {
@@ -410,5 +411,52 @@ module.exports = function (User) {
             }
     );
 //********************************* END LIST OF ALL USERS ************************************  
+
+//********************************* START LAST SEEN **********************************
+    User.last_seen = function ( accessToken, currentTimestamp, callback) {
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 0, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 0, 'UnAuthorized', {});
+                }else{
+                    var userId = accessToken.userId
+                    User.findById(userId, function (err, user) {
+                        if (err) {
+                            callback(null, 0, 'UnAuthorized', {});
+                        } else {
+                            user.updateAttribute('last_seen', currentTimestamp, function (err, user) {
+                                if (err) {
+                                    callback(null, 0, 'Error', {});
+                                } else {
+                                    callback(null, 1, 'Last seen updated successfully', {});
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    };
+    User.remoteMethod(
+            'last_seen', {
+                description: 'update last seen od user',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/last_seen',
+                }
+            }
+    );
+//********************************* END LAST SEEN **********************************
+
 
 };
