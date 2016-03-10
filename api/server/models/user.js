@@ -346,24 +346,26 @@ module.exports = function (User) {
 //********************************* END RESET PASSWORD **********************************
 
 //********************************* START LIST OF ALL USERS **********************************
-    User.list_users = function (req, page, currentTimestamp, limit, callback) {
+    User.list_users = function (req, page, limit, currentTimestamp, callback) {
         if (typeof req.accessToken == 'undefined' || req.accessToken == null || req.accessToken == '' || typeof req.accessToken.userId == 'undefined' || req.accessToken.userId == '') {
             callback(null, 0, 'UnAuthorized', {});
         } else {
             var access_token_userid = req.accessToken.userId;
-            if (page && limit) {
+            if (lodash.isUndefined(page) && lodash.isUndefined(limit)) {
+                callback(null, 0, 'Invalid Request Parameters', {});
+            }
+            else {
                 var num = 0;
-                if (lodash.isNumber(page) === true) {
-                    num = page;
-                }
+                num = page * 1;
+
                 User.findById(access_token_userid, function (err, user) {
                     if (err) {
                         callback(null, 0, 'UnAuthorized 1', err);
                     } else {
                         User.find({
-                            order: 'last_seen DESC',
-                            skip: num * 10,
-                            limit: limit
+                            limit: limit,
+                            skip: num * limit,
+                            order: 'last_seen DESC'
                         }, function (err, result) {
                             if (err) {
                                 callback(null, 0, 'Try Again', err);
@@ -373,7 +375,7 @@ module.exports = function (User) {
                                 if (result.length > 0) {
                                     lodash.forEach(result, function (value) {
                                         var userName = value.name;
-                                        var userId = value._id;
+                                        var userId = value.id;
                                         var pic = value.profile_image;
                                         var lastSeen = value.last_seen;
                                         userInfo.push({name: userName, id: userId, pic: pic, lastSeen: lastSeen});
@@ -387,9 +389,6 @@ module.exports = function (User) {
                         });
                     }
                 });
-            }
-            else {
-                callback(null, 0, 'Invalid Request Parameters', {});
             }
         }
     };
