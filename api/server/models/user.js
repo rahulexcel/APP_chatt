@@ -346,24 +346,23 @@ module.exports = function (User) {
 //********************************* END RESET PASSWORD **********************************
 
 //********************************* START LIST OF ALL USERS **********************************
-    User.list_users = function (req, page, currentTimestamp, limit, callback) {
+    User.list_users = function (req, page, limit, currentTimestamp, callback) {
         if (typeof req.accessToken == 'undefined' || req.accessToken == null || req.accessToken == '' || typeof req.accessToken.userId == 'undefined' || req.accessToken.userId == '') {
             callback(null, 0, 'UnAuthorized', {});
         } else {
             var access_token_userid = req.accessToken.userId;
-            if (page && limit) {
+            if (typeof page != 'undefined' && typeof limit != 'undefined') {
                 var num = 0;
-                if (lodash.isNumber(page) === true) {
-                    num = page;
-                }
+                num = page * 1;
+
                 User.findById(access_token_userid, function (err, user) {
                     if (err) {
                         callback(null, 0, 'UnAuthorized 1', err);
                     } else {
                         User.find({
-                            order: 'last_seen DESC',
+                            limit: limit,
                             skip: num * 10,
-                            limit: limit
+                            order: 'last_seen DESC'
                         }, function (err, result) {
                             if (err) {
                                 callback(null, 0, 'Try Again', err);
