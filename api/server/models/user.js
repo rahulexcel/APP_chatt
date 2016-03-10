@@ -351,7 +351,10 @@ module.exports = function (User) {
             callback(null, 0, 'UnAuthorized', {});
         } else {
             var access_token_userid = req.accessToken.userId;
-            if (typeof page != 'undefined' && typeof limit != 'undefined') {
+            if (lodash.isUndefined(page) && lodash.isUndefined(limit)) {
+                callback(null, 0, 'Invalid Request Parameters', {});
+            }
+            else {
                 var num = 0;
                 num = page * 1;
 
@@ -372,7 +375,7 @@ module.exports = function (User) {
                                 if (result.length > 0) {
                                     lodash.forEach(result, function (value) {
                                         var userName = value.name;
-                                        var userId = value._id;
+                                        var userId = value.id;
                                         var pic = value.profile_image;
                                         var lastSeen = value.last_seen;
                                         userInfo.push({name: userName, id: userId, pic: pic, lastSeen: lastSeen});
@@ -386,9 +389,6 @@ module.exports = function (User) {
                         });
                     }
                 });
-            }
-            else {
-                callback(null, 0, 'Invalid Request Parameters', {});
             }
         }
     };
