@@ -378,7 +378,9 @@ module.exports = function (User) {
                                         var userId = value.id;
                                         var pic = value.profile_image;
                                         var lastSeen = value.last_seen;
-                                        userInfo.push({name: userName, id: userId, pic: pic, lastSeen: lastSeen});
+                                        if (access_token_userid != userId) {
+                                            userInfo.push({name: userName, id: userId, pic: pic, lastSeen: lastSeen});
+                                        }
                                     });
                                     callback(null, 1, 'Users List', userInfo);
                                 }
