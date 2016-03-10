@@ -65,7 +65,7 @@
                 }
               })
             .state('app.chatpage', {
-                url: '/chatpage',
+                url: '/chatpage/:roomId',
                 cache:false,
                 views: {
                    'menuContent': {

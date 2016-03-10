@@ -16,13 +16,13 @@ googleLoginService.factory('timeStorage', ['$localStorage', function($localStora
         }
     };
     timeStorage.remove = function(key) {
-        this.cleanUp();
+        //this.cleanUp();
         var time_key = key + '_expire';
         $localStorage[key] = false;
         $localStorage[time_key] = false;
     };
     timeStorage.set = function(key, data, hours) {
-        this.cleanUp();
+        //this.cleanUp();
         $localStorage[key] = data;
         var time_key = key + '_expire';
         var time = new Date().getTime();
@@ -30,7 +30,7 @@ googleLoginService.factory('timeStorage', ['$localStorage', function($localStora
         $localStorage[time_key] = time;
     };
     timeStorage.get = function(key) {
-        this.cleanUp();
+        //this.cleanUp();
         var time_key = key + "_expire";
         if (!$localStorage[time_key]) {
             return false;

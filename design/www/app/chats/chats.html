@@ -4,7 +4,7 @@
             <div class="user-container" ng-repeat="chat in chats.displayChats">
                 <a class="item item-avatar hover" href="#/app/chatpage">
                     <img class="avatar" ng-src="{{chat.image}}">
-                    <h3>{{chat.user}} <span class="pull-right time">{{chat.messageTime}}</span></h3>
+                    <h3>{{chat.name}} <span class="pull-right time">{{chat.messageTime}}</span></h3>
                     <p>{{chat.message}}</p>
                 </a>
             </div>

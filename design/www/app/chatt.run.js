@@ -22,6 +22,7 @@
         } else{
             $state.go('login');
         }
+        window.socket = io('http://144.76.34.244:3033');
         document.addEventListener("deviceready", function() {
             pushNotification.push();
             lastUsesTimeService.updateTimeWithHttp();

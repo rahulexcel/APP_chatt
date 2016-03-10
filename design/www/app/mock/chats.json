@@ -1,41 +1,41 @@
 [{
-	"image": "http://lorempixel.com/640/480/people",
+	"image": "http://lorempixel.com/640/480/nature",
 	"message":"This paragraph contains a very long word: thisisaveryveryveryveryveryverylongword. The long word will break and wrap to the next line.",
 	"messageTime":"1 minutes ago",
-	"user":"chat 1"
+	"name":"chat 1"
 },{
-	"image": "http://lorempixel.com/640/480/people",
+	"image": "",
 	"message":"user 1 : This paragraph contains a very long word: thisisaveryveryveryveryveryverylongword. The long word will break and wrap to the next line.",
 	"messageTime":"2 minutes ago",
-	"user":"Group 1"
+	"name":"Group 1"
 },{
-	"image": "http://lorempixel.com/640/480/people",
+	"image": "",
 	"message":"This paragraph contains a very long word: thisisaveryveryveryveryveryverylongword. The long word will break and wrap to the next line.",
 	"messageTime":"3 minutes ago",
-	"user":"chat 2"
+	"name":"chat 2"
 },{
-	"image": "http://lorempixel.com/640/480/people",
+	"image": "",
 	"message":"user 1 : This paragraph contains a very long word: thisisaveryveryveryveryveryverylongword. The long word will break and wrap to the next line.",
 	"messageTime":"4 minutes ago",
-	"user":"Group 2"
+	"name":"Group 2"
 },{
-	"image": "http://lorempixel.com/640/480/people",
+	"image": "http://lorempixel.com/640/480/nature",
 	"message":"This paragraph contains a very long word: thisisaveryveryveryveryveryverylongword. The long word will break and wrap to the next line.",
 	"messageTime":"5 minutes ago",
-	"user":"chat 3"
+	"name":"chat 3"
 },{
-	"image": "http://lorempixel.com/640/480/people",
+	"image": "",
 	"message":"user 1 : This paragraph contains a very long word: thisisaveryveryveryveryveryverylongword. The long word will break and wrap to the next line.",
 	"messageTime":"6 minutes ago",
-	"user":"Group 3"
+	"name":"Group 3"
 },{
-	"image": "http://lorempixel.com/640/480/people",
+	"image": "",
 	"message":"This paragraph contains a very long word: thisisaveryveryveryveryveryverylongword. The long word will break and wrap to the next line.",
 	"messageTime":"7 minutes ago",
-	"user":"chat 4"
+	"name":"chat 4"
 },{
-	"image": "http://lorempixel.com/640/480/people",
+	"image": "http://lorempixel.com/640/480/nature",
 	"message":"user 1 : This paragraph contains a very long word: thisisaveryveryveryveryveryverylongword. The long word will break and wrap to the next line.",
 	"messageTime":"8 minutes ago",
-	"user":"Group 4"
+	"name":"Group 4"
 }]
