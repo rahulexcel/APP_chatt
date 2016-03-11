@@ -62,6 +62,11 @@
             "principalType": "ROLE",
             "principalId": "$authenticated",
             "property": "list_users"
+        }, {
+            "permission": "ALLOW",
+            "principalType": "ROLE",
+            "principalId": "$everyone",
+            "property": "last_seen"
         }],
     "methods": {}
 }
