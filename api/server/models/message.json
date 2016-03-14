@@ -8,7 +8,13 @@
     "properties": {
     },
     "validations": [],
-    "relations": {},
+    "relations": {
+        "message_owner": {
+            "type":"belongsTo",
+            "model":"user",
+            "foreignKey":"message_owner"
+        }
+    },
     "acls": [],
     "methods": {}
 }
