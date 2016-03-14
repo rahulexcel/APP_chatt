@@ -4,7 +4,7 @@
      angular.module('chattapp')
          .controller('chatPageController', chatPageController);
 
-     function chatPageController($scope, $state, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams) {
+     function chatPageController($scope, $state, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, sqliteService) {
          var self = this;
          var chatWithUserData = timeStorage.get('chatWithUserData');
          $scope.userHeader = {};
@@ -16,21 +16,19 @@
          }
          $scope.userfooter = {};
          $scope.userfooter.image = 'http://lorempixel.com/640/480/nature';
-         socket.on('new_room_message', function(data) {
-             self.displayChatMessages.push({
-                 "image": data.image,
-                 "message": data.message,
+         $scope.$on('newRoomMessage', function (event, response) {
+            self.displayChatMessages.push({
+                 "image": response.data.image,
+                 "message": response.data.message,
                  "messageTime": "2:12",
-                 "userName": data.name
+                 "userName": response.data.name
              });
-             $scope.$evalAsync();
-             $ionicScrollDelegate.scrollBottom(false);
+            $scope.$evalAsync();
+            $ionicScrollDelegate.scrollBottom(false);
          });
-         var messageToBeSend = [];
          $scope.userfooter.sendMessage = function() {
              socketService.room_message($stateParams.roomId, $scope.userfooter.message);
-             messageToBeSend.push($scope.userfooter.message);
-             timeStorage.set('messageToBeSend', messageToBeSend, 1);
+             sqliteService.messageToBeSend($scope.userfooter.message, 'userName', $stateParams.roomId);
              self.displayChatMessages.push({
                  "image": "http://lorempixel.com/640/480/nature",
                  "message": $scope.userfooter.message,

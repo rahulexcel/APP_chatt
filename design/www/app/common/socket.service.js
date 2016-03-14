@@ -3,7 +3,7 @@
      angular.module('chattapp')
          .factory('socketService', socketService);
 
-     function socketService($q, timeStorage) {
+     function socketService($rootScope, $q, timeStorage) {
          var service = {};
          var userData = timeStorage.get('userData');
          var accessToken = userData.data.access_token;
@@ -26,6 +26,9 @@
              service.room_message = function(roomId, message) {
                 console.log('service is calling');
                  socket.emit('room_message', accessToken, roomId, message, _.now());
+                 socket.on('new_room_message', function(data) {
+                    $rootScope.$broadcast('newRoomMessage', { data: data }); 
+                });
              }
          return service;
      };
