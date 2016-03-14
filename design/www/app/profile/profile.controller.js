@@ -1,7 +1,7 @@
  (function() {
      'use strict';
 
-     angular.module('starter')
+     angular.module('chattapp')
          .controller('profileController', profileController);
 
      function profileController(cameraService) {

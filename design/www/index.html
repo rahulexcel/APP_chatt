@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'"/>
+    <meta http-equiv="Content-Security-Policy" content="img-src * data:; default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'"/>
     <title>CHATT</title>
 
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
@@ -35,6 +35,7 @@
     <script src="app/lib/angular-resource.js"></script>
     <script src="app/lib/angular-messages.js"></script>
     <script src="app/lib/lodash.min.js"></script>
+    <script src="app/lib/socket.io.js"></script>
 
     <!-- your app's js -->
     <script src="app/chatt.route.js"></script>
@@ -53,7 +54,6 @@
     <script src="app/menu/menu.controller.js"></script>
     <script src="app/contacts/contacts.controller.js"></script>
     <script src="app/contacts/contacts.factory.js"></script>
-    <script src="app/contacts/createprivatechatroom.factory.js"></script>
     <script src="app/resetpassword/resetpassword.controller.js"></script>
     <script src="app/resetpassword/resetpassword.factory.js"></script>
     <script src="app/chatpage/chatpage.controller.js"></script>
@@ -62,6 +62,9 @@
     <script src="app/chatpage/chatpagefooter.directive.js"></script>
     <script src="app/setting/setting.controller.js"></script>
     <script src="app/profile/profile.controller.js"></script>
+    <script src="app/chats/chats.controller.js"></script>
+    <script src="app/chats/chats.factory.js"></script>
+    <script src="app/chats/chatsfooter.directive.js"></script>
     <script src="app/common/ngStorage.min.js"></script>
     <script src="app/common/google_login.service.js"></script>
     <script src="app/common/facebook_login.service.js"></script>
@@ -74,9 +77,12 @@
     <script src="app/common/httpinterceptor.config.js"></script>
     <script src="app/common/camera.service.js"></script>
     <script src="app/common/input.directive.js"></script>
+    <script src="app/common/socket.service.js"></script>
+    <script src="app/common/image.directive.js"></script>
+    <script src="app/common/sqlite.service.js"></script>
   </head>
 
-  <body ng-app="starter">
+  <body ng-app="chattapp">
     <ion-nav-view></ion-nav-view>
   </body>
 </html>

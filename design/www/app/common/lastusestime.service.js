@@ -1,6 +1,6 @@
  (function() {
      'use strict';
-     angular.module('starter')
+     angular.module('chattapp')
          .factory('lastUsesTimeService', lastUsesTimeService);
 
      function lastUsesTimeService(lastUsesTimeFactory, timeStorage, $interval, $localStorage) {

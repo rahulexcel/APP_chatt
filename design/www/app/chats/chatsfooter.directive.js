@@ -3,12 +3,12 @@
 
      angular.module('chattapp')
 
-     .directive('chatPageFooter', function() {
+     .directive('chatsFooter', function() {
          var directive = {};
          directive.restrict = 'E';
-         directive.templateUrl = "app/chatpage/templates/footer.html";
+         directive.templateUrl = "app/chats/templates/footer.html";
          directive.scope = {
-             chatPageFooter: "=footer"
+             chatsFooter: "=footer"
          }
          directive.compile = function(element, attributes) {
              var linkFunction = function($scope, element, attributes) {}

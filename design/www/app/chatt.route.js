@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    angular.module('starter', ['ionic', 'ngStorage', 'ngResource', 'GoogleLoginService', 'facebookLoginService', 'ngMessages'])
+    angular.module('chattapp', ['ionic', 'ngStorage', 'ngResource', 'GoogleLoginService', 'facebookLoginService', 'ngMessages'])
 
     .config(function($stateProvider, $urlRouterProvider) {
         $stateProvider
@@ -65,7 +65,7 @@
                 }
               })
             .state('app.chatpage', {
-                url: '/chatpage',
+                url: '/chatpage/:roomId',
                 cache:false,
                 views: {
                    'menuContent': {
@@ -94,6 +94,17 @@
                       templateUrl: 'app/profile/profile.html',
                       controller: 'profileController',
                       controllerAs: 'profile'
+                    }
+                }
+            })
+            .state('app.chats', {
+                url: '/chats',
+                cache:false,
+                views: {
+                   'menuContent': {
+                      templateUrl: 'app/chats/chats.html',
+                      controller: 'chatsController',
+                      controllerAs: 'chats'
                     }
                 }
             });

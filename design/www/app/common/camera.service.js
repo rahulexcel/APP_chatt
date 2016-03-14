@@ -1,6 +1,6 @@
  (function() {
      'use strict';
-     angular.module('starter')
+     angular.module('chattapp')
          .factory('cameraService', cameraService);
 
      function cameraService($q, $ionicActionSheet) {
@@ -34,9 +34,7 @@
                      destinationType: Camera.DestinationType.DATA_URL,
                      correctOrientation: true,
                      // allowEdit: true,
-                     sourceType: index,
-                     // targetWidth: 128,
-                     // targetHeight: 128
+                     sourceType: index
                  });
                  function onSuccess(imageData) {
                      q.resolve(imageData);

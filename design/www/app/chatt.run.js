@@ -1,9 +1,9 @@
 (function() {
     'use strict';
 
-    angular.module('starter')
+    angular.module('chattapp')
 
-    .run(function($ionicPlatform, timeStorage, $state, Configurations, deviceService, pushNotification, lastUsesTimeService, $localStorage) {
+    .run(function($ionicPlatform, timeStorage, $state, Configurations, deviceService, pushNotification, lastUsesTimeService, $localStorage, sqliteService) {
         $ionicPlatform.ready(function() {
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
             // for form inputs)
@@ -22,8 +22,10 @@
         } else{
             $state.go('login');
         }
+        window.socket = io(Configurations.socketApi);
         document.addEventListener("deviceready", function() {
             pushNotification.push();
+            sqliteService.createTable();
             lastUsesTimeService.updateTimeWithHttp();
             document.addEventListener("pause", onPause, false);
             document.addEventListener("resume", onResume, false);

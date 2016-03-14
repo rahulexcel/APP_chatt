@@ -1,6 +1,6 @@
 (function () {
     'use strict';
-    angular.module('starter')
+    angular.module('chattapp')
             .factory('pushNotification', pushNotification);
     function pushNotification($http, $q, $log,Configurations, timeStorage) {
         return {

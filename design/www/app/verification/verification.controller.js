@@ -1,7 +1,7 @@
  (function() {
      'use strict';
 
-     angular.module('starter')
+     angular.module('chattapp')
          .controller('verificationController', verificationController);
 
      function verificationController($state, verificationFactory, tostService, timeStorage,resendVerificationCodeFactory, $ionicLoading) {

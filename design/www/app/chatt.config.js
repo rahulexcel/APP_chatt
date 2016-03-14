@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-angular.module('starter')
+angular.module('chattapp')
 
 .config(function($ionicConfigProvider) {
     $ionicConfigProvider.backButton.previousTitleText(false).text(' ');

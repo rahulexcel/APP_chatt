@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    angular.module('starter')
+    angular.module('chattapp')
         .controller('loginController', loginController);
 
     function loginController($state, loginFactory, timeStorage, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService, $ionicLoading) {
