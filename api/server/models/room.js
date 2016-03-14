@@ -116,34 +116,53 @@ module.exports = function (Room) {
                 }else{
                     var Message = Room.app.models.message;
                     var userId = accessToken.userId
-                    var check_where = {
-                        where : {
-                            '_id' : new ObjectID( room_id )
-                        }
-                    };
-                    Room.find( check_where, function (err, result) {
-                        if( err ){
+                    User.findById(userId, function (err, userInfo) {
+                        if (err) {
                             callback(null, 0, 'try again', {});
-                        }else{
-                            if( result.length > 0 ){
-                                var new_message = new Message({
-                                    room_id : new ObjectID( room_id ),
-                                    message_owner : new ObjectID( userId ),
-                                    message : {
-                                        'type' : 'text',
-                                        'body' : message
-                                    },
-                                    message_time: currentTimestamp
-                                });
-                                new_message.save( function(err){
+                        } else {
+                            if( typeof userInfo == 'undefined' || userInfo == null ){
+                                callback(null, 0, 'message user not found', {});
+                            }else{
+                                var check_where = {
+                                    where : {
+                                        room_users : {'in':[new ObjectID( userId )]},
+                                        '_id' : new ObjectID( room_id )
+                                    }
+                                };
+                                Room.find( check_where, function (err, result) {
                                     if( err ){
                                         callback(null, 0, 'try again', {});
                                     }else{
-                                        callback(null, 1, 'Message posted', {});
+                                        if( result.length == 0 ){
+                                            callback(null, 0, 'Room or User not exists', {});
+                                        }else {
+                                            var new_message = new Message({
+                                                room_id : new ObjectID( room_id ),
+                                                message_owner : new ObjectID( userId ),
+                                                message : {
+                                                    'type' : 'text',
+                                                    'body' : message
+                                                },
+                                                message_time: currentTimestamp
+                                            });
+                                            new_message.save( function(err){
+                                                if( err ){
+                                                    callback(null, 0, 'try again', {});
+                                                }else{
+                                                    var data = {
+                                                        name : userInfo.name,
+                                                        profile_image : userInfo.profile_image,
+                                                        message : {
+                                                            'type' : 'text',
+                                                            'body' : message
+                                                        }
+                                                    }
+                                                    callback(null, 1, 'Message posted', data );
+                                                }
+                                            });
+                                        }
                                     }
                                 });
-                            }else{
-                                callback(null, 0, 'Room not exists', {});
                             }
                         }
                     });
