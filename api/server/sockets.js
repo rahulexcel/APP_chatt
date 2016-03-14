@@ -48,7 +48,9 @@ module.exports.listen = function(app){
             });
         });
         
-        socket.on('room_message', function( accessToken, room_id, message, currentTimestamp ){
+        //room_open means whenever a room is open in app/ will also be called when a room is created.
+        socket.on('room_open', function( room_id ){
+            console.log(' A Room is opened with id :  '+ room_id );
             var join_room = true;
             if( typeof io.sockets.adapter.rooms[room_id] != 'undefined' ){
                 if( typeof io.sockets.adapter.rooms[room_id].sockets != 'undefined'){
@@ -62,16 +64,22 @@ module.exports.listen = function(app){
                 }
             }
             if( join_room == true ){
+                console.log( '--- Room is in Socket JOIN');
                 socket.join( room_id );
             }
+        });
+        
+        socket.on('room_message', function( accessToken, room_id, message, currentTimestamp ){
             console.log('message: ' + message);
             Room.room_message( accessToken, room_id, message, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
                 if( res_status == 1 ){
                     var data = {
-                        'name' : 'msg_from_name',
-                        'image' : 'msg_from_image',
-                        'message' : message
+                        'name' : res_data.name,
+                        'profile_image' : res_data.profile_image,
+                        'message_type' : res_data.message.type,
+                        'message_body' : res_data.message.body,
                     };
+                    console.log( data );
                     socket.to( room_id ).emit( 'new_room_message', data );
                 }
             })
