@@ -16,7 +16,6 @@
              currentTimestamp: _.now()
          });
          query.$promise.then(function(data) {
-            console.log(data);
              $ionicLoading.hide();
              self.displaycontacts = data.data;
          });

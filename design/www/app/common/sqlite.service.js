@@ -3,10 +3,9 @@
      angular.module('chattapp')
          .factory('sqliteService', sqliteService);
 
-     function sqliteService() {
+     function sqliteService($ionicPlatform) {
          var service = {};
          service.createTable = function() {
-            if(window.sqlitePlugin){
                 var dbobj = window.sqlitePlugin.openDatabase({
                      name: "chattappDB"
                  });
@@ -20,11 +19,8 @@
                  function successInSchema() {
                      console.log("Schema creation successful");
                  }
-            }
-
              },
              service.messageToBeSend = function(message, userName, roomId) {
-                if(window.sqlitePlugin){
                     var dbobj = window.sqlitePlugin.openDatabase({
                      name: "chattappDB"
                  });
@@ -38,8 +34,6 @@
                  function success() {
                      console.log("success!");
                  }
-                }
-
              }
          return service;
      };
