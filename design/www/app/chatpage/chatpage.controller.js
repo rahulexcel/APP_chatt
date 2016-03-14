@@ -15,13 +15,13 @@
              $ionicHistory.goBack();
          }
          $scope.userfooter = {};
-         $scope.userfooter.image = 'http://lorempixel.com/640/480/nature';
+         $scope.userfooter.image = '';
          $scope.$on('newRoomMessage', function (event, response) {
             self.displayChatMessages.push({
                  "image": response.data.image,
                  "message": response.data.message,
-                 "messageTime": "2:12",
-                 "userName": response.data.name
+                 "messageTime": _.now(),
+                 "name": response.data.name
              });
             $scope.$evalAsync();
             $ionicScrollDelegate.scrollBottom(false);
@@ -30,10 +30,10 @@
              socketService.room_message($stateParams.roomId, $scope.userfooter.message);
              sqliteService.messageToBeSend($scope.userfooter.message, 'userName', $stateParams.roomId);
              self.displayChatMessages.push({
-                 "image": "http://lorempixel.com/640/480/nature",
+                 "image": "",
                  "message": $scope.userfooter.message,
-                 "messageTime": "2:12",
-                 "userName": "User 1"
+                 "messageTime": _.now(),
+                 "name": "User 1"
              });
              $scope.userfooter.message = '';
              $ionicScrollDelegate.scrollBottom(false);
@@ -47,11 +47,6 @@
              $ionicScrollDelegate.resize();
          };
          self.displayChatMessages = [];
-         // var query = chatPageFactory.query({});
-         // query.$promise.then(function(data) {
-         //     $ionicLoading.hide();
-         //     self.displayChatMessages = data;
-         // });
          $timeout(function() {
              $ionicScrollDelegate.scrollBottom(false);
          });

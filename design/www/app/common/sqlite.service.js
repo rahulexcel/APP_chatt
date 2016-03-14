@@ -6,7 +6,8 @@
      function sqliteService() {
          var service = {};
          service.createTable = function() {
-                 var dbobj = window.sqlitePlugin.openDatabase({
+            if(window.sqlitePlugin){
+                var dbobj = window.sqlitePlugin.openDatabase({
                      name: "chattappDB"
                  });
                  dbobj.transaction(createSchema, errorInSchema, successInSchema);
@@ -19,9 +20,12 @@
                  function successInSchema() {
                      console.log("Schema creation successful");
                  }
+            }
+
              },
              service.messageToBeSend = function(message, userName, roomId) {
-                 var dbobj = window.sqlitePlugin.openDatabase({
+                if(window.sqlitePlugin){
+                    var dbobj = window.sqlitePlugin.openDatabase({
                      name: "chattappDB"
                  });
                  dbobj.transaction(populateDB, error, success);
@@ -34,6 +38,8 @@
                  function success() {
                      console.log("success!");
                  }
+                }
+
              }
          return service;
      };
