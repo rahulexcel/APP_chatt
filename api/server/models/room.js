@@ -231,6 +231,86 @@ module.exports = function (Room) {
                 }
             }
     );
+    ///////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////
+    Room.list_room_messages = function ( accessToken, room_id, page, limit, currentTimestamp, callback) {
+        var User = Room.app.models.User;
+        var Message = Room.app.models.Message;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 0, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 0, 'UnAuthorized', {});
+                }else{
+                    var userId = accessToken.userId
+                    userId = new ObjectID( userId );
+                    Room.find({
+                        "where" : {
+                            room_users : {'in':[userId]},
+                            _id : new ObjectID( room_id )
+                        }
+                    }, function( err, result ){
+                        if( err ){
+                            callback(null, 0, 'try again', {});
+                        }else{
+                            if( result.length == 0 ){
+                                callback(null, 0, 'You are not a room user', {});
+                            }else{
+                                Message.find({
+                                    "where" : {
+                                        room_id : new ObjectID( room_id )
+                                    },
+                                    limit: limit,
+                                    skip: page * limit * 1,
+                                    order: 'message_time ASC',
+                                    "include": [{
+                                        relation: 'message_owner', 
+                                        scope: {
+                                            fields: ['name','profile_image'],
+                                        }
+                                    }]
+                                }, function( err, result ){
+                                    if( err ){
+                                        callback(null, 0, 'try again', {});
+                                    }else{
+                                        var data = {
+                                            'messages' : result
+                                        }
+                                        if( result.length == 0 ){
+                                            callback( null, 0, 'No more messages', data );
+                                        }else{
+                                            callback( null, 1, 'Messages found', data );
+                                        }
+                                    }
+                                })
+                            }
+                        }
+                    })
+                }
+            }
+        });
+    };
+    Room.remoteMethod(
+            'list_room_messages', {
+                description: 'Get room messages',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'},
+                    {arg: 'room_id', type: 'string'},
+                    {arg: 'page', type: 'string'},
+                    {arg: 'limit', type: 'string'},
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/list_room_messages',
+                }
+            }
+    );
     
     
     
