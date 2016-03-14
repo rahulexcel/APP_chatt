@@ -5,12 +5,15 @@ var generatePassword = require('password-generator');
 var ObjectID = require('mongodb').ObjectID;
 module.exports = function (User) {
     //********************************* START REGISTER AND LOGIN **********************************
-    User.register_login = function (action, action_type, social_id, platform, device_id, token, email_id, name, password, currentTimestamp, callback) {
+    User.register_login = function (action, action_type, social_id, platform, device_id, token, email_id, name, password, profile_image, currentTimestamp, callback) {
         if (action && action_type && email_id) {
             if (typeof name == 'undefined' || name == '') {
                 name = '';
             } else {
                 name = name.toLowerCase();
+            }
+            if (typeof profile_image == 'undefined' || profile_image == '') {
+                profile_image = '';
             }
             email_id = email_id.toLowerCase();
             where = {
@@ -35,7 +38,9 @@ module.exports = function (User) {
                                         } else {
                                             var data = {
                                                 user_id: accessToken.userId,
-                                                access_token: accessToken.id
+                                                access_token: accessToken.id,
+                                                name : result.name,
+                                                profile_image : result.profile_image
                                             };
                                             callback(null, 1, 'Success login', data);
                                         }
@@ -54,7 +59,9 @@ module.exports = function (User) {
                                             } else {
                                                 var data = {
                                                     user_id: result.id,
-                                                    access_token: accessToken.id
+                                                    access_token: accessToken.id,
+                                                    name : result.name,
+                                                    profile_image : result.profile_image
                                                 };
                                                 callback(null, 1, 'Success login', data);
                                             }
@@ -98,7 +105,7 @@ module.exports = function (User) {
                                     registration_time: currentTimestamp,
                                     registration_date: UTIL.currentDate(currentTimestamp),
                                     registration_date_time: UTIL.currentDateTimeDay(currentTimestamp),
-                                    profile_image: ''
+                                    profile_image: profile_image
                                 }, function (err, user) {
                                     if (err) {
                                         callback(null, 0, err, {});
@@ -119,7 +126,9 @@ module.exports = function (User) {
                                                     } else {
                                                         var data = {
                                                             user_id: accessToken.userId,
-                                                            access_token: accessToken.id
+                                                            access_token: accessToken.id,
+                                                            name : name,
+                                                            profile_image : profile_image
                                                         };
                                                         callback(null, 1, 'Success Registration', data);
                                                     }
@@ -152,6 +161,7 @@ module.exports = function (User) {
                     {arg: 'email', type: 'string'},
                     {arg: 'name', type: 'string'},
                     {arg: 'password', type: 'string'},
+                    {arg: 'profile_image', type: 'string'},
                     {arg: 'currentTimestamp', type: 'number'}
                 ],
                 returns: [
