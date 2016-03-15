@@ -69,21 +69,45 @@ module.exports.listen = function(app){
             }
         });
         
-        socket.on('room_message', function( accessToken, room_id, message, currentTimestamp ){
+        socket.on('room_message', function( msg_local_id, accessToken, room_id, message, currentTimestamp ){
             console.log('message: ' + message);
-            Room.room_message( accessToken, room_id, message, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            Room.room_message( msg_local_id, accessToken, room_id, message, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
                 if( res_status == 1 ){
-                    var data = {
+                    var broadcast_data = {
+                        'room_id' : room_id,
+                        'message_id' : res_data.message_id,
+                        'message_status' : res_data.message_status,
                         'name' : res_data.name,
                         'profile_image' : res_data.profile_image,
                         'message_type' : res_data.message.type,
                         'message_body' : res_data.message.body,
                     };
-                    console.log( data );
-                    socket.to( room_id ).emit( 'new_room_message', data );
+                    console.log( broadcast_data );
+                    // will be available on other users of room
+                    socket.to( room_id ).emit( 'new_room_message', broadcast_data );
+                    
+                    var user_data = {
+                        'msg_local_id' : res_data.msg_local_id,
+                        'room_id' : room_id,
+                        'message_id' : res_data.message_id,
+                        'message_status' : res_data.message_status,
+                    };
+                    
+                    // will have status of message sent by user
+                    socket.emit( 'sent_message_response', user_data );
                 }
             })
         });
+        
+        //when room users view a message, update message_status to seen
+        socket.on('update_message_status', function(accessToken, room_id, message_id, status, currentTimestamp ){
+            Room.update_message_status( accessToken, room_id, message_id, status, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+                if( res_status == 1 ){
+                    socket.to( room_id ).emit( 'response_update_message_status', res_data );
+                }
+            })
+        });
+        
     });
     //return io;
 }
