@@ -338,6 +338,7 @@ module.exports = function (Room) {
     ///////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////
     Room.update_message_status = function ( accessToken, room_id, message_id, status, currentTimestamp, callback) {
+        var org_message_id = message_id;
         var User = Room.app.models.User;
         User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
             if( err ){
@@ -368,31 +369,41 @@ module.exports = function (Room) {
                                         if( result.length == 0 ){
                                             callback(null, 0, 'Room or User not exists', {});
                                         }else {
-                                            Message.findById( message_id, function( err, messageInfo){
-                                                console.log( messageInfo);
-                                                if( err ){
-                                                    callback(null, 0, 'try again', {});
-                                                }else{
-                                                    if( typeof messageInfo == 'undefined' || messageInfo == null ){
-                                                        callback(null, 0, 'message not found', {});
-                                                    }else{
-                                                         messageInfo.updateAttribute('message_status', status, function (err, minfo) {
-                                                            if (err) {
-                                                                callback(null, 0, 'Error', {});
-                                                            } else {
-                                                                var data = {
-                                                                    room_id : minfo.room_id,
-                                                                    message_id : minfo.id,
-                                                                    message_status : minfo.message_status,
-                                                                }
-                                                                console.log( data );
-                                                                
-                                                                callback(null, 1, 'Status updated successfully', data );
-                                                            }
-                                                        });
-                                                    }
+                                            var explode_message_ids = message_id.split(",");
+                                            if( explode_message_ids.length == 0 ){
+                                                callback(null, 0, 'empty message ids', {});
+                                            }else{
+                                                for( var k in explode_message_ids ){
+                                                    explode_message_ids[k] = new ObjectID( explode_message_ids[k]);
                                                 }
-                                            }) 
+                                                Message.find({
+                                                    "where": {
+                                                        id : {'in':explode_message_ids},
+                                                        'room_id' : new ObjectID( room_id )
+                                                    }
+                                                },function (err, result) {
+                                                    if( err ){
+                                                        callback(null, 0, 'try again', {});
+                                                    }else{
+                                                        if( result.length == 0 ){
+                                                            callback(null, 0, 'room message not found', {});
+                                                        }else{
+                                                            Message.updateAll({id: {'in':explode_message_ids} },{message_status: 'seen'},function (err) {
+                                                                if (err) {
+                                                                    callback(null, 0, 'try again', {});
+                                                                } else {
+                                                                    var data = {
+                                                                        room_id : room_id,
+                                                                        message_id : org_message_id,
+                                                                        message_status : 'seen',
+                                                                    }
+                                                                    callback(null, 1, 'Status updated successfully', data );
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+                                                });
+                                            }
                                         }
                                     }
                                 });
