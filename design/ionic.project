@@ -1,8 +1,9 @@
 {
   "name": "chatt",
   "app_id": "",
-"gulpStartupTasks": [
+ "gulpStartupTasks": [
      "sass",
      "watch"
+
 ]
 }
