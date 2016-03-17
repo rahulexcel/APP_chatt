@@ -36,11 +36,11 @@ googleLoginService.factory('timeStorage', ['$localStorage', function($localStora
             return false;
         }
         var expire = $localStorage[time_key] * 1;
-        if (new Date().getTime() > expire) {
-            $localStorage[key] = null;
-            $localStorage[time_key] = null;
-            return false;
-        }
+        // if (new Date().getTime() > expire) {
+        //     $localStorage[key] = null;
+        //     $localStorage[time_key] = null;
+        //     return false;
+        // }
         return $localStorage[key];
     };
     return timeStorage;

@@ -3,12 +3,14 @@
     <chat-Page-Header header="userHeader"></chat-Page-Header>
 </ion-header-bar>
     <ion-content>
+    <ion-refresher pulling-text="Pull to refresh" on-refresh="doRefresh()">
+    </ion-refresher>
         <div class="list">
-            <div class="item {{msg.name == 'User 1' && 'left-chat' || 'right-chat' }}" ng-repeat="msg in chatPage.displayChatMessages">
+            <div class="item {{msg.user_id == userfooter.user_id && 'right-chat' || 'left-chat' }}" ng-repeat="msg in chatPage.displayChatMessages | orderBy:'timeStamp'">
                 <img class="avatar" ng-src="{{msg.image}}">
-                <div class="{{msg.name == 'User 1' && 'bubble-yellow' || 'bubble-blue' }}">
+                <div class="{{msg.user_id == userfooter.user_id && 'bubble-blue' || 'bubble-yellow' }}">
                     <p>{{msg.message}}</p>
-                    <p class="chat-time"><span>{{msg.messageTime}}</span> <i class="fa fa-circle"></i></p>
+                    <p class="chat-time"><span>{{msg.messageTime}}</span> <i class="{{msg.message_status == 'sent' && 'sent' || '' }}{{msg.message_status == 'post' && 'post' || '' }}{{msg.message_status == 'seen' && 'seen' || '' }}{{msg.user_id == userfooter.user_id && ' fa fa-circle' || ' ' }}"></i></p>
                 </div>
             </div>
         </div>

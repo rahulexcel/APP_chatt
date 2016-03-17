@@ -4,6 +4,6 @@
        .factory('chatsFactory', chatsFactory);
 
    function chatsFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/users/contacts', {},{});
+       return $resource(Configurations.api_url+'/rooms/list_my_rooms', {},{});
    };
 })();

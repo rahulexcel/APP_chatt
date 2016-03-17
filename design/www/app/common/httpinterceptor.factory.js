@@ -9,7 +9,7 @@
                             var accessToken = currentUser.data.access_token;
                             var configURL = config.url; 
                             console.log();
-                            if(configURL.substring(0, 4) == 'http'){
+                            if(configURL.substring(0, 10) == 'http://144'){
                                 config.url = config.url + '?access_token='+accessToken+'&currentTimestamp='+_.now()+'';
                             }
                         }

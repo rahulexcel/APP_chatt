@@ -2,7 +2,7 @@
 	<button ng-click='chatPage.goBack()' class='button back-button buttons button-clear header-item'>
 		<i class='icon ion-ios-arrow-back'></i>
 	</button>
-	<img class='img-circle' ng-src='{{chatPage.image}}'>
+	<img class='img-circle' ng-src='{{chatPage.image}}' ng-click='chatPage.goBack()'>
 	<p><strong>{{chatPage.name}} </strong><br><span>{{chatPage.lastSeen}}</span></p>
 	<button class='button button-clear pull-right'>
 		<i class='icon ion-android-more-vertical'></i>

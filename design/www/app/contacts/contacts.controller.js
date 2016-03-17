@@ -21,7 +21,7 @@
          });
          self.chatWithUser = function(chatWithUser){
             timeStorage.set('chatWithUserData', chatWithUser, 1);
-            socketService.create_private_room(chatWithUser.id).then(function(data){
+            socketService.create_room(chatWithUser.id).then(function(data){
                 $state.go('app.chatpage', {roomId:data.data.room_id});
             });
          }

@@ -4,7 +4,6 @@
        .factory('chatPageFactory', chatPageFactory);
 
    function chatPageFactory($resource, Configurations) {
-       // return $resource(Configurations.api_url+'/users/:user_Id/chats', {},{});
-       return $resource('app/mock/chatpage.json', {},{});
+       return $resource(Configurations.api_url+'/rooms/list_room_messages/:accessToken/:room_id/:page/:limit/:currentTimestamp', {},{});
    };
 })();

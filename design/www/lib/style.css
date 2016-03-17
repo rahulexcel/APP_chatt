@@ -13,6 +13,12 @@
 .back-button{
 	color: #fff!important;	
 }
+.sent{
+	color: #FFA500!important;
+}
+.seen{
+	color: green!important;
+}
 *{
 	font-family: 'Montserrat', sans-serif;
 }
@@ -28,6 +34,18 @@
 	width: 100%;
 	height: 100%;
 	border-radius: 50%;
+}
+.chatPageheader{
+	position: static;
+	max-width: 35px;
+}
+.chatPagefooter{
+	position: static;
+	max-width: 40px;
+}
+.right-chat button.no-image{
+	float: right;
+	margin-left: 13px;
 }
 .circleColor1{
 	background-color: #f44336;
@@ -234,8 +252,8 @@ text-decoration: none;
 	line-height: 16px;
 }
 .chatpage-header img{
-	max-width:40px;
-	padding-right: 6px;
+	max-width:36px;
+	padding-right: 1px;
 }
 .chatpage-header p span{
 	font-size: 10px;
@@ -320,14 +338,14 @@ text-decoration: none;
 }
 .chat-time{
 	text-align: right;
-	line-height: 7px;
+	line-height: 10px;
 }
 .chat-time span{
 	font-size: 12px;
 }
 .chat-time .fa{
 	font-size: 8px;
-	color: green;
+	color: #bbb;
 }
 .bubble-yellow p{
 	padding-left: 4px;
@@ -340,6 +358,7 @@ text-decoration: none;
 	position:relative;
 	padding-top: 0px!important;
     /*padding-bottom: 5px!important;*/
+    margin-top: 2px;
 }
 .right-chat img.avatar {
     border-radius: 50%;

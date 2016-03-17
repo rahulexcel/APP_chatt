@@ -26,14 +26,14 @@
         document.addEventListener("deviceready", function() {
             pushNotification.push();
             sqliteService.createTable();
-            lastUsesTimeService.updateTimeWithHttp();
+            // lastUsesTimeService.updateTimeWithHttp();
             document.addEventListener("pause", onPause, false);
             document.addEventListener("resume", onResume, false);
             function onPause() {
-                lastUsesTimeService.updateTime();
+                // lastUsesTimeService.updateTime();
             }
             function onResume() {
-                lastUsesTimeService.updateTime();
+                // lastUsesTimeService.updateTime();
             }
         });
 
