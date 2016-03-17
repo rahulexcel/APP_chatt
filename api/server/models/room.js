@@ -26,7 +26,7 @@ module.exports = function (Room) {
     Room.disableRemoteMethod('__updateById__accessTokens', false);
     //-------------------------------------------------------------
     
-    Room.create_room = function ( accessToken, room_type, chat_with, currentTimestamp, callback) {
+    Room.create_room = function ( accessToken, room_type, chat_with, room_name, room_description, currentTimestamp, callback) {
         var User = Room.app.models.User;
         User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
             if( err ){
@@ -42,8 +42,8 @@ module.exports = function (Room) {
                             room_type : 'public',
                             room_owner : new ObjectID( owner_user_id ),
                             room_users : room_users,
-                            room_name : '',
-                            room_description : '',
+                            room_name : room_name,
+                            room_description : room_description,
                             room_image : '',
                             room_background : '',
                             registration_time: currentTimestamp
@@ -122,6 +122,8 @@ module.exports = function (Room) {
                     {arg: 'accessToken', type: 'string'}, 
                     {arg: 'room_type', type: 'string'}, 
                     {arg: 'chat_with', type: 'string'}, 
+                    {arg: 'room_name', type: 'string'}, 
+                    {arg: 'room_description', type: 'string'}, 
                     {arg: 'currentTimestamp', type: 'number'}
                 ],
                 returns: [
@@ -227,7 +229,7 @@ module.exports = function (Room) {
     );
     ///////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////
-    Room.list_my_rooms = function ( accessToken, currentTimestamp, callback) {
+    Room.list_my_rooms = function ( accessToken, room_type, currentTimestamp, callback) {
         var User = Room.app.models.User;
         User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
             if( err ){
@@ -239,7 +241,10 @@ module.exports = function (Room) {
                     var userId = accessToken.userId
                     userId = new ObjectID( userId );
                     Room.find({
-                        "where": {room_users : {'in':[userId]}},
+                        "where": {
+                            room_users : {'in':[userId]},
+                            room_type : room_type,
+                        },
                         "include": [{
                             relation: 'room_owner', 
                             scope: {
@@ -274,6 +279,7 @@ module.exports = function (Room) {
                 description: 'List logged user rooms',
                 accepts: [
                     {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'room_type', type: 'string'}, 
                     {arg: 'currentTimestamp', type: 'number'}
                 ],
                 returns: [
