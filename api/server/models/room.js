@@ -41,6 +41,7 @@ module.exports = function (Room) {
                         var new_room = new Room({
                             room_type : 'public',
                             room_owner : new ObjectID( owner_user_id ),
+                            room_users_limit : 10*1,
                             room_users : room_users,
                             room_name : room_name,
                             room_description : room_description,
@@ -468,6 +469,93 @@ module.exports = function (Room) {
                 ],
                 http: {
                     verb: 'post', path: '/update_message_status',
+                }
+            }
+    );
+    ///////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////
+    // logged in user will be able to join a public room using this
+    Room.join_public_room = function ( accessToken, room_id, currentTimestamp, callback) {
+        var User = Room.app.models.User;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 0, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 0, 'UnAuthorized', {});
+                }else{
+                    var userId = accessToken.userId
+                    userId = new ObjectID( userId );
+                    Room.find({
+                        "where" : {
+                            room_type : 'public',
+                            _id : new ObjectID( room_id )
+                        }
+                    }, function( err, result ){
+                        if( err ){
+                            callback(null, 0, 'try again', {});
+                        }else{
+                            if( result.length == 0 ){
+                                callback(null, 0, 'Public room not exists', {});
+                            }else{
+                                Room.find({
+                                    "where" : {
+                                        room_type : 'public',
+                                        _id : new ObjectID( room_id ),
+                                        room_users : {'in':[userId]},
+                                    }
+                                }, function( err1, result1 ){
+                                    if( err1 ){
+                                        callback(null, 0, 'try again', {});
+                                    }else{
+                                        if( result1.length > 0 ){
+                                            var data = {
+                                                room_id : room_id
+                                            }
+                                            callback(null, 2, 'Already room member', data );
+                                        }else{
+                                            Room.update({
+                                                room_type : 'public',
+                                                _id : new ObjectID( room_id )
+                                            },{
+                                                '$push': {'room_users': userId }
+                                            },{ 
+                                                allowExtendedOperators: true 
+                                            },function (err, result2) {
+                                                if (err) {
+                                                    callback(null, 0, 'try again', {});
+                                                } else {
+                                                    var data = {
+                                                        room_id : room_id
+                                                    }
+                                                    callback(null, 1, 'Public room joined', data );
+                                                }
+                                            });
+                                        }
+                                    }
+                                })
+                            }
+                        }
+                    })
+                }
+            }
+        });
+    };
+    Room.remoteMethod(
+            'join_public_room', {
+                description: 'Get room messages',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'},
+                    {arg: 'room_id', type: 'string'},
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/join_public_room',
                 }
             }
     );
