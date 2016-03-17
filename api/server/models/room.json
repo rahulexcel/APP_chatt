@@ -27,7 +27,7 @@
             "permission": "ALLOW",
             "principalType": "ROLE",
             "principalId": "$authenticated",
-            "property": "create_private_room"
+            "property": "create_room"
         },{
             "permission": "ALLOW",
             "principalType": "ROLE",

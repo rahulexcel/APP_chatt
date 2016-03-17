@@ -15,8 +15,8 @@ module.exports.listen = function(app){
             callback( response );
         });
     }
-    function create_private_room( accessToken, chat_with, currentTimestamp, callback ){
-        Room.create_private_room( accessToken, chat_with, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+    function create_room( accessToken, room_type, chat_with, currentTimestamp, callback ){
+        Room.create_room( accessToken, room_type, chat_with, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
             var response = {
                 'status' : res_status,
                 'message' : res_message,
@@ -31,8 +31,8 @@ module.exports.listen = function(app){
     io.on('connection', function(socket){
         console.log('a user connected');
         
-        socket.on( 'create_private_room', function( accessToken, chat_with, currentTimestamp ){
-            create_private_room( accessToken, chat_with, currentTimestamp, function( response ){
+        socket.on( 'create_room', function( accessToken, room_type, chat_with, currentTimestamp ){
+            create_room( accessToken, room_type, chat_with, currentTimestamp, function( response ){
                 socket.emit( 'new_private_room', response );
                 if( response.status == 1 ){
                     list_my_rooms( accessToken, currentTimestamp, function( response_1 ){
