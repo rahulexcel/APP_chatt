@@ -25,6 +25,16 @@ module.exports.listen = function(app){
             callback( response );
         });
     }
+    function FN_join_public_room( accessToken, room_id, currentTimestamp, callback ){
+        Room.join_public_room( accessToken, room_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            var response = {
+                'status' : res_status,
+                'message' : res_message,
+                'data' : res_data
+            };
+            callback( response );
+        })
+    }
     
     
     io = socketio.listen(app);
@@ -107,6 +117,19 @@ module.exports.listen = function(app){
                 }
             })
         });
+        
+        //join public room 
+        socket.on('join_public_room', function( accessToken, room_id, currentTimestamp ){
+            FN_join_public_room( accessToken, room_id, currentTimestamp, function( response ){
+                if( response.status == 1 ){
+                    var d = {
+                        type : 'alert',
+                        data : response
+                    }
+                    socket.to( room_id ).emit( 'response_room', d );
+                }
+            });
+        })
         
     });
     //return io;
