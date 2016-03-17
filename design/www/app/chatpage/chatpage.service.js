@@ -6,7 +6,6 @@
      function chatpageService() {
          var service = {};
          service.oldMessages = function(data) {
-            // console.log(data);
              var roomMessages = [];
              for (var i = 0; i < data.length; i++) {
                  var newData = [];

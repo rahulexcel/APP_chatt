@@ -12,26 +12,15 @@
                              var name = scope.contact.name;
                              var firstLetter = name.charAt(0).toUpperCase();
                          }
-                         if(scope.chat){
-                             var name = scope.chat.name;
-                             var firstLetter = name.charAt(0).toUpperCase();
-                         }
-                         if(scope.chatPage){
-                            var name = '';
+                         if(scope.chatPageHeader){
                             chatPageClass = 'chatPageheader';
-                             if(scope.chatPage.displayChatMessages){
-                                name = scope.msg.name;
-                                // name = scope.chatPage.displayChatMessages[0].name;
-                                var firstLetter = name.charAt(0).toUpperCase();
-                             } else{
-                             name = scope.chatPage.name;
-                             var firstLetter = name.charAt(0).toUpperCase();
-                             }
+                            var name = scope.chatPageHeader.name;
+                            var firstLetter = name.charAt(0).toUpperCase();
                          }
                          if(scope.chatPageFooter){
+                            chatPageClass = 'chatPageheader';
                             var name = scope.chatPageFooter.name;
                             var firstLetter = name.charAt(0).toUpperCase();
-                            chatPageClass = 'chatPagefooter';
                          }
                          var colorClass = Math.floor((Math.random() * 10) + 1);
                          element.replaceWith("<button class='no-image circleColor"+colorClass+" "+chatPageClass+"'><i class='i-24 white'>" + firstLetter + "</i><div class='md-ripple-container'></div></button>");
