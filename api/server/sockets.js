@@ -5,8 +5,8 @@ module.exports.listen = function(app){
     var User = app._events.request.models.User;
     
     
-    function list_my_rooms( accessToken, currentTimestamp, callback ){
-        Room.list_my_rooms( accessToken, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+    function list_my_rooms( accessToken, room_type, currentTimestamp, callback ){
+        Room.list_my_rooms( accessToken, room_type, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
             var response = {
                 'status' : res_status,
                 'message' : res_message,
@@ -35,7 +35,7 @@ module.exports.listen = function(app){
             create_room( accessToken, room_type, chat_with, room_name, room_description, currentTimestamp, function( response ){
                 socket.emit( 'new_private_room', response );
                 if( response.status == 1 ){
-                    list_my_rooms( accessToken, currentTimestamp, function( response_1 ){
+                    list_my_rooms( accessToken, room_type, currentTimestamp, function( response_1 ){
                         socket.emit( 'show_my_rooms', response_1 );
                     });
                 }
