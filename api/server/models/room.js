@@ -324,7 +324,7 @@ module.exports = function (Room) {
                                     },
                                     limit: limit,
                                     skip: page * limit * 1,
-                                    order: 'message_time ASC',
+                                    order: 'message_time DESC',
                                     "include": [{
                                         relation: 'message_owner', 
                                         scope: {
