@@ -3,7 +3,7 @@
 
      angular.module('chattapp')
 
-     .directive('chatPageHeader', function(timeStorage, $ionicHistory) {
+     .directive('chatPageHeader', function() {
          var directive = {};
          directive.restrict = 'E';
          directive.templateUrl = "app/chatpage/templates/header.html";
