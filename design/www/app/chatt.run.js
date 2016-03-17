@@ -3,7 +3,7 @@
 
     angular.module('chattapp')
 
-    .run(function($ionicPlatform, timeStorage, $state, Configurations, deviceService, pushNotification, lastUsesTimeService, $localStorage, sqliteService) {
+    .run(function($rootScope, $ionicPlatform, timeStorage, $state, Configurations, deviceService, pushNotification, lastUsesTimeService, $localStorage, sqliteService) {
         $ionicPlatform.ready(function() {
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
             // for form inputs)
@@ -23,17 +23,21 @@
             $state.go('login');
         }
         window.socket = io(Configurations.socketApi);
+        document.addEventListener("online", onOnline, false);
+         function onOnline() {
+            $rootScope.$broadcast('now_device_is_online', { data: '' });
+         }
         document.addEventListener("deviceready", function() {
             pushNotification.push();
             sqliteService.createTable();
-            lastUsesTimeService.updateTimeWithHttp();
+            // lastUsesTimeService.updateTimeWithHttp();
             document.addEventListener("pause", onPause, false);
             document.addEventListener("resume", onResume, false);
             function onPause() {
-                lastUsesTimeService.updateTime();
+                // lastUsesTimeService.updateTime();
             }
             function onResume() {
-                lastUsesTimeService.updateTime();
+                // lastUsesTimeService.updateTime();
             }
         });
 

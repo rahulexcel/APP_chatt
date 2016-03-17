@@ -28,7 +28,8 @@
                     email: self.data.email,
                     password: self.data.password,
                     name: '',
-                    currentTimestamp: _.now()
+                    currentTimestamp: _.now(),
+                    profile_image:''
                 });
                 query.$promise.then(function(data) {
                     $ionicLoading.hide();
@@ -39,7 +40,7 @@
                     } else if (data.status == 1) {
                         timeStorage.set('userEmail', self.data.email, 1);
                         timeStorage.set('userData', data, 1);
-                        lastUsesTimeService.updateTime();
+                        // lastUsesTimeService.updateTime();
                         $state.go('app.contacts');
                     }
                 });
@@ -63,7 +64,8 @@
                     email: googleData.email,
                     name: googleData.name,
                     currentTimestamp: _.now(),
-                    password: ''
+                    password: '',
+                    profile_image:googleData.picture
                 });
                 query.$promise.then(function(data) {
                     $ionicLoading.hide();
@@ -71,7 +73,7 @@
                     tostService.notify(data.message, 'top');
                     timeStorage.set('userEmail', googleData.email, 1);
                     timeStorage.set('userData', data, 1);
-                    lastUsesTimeService.updateTime();
+                    // lastUsesTimeService.updateTime();
                     $state.go('app.contacts');
                 });
             }, function(data) {
@@ -111,7 +113,8 @@
                 email: fbData.email,
                 name: fbData.name,
                 currentTimestamp: _.now(),
-                password: ''
+                password: '',
+                profile_image:'http://graph.facebook.com/' + fbData.id + '/picture?type=large'
             });
             query.$promise.then(function(data) {
                 $ionicLoading.hide();
@@ -119,7 +122,7 @@
                 tostService.notify(data.message, 'top');
                 timeStorage.set('userEmail', fbData.email, 1);
                 timeStorage.set('userData', data, 1);
-                lastUsesTimeService.updateTime();
+                // lastUsesTimeService.updateTime();
                 $state.go('app.contacts');
             });
         };

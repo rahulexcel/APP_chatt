@@ -6,6 +6,7 @@ angular.module('chattapp')
                 'returnClose': '=',
                 'onReturn': '&',
                 'onFocus': '&',
+                'onClick': '&',
                 'onBlur': '&'
             },
             link: function(scope, element, attr) {
@@ -20,6 +21,7 @@ angular.module('chattapp')
                     if (scope.onBlur) {
                         $timeout(function() {
                             scope.onBlur();
+                            // element[0].focus();
                         });
                     }
                 });
