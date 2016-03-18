@@ -11,14 +11,16 @@
         self.name = userData.data.name;
         self.user_id = userData.data.user_id;
         self.sendMessage = function() {
-            sqliteService.messageToBeSend(self.message, userData.data.user_id, $stateParams.roomId, _.now()).then(function(lastInsertId){
-                socketService.room_message(lastInsertId, $stateParams.roomId, self.message);
+            var currentTimeStamp = _.now();
+            var offset = new Date().getTimezoneOffset();
+            sqliteService.messageToBeSend(self.message, userData.data.user_id, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId){
+                socketService.room_message(lastInsertId, $stateParams.roomId, self.message, currentTimeStamp);
                 var currentMessage = {
                  "id": lastInsertId,
                  "image": userData.data.profile_image,
                  "message": self.message,
-                 "messageTime": moment(_.now()).format("hh:mm a"),
-                 "timeStamp": _.now(),
+                 "messageTime": moment(currentTimeStamp).format("hh:mm a"),
+                 "timeStamp": currentTimeStamp,
                  "name": userData.data.name,
                  "user_id":userData.data.user_id,
                  "message_status":'post'

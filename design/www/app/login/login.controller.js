@@ -41,7 +41,7 @@
                         timeStorage.set('userEmail', self.data.email, 1);
                         timeStorage.set('userData', data, 1);
                         // lastUsesTimeService.updateTime();
-                        $state.go('app.contacts');
+                        $state.go('app.chats');
                     }
                 });
             }
@@ -74,7 +74,7 @@
                     timeStorage.set('userEmail', googleData.email, 1);
                     timeStorage.set('userData', data, 1);
                     // lastUsesTimeService.updateTime();
-                    $state.go('app.contacts');
+                    $state.go('app.chats');
                 });
             }, function(data) {
                 console.log(data);
@@ -123,7 +123,7 @@
                 timeStorage.set('userEmail', fbData.email, 1);
                 timeStorage.set('userData', data, 1);
                 // lastUsesTimeService.updateTime();
-                $state.go('app.contacts');
+                $state.go('app.chats');
             });
         };
         var count = 0;

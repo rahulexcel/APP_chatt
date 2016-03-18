@@ -1,0 +1,43 @@
+<ion-view view-title="Public Chats" id="background" hide-back-button="true">
+    <ion-content>
+        <div class="list" id="chats">
+            <div class="user-container" ng-repeat="chat in chats.displayChats">
+                <a class="item item-avatar hover" href="#/app/chatpage">
+                    <img class="avatar" ng-src="{{chat.image}}">
+                    <h3>{{chat.name}} <span class="pull-right time">{{chat.messageTime}}</span></h3>
+                    <p>{{chat.message}}</p>
+                </a>
+            </div>
+        </div>
+        <div class="md-list-item-left circle green add-public-chat" ng-click="modal.show()">
+            <i class="ion-plus-round i-24"></i>
+        </div>
+    </ion-content>
+    <ion-footer-bar class="bar-stable">
+        <div class="tabs tabs-icon-top" id="background">
+            <a class="tab-item" href="#/app/chats">
+                <i class="icon ion-chatbubble tabs-icon-color"></i> Private
+            </a>
+            <a class="tab-item active" href="#/app/publicChats">
+                <i class="icon ion-person-stalker tabs-icon-color"></i> Public
+            </a>
+            <a class="tab-item" href="#/app/contacts">
+                <i class="icon ion-person tabs-icon-color"></i> Search
+            </a>
+            <a class="tab-item" href="#/app/setting">
+                <i class="icon ion-android-settings tabs-icon-color"></i> Settings
+            </a>
+        </div>
+    </ion-fotter-bar>
+</ion-view>
+<script id="modal.html" type="text/ng-template">
+    <div class="modal">
+        <header class="bar bar-header bar-positive">
+          <h1 class="title">I'm A Modal</h1>
+          <div class="button button-clear" ng-click="modal.hide()"><span class="icon ion-close"></span></div>
+        </header>
+        <content has-header="true" padding="true">
+          <p>This is a modal</p>
+        </content>
+    </div>
+</script>

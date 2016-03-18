@@ -18,7 +18,7 @@
             }
         });
         if($localStorage.userData){
-            $state.go('app.contacts');
+            $state.go('app.chats');
         } else{
             $state.go('login');
         }
