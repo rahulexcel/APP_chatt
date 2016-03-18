@@ -2,9 +2,9 @@
     <ion-content>
         <div class="list" id="chats">
             <div class="user-container" ng-repeat="chat in chats.displayChats">
-                <a class="item item-avatar hover" href="#/app/chatpage">
-                    <img class="avatar" ng-src="{{chat.image}}">
-                    <h3>{{chat.name}} <span class="pull-right time">{{chat.messageTime}}</span></h3>
+                <a class="item item-avatar hover" ng-click="chats.roomClick(chat)">
+                    <img class="avatar" ng-src="{{chat.user_data.profile_image}}">
+                    <h3>{{chat.user_data.name}} <span class="pull-right time">{{chat.messageTime}}</span></h3>
                     <p>{{chat.message}}</p>
                 </a>
             </div>

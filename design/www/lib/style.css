@@ -454,3 +454,18 @@ span.name input{
 .ion-android-more-vertical{
 	color: #fff!important;
 }
+/*Public Chat*/
+.add-public-chat{
+	position: absolute;
+	bottom: 12px;
+	right: 0;
+}
+.add-public-chat .i-24{
+	vertical-align: -11%;
+}
+.modal{
+	display: block!important;
+}
+.modal-backdrop{
+	background-color: #3F51B5;
+}

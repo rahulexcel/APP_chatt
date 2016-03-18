@@ -36,8 +36,8 @@
                  });
                  return q.promise;
              },
-             service.room_message = function(msg_local_id, roomId, message) {
-                 socket.emit('room_message', msg_local_id, accessToken, roomId, message, _.now());
+             service.room_message = function(msg_local_id, roomId, message, currentTimestamp) {
+                 socket.emit('room_message', msg_local_id, accessToken, roomId, message, currentTimestamp);
              },
              service.update_message_status = function(messages, roomId) {
                 var array = [];

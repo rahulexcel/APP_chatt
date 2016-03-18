@@ -11,13 +11,14 @@
          self.user_id = userData.data.user_id;
          $scope.$on('newRoomMessage', function (event, response) {
             if(response.data.room_id == $stateParams.roomId){
+                console.log(response);
                 socketService.update_message_status_room_open(response.data.message_id, $stateParams.roomId);
                 self.displayChatMessages.push({
                      "image": response.data.profile_image,
                      "message": response.data.message_body,
-                     "messageTime": moment(_.now()).format("hh:mm a"),
+                     "messageTime": moment(response.data.message_time).format("hh:mm a"),
                      "name": response.data.name,
-                     "timeStamp": _.now(),
+                     "timeStamp": response.data.message_time,
                  });
                 $scope.$evalAsync();
                 $ionicScrollDelegate.scrollBottom(false);
@@ -28,6 +29,8 @@
                 if(self.displayChatMessages[i].id == response.data.msg_local_id){
                     self.displayChatMessages[i].message_status = 'sent';
                     self.displayChatMessages[i].id = response.data.message_id;
+                    self.displayChatMessages[i].messageTime = moment(response.data.message_time).format("hh:mm a");
+                    self.displayChatMessages[i].timeStamp = response.data.message_time;
                 }
             }
             $scope.$evalAsync();
@@ -47,6 +50,7 @@
             $scope.$evalAsync();
          });
          $scope.$on('now_device_is_online', function (event, response) {
+            socket.emit('room_open', $stateParams.roomId);
             roomOpenApi();
          });
          roomOpenApi();
