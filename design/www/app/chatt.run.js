@@ -28,6 +28,8 @@
             $rootScope.$broadcast('now_device_is_online', { data: '' });
          }
         document.addEventListener("deviceready", function() {
+            timeStorage.set('deviceUUID', deviceService.getuuid(),1);
+            timeStorage.set('devicePlatform', deviceService.platform(),1);
             pushNotification.push();
             sqliteService.createTable();
             // lastUsesTimeService.updateTimeWithHttp();
