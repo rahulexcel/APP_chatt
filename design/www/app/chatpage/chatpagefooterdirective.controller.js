@@ -11,25 +11,30 @@
         self.name = userData.data.name;
         self.user_id = userData.data.user_id;
         self.sendMessage = function() {
-            var currentTimeStamp = _.now();
-            var offset = new Date().getTimezoneOffset();
-            sqliteService.messageToBeSend(self.message, userData.data.user_id, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId){
-                socketService.room_message(lastInsertId, $stateParams.roomId, self.message, currentTimeStamp);
-                var currentMessage = {
-                 "id": lastInsertId,
-                 "image": userData.data.profile_image,
-                 "message": self.message,
-                 "messageTime": moment(currentTimeStamp).format("hh:mm a"),
-                 "timeStamp": currentTimeStamp,
-                 "name": userData.data.name,
-                 "user_id":userData.data.user_id,
-                 "message_status":'post'
-                }
-                $rootScope.$broadcast('displayChatMessages', { data: currentMessage });
-                $ionicScrollDelegate.scrollBottom(false);
-                self.message = '';
-            })
-             $ionicScrollDelegate.scrollBottom(false);
+            if(self.message == ''){
+                console.log('empty');
+            } else{
+                socket.emit('room_open', $stateParams.roomId);
+                var currentTimeStamp = _.now();
+                var offset = new Date().getTimezoneOffset();
+                sqliteService.messageToBeSend(self.message, userData.data.user_id, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId){
+                    socketService.room_message(lastInsertId, $stateParams.roomId, self.message, currentTimeStamp);
+                    var currentMessage = {
+                     "id": lastInsertId,
+                     "image": userData.data.profile_image,
+                     "message": self.message,
+                     "messageTime": moment(currentTimeStamp).format("hh:mm a"),
+                     "timeStamp": currentTimeStamp,
+                     "name": userData.data.name,
+                     "user_id":userData.data.user_id,
+                     "message_status":'post'
+                    }
+                    $rootScope.$broadcast('displayChatMessages', { data: currentMessage });
+                    $ionicScrollDelegate.scrollBottom(false);
+                    self.message = '';
+                })
+                 $ionicScrollDelegate.scrollBottom(false);
+            }
          }
          self.inputUp = function() {
             console.log('inputUp');
