@@ -371,7 +371,8 @@ module.exports = function (User) {
                         callback(null, 0, 'UnAuthorized 1', err);
                     } else {
                         var where = {
-                            id: {neq: access_token_userid}
+                            id: {neq: access_token_userid},
+                            verification_status: 1*1
                         };
                         User.find({
                             where: where,
