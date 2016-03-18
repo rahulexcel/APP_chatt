@@ -91,6 +91,7 @@ module.exports.listen = function(app){
                         'profile_image' : res_data.profile_image,
                         'message_type' : res_data.message.type,
                         'message_body' : res_data.message.body,
+                        'message_time' : currentTimestamp,
                     };
                     console.log( broadcast_data );
                     // will be available on other users of room
@@ -101,6 +102,7 @@ module.exports.listen = function(app){
                         'room_id' : room_id,
                         'message_id' : res_data.message_id,
                         'message_status' : res_data.message_status,
+                        'message_time' : currentTimestamp,
                     };
                     
                     // will have status of message sent by user
