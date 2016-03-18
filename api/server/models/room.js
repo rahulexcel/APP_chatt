@@ -171,6 +171,7 @@ module.exports = function (Room) {
                                         if( result.length == 0 ){
                                             callback(null, 0, 'Room or User not exists', {});
                                         }else {
+                                            var server_time = UTIL.currentTimestamp();
                                             var new_message = new Message({
                                                 room_id : new ObjectID( room_id ),
                                                 message_owner : new ObjectID( userId ),
@@ -178,7 +179,7 @@ module.exports = function (Room) {
                                                     'type' : 'text',
                                                     'body' : message
                                                 },
-                                                message_time: currentTimestamp,
+                                                message_time: server_time,
                                                 message_status : 'sent'
                                             });
                                             new_message.save( function(err){
@@ -194,7 +195,8 @@ module.exports = function (Room) {
                                                         message : {
                                                             'type' : 'text',
                                                             'body' : message
-                                                        }
+                                                        },
+                                                        message_time: server_time
                                                     }
                                                     callback(null, 1, 'Message posted', data );
                                                 }
