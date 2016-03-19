@@ -4,16 +4,20 @@
     angular.module('chattapp')
         .controller('chatsController', chatsController);
 
-    function chatsController(chatsFactory, timeStorage, chatsService, $state, socketService) {
+    function chatsController($scope, chatsFactory, timeStorage, chatsService, $state, socketService) {
             var self = this;
             var userData = timeStorage.get('userData');
-            var query = chatsFactory.save({
-                 accessToken: userData.data.access_token,
-                 timestamp:_.now(),
+            chatsService.listMyRooms();
+            self.displayChats = timeStorage.get('displayPrivateChats');
+            $scope.$on('updatedRoomData', function (event, response) {
+                self.displayChats = response.data;
+                $scope.$evalAsync();
              });
-             query.$promise.then(function(data) {
-                self.displayChats = chatsService.privateRooms(data.data.rooms);
-             });
+            if(!self.displayChats){
+                chatsService.listMyRooms().then(function(data){
+                    self.displayChats= data;
+                });
+            }
              self.roomClick = function(roomData){
                 var clickRoomUserData = {
                     "name":roomData.user_data.name,
