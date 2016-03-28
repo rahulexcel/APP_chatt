@@ -16,6 +16,9 @@
             timeStorage.remove('google_access_token');
             timeStorage.remove('userEmail');
             timeStorage.remove('userData');
+            timeStorage.remove('displayPrivateChats');
+            timeStorage.remove('listUsers');
+            timeStorage.remove('chatWithUserData');
             $state.go('login');
          }
      }
