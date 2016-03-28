@@ -11,7 +11,7 @@
                  var newData = [];
                  newData.id = data[i].id;
                  newData.message = data[i].message.body;
-                 newData.messageTime = moment(data[i].message_time).format("hh:mm a");
+                 newData.messageTime = moment.unix(data[i].message_time).tz('Asia/Kolkata').format("hh:mm a");
                  newData.timeStamp = data[i].message_time;
                  newData.name = data[i].message_owner.name;
                  newData.user_id = data[i].message_owner.id;

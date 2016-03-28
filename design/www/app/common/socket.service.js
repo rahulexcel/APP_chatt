@@ -41,9 +41,11 @@
              },
              service.update_message_status = function(messages, roomId) {
                 var array = [];
-                for(var i =0; i < messages.length; i++){
+                if(messages){
+                    for(var i =0; i < messages.length; i++){
                     if(messages[i].message_status == 'sent' && messages[i].message_owner.id != userData.data.user_id){
                         array.push(messages[i].id);
+                        }
                     }
                 }
                 if(array.toString() == ''){

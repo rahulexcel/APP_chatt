@@ -24,6 +24,9 @@
                     timeStorage.set('gcmToken',data.registrationId)
                 });
                 push.on('notification', function(data) {
+                    if(data.additionalData.coldstart){
+                        console.log('data.additionalData.coldstart');
+                    }
                     if (undefined != data.additionalData.callback && 'function' == typeof window[data.additionalData.callback]) {
                         windowdata.additionalData.callback;
                     }
