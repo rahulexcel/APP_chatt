@@ -6,6 +6,7 @@
 
      function chatPageCenterDirectiveController($scope, $state, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, sqliteService, chatpageService) {
          var self = this;
+         var timeZone = jstz.determine().name();
          var chatWithUserData = timeStorage.get('chatWithUserData');
          var userData = timeStorage.get('userData');
          self.user_id = userData.data.user_id;
@@ -16,7 +17,7 @@
                 self.displayChatMessages.push({
                      "image": response.data.profile_image,
                      "message": response.data.message_body,
-                     "messageTime": moment.unix(response.data.message_time).tz('Asia/Kolkata').format("hh:mm a"),
+                     "messageTime": moment.unix(response.data.message_time).tz(timeZone).format("hh:mm a"),
                      "name": response.data.name,
                      "timeStamp": response.data.message_time,
                  });
@@ -29,7 +30,7 @@
                 if(self.displayChatMessages[i].id == response.data.msg_local_id){
                     self.displayChatMessages[i].message_status = 'sent';
                     self.displayChatMessages[i].id = response.data.message_id;
-                    self.displayChatMessages[i].messageTime = moment.unix(response.data.message_time).tz('Asia/Kolkata').format("hh:mm a");
+                    self.displayChatMessages[i].messageTime = moment.unix(response.data.message_time).tz(timeZone).format("hh:mm a");
                     self.displayChatMessages[i].timeStamp = response.data.message_time;
                 }
             }
