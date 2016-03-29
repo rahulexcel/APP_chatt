@@ -24,5 +24,6 @@
         }
     },
     "legacyExplorer": false,
-    "sender": "noreply@excellencetechnologies.in"
+    "sender": "noreply@excellencetechnologies.in",
+    "CONFIG_gcm_sender_id" : "AIzaSyDluTER917Kc6usic9OaHWw3rEXdG3_gTg"
 }

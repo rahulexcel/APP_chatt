@@ -1,5 +1,5 @@
 var UTIL = require('../modules/generic');
-//var PUSH_NOTIFICATIONS = require('../modules/push_notifications');
+var PUSH_NOTIFICATIONS = require('../modules/push_notifications');
 var ObjectID = require('mongodb').ObjectID;
 
 module.exports = function (Room) {
@@ -162,7 +162,10 @@ module.exports = function (Room) {
                                     where : {
                                         room_users : {'in':[new ObjectID( userId )]},
                                         '_id' : new ObjectID( room_id )
-                                    }
+                                    },
+                                    "include": [{
+                                        relation: 'room_users'
+                                    }]
                                 };
                                 Room.find( check_where, function (err, result) {
                                     if( err ){
@@ -171,6 +174,26 @@ module.exports = function (Room) {
                                         if( result.length == 0 ){
                                             callback(null, 0, 'Room or User not exists', {});
                                         }else {
+                                            //----start---for push notification info--------
+                                            var TOKENS = [];
+                                            var msg_by_name = msg_by_profile_image = '';
+                                            result.forEach(function(result) {
+                                                room_info = result.toJSON();
+                                                room_users = room_info.room_users;
+                                                for( var k in room_users ){
+                                                    var room_user_id = room_users[k].id;
+                                                    if( room_user_id.toString() != userId.toString() ){
+                                                        var user_tokens = room_users[k].token;
+                                                        if( typeof user_tokens != 'undefined' && user_tokens  != ''){
+                                                            TOKENS.push( user_tokens );
+                                                        }
+                                                    }else{
+                                                        msg_by_name = room_users[k].name;
+                                                        msg_by_profile_image = room_users[k].profile_image;
+                                                    }
+                                                }
+                                            });
+                                            //----end---for push notification info--------
                                             var server_time = UTIL.currentTimestamp();
                                             var new_message = new Message({
                                                 room_id : new ObjectID( room_id ),
@@ -198,6 +221,19 @@ module.exports = function (Room) {
                                                         },
                                                         message_time: server_time
                                                     }
+                                                    //----start---for push notification message--------
+                                                    if( TOKENS.length > 0 ){
+                                                        var push_msg_info = {
+                                                            'room_id' : room_id,
+                                                            'message_owner_name' : msg_by_name,
+                                                            'message_profile_image' : msg_by_profile_image,
+                                                            'message_type' : 'text',
+                                                            'message_body' : message,
+                                                        };
+                                                        PUSH_NOTIFICATIONS.PUSH_MESSAGE( TOKENS, push_msg_info, function( push_status, push_response ){
+                                                        });   
+                                                    }
+                                                    //----end---for push notification message--------
                                                     callback(null, 1, 'Message posted', data );
                                                 }
                                             });
