@@ -11,7 +11,7 @@
              self.image = chatWithUserData.pic;
              self.lastSeen = moment(parseInt(chatWithUserData.lastSeen)).format("hh:mm a");
              self.goBack = function() {
-                 $ionicHistory.goBack();
+                 $state.go('app.chats');
              }
      }
  })();
