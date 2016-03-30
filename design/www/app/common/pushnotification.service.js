@@ -24,32 +24,22 @@
                     timeStorage.set('gcmToken',data.registrationId)
                 });
                 push.on('notification', function(data) {
-                    if(data.additionalData.coldstart){
-                        console.log('data.additionalData.coldstart');
-                    }
-                    if (undefined != data.additionalData.callback && 'function' == typeof window[data.additionalData.callback]) {
-                        windowdata.additionalData.callback;
-                    }
-                    console.log(data);
                     if (data.additionalData.foreground) {
                         console.log(data);
                     } else {
-                        data.message,
-                            data.title,
-                            data.count,
-                            data.sound,
-                            data.image,
-                            data.additionalData
+                        // data.message,
+                        //     data.title,
+                        //     data.count,
+                        //     data.sound,
+                        //     data.image,
+                        //     data.additionalData
                     }
-                    window.callbackName = function() {
-                        console.log("Notification");
+                    if(data.additionalData.coldstart){
+                        $state.go('app.chatpage', {roomId:data.additionalData.room_id});
+                        console.log('data.additionalData.coldstart');
                     }
                 });
-                window.actions_left = function(data) {
-                    $state.go('app.chatpage');
-                };
                 push.on('error', function(e) {
-                    console.log("error");
                     console.log(e.message);
                 });
             }

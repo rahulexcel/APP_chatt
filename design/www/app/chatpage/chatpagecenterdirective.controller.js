@@ -51,7 +51,6 @@
          });
          $scope.$on('now_device_is_online', function (event, response) {
             socket.emit('room_open', $stateParams.roomId);
-            roomOpenApi();
          });
          roomOpenApi();
          function roomOpenApi(){
