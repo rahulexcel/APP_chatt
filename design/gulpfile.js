@@ -20,6 +20,8 @@ var paths = {
         './bower_components/angular-messages/angular-messages.js',
         './bower_components/angular-resource/angular-resource.js',
         './bower_components/jquery/dist/jquery.js',
+        './bower_components/jstz/jstz.js',
+        './bower_components/jquery/dist/jquery.js',
         './www/lib/socket.io.js',
         './bower_components/lodash/dist/lodash.min.js',
         './www/app/chatt.route.js',

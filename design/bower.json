@@ -13,7 +13,9 @@
         "angular-material": "1.0.6",
         "bootstrap": "3.3.6",
         "moment": "2.10.6",
-        "font-awesome": "4.5.0"
+        "font-awesome": "4.5.0",
+        "moment-timezone": "0.5.3",
+        "jstz": "38263a9e22"
 
     }
 }

@@ -73415,6 +73415,14 @@ button.close {
   color: #fff!important;
 }
 
+.sent {
+  color: #FFA500!important;
+}
+
+.seen {
+  color: green!important;
+}
+
 * {
   font-family: 'Montserrat', sans-serif;
 }
@@ -73431,6 +73439,21 @@ button.close {
   width: 100%;
   height: 100%;
   border-radius: 50%;
+}
+
+.chatPageheader {
+  position: static;
+  max-width: 35px;
+}
+
+.chatPagefooter {
+  position: static;
+  max-width: 40px;
+}
+
+.right-chat button.no-image {
+  float: right;
+  margin-left: 13px;
 }
 
 .circleColor1 {
@@ -73701,8 +73724,8 @@ a.tab-item:hover {
 }
 
 .chatpage-header img {
-  max-width: 40px;
-  padding-right: 6px;
+  max-width: 36px;
+  padding-right: 1px;
 }
 
 .chatpage-header p span {
@@ -73797,7 +73820,7 @@ a.tab-item:hover {
 
 .chat-time {
   text-align: right;
-  line-height: 7px;
+  line-height: 10px;
 }
 
 .chat-time span {
@@ -73806,7 +73829,7 @@ a.tab-item:hover {
 
 .chat-time .fa {
   font-size: 8px;
-  color: green;
+  color: #bbb;
 }
 
 .bubble-yellow p {
@@ -73821,6 +73844,7 @@ a.tab-item:hover {
   position: relative;
   padding-top: 0px!important;
   /*padding-bottom: 5px!important;*/
+  margin-top: 2px;
 }
 
 .right-chat img.avatar {
@@ -73934,4 +73958,24 @@ span.name input {
 
 .ion-android-more-vertical {
   color: #fff!important;
+}
+
+/*Public Chat*/
+
+.add-public-chat {
+  position: absolute;
+  bottom: 12px;
+  right: 0;
+}
+
+.add-public-chat .i-24 {
+  vertical-align: -11%;
+}
+
+.modal {
+  display: block!important;
+}
+
+.modal-backdrop {
+  background-color: #3F51B5;
 }
