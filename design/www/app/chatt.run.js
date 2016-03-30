@@ -17,11 +17,13 @@
                 StatusBar.styleDefault();
             }
         });
+        
         if($localStorage.userData){
             $state.go('app.contacts');
         } else{
             $state.go('login');
         }
+        console.log('heyey');
         window.socket = io(Configurations.socketApi);
         document.addEventListener("deviceready", function() {
             pushNotification.push();

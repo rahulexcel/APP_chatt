@@ -15,8 +15,11 @@ var paths = {
 var paths = {
     sass: ['./scss/**/*.scss'],
     javascript: [
-        './www/lib/ionic/js/ionic.bundle.min.js',
-        './www/app/lib/*.js',
+        './bower_components/ionic/js/ionic.bundle.min.js',
+        './bower_components/angular-messages/angular-messages.js',
+        './bower_components/angular-resource/angular-resource.js',
+        './www/lib/socket.io.js',
+        './bower_components/lodash/dist/lodash.min.js',
         './www/app/chatt.route.js',
         './www/app/chatt.run.js',
         './www/app/chatt.config.js',
@@ -24,14 +27,15 @@ var paths = {
         './www/app/**/*.*.js'
     ],
     css: [
-        './www/lib/ionic/css/ionic.css',
-//        './www/lib/style.css',
-        './www/lib/lib/animate.css/animate.css',
-        './www/lib/angular-material/angular-material.css',
+        './bower_components/ionic/css/ionic.css',
+//        './www/lib/lib/animate.css/animate.css',
+         './www/lib/style.css',
+        './bower_components/bootstrap/dist/css/bootstrap.min.css',
+        './bower_components/angular-material/angular-material.css',
         './www/lib/material-design-icons.css',
         './www/lib/app.min.css',
-        './www/css/style.css',
-        './www/lib/bootstrap/css/bootstrap.min.css'
+        './www/css/style.css'
+        
     ]
 };
 
@@ -62,12 +66,12 @@ gulp.task('sass', function(done) {
 });
 gulp.task('css', function() {
     return gulp.src(paths.css)
-            .pipe(concatCss("main.css"))
+            .pipe(concatCss("chat.bundle.css"))
             .pipe(gulp.dest('./www'));
 });
 gulp.task('scripts', function() {
     return gulp.src(paths.javascript)
-            .pipe(concat('main.js'))
+            .pipe(concat('chat.bundle.js'))
             .pipe(gulp.dest('./www'));
 });
 
