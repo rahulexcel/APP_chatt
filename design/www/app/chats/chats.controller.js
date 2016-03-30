@@ -4,17 +4,30 @@
     angular.module('chattapp')
         .controller('chatsController', chatsController);
 
-    function chatsController(chatsFactory, timeStorage) {
+    function chatsController($scope, chatsFactory, timeStorage, chatsService, $state, socketService) {
             var self = this;
             var userData = timeStorage.get('userData');
-            var query = chatsFactory.query({
-                 access_token: userData.data.access_token,
-                 timestamp:_.now(),
-                 limit: 10,
-                 page: 0
+            chatsService.listMyRooms();
+            self.displayChats = timeStorage.get('displayPrivateChats');
+            console.log(self.displayChats);
+            $scope.$on('updatedRoomData', function (event, response) {
+                self.displayChats = response.data;
+                $scope.$evalAsync();
              });
-             query.$promise.then(function(data) {
-                 self.displayChats = data;
-             });
+            if(!self.displayChats){
+                chatsService.listMyRooms().then(function(data){
+                    self.displayChats = data;
+                });
+            }
+             self.roomClick = function(roomData){
+                var clickRoomUserData = {
+                    "name":roomData.user_data.name,
+                    "id":roomData.user_data.id,
+                    "pic":roomData.user_data.profile_image
+                }
+                timeStorage.set('chatWithUserData', clickRoomUserData, 1);
+                socketService.create_room(roomData.user_data.id);
+                $state.go('app.chatpage', {roomId:roomData.room_id});
+             }
     }
 })();

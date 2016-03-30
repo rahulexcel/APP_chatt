@@ -26,7 +26,8 @@
     {
       "locator": "/var/www/html/facebook_plugin",
       "id": "phonegap-facebook-plugin"
-    }
+    },
+    "cordova-plugin-network-information"
   ],
   "cordovaPlatforms": [
     "android"

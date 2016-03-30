@@ -5,8 +5,8 @@ module.exports.listen = function(app){
     var User = app._events.request.models.User;
     
     
-    function list_my_rooms( accessToken, currentTimestamp, callback ){
-        Room.list_my_rooms( accessToken, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+    function list_my_rooms( accessToken, room_type, currentTimestamp, callback ){
+        Room.list_my_rooms( accessToken, room_type, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
             var response = {
                 'status' : res_status,
                 'message' : res_message,
@@ -15,8 +15,8 @@ module.exports.listen = function(app){
             callback( response );
         });
     }
-    function create_private_room( accessToken, chat_with, currentTimestamp, callback ){
-        Room.create_private_room( accessToken, chat_with, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+    function create_room( accessToken, room_type, chat_with, room_name, room_description, currentTimestamp, callback ){
+        Room.create_room( accessToken, room_type, chat_with, room_name, room_description, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
             var response = {
                 'status' : res_status,
                 'message' : res_message,
@@ -24,6 +24,16 @@ module.exports.listen = function(app){
             };
             callback( response );
         });
+    }
+    function FN_join_public_room( accessToken, room_id, currentTimestamp, callback ){
+        Room.join_public_room( accessToken, room_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            var response = {
+                'status' : res_status,
+                'message' : res_message,
+                'data' : res_data
+            };
+            callback( response );
+        })
     }
     
     
@@ -31,11 +41,11 @@ module.exports.listen = function(app){
     io.on('connection', function(socket){
         console.log('a user connected');
         
-        socket.on( 'create_private_room', function( accessToken, chat_with, currentTimestamp ){
-            create_private_room( accessToken, chat_with, currentTimestamp, function( response ){
+        socket.on( 'create_room', function( accessToken, room_type, chat_with, room_name, room_description, currentTimestamp ){
+            create_room( accessToken, room_type, chat_with, room_name, room_description, currentTimestamp, function( response ){
                 socket.emit( 'new_private_room', response );
                 if( response.status == 1 ){
-                    list_my_rooms( accessToken, currentTimestamp, function( response_1 ){
+                    list_my_rooms( accessToken, room_type, currentTimestamp, function( response_1 ){
                         socket.emit( 'show_my_rooms', response_1 );
                     });
                 }
@@ -81,6 +91,7 @@ module.exports.listen = function(app){
                         'profile_image' : res_data.profile_image,
                         'message_type' : res_data.message.type,
                         'message_body' : res_data.message.body,
+                        'message_time' : res_data.message_time,
                     };
                     console.log( broadcast_data );
                     // will be available on other users of room
@@ -91,6 +102,7 @@ module.exports.listen = function(app){
                         'room_id' : room_id,
                         'message_id' : res_data.message_id,
                         'message_status' : res_data.message_status,
+                        'message_time' : res_data.message_time,
                     };
                     
                     // will have status of message sent by user
@@ -107,6 +119,19 @@ module.exports.listen = function(app){
                 }
             })
         });
+        
+        //join public room 
+        socket.on('join_public_room', function( accessToken, room_id, currentTimestamp ){
+            FN_join_public_room( accessToken, room_id, currentTimestamp, function( response ){
+                if( response.status == 1 ){
+                    var d = {
+                        type : 'alert',
+                        data : response
+                    }
+                    socket.to( room_id ).emit( 'response_room', d );
+                }
+            });
+        })
         
     });
     //return io;

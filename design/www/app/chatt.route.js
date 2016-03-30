@@ -107,6 +107,17 @@
                       controllerAs: 'chats'
                     }
                 }
+            })
+            .state('app.publicChats', {
+                url: '/publicChats',
+                cache:false,
+                views: {
+                   'menuContent': {
+                      templateUrl: 'app/publicchats/publicchats.html',
+                      controller: 'publicChatsController',
+                      controllerAs: 'publicChats'
+                    }
+                }
             });
         // if none of the above states are matched, use this as the fallback
         // $urlRouterProvider.otherwise('/login');

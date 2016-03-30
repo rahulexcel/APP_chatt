@@ -2,10 +2,11 @@
     'use strict';
     angular.module('chattapp')
             .factory('pushNotification', pushNotification);
-    function pushNotification($http, $q, $log,Configurations, timeStorage) {
+    function pushNotification($http, $q, $log,Configurations, timeStorage, $state, $localStorage) {
         return {
             push: function () {
                 console.log('push is calling');
+                var flag = 0;
                     var push = PushNotification.init({
                     "android": {
                         "senderID": Configurations.senderID,
@@ -24,33 +25,37 @@
                     timeStorage.set('gcmToken',data.registrationId)
                 });
                 push.on('notification', function(data) {
-                    if (undefined != data.additionalData.callback && 'function' == typeof window[data.additionalData.callback]) {
-                        windowdata.additionalData.callback;
-                    }
-                    console.log(data);
                     if (data.additionalData.foreground) {
                         console.log(data);
                     } else {
-                        data.message,
-                            data.title,
-                            data.count,
-                            data.sound,
-                            data.image,
-                            data.additionalData
+                        // data.message,
+                        //     data.title,
+                        //     data.count,
+                        //     data.sound,
+                        //     data.image,
+                        //     data.additionalData
                     }
-                    window.callbackName = function() {
-                        console.log("Notification");
+                    if(data.additionalData.coldstart){
+                        flag = 1;
+                        var chatWithUser = {
+                            name:data.title,
+                            pic:data.additionalData.icon,
+                        }
+                        timeStorage.set('chatWithUserData', chatWithUser, 1);
+                        $state.go('app.chatpage', {roomId:data.additionalData.room_id});
                     }
                 });
-                window.actions_left = function(data) {
-                    $state.go('app.chatpage');
-                };
                 push.on('error', function(e) {
-                    console.log("error");
                     console.log(e.message);
                 });
+                if(flag == 0){
+                     if($localStorage.userData){
+                        $state.go('app.chats');
+                        } else{
+                        $state.go('login');
+                     }
+                }
             }
         };
     }
-
 })();

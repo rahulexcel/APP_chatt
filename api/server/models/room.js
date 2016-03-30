@@ -1,4 +1,5 @@
 var UTIL = require('../modules/generic');
+var PUSH_NOTIFICATIONS = require('../modules/push_notifications');
 var ObjectID = require('mongodb').ObjectID;
 
 module.exports = function (Room) {
@@ -26,7 +27,7 @@ module.exports = function (Room) {
     Room.disableRemoteMethod('__updateById__accessTokens', false);
     //-------------------------------------------------------------
     
-    Room.create_private_room = function ( accessToken, chat_with, currentTimestamp, callback) {
+    Room.create_room = function ( accessToken, room_type, chat_with, room_name, room_description, currentTimestamp, callback) {
         var User = Room.app.models.User;
         User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
             if( err ){
@@ -36,61 +37,95 @@ module.exports = function (Room) {
                     callback(null, 0, 'UnAuthorized', {});
                 }else{
                     var owner_user_id = accessToken.userId;
-                    var room_users = [
-                        owner_user_id,
-                        chat_with
-                    ];
-                    var ru = room_users;
-                    for( var k in room_users ){
-                        room_users[k] = new ObjectID( room_users[k]);
-                    }
-                    var check_where = {
-                        where : {
-                            room_users : {'all':room_users}
-                        }
-                    };
-                    Room.find( check_where, function (err, result) {
-                        if( err ){
-                            callback(null, 0, 'try again', {});
-                        }else{
-                            if( result.length > 0 ){
-                                result = result[0];
-                                var room_id = result.id;
-                                var data = {
-                                    'room_id' : room_id
-                                };
-                                callback(null, 1, 'Room already exists', data);
+                    if( room_type == 'public'){
+                        room_users = [ new ObjectID( owner_user_id ) ];
+                        var new_room = new Room({
+                            room_type : 'public',
+                            room_owner : new ObjectID( owner_user_id ),
+                            room_users_limit : 10*1,
+                            room_users : room_users,
+                            room_name : room_name,
+                            room_description : room_description,
+                            room_image : '',
+                            room_background : '',
+                            registration_time: currentTimestamp
+                        });
+                        new_room.save( function(err){
+                            if( err ){
+                                callback(null, 0, 'try again', {});
                             }else{
-                                var new_room = new Room({
-                                    room_owner : new ObjectID( owner_user_id ),
-                                    room_users : room_users,
-                                    registration_time: currentTimestamp,
-                                });
-                                new_room.save( function(err){
-                                    if( err ){
-                                        callback(null, 0, 'try again', {});
-                                    }else{
-                                        var room_id = new_room.id;
-                                        var data = {
-                                            'room_id' : room_id
-                                        };
-                                        callback(null, 1, 'Chat Room Created', data);
-                                    }
-                                });
+                                var room_id = new_room.id;
+                                var data = {
+                                    'room_id' : room_id,
+                                    'room_type' : room_type
+                                };
+                                callback(null, 1, 'Public chat Room Created', data);
                             }
+                        });
+                    }else if( room_type == 'private'){
+                        var room_users = [
+                            owner_user_id,
+                            chat_with
+                        ];
+                        var ru = room_users;
+                        for( var k in room_users ){
+                            room_users[k] = new ObjectID( room_users[k]);
                         }
-                    });
+                        var check_where = {
+                            where : {
+                                room_users : {'all':room_users}
+                            }
+                        };
+                        Room.find( check_where, function (err, result) {
+                            if( err ){
+                                callback(null, 0, 'try again', {});
+                            }else{
+                                if( result.length > 0 ){
+                                    result = result[0];
+                                    var room_id = result.id;
+                                    var data = {
+                                        'room_id' : room_id
+                                    };
+                                    callback(null, 1, 'Room already exists', data);
+                                }else{
+                                    var new_room = new Room({
+                                        room_type : 'private',
+                                        room_owner : new ObjectID( owner_user_id ),
+                                        room_users : room_users,
+                                        registration_time: currentTimestamp,
+                                    });
+                                    new_room.save( function(err){
+                                        if( err ){
+                                            callback(null, 0, 'try again', {});
+                                        }else{
+                                            var room_id = new_room.id;
+                                            var data = {
+                                                'room_id' : room_id,
+                                                'room_type' : room_type
+                                            };
+                                            callback(null, 1, 'Private Chat Room Created', data);
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }else{
+                        callback(null, 0, 'Room type is not correct', {});
+                    }
                 }
             }
         });
         
     };
     Room.remoteMethod(
-            'create_private_room', {
+            'create_room', {
                 description: 'create private room',
                 accepts: [
                     {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'room_type', type: 'string'}, 
                     {arg: 'chat_with', type: 'string'}, 
+                    {arg: 'room_name', type: 'string'}, 
+                    {arg: 'room_description', type: 'string'}, 
                     {arg: 'currentTimestamp', type: 'number'}
                 ],
                 returns: [
@@ -99,7 +134,7 @@ module.exports = function (Room) {
                     {arg: 'data', type: 'array'}
                 ],
                 http: {
-                    verb: 'post', path: '/create_private_room',
+                    verb: 'post', path: '/create_room',
                 }
             }
     );
@@ -127,7 +162,10 @@ module.exports = function (Room) {
                                     where : {
                                         room_users : {'in':[new ObjectID( userId )]},
                                         '_id' : new ObjectID( room_id )
-                                    }
+                                    },
+                                    "include": [{
+                                        relation: 'room_users'
+                                    }]
                                 };
                                 Room.find( check_where, function (err, result) {
                                     if( err ){
@@ -136,6 +174,27 @@ module.exports = function (Room) {
                                         if( result.length == 0 ){
                                             callback(null, 0, 'Room or User not exists', {});
                                         }else {
+                                            //----start---for push notification info--------
+                                            var TOKENS = [];
+                                            var msg_by_name = msg_by_profile_image = '';
+                                            result.forEach(function(result) {
+                                                room_info = result.toJSON();
+                                                room_users = room_info.room_users;
+                                                for( var k in room_users ){
+                                                    var room_user_id = room_users[k].id;
+                                                    if( room_user_id.toString() != userId.toString() ){
+                                                        var user_tokens = room_users[k].token;
+                                                        if( typeof user_tokens != 'undefined' && user_tokens  != ''){
+                                                            TOKENS.push( user_tokens );
+                                                        }
+                                                    }else{
+                                                        msg_by_name = room_users[k].name;
+                                                        msg_by_profile_image = room_users[k].profile_image;
+                                                    }
+                                                }
+                                            });
+                                            //----end---for push notification info--------
+                                            var server_time = UTIL.currentTimestamp();
                                             var new_message = new Message({
                                                 room_id : new ObjectID( room_id ),
                                                 message_owner : new ObjectID( userId ),
@@ -143,7 +202,7 @@ module.exports = function (Room) {
                                                     'type' : 'text',
                                                     'body' : message
                                                 },
-                                                message_time: currentTimestamp,
+                                                message_time: server_time,
                                                 message_status : 'sent'
                                             });
                                             new_message.save( function(err){
@@ -159,8 +218,22 @@ module.exports = function (Room) {
                                                         message : {
                                                             'type' : 'text',
                                                             'body' : message
-                                                        }
+                                                        },
+                                                        message_time: server_time
                                                     }
+                                                    //----start---for push notification message--------
+                                                    if( TOKENS.length > 0 ){
+                                                        var push_msg_info = {
+                                                            'room_id' : room_id,
+                                                            'message_owner_name' : msg_by_name,
+                                                            'message_profile_image' : msg_by_profile_image,
+                                                            'message_type' : 'text',
+                                                            'message_body' : message,
+                                                        };
+                                                        PUSH_NOTIFICATIONS.PUSH_MESSAGE( TOKENS, push_msg_info, function( push_status, push_response ){
+                                                        });   
+                                                    }
+                                                    //----end---for push notification message--------
                                                     callback(null, 1, 'Message posted', data );
                                                 }
                                             });
@@ -196,7 +269,7 @@ module.exports = function (Room) {
     );
     ///////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////
-    Room.list_my_rooms = function ( accessToken, currentTimestamp, callback) {
+    Room.list_my_rooms = function ( accessToken, room_type, currentTimestamp, callback) {
         var User = Room.app.models.User;
         User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
             if( err ){
@@ -208,7 +281,10 @@ module.exports = function (Room) {
                     var userId = accessToken.userId
                     userId = new ObjectID( userId );
                     Room.find({
-                        "where": {room_users : {'in':[userId]}},
+                        "where": {
+                            room_users : {'in':[userId]},
+                            room_type : room_type,
+                        },
                         "include": [{
                             relation: 'room_owner', 
                             scope: {
@@ -243,6 +319,7 @@ module.exports = function (Room) {
                 description: 'List logged user rooms',
                 accepts: [
                     {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'room_type', type: 'string'}, 
                     {arg: 'currentTimestamp', type: 'number'}
                 ],
                 returns: [
@@ -287,7 +364,7 @@ module.exports = function (Room) {
                                     },
                                     limit: limit,
                                     skip: page * limit * 1,
-                                    order: 'message_time ASC',
+                                    order: 'message_time DESC',
                                     "include": [{
                                         relation: 'message_owner', 
                                         scope: {
@@ -434,90 +511,91 @@ module.exports = function (Room) {
                 }
             }
     );
-    
-    
-    
-    
-    
-    
-//    //********************************* START REGISTER AND LOGIN **********************************
-//    Room.create_private_room = function ( req, chat_with, currentTimestamp, callback) {
-//        if( typeof req.accessToken == 'undefined' || req.accessToken == null || req.accessToken == '' || typeof req.accessToken.userId == 'undefined' || req.accessToken.userId == '' ){
-//            callback(null, 0, 'UnAuthorized', {});
-//        }else{
-//            var access_token_userid = req.accessToken.userId;
-//            Room.findById( access_token_userid, function(err, user) {
-//                if( err ){
-//                    callback(null, 0, 'UnAuthorized 1', {});
-//                }else{
-//                    var owner_user_id = access_token_userid;
-//                    var room_users = [
-//                        owner_user_id,
-//                        chat_with
-//                    ];
-//                    var ru = room_users;
-//                    for( var k in room_users ){
-//                        room_users[k] = new ObjectID( room_users[k]);
-//                    }
-//                    var check_where = {
-//                        where : {
-//                            room_users : {'all':room_users}
-//                        }
-//                    };
-//                    Room.find( check_where, function (err, result) {
-//                        if( err ){
-//                            callback(null, 0, 'try again', {});
-//                        }else{
-//                            if( result.length > 0 ){
-//                                result = result[0];
-//                                var room_id = result.id;
-//                                var data = {
-//                                    'room_id' : room_id
-//                                };
-//                                callback(null, 1, 'Room already exists', data);
-//                            }else{
-//                                var new_room = new Room({
-//                                    room_owner : new ObjectID( owner_user_id ),
-//                                    room_users : room_users,
-//                                    registration_time: currentTimestamp,
-//                                    registration_date: UTIL.currentDate(currentTimestamp),
-//                                    registration_date_time: UTIL.currentDateTimeDay(currentTimestamp)
-//                                });
-//                                new_room.save( function(err){
-//                                    if( err ){
-//                                        callback(null, 0, 'try again', {});
-//                                    }else{
-//                                        var room_id = new_room.id;
-//                                        var data = {
-//                                            'room_id' : room_id
-//                                        };
-//                                        callback(null, 1, 'Chat Room Created', data);
-//                                    }
-//                                });
-//                            }
-//                        }
-//                    });
-//                }
-//            });
-//        }
-//    };
-//    Room.remoteMethod(
-//            'create_private_room', {
-//                description: 'Create a private chat room',
-//                accepts: [
-//                    {arg: 'req', type: 'object', 'http': {source: 'req'}},
-//                    {arg: 'chat_with', type: 'string'}, 
-//                    {arg: 'currentTimestamp', type: 'number'}
-//                ],
-//                returns: [
-//                    {arg: 'status', type: 'number'},
-//                    {arg: 'message', type: 'string'},
-//                    {arg: 'data', type: 'array'}
-//                ],
-//                http: {
-//                    verb: 'post', path: '/create_private_room',
-//                }
-//            }
-//    );
-//    //********************************* END REGISTER AND LOGIN ************************************   
+    ///////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////
+    // logged in user will be able to join a public room using this
+    Room.join_public_room = function ( accessToken, room_id, currentTimestamp, callback) {
+        var User = Room.app.models.User;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 0, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 0, 'UnAuthorized', {});
+                }else{
+                    var userId = accessToken.userId
+                    userId = new ObjectID( userId );
+                    Room.find({
+                        "where" : {
+                            room_type : 'public',
+                            _id : new ObjectID( room_id )
+                        }
+                    }, function( err, result ){
+                        if( err ){
+                            callback(null, 0, 'try again', {});
+                        }else{
+                            if( result.length == 0 ){
+                                callback(null, 0, 'Public room not exists', {});
+                            }else{
+                                Room.find({
+                                    "where" : {
+                                        room_type : 'public',
+                                        _id : new ObjectID( room_id ),
+                                        room_users : {'in':[userId]},
+                                    }
+                                }, function( err1, result1 ){
+                                    if( err1 ){
+                                        callback(null, 0, 'try again', {});
+                                    }else{
+                                        if( result1.length > 0 ){
+                                            var data = {
+                                                room_id : room_id
+                                            }
+                                            callback(null, 2, 'Already room member', data );
+                                        }else{
+                                            Room.update({
+                                                room_type : 'public',
+                                                _id : new ObjectID( room_id )
+                                            },{
+                                                '$push': {'room_users': userId }
+                                            },{ 
+                                                allowExtendedOperators: true 
+                                            },function (err, result2) {
+                                                if (err) {
+                                                    callback(null, 0, 'try again', {});
+                                                } else {
+                                                    var data = {
+                                                        room_id : room_id
+                                                    }
+                                                    callback(null, 1, 'Public room joined', data );
+                                                }
+                                            });
+                                        }
+                                    }
+                                })
+                            }
+                        }
+                    })
+                }
+            }
+        });
+    };
+    Room.remoteMethod(
+            'join_public_room', {
+                description: 'Get room messages',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'},
+                    {arg: 'room_id', type: 'string'},
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/join_public_room',
+                }
+            }
+    );
 };

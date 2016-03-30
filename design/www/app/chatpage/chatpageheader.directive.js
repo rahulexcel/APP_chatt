@@ -10,8 +10,11 @@
          directive.scope = {
              chatPage: "=header"
          }
+         directive.controller = 'chatPageHeaderDirectiveController';
+         directive.controllerAs = 'chatPageHeader';
          directive.compile = function(element, attributes) {
-             var linkFunction = function($scope, element, attributes) {}
+             var linkFunction = function($scope, element, attributes) {
+         }
              return linkFunction;
          }
          return directive;
