@@ -9,13 +9,14 @@
             var userData = timeStorage.get('userData');
             chatsService.listMyRooms();
             self.displayChats = timeStorage.get('displayPrivateChats');
+            console.log(self.displayChats);
             $scope.$on('updatedRoomData', function (event, response) {
                 self.displayChats = response.data;
                 $scope.$evalAsync();
              });
             if(!self.displayChats){
                 chatsService.listMyRooms().then(function(data){
-                    self.displayChats= data;
+                    self.displayChats = data;
                 });
             }
              self.roomClick = function(roomData){

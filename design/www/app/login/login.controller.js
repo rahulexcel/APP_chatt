@@ -131,7 +131,6 @@
         var count = 0;
         $ionicPlatform.registerBackButtonAction(function() {
             var view = $ionicHistory.currentView();
-            console.log(view.stateId);
             if (view.stateId == 'login' && count == 0) {
                 tostService.notify('Press Back Button Again To Exit The App!', 'center');
                 count++;

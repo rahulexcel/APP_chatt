@@ -29,10 +29,12 @@
              },
              service.create_room = function(chatWithUserId) {
                  var q = $q.defer();
+                 var userData = timeStorage.get('userData');
+                 var accessToken = userData.data.access_token;
                  socket.emit('create_room', accessToken, 'private', chatWithUserId, '', '', _.now());
                  service.new_private_room().then(function(data) {
+                     socket.emit('room_open', data.data.room_id);
                      q.resolve(data);
-                    socket.emit('room_open', data.data.room_id);
                  });
                  return q.promise;
              },
@@ -49,7 +51,7 @@
                     }
                 }
                 if(array.toString() == ''){
-                    console.log('empty')
+                    console.log('empty');
                 } else{
                     socket.emit('update_message_status', accessToken, roomId, array.toString(), 'seen', _.now());
                 }
