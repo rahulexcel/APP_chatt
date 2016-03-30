@@ -16,9 +16,10 @@ var paths = {
     sass: ['./scss/**/*.scss'],
     javascript: [
         './bower_components/ionic/js/ionic.bundle.min.js',
+        './bower_components/moment/moment.js',
         './bower_components/angular-messages/angular-messages.js',
         './bower_components/angular-resource/angular-resource.js',
-        './bower_components/moment/moment.js',
+        './bower_components/jquery/dist/jquery.js',
         './www/lib/socket.io.js',
         './bower_components/lodash/dist/lodash.min.js',
         './www/app/chatt.route.js',
@@ -29,13 +30,13 @@ var paths = {
     ],
     css: [
         './bower_components/ionic/css/ionic.css',
-        './www/lib/animate.css',
         './bower_components/angular-material/angular-material.css',
         './www/lib/material-design-icons.css',
         './www/lib/app.min.css',
-        './www/css/style.css',
-        './node_modules/font-awesome/css/font-awesome.css',
+        './www/css/*.css',
         './bower_components/bootstrap/dist/css/bootstrap.min.css',
+        './bower_components/font-awesome/css/font-awesome.css',
+        './www/lib/style.css'
     ]
 };
 
