@@ -1,5 +1,4 @@
 var UTIL = require('../modules/generic');
-var PUSH_NOTIFICATIONS = require('../modules/push_notifications');
 var ObjectID = require('mongodb').ObjectID;
 
 module.exports = function (Room) {
@@ -142,6 +141,7 @@ module.exports = function (Room) {
     ///////////////////////////////////////////////////////////////////////////////////
     Room.room_message = function ( msg_local_id,  accessToken, room_id, message, currentTimestamp, callback) {
         var User = Room.app.models.User;
+        var Pushmessage = Room.app.models.Pushmessage;
         User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
             if( err ){
                 callback(null, 0, 'UnAuthorized', {});
@@ -224,14 +224,15 @@ module.exports = function (Room) {
                                                     //----start---for push notification message--------
                                                     if( TOKENS.length > 0 ){
                                                         var push_msg_info = {
+                                                            'message_id' : new_message.id.toString(),
                                                             'room_id' : room_id,
                                                             'message_owner_name' : msg_by_name,
                                                             'message_profile_image' : msg_by_profile_image,
                                                             'message_type' : 'text',
                                                             'message_body' : message,
-                                                        };
-                                                        PUSH_NOTIFICATIONS.PUSH_MESSAGE( TOKENS, push_msg_info, function( push_status, push_response ){
-                                                        });   
+                                                        }
+                                                        Pushmessage.create_push_message( 'room_message', TOKENS , push_msg_info, function( ignore_param, p_status, p_message, p_data){
+                                                        })  
                                                     }
                                                     //----end---for push notification message--------
                                                     callback(null, 1, 'Message posted', data );
