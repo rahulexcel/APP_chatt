@@ -44,5 +44,9 @@
     "message": {
         "dataSource": "mongo_db_app_chatt",
         "public": true
+    },
+    "pushmessage": {
+        "dataSource": "mongo_db_app_chatt",
+        "public": true
     }
 }
