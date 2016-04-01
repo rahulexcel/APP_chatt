@@ -1,5 +1,5 @@
-<ion-view view-title="Register" id="background">
-  <ion-content>
+<ion-view view-title="Register">
+  <ion-content id="background">
   <div class="navbar" style="margin-top:20px;">
       <div class="navbar-brand text-center">
         <span class="inline white">CHATT</span>
@@ -24,9 +24,10 @@
           <label>Password</label>
         </div>
         <button md-ink-ripple type="submit" class="md-btn md-raised pink btn-block p-h-md" ng-click="submitted = true;"><span ng-show="register.registerSpinner"><i class="fa fa-spin fa-spinner"></i></span> Sign up</button>
-        <br>
-        <a type="button" class="md-btn md-raised btn-block p-h-md google-btn" href="#/login"><span>Sign In</span></a>
       </form>
+    </div>
+    <div class="text-center">
+      <button class="md-btn white" ui-sref="login">Sign In</button>
     </div>
   </div>
   </ion-content>
