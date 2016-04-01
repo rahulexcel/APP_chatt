@@ -289,12 +289,12 @@ module.exports = function (Room) {
                         "include": [{
                             relation: 'room_owner', 
                             scope: {
-                                fields: ['name','profile_image'],
+                                fields: ['name','profile_image','last_seen'],
                             }
                         },{
                             relation: 'room_users', 
                             scope: {
-                                fields: ['name','profile_image'],
+                                fields: ['name','profile_image','last_seen'],
                             }
                         }]
                     },function (err, result) {
