@@ -6,6 +6,7 @@ var ObjectID = require('mongodb').ObjectID;
 module.exports = function (User) {
     //********************************* START REGISTER AND LOGIN **********************************
     User.register_login = function (action, action_type, social_id, platform, device_id, token, email_id, name, password, profile_image, currentTimestamp, callback) {
+        var LIFE_OF_ACCESS_TOKEN = 60 * 60 * 24 * 1000;
         if (action && action_type && email_id) {
             if (typeof name == 'undefined' || name == '') {
                 name = '';
@@ -32,7 +33,7 @@ module.exports = function (User) {
                                 callback(null, 0, 'Email id already exists.', {});
                             } else if (action_type == 'manual_login' || action_type == 'facebook' || action_type == 'google') {
                                 if (action_type == 'facebook' || action_type == 'google') {
-                                    result.createAccessToken(86400, function (err, accessToken) {
+                                    result.createAccessToken(LIFE_OF_ACCESS_TOKEN, function (err, accessToken) {
                                         if (err) {
                                             callback(null, 0, 'Invalid login', {});
                                         } else {
@@ -52,7 +53,8 @@ module.exports = function (User) {
                                         //-START--get access token---------
                                         User.login({
                                             email: email_id,
-                                            password: password
+                                            password: password,
+                                            ttl: LIFE_OF_ACCESS_TOKEN
                                         }, function (err, accessToken) {
                                             if (err) {
                                                 callback(null, 0, 'Invalid login', {});
@@ -121,7 +123,7 @@ module.exports = function (User) {
                                         User.app.models.email.newRegisteration({email: email_id, name: name, verification_code: verification_code}, function () {
                                             //--send access token if register is via facebook or google
                                             if (action_type == 'facebook' || action_type == 'google') {
-                                                user.createAccessToken(86400, function (err, accessToken) {
+                                                user.createAccessToken(LIFE_OF_ACCESS_TOKEN, function (err, accessToken) {
                                                     if (err) {
                                                         callback(null, 0, 'Invalid login', {});
                                                     } else {
