@@ -21,5 +21,13 @@
                 $state.go('app.chatpage', {roomId:data.data.room_id});
             });
          }
+         self.isSearchOpen = false;
+         self.searchOpen = function(){
+            if(self.isSearchOpen){
+                self.isSearchOpen = false;
+            } else{
+                self.isSearchOpen = true;
+            }
+         }
      }
  })();

@@ -1,7 +1,9 @@
 <ion-view view-title="CONTACTS" id="background" hide-nav-bar="true">
-<ion-header-bar class='bar-stable' align-title="center">
-   <p class="title"><strong>CONTACTS</strong>
+<ion-header-bar class='bar-stable'>
+   <p class="title">CONTACTS
    <button class="button button-icon ion-android-more-vertical pull-right" style="margin-top: 5px;" ng-click="menu.popover.show($event)"></button>
+   <button class="button button-icon ion-ios-search-strong pull-right white" style="margin-top: 5px;" ng-click="contacts.searchOpen()"></button>
+   <input type="text" ng-class="contacts.isSearchOpen ? 'search-box-open' : 'search-box-close'">
    </p>
 </ion-header-bar>
    <ion-content scroll="true">
@@ -9,8 +11,9 @@
          <div class="user-container" ng-repeat="contact in contacts.displaycontacts">
             <a class="item item-avatar hover item-icon-right" on-tap="contacts.chatWithUser(contact)">
                <img class="avatar" ng-src="{{contact.pic}}">
+               <i class="fa fa-circle user-status"></i>
                <h3>{{contact.name}}</h3>
-               <p>{{contact.status}}</p>
+               <p>{{contact.lastSeen}}</p>
             </a>
          </div>
       </div>
