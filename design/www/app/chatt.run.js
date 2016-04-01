@@ -17,6 +17,8 @@
                 StatusBar.styleDefault();
             }
         });
+
+       
         window.socket = io(Configurations.socketApi);
         document.addEventListener("online", onOnline, false);
          function onOnline() {
