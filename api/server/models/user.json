@@ -67,6 +67,16 @@
             "principalType": "ROLE",
             "principalId": "$everyone",
             "property": "last_seen"
+        }, {
+            "permission": "ALLOW",
+            "principalType": "ROLE",
+            "principalId": "$everyone",
+            "property": "my_profile"
+        }, {
+            "permission": "ALLOW",
+            "principalType": "ROLE",
+            "principalId": "$everyone",
+            "property": "get_user_profile"
         }],
     "methods": {}
 }

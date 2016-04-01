@@ -105,7 +105,8 @@ module.exports = function (User) {
                                     registration_time: currentTimestamp,
                                     registration_date: UTIL.currentDate(currentTimestamp),
                                     registration_date_time: UTIL.currentDateTimeDay(currentTimestamp),
-                                    profile_image: profile_image
+                                    profile_image: profile_image,
+                                    profile_status: '',
                                 }, function (err, user) {
                                     if (err) {
                                         callback(null, 0, err, {});
@@ -468,6 +469,159 @@ module.exports = function (User) {
             }
     );
 //********************************* END LAST SEEN **********************************
+
+//********************************* START my profile ( logged user profile) **********************************
+    User.my_profile = function ( accessToken, currentTimestamp, callback) {
+        var Room = User.app.models.Room;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 0, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 0, 'UnAuthorized', {});
+                }else{
+                    var userId = accessToken.userId
+                    User.findById(userId, function (err, user) {
+                        if (err) {
+                            callback(null, 0, 'UnAuthorized', {});
+                        } else {
+                            Room.find({
+                                'where':{
+                                    room_users : {'all':[new ObjectID( userId )]}
+                                }
+                            },function( err1, rooms ){
+                                if( err1 ){
+                                    callback(null, 0, 'try again', {});
+                                }else{
+                                    var user_private_rooms = 0;
+                                    var user_public_rooms = 0;
+                                    if( rooms.length > 0 ){
+                                        for( var k in rooms){
+                                            r_type = rooms[k].room_type;
+                                            if( r_type == 'public' ){
+                                                user_public_rooms += 1;
+                                            }else if( r_type == 'private' ){
+                                                user_private_rooms += 1;
+                                            }
+                                        }
+                                    }
+                                    var USER_PROFILE = {
+                                        'name' : user.name,
+                                        'profile_image' : user.profile_image,
+                                        'profile_status' : user.profile_status,
+                                        'last_seen' : user.last_seen,
+                                        'user_private_rooms' : user_private_rooms,
+                                        'user_public_rooms' : user_public_rooms,
+                                    }
+                                    callback(null, 1, 'User profile details', USER_PROFILE);
+                                }
+                            })
+                        }
+                    });
+                }
+            }
+        });
+    };
+    User.remoteMethod(
+            'my_profile', {
+                description: 'get logged user profile',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/my_profile',
+                }
+            }
+    );
+//********************************* END my profile ( logged user profile) **********************************
+
+
+//********************************* START user profile ( any user profile on user_id basis ) **********************************
+    User.get_user_profile = function ( accessToken, user_id, currentTimestamp, callback) {
+        var Room = User.app.models.Room;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 0, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 0, 'UnAuthorized', {});
+                }else{
+                    User.find({
+                        'where' : {
+                            '_id' : new ObjectID( user_id )
+                        }
+                    }, function (err, results) {
+                        if (err) {
+                            callback(null, 0, 'try again', {});
+                        } else {
+                            if( results.length == 0 ){
+                                callback(null, 0, 'No user Found', {});
+                            }else{
+                                user = results[0];
+                                Room.find({
+                                    'where':{
+                                        room_users : {'all':[new ObjectID( user_id )]}
+                                    }
+                                },function( err1, rooms ){
+                                    if( err1 ){
+                                        callback(null, 0, 'try again', {});
+                                    }else{
+                                        var user_private_rooms = 0;
+                                        var user_public_rooms = 0;
+                                        if( rooms.length > 0 ){
+                                            for( var k in rooms){
+                                                r_type = rooms[k].room_type;
+                                                if( r_type == 'public' ){
+                                                    user_public_rooms += 1;
+                                                }else if( r_type == 'private' ){
+                                                    user_private_rooms += 1;
+                                                }
+                                            }
+                                        }
+                                        var USER_PROFILE = {
+                                            'name' : user.name,
+                                            'profile_image' : user.profile_image,
+                                            'profile_status' : user.profile_status,
+                                            'last_seen' : user.last_seen,
+                                            'user_private_rooms' : user_private_rooms,
+                                            'user_public_rooms' : user_public_rooms,
+                                        }
+                                        callback(null, 1, 'User profile details', USER_PROFILE);
+                                    }
+                                })
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    };
+    User.remoteMethod(
+            'get_user_profile', {
+                description: 'get any user profile info',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'user_id', type: 'string'}, 
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/get_user_profile',
+                }
+            }
+    );
+//********************************* START user profile ( any user profile on user_id basis ) **********************************
+
 
 
 };
