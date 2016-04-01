@@ -60,7 +60,7 @@
         }, {
             "permission": "ALLOW",
             "principalType": "ROLE",
-            "principalId": "$authenticated",
+            "principalId": "$everyone",
             "property": "list_users"
         }, {
             "permission": "ALLOW",
