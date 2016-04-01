@@ -356,61 +356,68 @@ module.exports = function (User) {
 //********************************* END RESET PASSWORD **********************************
 
 //********************************* START LIST OF ALL USERS **********************************
-    User.list_users = function (req, page, limit, currentTimestamp, callback) {
-        if (typeof req.accessToken == 'undefined' || req.accessToken == null || req.accessToken == '' || typeof req.accessToken.userId == 'undefined' || req.accessToken.userId == '') {
-            callback(null, 0, 'UnAuthorized', {});
-        } else {
-            var access_token_userid = req.accessToken.userId;
-            if (lodash.isUndefined(page) && lodash.isUndefined(limit)) {
-                callback(null, 0, 'Invalid Request Parameters', {});
-            }
-            else {
-                var num = 0;
-                num = page * 1;
-                User.findById(access_token_userid, function (err, user) {
-                    if (err) {
-                        callback(null, 0, 'UnAuthorized 1', err);
-                    } else {
-                        var where = {
-                            id: {neq: access_token_userid},
-                            verification_status: 1*1
-                        };
-                        User.find({
-                            where: where,
-                            limit: limit,
-                            skip: num * limit,
-                            order: 'last_seen DESC'
-                        }, function (err, result) {
+    User.list_users = function ( accessToken, page, limit, currentTimestamp, callback) {
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 401, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 401, 'UnAuthorized', {});
+                }else{
+                    var access_token_userid = accessToken.userId
+                    if (lodash.isUndefined(page) && lodash.isUndefined(limit)) {
+                        callback(null, 0, 'Invalid Request Parameters', {});
+                    }
+                    else {
+                        var num = 0;
+                        num = page * 1;
+                        User.findById(access_token_userid, function (err, user) {
                             if (err) {
-                                callback(null, 0, 'Try Again', err);
-                            }
-                            else {
-                                var userInfo = [];
-                                if (result.length > 0) {
-                                    lodash.forEach(result, function (value) {
-                                        var userName = value.name;
-                                        var userId = value.id;
-                                        var pic = value.profile_image;
-                                        var lastSeen = value.last_seen;
-                                        userInfo.push({name: userName, id: userId, pic: pic, lastSeen: lastSeen});
-                                    });
-                                    callback(null, 1, 'Users List', userInfo);
-                                }
-                                else {
-                                    callback(null, 0, 'No Record Found', {});
-                                }
+                                callback(null, 0, 'UnAuthorized 1', err);
+                            } else {
+                                var where = {
+                                    id: {neq: access_token_userid},
+                                    verification_status: 1*1
+                                };
+                                User.find({
+                                    where: where,
+                                    limit: limit,
+                                    skip: num * limit,
+                                    order: 'last_seen DESC'
+                                }, function (err, result) {
+                                    if (err) {
+                                        callback(null, 0, 'Try Again', err);
+                                    }
+                                    else {
+                                        var userInfo = [];
+                                        if (result.length > 0) {
+                                            lodash.forEach(result, function (value) {
+                                                var userName = value.name;
+                                                var userId = value.id;
+                                                var pic = value.profile_image;
+                                                var lastSeen = value.last_seen;
+                                                userInfo.push({name: userName, id: userId, pic: pic, lastSeen: lastSeen});
+                                            });
+                                            callback(null, 1, 'Users List', userInfo);
+                                        }
+                                        else {
+                                            callback(null, 0, 'No Record Found', {});
+                                        }
+                                    }
+                                });
                             }
                         });
                     }
-                });
+                }
             }
-        }
+        });
     };
     User.remoteMethod(
             'list_users', {
                 description: 'Show the list of all Users',
                 accepts: [
-                    {arg: 'req', type: 'object', 'http': {source: 'req'}},
+                    //{arg: 'req', type: 'object', 'http': {source: 'req'}},
+                    {arg: 'accessToken', type: 'string'}, 
                     {arg: 'page', type: 'number'},
                     {arg: 'limit', type: 'number'},
                     {arg: 'currentTimestamp', type: 'number'}
@@ -419,7 +426,10 @@ module.exports = function (User) {
                     {arg: 'status', type: 'number'},
                     {arg: 'message', type: 'string'},
                     {arg: 'data', type: 'array'}
-                ]
+                ],
+                http: {
+                    verb: 'post', path: '/list_users',
+                }
             }
     );
 //********************************* END LIST OF ALL USERS ************************************  
