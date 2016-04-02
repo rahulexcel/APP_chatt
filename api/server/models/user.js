@@ -518,6 +518,7 @@ module.exports = function (User) {
                                         }
                                     }
                                     var USER_PROFILE = {
+                                        'user_id' : user.id,
                                         'name' : user.name,
                                         'profile_image' : user.profile_image,
                                         'profile_status' : user.profile_status,
@@ -597,6 +598,7 @@ module.exports = function (User) {
                                             }
                                         }
                                         var USER_PROFILE = {
+                                            'user_id' : user.id,
                                             'name' : user.name,
                                             'profile_image' : user.profile_image,
                                             'profile_status' : user.profile_status,
