@@ -608,4 +608,82 @@ module.exports = function (Room) {
                 }
             }
     );
+    
+    //********************************* START LIST OF ALL public rooms **********************************
+    Room.get_public_rooms = function ( accessToken, page, limit, currentTimestamp, callback) {
+        var User = Room.app.models.User;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 401, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 401, 'UnAuthorized', {});
+                }else{
+                    var access_token_userid = accessToken.userId
+                    
+                    var num = 0;
+                    num = page * 1;
+                    User.findById(access_token_userid, function (err, user) {
+                        if (err) {
+                            callback(null, 0, 'UnAuthorized', err);
+                        } else {
+                            var where = {
+                                'room_type' : 'public'
+                            };
+                            Room.find({
+                                "where": where,
+                                "limit": limit,
+                                "skip": num * limit,
+                                "order": 'registration_time DESC',
+                                "include": [{
+                                    relation: 'room_owner', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen'],
+                                    }
+                                },{
+                                    relation: 'room_users', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen'],
+                                    }
+                                }]
+                            },function (err, result) {
+                                if( err ){
+                                    callback(null, 0, 'try again', {});
+                                }else{
+                                    if( result.length > 0 ){
+                                        var data = {
+                                            'rooms' : result
+                                        };
+                                        callback( null, 1, 'Rooms found', data );
+                                    }else{
+                                        callback( null, 0, 'No rooms found', {} );
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    };
+    Room.remoteMethod(
+            'get_public_rooms', {
+                description: 'get all public rooms',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'page', type: 'number'},
+                    {arg: 'limit', type: 'number'},
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/get_public_rooms',
+                }
+            }
+    );
+//********************************* END LIST OF ALL USERS ************************************ 
 };
