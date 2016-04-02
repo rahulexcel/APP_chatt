@@ -14,7 +14,7 @@
         ]
     },
     "AccessToken": {
-        "dataSource": "db",
+        "dataSource": "mongo_db_app_chatt",
         "public": false
     },
     "ACL": {

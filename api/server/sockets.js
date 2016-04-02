@@ -133,6 +133,24 @@ module.exports.listen = function(app){
             });
         })
         
+        //get_user_profile
+        socket.on('get_user_profile_for_room', function( accessToken, room_id, user_id, currentTimestamp ){
+            User.get_user_profile( accessToken, user_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+                console.log( res_message );
+                console.log( res_data)
+                if( res_status == 1 ){
+                    var d = {
+                        type : 'info',
+                        room_id : room_id,
+                        user_id : user_id,
+                        data : res_data
+                    }
+                    socket.emit( 'RESPONSE_get_user_profile_for_room', d );
+                }
+            })
+        });
+        
+        
     });
     //return io;
 }
