@@ -17,10 +17,12 @@ var paths = {
     javascript: [
         './bower_components/ionic/js/ionic.bundle.min.js',
         './bower_components/moment/moment.js',
+        './bower_components/moment-timezone/moment-timezone.js',
         './bower_components/angular-messages/angular-messages.js',
         './bower_components/angular-resource/angular-resource.js',
         './bower_components/jquery/dist/jquery.js',
-        './bower_components/jstz/jstz.js',
+        './bower_components/jstz/jstz.min.js',
+        './bower_components/jstzdetect/jstz.js',
         './bower_components/jquery/dist/jquery.js',
         './www/lib/socket.io.js',
         './bower_components/lodash/dist/lodash.min.js',

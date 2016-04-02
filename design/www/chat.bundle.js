@@ -3641,6 +3641,1198 @@ c){g.push("<a ");h.isDefined(b)&&g.push('target="',b,'" ');g.push('href="',a.rep
     return _moment;
 
 }));
+//! moment-timezone.js
+//! version : 0.5.3
+//! author : Tim Wood
+//! license : MIT
+//! github.com/moment/moment-timezone
+
+(function (root, factory) {
+	"use strict";
+
+	/*global define*/
+	if (typeof define === 'function' && define.amd) {
+		define(['moment'], factory);                 // AMD
+	} else if (typeof module === 'object' && module.exports) {
+		module.exports = factory(require('moment')); // Node
+	} else {
+		factory(root.moment);                        // Browser
+	}
+}(this, function (moment) {
+	"use strict";
+
+	// Do not load moment-timezone a second time.
+	if (moment.tz !== undefined) {
+		logError('Moment Timezone ' + moment.tz.version + ' was already loaded ' + (moment.tz.dataVersion ? 'with data from ' : 'without any data') + moment.tz.dataVersion);
+		return moment;
+	}
+
+	var VERSION = "0.5.3",
+		zones = {},
+		links = {},
+		names = {},
+		guesses = {},
+		cachedGuess,
+
+		momentVersion = moment.version.split('.'),
+		major = +momentVersion[0],
+		minor = +momentVersion[1];
+
+	// Moment.js version check
+	if (major < 2 || (major === 2 && minor < 6)) {
+		logError('Moment Timezone requires Moment.js >= 2.6.0. You are using Moment.js ' + moment.version + '. See momentjs.com');
+	}
+
+	/************************************
+		Unpacking
+	************************************/
+
+	function charCodeToInt(charCode) {
+		if (charCode > 96) {
+			return charCode - 87;
+		} else if (charCode > 64) {
+			return charCode - 29;
+		}
+		return charCode - 48;
+	}
+
+	function unpackBase60(string) {
+		var i = 0,
+			parts = string.split('.'),
+			whole = parts[0],
+			fractional = parts[1] || '',
+			multiplier = 1,
+			num,
+			out = 0,
+			sign = 1;
+
+		// handle negative numbers
+		if (string.charCodeAt(0) === 45) {
+			i = 1;
+			sign = -1;
+		}
+
+		// handle digits before the decimal
+		for (i; i < whole.length; i++) {
+			num = charCodeToInt(whole.charCodeAt(i));
+			out = 60 * out + num;
+		}
+
+		// handle digits after the decimal
+		for (i = 0; i < fractional.length; i++) {
+			multiplier = multiplier / 60;
+			num = charCodeToInt(fractional.charCodeAt(i));
+			out += num * multiplier;
+		}
+
+		return out * sign;
+	}
+
+	function arrayToInt (array) {
+		for (var i = 0; i < array.length; i++) {
+			array[i] = unpackBase60(array[i]);
+		}
+	}
+
+	function intToUntil (array, length) {
+		for (var i = 0; i < length; i++) {
+			array[i] = Math.round((array[i - 1] || 0) + (array[i] * 60000)); // minutes to milliseconds
+		}
+
+		array[length - 1] = Infinity;
+	}
+
+	function mapIndices (source, indices) {
+		var out = [], i;
+
+		for (i = 0; i < indices.length; i++) {
+			out[i] = source[indices[i]];
+		}
+
+		return out;
+	}
+
+	function unpack (string) {
+		var data = string.split('|'),
+			offsets = data[2].split(' '),
+			indices = data[3].split(''),
+			untils  = data[4].split(' ');
+
+		arrayToInt(offsets);
+		arrayToInt(indices);
+		arrayToInt(untils);
+
+		intToUntil(untils, indices.length);
+
+		return {
+			name       : data[0],
+			abbrs      : mapIndices(data[1].split(' '), indices),
+			offsets    : mapIndices(offsets, indices),
+			untils     : untils,
+			population : data[5] | 0
+		};
+	}
+
+	/************************************
+		Zone object
+	************************************/
+
+	function Zone (packedString) {
+		if (packedString) {
+			this._set(unpack(packedString));
+		}
+	}
+
+	Zone.prototype = {
+		_set : function (unpacked) {
+			this.name       = unpacked.name;
+			this.abbrs      = unpacked.abbrs;
+			this.untils     = unpacked.untils;
+			this.offsets    = unpacked.offsets;
+			this.population = unpacked.population;
+		},
+
+		_index : function (timestamp) {
+			var target = +timestamp,
+				untils = this.untils,
+				i;
+
+			for (i = 0; i < untils.length; i++) {
+				if (target < untils[i]) {
+					return i;
+				}
+			}
+		},
+
+		parse : function (timestamp) {
+			var target  = +timestamp,
+				offsets = this.offsets,
+				untils  = this.untils,
+				max     = untils.length - 1,
+				offset, offsetNext, offsetPrev, i;
+
+			for (i = 0; i < max; i++) {
+				offset     = offsets[i];
+				offsetNext = offsets[i + 1];
+				offsetPrev = offsets[i ? i - 1 : i];
+
+				if (offset < offsetNext && tz.moveAmbiguousForward) {
+					offset = offsetNext;
+				} else if (offset > offsetPrev && tz.moveInvalidForward) {
+					offset = offsetPrev;
+				}
+
+				if (target < untils[i] - (offset * 60000)) {
+					return offsets[i];
+				}
+			}
+
+			return offsets[max];
+		},
+
+		abbr : function (mom) {
+			return this.abbrs[this._index(mom)];
+		},
+
+		offset : function (mom) {
+			return this.offsets[this._index(mom)];
+		}
+	};
+
+	/************************************
+		Current Timezone
+	************************************/
+
+	function OffsetAt(at) {
+		var timeString = at.toTimeString();
+		var abbr = timeString.match(/\([a-z ]+\)/i);
+		if (abbr && abbr[0]) {
+			// 17:56:31 GMT-0600 (CST)
+			// 17:56:31 GMT-0600 (Central Standard Time)
+			abbr = abbr[0].match(/[A-Z]/g);
+			abbr = abbr ? abbr.join('') : undefined;
+		} else {
+			// 17:56:31 CST
+			// 17:56:31 GMT+0800 (台北標準時間)
+			abbr = timeString.match(/[A-Z]{3,5}/g);
+			abbr = abbr ? abbr[0] : undefined;
+		}
+
+		if (abbr === 'GMT') {
+			abbr = undefined;
+		}
+
+		this.at = +at;
+		this.abbr = abbr;
+		this.offset = at.getTimezoneOffset();
+	}
+
+	function ZoneScore(zone) {
+		this.zone = zone;
+		this.offsetScore = 0;
+		this.abbrScore = 0;
+	}
+
+	ZoneScore.prototype.scoreOffsetAt = function (offsetAt) {
+		this.offsetScore += Math.abs(this.zone.offset(offsetAt.at) - offsetAt.offset);
+		if (this.zone.abbr(offsetAt.at).match(/[A-Z]/g).join('') !== offsetAt.abbr) {
+			this.abbrScore++;
+		}
+	};
+
+	function findChange(low, high) {
+		var mid, diff;
+
+		while ((diff = ((high.at - low.at) / 12e4 | 0) * 6e4)) {
+			mid = new OffsetAt(new Date(low.at + diff));
+			if (mid.offset === low.offset) {
+				low = mid;
+			} else {
+				high = mid;
+			}
+		}
+
+		return low;
+	}
+
+	function userOffsets() {
+		var startYear = new Date().getFullYear() - 2,
+			last = new OffsetAt(new Date(startYear, 0, 1)),
+			offsets = [last],
+			change, next, i;
+
+		for (i = 1; i < 48; i++) {
+			next = new OffsetAt(new Date(startYear, i, 1));
+			if (next.offset !== last.offset) {
+				change = findChange(last, next);
+				offsets.push(change);
+				offsets.push(new OffsetAt(new Date(change.at + 6e4)));
+			}
+			last = next;
+		}
+
+		for (i = 0; i < 4; i++) {
+			offsets.push(new OffsetAt(new Date(startYear + i, 0, 1)));
+			offsets.push(new OffsetAt(new Date(startYear + i, 6, 1)));
+		}
+
+		return offsets;
+	}
+
+	function sortZoneScores (a, b) {
+		if (a.offsetScore !== b.offsetScore) {
+			return a.offsetScore - b.offsetScore;
+		}
+		if (a.abbrScore !== b.abbrScore) {
+			return a.abbrScore - b.abbrScore;
+		}
+		return b.zone.population - a.zone.population;
+	}
+
+	function addToGuesses (name, offsets) {
+		var i, offset;
+		arrayToInt(offsets);
+		for (i = 0; i < offsets.length; i++) {
+			offset = offsets[i];
+			guesses[offset] = guesses[offset] || {};
+			guesses[offset][name] = true;
+		}
+	}
+
+	function guessesForUserOffsets (offsets) {
+		var offsetsLength = offsets.length,
+			filteredGuesses = {},
+			out = [],
+			i, j, guessesOffset;
+
+		for (i = 0; i < offsetsLength; i++) {
+			guessesOffset = guesses[offsets[i].offset] || {};
+			for (j in guessesOffset) {
+				if (guessesOffset.hasOwnProperty(j)) {
+					filteredGuesses[j] = true;
+				}
+			}
+		}
+
+		for (i in filteredGuesses) {
+			if (filteredGuesses.hasOwnProperty(i)) {
+				out.push(names[i]);
+			}
+		}
+
+		return out;
+	}
+
+	function rebuildGuess () {
+
+		// use Intl API when available and returning valid time zone
+		try {
+			var intlName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+			var name = names[normalizeName(intlName)];
+			if (name) {
+				return name;
+			}
+			logError("Moment Timezone found " + intlName + " from the Intl api, but did not have that data loaded.");
+		} catch (e) {
+			// Intl unavailable, fall back to manual guessing.
+		}
+
+		var offsets = userOffsets(),
+			offsetsLength = offsets.length,
+			guesses = guessesForUserOffsets(offsets),
+			zoneScores = [],
+			zoneScore, i, j;
+
+		for (i = 0; i < guesses.length; i++) {
+			zoneScore = new ZoneScore(getZone(guesses[i]), offsetsLength);
+			for (j = 0; j < offsetsLength; j++) {
+				zoneScore.scoreOffsetAt(offsets[j]);
+			}
+			zoneScores.push(zoneScore);
+		}
+
+		zoneScores.sort(sortZoneScores);
+
+		return zoneScores.length > 0 ? zoneScores[0].zone.name : undefined;
+	}
+
+	function guess (ignoreCache) {
+		if (!cachedGuess || ignoreCache) {
+			cachedGuess = rebuildGuess();
+		}
+		return cachedGuess;
+	}
+
+	/************************************
+		Global Methods
+	************************************/
+
+	function normalizeName (name) {
+		return (name || '').toLowerCase().replace(/\//g, '_');
+	}
+
+	function addZone (packed) {
+		var i, name, split, normalized;
+
+		if (typeof packed === "string") {
+			packed = [packed];
+		}
+
+		for (i = 0; i < packed.length; i++) {
+			split = packed[i].split('|');
+			name = split[0];
+			normalized = normalizeName(name);
+			zones[normalized] = packed[i];
+			names[normalized] = name;
+			if (split[5]) {
+				addToGuesses(normalized, split[2].split(' '));
+			}
+		}
+	}
+
+	function getZone (name, caller) {
+		name = normalizeName(name);
+
+		var zone = zones[name];
+		var link;
+
+		if (zone instanceof Zone) {
+			return zone;
+		}
+
+		if (typeof zone === 'string') {
+			zone = new Zone(zone);
+			zones[name] = zone;
+			return zone;
+		}
+
+		// Pass getZone to prevent recursion more than 1 level deep
+		if (links[name] && caller !== getZone && (link = getZone(links[name], getZone))) {
+			zone = zones[name] = new Zone();
+			zone._set(link);
+			zone.name = names[name];
+			return zone;
+		}
+
+		return null;
+	}
+
+	function getNames () {
+		var i, out = [];
+
+		for (i in names) {
+			if (names.hasOwnProperty(i) && (zones[i] || zones[links[i]]) && names[i]) {
+				out.push(names[i]);
+			}
+		}
+
+		return out.sort();
+	}
+
+	function addLink (aliases) {
+		var i, alias, normal0, normal1;
+
+		if (typeof aliases === "string") {
+			aliases = [aliases];
+		}
+
+		for (i = 0; i < aliases.length; i++) {
+			alias = aliases[i].split('|');
+
+			normal0 = normalizeName(alias[0]);
+			normal1 = normalizeName(alias[1]);
+
+			links[normal0] = normal1;
+			names[normal0] = alias[0];
+
+			links[normal1] = normal0;
+			names[normal1] = alias[1];
+		}
+	}
+
+	function loadData (data) {
+		addZone(data.zones);
+		addLink(data.links);
+		tz.dataVersion = data.version;
+	}
+
+	function zoneExists (name) {
+		if (!zoneExists.didShowError) {
+			zoneExists.didShowError = true;
+				logError("moment.tz.zoneExists('" + name + "') has been deprecated in favor of !moment.tz.zone('" + name + "')");
+		}
+		return !!getZone(name);
+	}
+
+	function needsOffset (m) {
+		return !!(m._a && (m._tzm === undefined));
+	}
+
+	function logError (message) {
+		if (typeof console !== 'undefined' && typeof console.error === 'function') {
+			console.error(message);
+		}
+	}
+
+	/************************************
+		moment.tz namespace
+	************************************/
+
+	function tz (input) {
+		var args = Array.prototype.slice.call(arguments, 0, -1),
+			name = arguments[arguments.length - 1],
+			zone = getZone(name),
+			out  = moment.utc.apply(null, args);
+
+		if (zone && !moment.isMoment(input) && needsOffset(out)) {
+			out.add(zone.parse(out), 'minutes');
+		}
+
+		out.tz(name);
+
+		return out;
+	}
+
+	tz.version      = VERSION;
+	tz.dataVersion  = '';
+	tz._zones       = zones;
+	tz._links       = links;
+	tz._names       = names;
+	tz.add          = addZone;
+	tz.link         = addLink;
+	tz.load         = loadData;
+	tz.zone         = getZone;
+	tz.zoneExists   = zoneExists; // deprecated in 0.1.0
+	tz.guess        = guess;
+	tz.names        = getNames;
+	tz.Zone         = Zone;
+	tz.unpack       = unpack;
+	tz.unpackBase60 = unpackBase60;
+	tz.needsOffset  = needsOffset;
+	tz.moveInvalidForward   = true;
+	tz.moveAmbiguousForward = false;
+
+	/************************************
+		Interface with Moment.js
+	************************************/
+
+	var fn = moment.fn;
+
+	moment.tz = tz;
+
+	moment.defaultZone = null;
+
+	moment.updateOffset = function (mom, keepTime) {
+		var zone = moment.defaultZone,
+			offset;
+
+		if (mom._z === undefined) {
+			if (zone && needsOffset(mom) && !mom._isUTC) {
+				mom._d = moment.utc(mom._a)._d;
+				mom.utc().add(zone.parse(mom), 'minutes');
+			}
+			mom._z = zone;
+		}
+		if (mom._z) {
+			offset = mom._z.offset(mom);
+			if (Math.abs(offset) < 16) {
+				offset = offset / 60;
+			}
+			if (mom.utcOffset !== undefined) {
+				mom.utcOffset(-offset, keepTime);
+			} else {
+				mom.zone(offset, keepTime);
+			}
+		}
+	};
+
+	fn.tz = function (name) {
+		if (name) {
+			this._z = getZone(name);
+			if (this._z) {
+				moment.updateOffset(this);
+			} else {
+				logError("Moment Timezone has no data for " + name + ". See http://momentjs.com/timezone/docs/#/data-loading/.");
+			}
+			return this;
+		}
+		if (this._z) { return this._z.name; }
+	};
+
+	function abbrWrap (old) {
+		return function () {
+			if (this._z) { return this._z.abbr(this); }
+			return old.call(this);
+		};
+	}
+
+	function resetZoneWrap (old) {
+		return function () {
+			this._z = null;
+			return old.apply(this, arguments);
+		};
+	}
+
+	fn.zoneName = abbrWrap(fn.zoneName);
+	fn.zoneAbbr = abbrWrap(fn.zoneAbbr);
+	fn.utc      = resetZoneWrap(fn.utc);
+
+	moment.tz.setDefault = function(name) {
+		if (major < 2 || (major === 2 && minor < 9)) {
+			logError('Moment Timezone setDefault() requires Moment.js >= 2.9.0. You are using Moment.js ' + moment.version + '.');
+		}
+		moment.defaultZone = name ? getZone(name) : null;
+		return moment;
+	};
+
+	// Cloning a moment should include the _z property.
+	var momentProperties = moment.momentProperties;
+	if (Object.prototype.toString.call(momentProperties) === '[object Array]') {
+		// moment 2.8.1+
+		momentProperties.push('_z');
+		momentProperties.push('_a');
+	} else if (momentProperties) {
+		// moment 2.7.0
+		momentProperties._z = null;
+	}
+
+	loadData({
+		"version": "2016c",
+		"zones": [
+			"Africa/Abidjan|GMT|0|0||48e5",
+			"Africa/Khartoum|EAT|-30|0||51e5",
+			"Africa/Algiers|CET|-10|0||26e5",
+			"Africa/Lagos|WAT|-10|0||17e6",
+			"Africa/Maputo|CAT|-20|0||26e5",
+			"Africa/Cairo|EET EEST|-20 -30|010101010|1Cby0 Fb0 c10 8n0 8Nd0 gL0 e10 mn0|15e6",
+			"Africa/Casablanca|WET WEST|0 -10|01010101010101010101010101010101010101010|1Cco0 Db0 1zd0 Lz0 1Nf0 wM0 co0 go0 1o00 s00 dA0 vc0 11A0 A00 e00 y00 11A0 uM0 e00 Dc0 11A0 s00 e00 IM0 WM0 mo0 gM0 LA0 WM0 jA0 e00 Rc0 11A0 e00 e00 U00 11A0 8o0 e00 11A0|32e5",
+			"Europe/Paris|CET CEST|-10 -20|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|11e6",
+			"Africa/Johannesburg|SAST|-20|0||84e5",
+			"Africa/Tripoli|EET CET CEST|-20 -10 -20|0120|1IlA0 TA0 1o00|11e5",
+			"Africa/Windhoek|WAST WAT|-20 -10|01010101010101010101010|1C1c0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 11B0|32e4",
+			"America/Adak|HST HDT|a0 90|01010101010101010101010|1BR00 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|326",
+			"America/Anchorage|AKST AKDT|90 80|01010101010101010101010|1BQX0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|30e4",
+			"America/Santo_Domingo|AST|40|0||29e5",
+			"America/Araguaina|BRT BRST|30 20|010|1IdD0 Lz0|14e4",
+			"America/Argentina/Buenos_Aires|ART|30|0|",
+			"America/Asuncion|PYST PYT|30 40|01010101010101010101010|1C430 1a10 1fz0 1a10 1fz0 1cN0 17b0 1ip0 17b0 1ip0 17b0 1ip0 19X0 1fB0 19X0 1fB0 19X0 1ip0 17b0 1ip0 17b0 1ip0|28e5",
+			"America/Panama|EST|50|0||15e5",
+			"America/Bahia|BRT BRST|30 20|010|1FJf0 Rb0|27e5",
+			"America/Bahia_Banderas|MST CDT CST|70 50 60|01212121212121212121212|1C1l0 1nW0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0|84e3",
+			"America/Fortaleza|BRT|30|0||34e5",
+			"America/Managua|CST|60|0||22e5",
+			"America/Manaus|AMT|40|0||19e5",
+			"America/Bogota|COT|50|0||90e5",
+			"America/Denver|MST MDT|70 60|01010101010101010101010|1BQV0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|26e5",
+			"America/Campo_Grande|AMST AMT|30 40|01010101010101010101010|1BIr0 1zd0 On0 1zd0 Rb0 1zd0 Lz0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 On0 1zd0 On0 1C10 Lz0 1C10 Lz0 1C10|77e4",
+			"America/Cancun|CST CDT EST|60 50 50|010101010102|1C1k0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 Dd0|63e4",
+			"America/Caracas|VET|4u|0||29e5",
+			"America/Cayenne|GFT|30|0||58e3",
+			"America/Chicago|CST CDT|60 50|01010101010101010101010|1BQU0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|92e5",
+			"America/Chihuahua|MST MDT|70 60|01010101010101010101010|1C1l0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0|81e4",
+			"America/Phoenix|MST|70|0||42e5",
+			"America/Los_Angeles|PST PDT|80 70|01010101010101010101010|1BQW0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|15e6",
+			"America/New_York|EST EDT|50 40|01010101010101010101010|1BQT0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|21e6",
+			"America/Rio_Branco|AMT ACT|40 50|01|1KLE0|31e4",
+			"America/Fort_Nelson|PST PDT MST|80 70 70|010101010102|1BQW0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0|39e2",
+			"America/Halifax|AST ADT|40 30|01010101010101010101010|1BQS0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|39e4",
+			"America/Godthab|WGT WGST|30 20|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|17e3",
+			"America/Goose_Bay|AST ADT|40 30|01010101010101010101010|1BQQ1 1zb0 Op0 1zcX Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|76e2",
+			"America/Grand_Turk|EST EDT AST|50 40 40|0101010101012|1BQT0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|37e2",
+			"America/Guayaquil|ECT|50|0||27e5",
+			"America/Guyana|GYT|40|0||80e4",
+			"America/Havana|CST CDT|50 40|01010101010101010101010|1BQR0 1wo0 U00 1zc0 U00 1qM0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0|21e5",
+			"America/La_Paz|BOT|40|0||19e5",
+			"America/Lima|PET|50|0||11e6",
+			"America/Mexico_City|CST CDT|60 50|01010101010101010101010|1C1k0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0|20e6",
+			"America/Metlakatla|PST AKST AKDT|80 90 80|012121212121|1PAa0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|14e2",
+			"America/Miquelon|PMST PMDT|30 20|01010101010101010101010|1BQR0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|61e2",
+			"America/Montevideo|UYST UYT|20 30|010101010101|1BQQ0 1ld0 14n0 1ld0 14n0 1o10 11z0 1o10 11z0 1o10 11z0|17e5",
+			"America/Noronha|FNT|20|0||30e2",
+			"America/North_Dakota/Beulah|MST MDT CST CDT|70 60 60 50|01232323232323232323232|1BQV0 1zb0 Oo0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0",
+			"America/Paramaribo|SRT|30|0||24e4",
+			"America/Port-au-Prince|EST EDT|50 40|010101010|1GI70 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|23e5",
+			"America/Santiago|CLST CLT|30 40|010101010101010101010|1C1f0 1fB0 1nX0 G10 1EL0 Op0 1zb0 Rd0 1wn0 Rd0 46n0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0|62e5",
+			"America/Sao_Paulo|BRST BRT|20 30|01010101010101010101010|1BIq0 1zd0 On0 1zd0 Rb0 1zd0 Lz0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 On0 1zd0 On0 1C10 Lz0 1C10 Lz0 1C10|20e6",
+			"America/Scoresbysund|EGT EGST|10 0|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|452",
+			"America/St_Johns|NST NDT|3u 2u|01010101010101010101010|1BQPv 1zb0 Op0 1zcX Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|11e4",
+			"Antarctica/Casey|CAST AWST|-b0 -80|0101|1BN30 40P0 KL0|10",
+			"Antarctica/Davis|DAVT DAVT|-50 -70|0101|1BPw0 3Wn0 KN0|70",
+			"Antarctica/DumontDUrville|DDUT|-a0|0||80",
+			"Antarctica/Macquarie|AEDT MIST|-b0 -b0|01|1C140|1",
+			"Antarctica/Mawson|MAWT|-50|0||60",
+			"Pacific/Auckland|NZDT NZST|-d0 -c0|01010101010101010101010|1C120 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00|14e5",
+			"Antarctica/Rothera|ROTT|30|0||130",
+			"Antarctica/Syowa|SYOT|-30|0||20",
+			"Antarctica/Troll|UTC CEST|0 -20|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|40",
+			"Antarctica/Vostok|VOST|-60|0||25",
+			"Asia/Baghdad|AST|-30|0||66e5",
+			"Asia/Almaty|ALMT|-60|0||15e5",
+			"Asia/Amman|EET EEST|-20 -30|010101010101010101010|1BVy0 1qM0 11A0 1o00 11A0 4bX0 Dd0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0|25e5",
+			"Asia/Anadyr|ANAT ANAST ANAT|-c0 -c0 -b0|0120|1BWe0 1qN0 WM0|13e3",
+			"Asia/Aqtobe|AQTT|-50|0||27e4",
+			"Asia/Ashgabat|TMT|-50|0||41e4",
+			"Asia/Baku|AZT AZST|-40 -50|0101010101010|1BWo0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00|27e5",
+			"Asia/Bangkok|ICT|-70|0||15e6",
+			"Asia/Barnaul|+06 +07|-60 -70|010101|1BWk0 1qM0 WM0 8Hz0 3rd0",
+			"Asia/Beirut|EET EEST|-20 -30|01010101010101010101010|1BWm0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0|22e5",
+			"Asia/Bishkek|KGT|-60|0||87e4",
+			"Asia/Brunei|BNT|-80|0||42e4",
+			"Asia/Kolkata|IST|-5u|0||15e6",
+			"Asia/Chita|YAKT YAKST YAKT IRKT|-90 -a0 -a0 -80|010230|1BWh0 1qM0 WM0 8Hz0 3re0|33e4",
+			"Asia/Choibalsan|CHOT CHOST|-80 -90|0101010101010|1O8G0 1cJ0 1cP0 1cJ0 1cP0 1fx0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0|38e3",
+			"Asia/Shanghai|CST|-80|0||23e6",
+			"Asia/Dhaka|BDT|-60|0||16e6",
+			"Asia/Damascus|EET EEST|-20 -30|01010101010101010101010|1C0m0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0|26e5",
+			"Asia/Dili|TLT|-90|0||19e4",
+			"Asia/Dubai|GST|-40|0||39e5",
+			"Asia/Dushanbe|TJT|-50|0||76e4",
+			"Asia/Gaza|EET EEST|-20 -30|01010101010101010101010|1BVW1 SKX 1xd1 MKX 1AN0 1a00 1fA0 1cL0 1cN0 1nX0 1210 1nz0 1220 1ny0 1220 1qm0 1220 1ny0 1220 1ny0 1220 1ny0|18e5",
+			"Asia/Hebron|EET EEST|-20 -30|0101010101010101010101010|1BVy0 Tb0 1xd1 MKX bB0 cn0 1cN0 1a00 1fA0 1cL0 1cN0 1nX0 1210 1nz0 1220 1ny0 1220 1qm0 1220 1ny0 1220 1ny0 1220 1ny0|25e4",
+			"Asia/Hong_Kong|HKT|-80|0||73e5",
+			"Asia/Hovd|HOVT HOVST|-70 -80|0101010101010|1O8H0 1cJ0 1cP0 1cJ0 1cP0 1fx0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0|81e3",
+			"Asia/Irkutsk|IRKT IRKST IRKT|-80 -90 -90|01020|1BWi0 1qM0 WM0 8Hz0|60e4",
+			"Europe/Istanbul|EET EEST|-20 -30|01010101010101010101010|1BWp0 1qM0 Xc0 1qo0 WM0 1qM0 11A0 1o00 1200 1nA0 11A0 1tA0 U00 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|13e6",
+			"Asia/Jakarta|WIB|-70|0||31e6",
+			"Asia/Jayapura|WIT|-90|0||26e4",
+			"Asia/Jerusalem|IST IDT|-20 -30|01010101010101010101010|1BVA0 17X0 1kp0 1dz0 1c10 1aL0 1eN0 1oL0 10N0 1oL0 10N0 1oL0 10N0 1rz0 W10 1rz0 W10 1rz0 10N0 1oL0 10N0 1oL0|81e4",
+			"Asia/Kabul|AFT|-4u|0||46e5",
+			"Asia/Kamchatka|PETT PETST PETT|-c0 -c0 -b0|0120|1BWe0 1qN0 WM0|18e4",
+			"Asia/Karachi|PKT|-50|0||24e6",
+			"Asia/Urumqi|XJT|-60|0||32e5",
+			"Asia/Kathmandu|NPT|-5J|0||12e5",
+			"Asia/Khandyga|VLAT VLAST VLAT YAKT YAKT|-a0 -b0 -b0 -a0 -90|010234|1BWg0 1qM0 WM0 17V0 7zD0|66e2",
+			"Asia/Krasnoyarsk|KRAT KRAST KRAT|-70 -80 -80|01020|1BWj0 1qM0 WM0 8Hz0|10e5",
+			"Asia/Kuala_Lumpur|MYT|-80|0||71e5",
+			"Asia/Magadan|MAGT MAGST MAGT MAGT|-b0 -c0 -c0 -a0|01023|1BWf0 1qM0 WM0 8Hz0|95e3",
+			"Asia/Makassar|WITA|-80|0||15e5",
+			"Asia/Manila|PHT|-80|0||24e6",
+			"Europe/Athens|EET EEST|-20 -30|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|35e5",
+			"Asia/Novokuznetsk|KRAT NOVST NOVT NOVT|-70 -70 -60 -70|01230|1BWj0 1qN0 WM0 8Hz0|55e4",
+			"Asia/Novosibirsk|NOVT NOVST NOVT|-60 -70 -70|01020|1BWk0 1qM0 WM0 8Hz0|15e5",
+			"Asia/Omsk|OMST OMSST OMST|-60 -70 -70|01020|1BWk0 1qM0 WM0 8Hz0|12e5",
+			"Asia/Oral|ORAT|-50|0||27e4",
+			"Asia/Pyongyang|KST KST|-90 -8u|01|1P4D0|29e5",
+			"Asia/Qyzylorda|QYZT|-60|0||73e4",
+			"Asia/Rangoon|MMT|-6u|0||48e5",
+			"Asia/Sakhalin|SAKT SAKST SAKT|-a0 -b0 -b0|010202|1BWg0 1qM0 WM0 8Hz0 3rd0|58e4",
+			"Asia/Tashkent|UZT|-50|0||23e5",
+			"Asia/Seoul|KST|-90|0||23e6",
+			"Asia/Singapore|SGT|-80|0||56e5",
+			"Asia/Srednekolymsk|MAGT MAGST MAGT SRET|-b0 -c0 -c0 -b0|01023|1BWf0 1qM0 WM0 8Hz0|35e2",
+			"Asia/Tbilisi|GET|-40|0||11e5",
+			"Asia/Tehran|IRST IRDT|-3u -4u|01010101010101010101010|1BTUu 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0|14e6",
+			"Asia/Thimphu|BTT|-60|0||79e3",
+			"Asia/Tokyo|JST|-90|0||38e6",
+			"Asia/Ulaanbaatar|ULAT ULAST|-80 -90|0101010101010|1O8G0 1cJ0 1cP0 1cJ0 1cP0 1fx0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0|12e5",
+			"Asia/Ust-Nera|MAGT MAGST MAGT VLAT VLAT|-b0 -c0 -c0 -b0 -a0|010234|1BWf0 1qM0 WM0 17V0 7zD0|65e2",
+			"Asia/Vladivostok|VLAT VLAST VLAT|-a0 -b0 -b0|01020|1BWg0 1qM0 WM0 8Hz0|60e4",
+			"Asia/Yakutsk|YAKT YAKST YAKT|-90 -a0 -a0|01020|1BWh0 1qM0 WM0 8Hz0|28e4",
+			"Asia/Yekaterinburg|YEKT YEKST YEKT|-50 -60 -60|01020|1BWl0 1qM0 WM0 8Hz0|14e5",
+			"Asia/Yerevan|AMT AMST|-40 -50|01010|1BWm0 1qM0 WM0 1qM0|13e5",
+			"Atlantic/Azores|AZOT AZOST|10 0|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|25e4",
+			"Europe/Lisbon|WET WEST|0 -10|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|27e5",
+			"Atlantic/Cape_Verde|CVT|10|0||50e4",
+			"Atlantic/South_Georgia|GST|20|0||30",
+			"Atlantic/Stanley|FKST FKT|30 40|010|1C6R0 U10|21e2",
+			"Australia/Sydney|AEDT AEST|-b0 -a0|01010101010101010101010|1C140 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0|40e5",
+			"Australia/Adelaide|ACDT ACST|-au -9u|01010101010101010101010|1C14u 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0|11e5",
+			"Australia/Brisbane|AEST|-a0|0||20e5",
+			"Australia/Darwin|ACST|-9u|0||12e4",
+			"Australia/Eucla|ACWST|-8J|0||368",
+			"Australia/Lord_Howe|LHDT LHST|-b0 -au|01010101010101010101010|1C130 1cMu 1cLu 1cMu 1cLu 1fAu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1fAu 1cLu 1cMu 1cLu 1cMu|347",
+			"Australia/Perth|AWST|-80|0||18e5",
+			"Pacific/Easter|EASST EAST|50 60|010101010101010101010|1C1f0 1fB0 1nX0 G10 1EL0 Op0 1zb0 Rd0 1wn0 Rd0 46n0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0|30e2",
+			"Europe/Dublin|GMT IST|0 -10|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|12e5",
+			"Etc/GMT+1|GMT+1|10|0|",
+			"Etc/GMT+10|GMT+10|a0|0|",
+			"Etc/GMT+11|GMT+11|b0|0|",
+			"Etc/GMT+12|GMT+12|c0|0|",
+			"Etc/GMT+2|GMT+2|20|0|",
+			"Etc/GMT+3|GMT+3|30|0|",
+			"Etc/GMT+4|GMT+4|40|0|",
+			"Etc/GMT+5|GMT+5|50|0|",
+			"Etc/GMT+6|GMT+6|60|0|",
+			"Etc/GMT+7|GMT+7|70|0|",
+			"Etc/GMT+8|GMT+8|80|0|",
+			"Etc/GMT+9|GMT+9|90|0|",
+			"Etc/GMT-1|GMT-1|-10|0|",
+			"Etc/GMT-10|GMT-10|-a0|0|",
+			"Etc/GMT-11|GMT-11|-b0|0|",
+			"Etc/GMT-12|GMT-12|-c0|0|",
+			"Etc/GMT-13|GMT-13|-d0|0|",
+			"Etc/GMT-14|GMT-14|-e0|0|",
+			"Etc/GMT-2|GMT-2|-20|0|",
+			"Etc/GMT-3|GMT-3|-30|0|",
+			"Etc/GMT-4|GMT-4|-40|0|",
+			"Etc/GMT-5|GMT-5|-50|0|",
+			"Etc/GMT-6|GMT-6|-60|0|",
+			"Etc/GMT-7|GMT-7|-70|0|",
+			"Etc/GMT-8|GMT-8|-80|0|",
+			"Etc/GMT-9|GMT-9|-90|0|",
+			"Etc/UCT|UCT|0|0|",
+			"Etc/UTC|UTC|0|0|",
+			"Europe/Astrakhan|+03 +04|-30 -40|010101|1BWn0 1qM0 WM0 8Hz0 3rd0",
+			"Europe/London|GMT BST|0 -10|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|10e6",
+			"Europe/Chisinau|EET EEST|-20 -30|01010101010101010101010|1BWo0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|67e4",
+			"Europe/Kaliningrad|EET EEST FET|-20 -30 -30|01020|1BWo0 1qM0 WM0 8Hz0|44e4",
+			"Europe/Minsk|EET EEST FET MSK|-20 -30 -30 -30|01023|1BWo0 1qM0 WM0 8Hy0|19e5",
+			"Europe/Moscow|MSK MSD MSK|-30 -40 -40|01020|1BWn0 1qM0 WM0 8Hz0|16e6",
+			"Europe/Samara|SAMT SAMST SAMT|-40 -40 -30|0120|1BWm0 1qN0 WM0|12e5",
+			"Europe/Simferopol|EET EEST MSK MSK|-20 -30 -40 -30|01010101023|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11z0 1nW0|33e4",
+			"Pacific/Honolulu|HST|a0|0||37e4",
+			"Indian/Chagos|IOT|-60|0||30e2",
+			"Indian/Christmas|CXT|-70|0||21e2",
+			"Indian/Cocos|CCT|-6u|0||596",
+			"Indian/Kerguelen|TFT|-50|0||130",
+			"Indian/Mahe|SCT|-40|0||79e3",
+			"Indian/Maldives|MVT|-50|0||35e4",
+			"Indian/Mauritius|MUT|-40|0||15e4",
+			"Indian/Reunion|RET|-40|0||84e4",
+			"Pacific/Majuro|MHT|-c0|0||28e3",
+			"MET|MET MEST|-10 -20|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00",
+			"Pacific/Chatham|CHADT CHAST|-dJ -cJ|01010101010101010101010|1C120 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00|600",
+			"Pacific/Apia|SST SDT WSDT WSST|b0 a0 -e0 -d0|01012323232323232323232|1Dbn0 1ff0 1a00 CI0 AQ0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00|37e3",
+			"Pacific/Bougainville|PGT BST|-a0 -b0|01|1NwE0|18e4",
+			"Pacific/Chuuk|CHUT|-a0|0||49e3",
+			"Pacific/Efate|VUT|-b0|0||66e3",
+			"Pacific/Enderbury|PHOT|-d0|0||1",
+			"Pacific/Fakaofo|TKT TKT|b0 -d0|01|1Gfn0|483",
+			"Pacific/Fiji|FJST FJT|-d0 -c0|01010101010101010101010|1BWe0 1o00 Rc0 1wo0 Ao0 1Nc0 Ao0 1Q00 xz0 1SN0 uM0 1SM0 uM0 1VA0 s00 1VA0 uM0 1SM0 uM0 1SM0 uM0 1SM0|88e4",
+			"Pacific/Funafuti|TVT|-c0|0||45e2",
+			"Pacific/Galapagos|GALT|60|0||25e3",
+			"Pacific/Gambier|GAMT|90|0||125",
+			"Pacific/Guadalcanal|SBT|-b0|0||11e4",
+			"Pacific/Guam|ChST|-a0|0||17e4",
+			"Pacific/Kiritimati|LINT|-e0|0||51e2",
+			"Pacific/Kosrae|KOST|-b0|0||66e2",
+			"Pacific/Marquesas|MART|9u|0||86e2",
+			"Pacific/Pago_Pago|SST|b0|0||37e2",
+			"Pacific/Nauru|NRT|-c0|0||10e3",
+			"Pacific/Niue|NUT|b0|0||12e2",
+			"Pacific/Norfolk|NFT NFT|-bu -b0|01|1PoCu|25e4",
+			"Pacific/Noumea|NCT|-b0|0||98e3",
+			"Pacific/Palau|PWT|-90|0||21e3",
+			"Pacific/Pitcairn|PST|80|0||56",
+			"Pacific/Pohnpei|PONT|-b0|0||34e3",
+			"Pacific/Port_Moresby|PGT|-a0|0||25e4",
+			"Pacific/Rarotonga|CKT|a0|0||13e3",
+			"Pacific/Tahiti|TAHT|a0|0||18e4",
+			"Pacific/Tarawa|GILT|-c0|0||29e3",
+			"Pacific/Tongatapu|TOT|-d0|0||75e3",
+			"Pacific/Wake|WAKT|-c0|0||16e3",
+			"Pacific/Wallis|WFT|-c0|0||94"
+		],
+		"links": [
+			"Africa/Abidjan|Africa/Accra",
+			"Africa/Abidjan|Africa/Bamako",
+			"Africa/Abidjan|Africa/Banjul",
+			"Africa/Abidjan|Africa/Bissau",
+			"Africa/Abidjan|Africa/Conakry",
+			"Africa/Abidjan|Africa/Dakar",
+			"Africa/Abidjan|Africa/Freetown",
+			"Africa/Abidjan|Africa/Lome",
+			"Africa/Abidjan|Africa/Monrovia",
+			"Africa/Abidjan|Africa/Nouakchott",
+			"Africa/Abidjan|Africa/Ouagadougou",
+			"Africa/Abidjan|Africa/Sao_Tome",
+			"Africa/Abidjan|Africa/Timbuktu",
+			"Africa/Abidjan|America/Danmarkshavn",
+			"Africa/Abidjan|Atlantic/Reykjavik",
+			"Africa/Abidjan|Atlantic/St_Helena",
+			"Africa/Abidjan|Etc/GMT",
+			"Africa/Abidjan|Etc/GMT+0",
+			"Africa/Abidjan|Etc/GMT-0",
+			"Africa/Abidjan|Etc/GMT0",
+			"Africa/Abidjan|Etc/Greenwich",
+			"Africa/Abidjan|GMT",
+			"Africa/Abidjan|GMT+0",
+			"Africa/Abidjan|GMT-0",
+			"Africa/Abidjan|GMT0",
+			"Africa/Abidjan|Greenwich",
+			"Africa/Abidjan|Iceland",
+			"Africa/Algiers|Africa/Tunis",
+			"Africa/Cairo|Egypt",
+			"Africa/Casablanca|Africa/El_Aaiun",
+			"Africa/Johannesburg|Africa/Maseru",
+			"Africa/Johannesburg|Africa/Mbabane",
+			"Africa/Khartoum|Africa/Addis_Ababa",
+			"Africa/Khartoum|Africa/Asmara",
+			"Africa/Khartoum|Africa/Asmera",
+			"Africa/Khartoum|Africa/Dar_es_Salaam",
+			"Africa/Khartoum|Africa/Djibouti",
+			"Africa/Khartoum|Africa/Juba",
+			"Africa/Khartoum|Africa/Kampala",
+			"Africa/Khartoum|Africa/Mogadishu",
+			"Africa/Khartoum|Africa/Nairobi",
+			"Africa/Khartoum|Indian/Antananarivo",
+			"Africa/Khartoum|Indian/Comoro",
+			"Africa/Khartoum|Indian/Mayotte",
+			"Africa/Lagos|Africa/Bangui",
+			"Africa/Lagos|Africa/Brazzaville",
+			"Africa/Lagos|Africa/Douala",
+			"Africa/Lagos|Africa/Kinshasa",
+			"Africa/Lagos|Africa/Libreville",
+			"Africa/Lagos|Africa/Luanda",
+			"Africa/Lagos|Africa/Malabo",
+			"Africa/Lagos|Africa/Ndjamena",
+			"Africa/Lagos|Africa/Niamey",
+			"Africa/Lagos|Africa/Porto-Novo",
+			"Africa/Maputo|Africa/Blantyre",
+			"Africa/Maputo|Africa/Bujumbura",
+			"Africa/Maputo|Africa/Gaborone",
+			"Africa/Maputo|Africa/Harare",
+			"Africa/Maputo|Africa/Kigali",
+			"Africa/Maputo|Africa/Lubumbashi",
+			"Africa/Maputo|Africa/Lusaka",
+			"Africa/Tripoli|Libya",
+			"America/Adak|America/Atka",
+			"America/Adak|US/Aleutian",
+			"America/Anchorage|America/Juneau",
+			"America/Anchorage|America/Nome",
+			"America/Anchorage|America/Sitka",
+			"America/Anchorage|America/Yakutat",
+			"America/Anchorage|US/Alaska",
+			"America/Argentina/Buenos_Aires|America/Argentina/Catamarca",
+			"America/Argentina/Buenos_Aires|America/Argentina/ComodRivadavia",
+			"America/Argentina/Buenos_Aires|America/Argentina/Cordoba",
+			"America/Argentina/Buenos_Aires|America/Argentina/Jujuy",
+			"America/Argentina/Buenos_Aires|America/Argentina/La_Rioja",
+			"America/Argentina/Buenos_Aires|America/Argentina/Mendoza",
+			"America/Argentina/Buenos_Aires|America/Argentina/Rio_Gallegos",
+			"America/Argentina/Buenos_Aires|America/Argentina/Salta",
+			"America/Argentina/Buenos_Aires|America/Argentina/San_Juan",
+			"America/Argentina/Buenos_Aires|America/Argentina/San_Luis",
+			"America/Argentina/Buenos_Aires|America/Argentina/Tucuman",
+			"America/Argentina/Buenos_Aires|America/Argentina/Ushuaia",
+			"America/Argentina/Buenos_Aires|America/Buenos_Aires",
+			"America/Argentina/Buenos_Aires|America/Catamarca",
+			"America/Argentina/Buenos_Aires|America/Cordoba",
+			"America/Argentina/Buenos_Aires|America/Jujuy",
+			"America/Argentina/Buenos_Aires|America/Mendoza",
+			"America/Argentina/Buenos_Aires|America/Rosario",
+			"America/Campo_Grande|America/Cuiaba",
+			"America/Chicago|America/Indiana/Knox",
+			"America/Chicago|America/Indiana/Tell_City",
+			"America/Chicago|America/Knox_IN",
+			"America/Chicago|America/Matamoros",
+			"America/Chicago|America/Menominee",
+			"America/Chicago|America/North_Dakota/Center",
+			"America/Chicago|America/North_Dakota/New_Salem",
+			"America/Chicago|America/Rainy_River",
+			"America/Chicago|America/Rankin_Inlet",
+			"America/Chicago|America/Resolute",
+			"America/Chicago|America/Winnipeg",
+			"America/Chicago|CST6CDT",
+			"America/Chicago|Canada/Central",
+			"America/Chicago|US/Central",
+			"America/Chicago|US/Indiana-Starke",
+			"America/Chihuahua|America/Mazatlan",
+			"America/Chihuahua|Mexico/BajaSur",
+			"America/Denver|America/Boise",
+			"America/Denver|America/Cambridge_Bay",
+			"America/Denver|America/Edmonton",
+			"America/Denver|America/Inuvik",
+			"America/Denver|America/Ojinaga",
+			"America/Denver|America/Shiprock",
+			"America/Denver|America/Yellowknife",
+			"America/Denver|Canada/Mountain",
+			"America/Denver|MST7MDT",
+			"America/Denver|Navajo",
+			"America/Denver|US/Mountain",
+			"America/Fortaleza|America/Belem",
+			"America/Fortaleza|America/Maceio",
+			"America/Fortaleza|America/Recife",
+			"America/Fortaleza|America/Santarem",
+			"America/Halifax|America/Glace_Bay",
+			"America/Halifax|America/Moncton",
+			"America/Halifax|America/Thule",
+			"America/Halifax|Atlantic/Bermuda",
+			"America/Halifax|Canada/Atlantic",
+			"America/Havana|Cuba",
+			"America/Los_Angeles|America/Dawson",
+			"America/Los_Angeles|America/Ensenada",
+			"America/Los_Angeles|America/Santa_Isabel",
+			"America/Los_Angeles|America/Tijuana",
+			"America/Los_Angeles|America/Vancouver",
+			"America/Los_Angeles|America/Whitehorse",
+			"America/Los_Angeles|Canada/Pacific",
+			"America/Los_Angeles|Canada/Yukon",
+			"America/Los_Angeles|Mexico/BajaNorte",
+			"America/Los_Angeles|PST8PDT",
+			"America/Los_Angeles|US/Pacific",
+			"America/Los_Angeles|US/Pacific-New",
+			"America/Managua|America/Belize",
+			"America/Managua|America/Costa_Rica",
+			"America/Managua|America/El_Salvador",
+			"America/Managua|America/Guatemala",
+			"America/Managua|America/Regina",
+			"America/Managua|America/Swift_Current",
+			"America/Managua|America/Tegucigalpa",
+			"America/Managua|Canada/East-Saskatchewan",
+			"America/Managua|Canada/Saskatchewan",
+			"America/Manaus|America/Boa_Vista",
+			"America/Manaus|America/Porto_Velho",
+			"America/Manaus|Brazil/West",
+			"America/Mexico_City|America/Merida",
+			"America/Mexico_City|America/Monterrey",
+			"America/Mexico_City|Mexico/General",
+			"America/New_York|America/Detroit",
+			"America/New_York|America/Fort_Wayne",
+			"America/New_York|America/Indiana/Indianapolis",
+			"America/New_York|America/Indiana/Marengo",
+			"America/New_York|America/Indiana/Petersburg",
+			"America/New_York|America/Indiana/Vevay",
+			"America/New_York|America/Indiana/Vincennes",
+			"America/New_York|America/Indiana/Winamac",
+			"America/New_York|America/Indianapolis",
+			"America/New_York|America/Iqaluit",
+			"America/New_York|America/Kentucky/Louisville",
+			"America/New_York|America/Kentucky/Monticello",
+			"America/New_York|America/Louisville",
+			"America/New_York|America/Montreal",
+			"America/New_York|America/Nassau",
+			"America/New_York|America/Nipigon",
+			"America/New_York|America/Pangnirtung",
+			"America/New_York|America/Thunder_Bay",
+			"America/New_York|America/Toronto",
+			"America/New_York|Canada/Eastern",
+			"America/New_York|EST5EDT",
+			"America/New_York|US/East-Indiana",
+			"America/New_York|US/Eastern",
+			"America/New_York|US/Michigan",
+			"America/Noronha|Brazil/DeNoronha",
+			"America/Panama|America/Atikokan",
+			"America/Panama|America/Cayman",
+			"America/Panama|America/Coral_Harbour",
+			"America/Panama|America/Jamaica",
+			"America/Panama|EST",
+			"America/Panama|Jamaica",
+			"America/Phoenix|America/Creston",
+			"America/Phoenix|America/Dawson_Creek",
+			"America/Phoenix|America/Hermosillo",
+			"America/Phoenix|MST",
+			"America/Phoenix|US/Arizona",
+			"America/Rio_Branco|America/Eirunepe",
+			"America/Rio_Branco|America/Porto_Acre",
+			"America/Rio_Branco|Brazil/Acre",
+			"America/Santiago|Antarctica/Palmer",
+			"America/Santiago|Chile/Continental",
+			"America/Santo_Domingo|America/Anguilla",
+			"America/Santo_Domingo|America/Antigua",
+			"America/Santo_Domingo|America/Aruba",
+			"America/Santo_Domingo|America/Barbados",
+			"America/Santo_Domingo|America/Blanc-Sablon",
+			"America/Santo_Domingo|America/Curacao",
+			"America/Santo_Domingo|America/Dominica",
+			"America/Santo_Domingo|America/Grenada",
+			"America/Santo_Domingo|America/Guadeloupe",
+			"America/Santo_Domingo|America/Kralendijk",
+			"America/Santo_Domingo|America/Lower_Princes",
+			"America/Santo_Domingo|America/Marigot",
+			"America/Santo_Domingo|America/Martinique",
+			"America/Santo_Domingo|America/Montserrat",
+			"America/Santo_Domingo|America/Port_of_Spain",
+			"America/Santo_Domingo|America/Puerto_Rico",
+			"America/Santo_Domingo|America/St_Barthelemy",
+			"America/Santo_Domingo|America/St_Kitts",
+			"America/Santo_Domingo|America/St_Lucia",
+			"America/Santo_Domingo|America/St_Thomas",
+			"America/Santo_Domingo|America/St_Vincent",
+			"America/Santo_Domingo|America/Tortola",
+			"America/Santo_Domingo|America/Virgin",
+			"America/Sao_Paulo|Brazil/East",
+			"America/St_Johns|Canada/Newfoundland",
+			"Asia/Aqtobe|Asia/Aqtau",
+			"Asia/Ashgabat|Asia/Ashkhabad",
+			"Asia/Baghdad|Asia/Aden",
+			"Asia/Baghdad|Asia/Bahrain",
+			"Asia/Baghdad|Asia/Kuwait",
+			"Asia/Baghdad|Asia/Qatar",
+			"Asia/Baghdad|Asia/Riyadh",
+			"Asia/Bangkok|Asia/Ho_Chi_Minh",
+			"Asia/Bangkok|Asia/Phnom_Penh",
+			"Asia/Bangkok|Asia/Saigon",
+			"Asia/Bangkok|Asia/Vientiane",
+			"Asia/Dhaka|Asia/Dacca",
+			"Asia/Dubai|Asia/Muscat",
+			"Asia/Hong_Kong|Hongkong",
+			"Asia/Jakarta|Asia/Pontianak",
+			"Asia/Jerusalem|Asia/Tel_Aviv",
+			"Asia/Jerusalem|Israel",
+			"Asia/Kathmandu|Asia/Katmandu",
+			"Asia/Kolkata|Asia/Calcutta",
+			"Asia/Kolkata|Asia/Colombo",
+			"Asia/Kuala_Lumpur|Asia/Kuching",
+			"Asia/Makassar|Asia/Ujung_Pandang",
+			"Asia/Seoul|ROK",
+			"Asia/Shanghai|Asia/Chongqing",
+			"Asia/Shanghai|Asia/Chungking",
+			"Asia/Shanghai|Asia/Harbin",
+			"Asia/Shanghai|Asia/Macao",
+			"Asia/Shanghai|Asia/Macau",
+			"Asia/Shanghai|Asia/Taipei",
+			"Asia/Shanghai|PRC",
+			"Asia/Shanghai|ROC",
+			"Asia/Singapore|Singapore",
+			"Asia/Tashkent|Asia/Samarkand",
+			"Asia/Tehran|Iran",
+			"Asia/Thimphu|Asia/Thimbu",
+			"Asia/Tokyo|Japan",
+			"Asia/Ulaanbaatar|Asia/Ulan_Bator",
+			"Asia/Urumqi|Asia/Kashgar",
+			"Australia/Adelaide|Australia/Broken_Hill",
+			"Australia/Adelaide|Australia/South",
+			"Australia/Adelaide|Australia/Yancowinna",
+			"Australia/Brisbane|Australia/Lindeman",
+			"Australia/Brisbane|Australia/Queensland",
+			"Australia/Darwin|Australia/North",
+			"Australia/Lord_Howe|Australia/LHI",
+			"Australia/Perth|Australia/West",
+			"Australia/Sydney|Australia/ACT",
+			"Australia/Sydney|Australia/Canberra",
+			"Australia/Sydney|Australia/Currie",
+			"Australia/Sydney|Australia/Hobart",
+			"Australia/Sydney|Australia/Melbourne",
+			"Australia/Sydney|Australia/NSW",
+			"Australia/Sydney|Australia/Tasmania",
+			"Australia/Sydney|Australia/Victoria",
+			"Etc/UCT|UCT",
+			"Etc/UTC|Etc/Universal",
+			"Etc/UTC|Etc/Zulu",
+			"Etc/UTC|UTC",
+			"Etc/UTC|Universal",
+			"Etc/UTC|Zulu",
+			"Europe/Astrakhan|Europe/Ulyanovsk",
+			"Europe/Athens|Asia/Nicosia",
+			"Europe/Athens|EET",
+			"Europe/Athens|Europe/Bucharest",
+			"Europe/Athens|Europe/Helsinki",
+			"Europe/Athens|Europe/Kiev",
+			"Europe/Athens|Europe/Mariehamn",
+			"Europe/Athens|Europe/Nicosia",
+			"Europe/Athens|Europe/Riga",
+			"Europe/Athens|Europe/Sofia",
+			"Europe/Athens|Europe/Tallinn",
+			"Europe/Athens|Europe/Uzhgorod",
+			"Europe/Athens|Europe/Vilnius",
+			"Europe/Athens|Europe/Zaporozhye",
+			"Europe/Chisinau|Europe/Tiraspol",
+			"Europe/Dublin|Eire",
+			"Europe/Istanbul|Asia/Istanbul",
+			"Europe/Istanbul|Turkey",
+			"Europe/Lisbon|Atlantic/Canary",
+			"Europe/Lisbon|Atlantic/Faeroe",
+			"Europe/Lisbon|Atlantic/Faroe",
+			"Europe/Lisbon|Atlantic/Madeira",
+			"Europe/Lisbon|Portugal",
+			"Europe/Lisbon|WET",
+			"Europe/London|Europe/Belfast",
+			"Europe/London|Europe/Guernsey",
+			"Europe/London|Europe/Isle_of_Man",
+			"Europe/London|Europe/Jersey",
+			"Europe/London|GB",
+			"Europe/London|GB-Eire",
+			"Europe/Moscow|Europe/Volgograd",
+			"Europe/Moscow|W-SU",
+			"Europe/Paris|Africa/Ceuta",
+			"Europe/Paris|Arctic/Longyearbyen",
+			"Europe/Paris|Atlantic/Jan_Mayen",
+			"Europe/Paris|CET",
+			"Europe/Paris|Europe/Amsterdam",
+			"Europe/Paris|Europe/Andorra",
+			"Europe/Paris|Europe/Belgrade",
+			"Europe/Paris|Europe/Berlin",
+			"Europe/Paris|Europe/Bratislava",
+			"Europe/Paris|Europe/Brussels",
+			"Europe/Paris|Europe/Budapest",
+			"Europe/Paris|Europe/Busingen",
+			"Europe/Paris|Europe/Copenhagen",
+			"Europe/Paris|Europe/Gibraltar",
+			"Europe/Paris|Europe/Ljubljana",
+			"Europe/Paris|Europe/Luxembourg",
+			"Europe/Paris|Europe/Madrid",
+			"Europe/Paris|Europe/Malta",
+			"Europe/Paris|Europe/Monaco",
+			"Europe/Paris|Europe/Oslo",
+			"Europe/Paris|Europe/Podgorica",
+			"Europe/Paris|Europe/Prague",
+			"Europe/Paris|Europe/Rome",
+			"Europe/Paris|Europe/San_Marino",
+			"Europe/Paris|Europe/Sarajevo",
+			"Europe/Paris|Europe/Skopje",
+			"Europe/Paris|Europe/Stockholm",
+			"Europe/Paris|Europe/Tirane",
+			"Europe/Paris|Europe/Vaduz",
+			"Europe/Paris|Europe/Vatican",
+			"Europe/Paris|Europe/Vienna",
+			"Europe/Paris|Europe/Warsaw",
+			"Europe/Paris|Europe/Zagreb",
+			"Europe/Paris|Europe/Zurich",
+			"Europe/Paris|Poland",
+			"Pacific/Auckland|Antarctica/McMurdo",
+			"Pacific/Auckland|Antarctica/South_Pole",
+			"Pacific/Auckland|NZ",
+			"Pacific/Chatham|NZ-CHAT",
+			"Pacific/Chuuk|Pacific/Truk",
+			"Pacific/Chuuk|Pacific/Yap",
+			"Pacific/Easter|Chile/EasterIsland",
+			"Pacific/Guam|Pacific/Saipan",
+			"Pacific/Honolulu|HST",
+			"Pacific/Honolulu|Pacific/Johnston",
+			"Pacific/Honolulu|US/Hawaii",
+			"Pacific/Majuro|Kwajalein",
+			"Pacific/Majuro|Pacific/Kwajalein",
+			"Pacific/Pago_Pago|Pacific/Midway",
+			"Pacific/Pago_Pago|Pacific/Samoa",
+			"Pacific/Pago_Pago|US/Samoa",
+			"Pacific/Pohnpei|Pacific/Ponape"
+		]
+	});
+
+
+	return moment;
+}));
 /**
  * @license AngularJS v1.4.8
  * (c) 2010-2015 Google, Inc. http://angularjs.org
@@ -14855,289 +16047,364 @@ if ( !noGlobal ) {
 return jQuery;
 }));
 
-"use strict";
-/* 
- * Original script by Josh Fraser (http://www.onlineaspect.com)
- * Continued and maintained by Jon Nylander at https://bitbucket.org/pellepim/jstimezonedetect
- *
- * Provided under the Do Whatever You Want With This Code License.
- */
-
 /**
- * Namespace to hold all the code for timezone detection.
+ * This script gives you the zone info key representing your device's time zone setting.
+ *
+ * @name jsTimezoneDetect
+ * @version 1.0.5
+ * @author Jon Nylander
+ * @license MIT License - http://www.opensource.org/licenses/mit-license.php
+ *
+ * For usage and examples, visit:
+ * http://pellepim.bitbucket.org/jstz/
+ *
+ * Copyright (c) Jon Nylander
  */
-var jstz = function () {
-  var HEMISPHERE_SOUTH = 's',
-		retval = {
-			timezone_name : '',
-			uses_dst : '',
-			utc_offset : 0,
-			utc_name : '',
-			hemisphere : ''
-		};
-	/** 
-	 * Gets the offset in minutes from UTC for a certain date.
-	 * @param {Date} date
-	 * @returns {Number}
-	 */
-	function get_date_offset(date) {
-		var offset = -date.getTimezoneOffset();
-		return (offset !== null ? offset : 0);
-	};
 
-	function get_january_offset() {
-		return get_date_offset(new Date(2010, 0, 1, 0, 0, 0, 0));
-	};
+/*jslint undef: true */
+/*global console, exports*/
 
-	function get_june_offset() {
-		return get_date_offset(new Date(2010, 5, 1, 0, 0, 0, 0));
-	};
+(function(root) {
+  /**
+   * Namespace to hold all the code for timezone detection.
+   */
+  var jstz = (function () {
+      'use strict';
+      var HEMISPHERE_SOUTH = 's',
+          
+          /**
+           * Gets the offset in minutes from UTC for a certain date.
+           * @param {Date} date
+           * @returns {Number}
+           */
+          get_date_offset = function (date) {
+              var offset = -date.getTimezoneOffset();
+              return (offset !== null ? offset : 0);
+          },
 
-	/**
-	 * Checks whether a given date is in daylight savings time.
-	 * If the date supplied is after june, we assume that we're checking
-	 * for southern hemisphere DST.
-	 * @param {Date} date
-	 * @returns {Boolean}
-	 */
-	function date_is_dst(date) {
-		var base_offset = ((date.getMonth() > 5 ? get_june_offset() : get_january_offset())),
-			date_offset = get_date_offset(date); 
-		return (base_offset - date_offset) !== 0;
-	};
+          get_date = function (year, month, date) {
+              var d = new Date();
+              if (year !== undefined) {
+                d.setFullYear(year);
+              }
+              d.setMonth(month);
+              d.setDate(date);
+              return d;
+          },
 
-	function set_utc_name(){
-		retval.utc_name = '';
-		var hour, min, sign;
-		min = parseInt(retval.utc_offset % 60);
-		if( min != 0 ) return;
-		hour = parseInt(retval.utc_offset / 60);
-		if( retval.dst ) hour += 1;
-		sign = retval.utc_offset<0 ? '+' : '-';
-		retval.utc_name = 'Etc/GMT' + sign + Math.abs(hour);
-	}
-	/**
-	 * This function does some basic calculations to create information about 
-	 * the user's timezone.
-	 * 
-	 * Returns a key that can be used to do lookups in jstz.olson.timezones.
-	 * 
-	 * @returns {String}  
-	 */
-	function lookup_olson_table() {
-		var tmp, key;
-		key = '' + retval.utc_offset;
-		if( jstz.olson.timezones[key] ) tmp = jstz.olson.timezones[key];
-		key += retval.uses_dst ? ',1' : ',0';
-		if( jstz.olson.timezones[key] ) tmp = jstz.olson.timezones[key];
-		//really nasty hack for "Mid-Atantic" windows timezone
-		if(key == "-120,1"){
-			var actual_offset = get_date_offset(new Date()),
-				january_offset = get_january_offset();
-			if(actual_offset != january_offset){
-				retval.timezone_name = jstz.olson.timezones['-60,0'];
-				retval.hemisphere = 'south';
-			}
-		}
-		key += retval.hemisphere == 'south'? 's' : '';
-		if( jstz.olson.timezones[key] ) tmp = jstz.olson.timezones[key];
-		return tmp;
-	};
+          get_january_offset = function (year) {
+              return get_date_offset(get_date(year, 0 ,2));
+          },
 
-	/**
-	 * Checks if a timezone has possible ambiguities. I.e timezones that are similar.
-	 * 
-	 * If the preliminary scan determines that we're in America/Denver. We double check
-	 * here that we're really there and not in America/Mazatlan.
-	 * 
-	 * This is done by checking known dates for when daylight savings start for different
-	 * timezones.
-	 */
-	function ambiguity_check() {
-		var ambiguity_list = jstz.olson.ambiguity_list[retval.timezone_name],
-			length = ambiguity_list.length,
-			tz = ambiguity_list[0],
-			i;
-		for (i = 0; i < length; i++) {
-			tz = ambiguity_list[i];
-			if (date_is_dst(jstz.olson.dst_start_dates[tz])) {
-				retval.timezone_name = tz;
-				return;
-			} 
-		}
-	};
+          get_june_offset = function (year) {
+              return get_date_offset(get_date(year, 5, 2));
+          },
 
-	/**
-	 * Main function
-	 */
-	function determine() {
-		var january_offset = get_january_offset(), 
-			june_offset = get_june_offset(),
-			diff = january_offset - june_offset;
-		if (diff < 0) retval.utc_offset = january_offset;
-		if (diff > 0) retval.utc_offset = june_offset;
-		retval.uses_dst = diff == 0 ? false : true;
-		retval.utc_offset = january_offset;
-		var tmp = lookup_olson_table();
-		retval.timezone_name = tmp[0];
-		if( tmp[1]==='s' ) retval.hemisphere = 'south';
-		if( tmp[1]==='n' ) retval.hemisphere = 'north';
-		//handle ambiguous time zones
-		if (jstz.olson.is_ambiguous(retval.timezone_name)) {
-			ambiguity_check();
-		}
-		set_utc_name();
-		return retval;
-	};
+          /**
+           * Private method.
+           * Checks whether a given date is in daylight saving time.
+           * If the date supplied is after august, we assume that we're checking
+           * for southern hemisphere DST.
+           * @param {Date} date
+           * @returns {Boolean}
+           */
+          date_is_dst = function (date) {
+              var is_southern = date.getMonth() > 7,
+                  base_offset = is_southern ? get_june_offset(date.getFullYear()) : 
+                                              get_january_offset(date.getFullYear()),
+                  date_offset = get_date_offset(date),
+                  is_west = base_offset < 0,
+                  dst_offset = base_offset - date_offset;
+                  
+              if (!is_west && !is_southern) {
+                  return dst_offset < 0;
+              }
 
-	return determine();
-};
+              return dst_offset !== 0;
+          },
 
-jstz.olson = {
-	/**
-	 * The keys in this dictionary are comma separated as such:
-	 * 
-	 * First the offset compared to UTC time in minutes.
-	 * Then a DST flag which is 0 if DST is disabled or 1 if is enabled
-	 * Thirdly an optional 's' signifies that the timezone is in the southern hemisphere
-	 */
-	timezones : {
-		'-720'     : ['Etc/GMT-12',''],
-		'-660,0'   : ['Pacific/Pago_Pago','n'],
-		'-600,1'   : ['America/Adak','n'],
-		'-660,1,s' : ['Pacific/Apia','s'],
-		'-600,0'   : ['Pacific/Honolulu','n'],
-		'-570'     : ['Pacific/Marquesas','n'],
-		'-540,0'   : ['Pacific/Gambier',''],
-		'-540,1'   : ['America/Anchorage','n'],
-		'-480,1'   : ['America/Los_Angeles','n'],
-		'-480,0'   : ['Pacific/Pitcairn','n'],
-		'-420,0'   : ['America/Phoenix','n'],
-		'-420,1'   : ['America/Denver','n'],
-		'-360,0'   : ['America/Guatemala','n'],
-		'-360,1'   : ['America/Chicago','n'],
-		'-360,1,s' : ['Pacific/Easter','s'],
-		'-300,0'   : ['America/Bogota','n'],
-		'-300,1'   : ['America/New_York','n'],
-		'-270'     : ['America/Caracas','n'],
-		'-240,1'   : ['America/Halifax','n'],
-		'-240,0'   : ['America/Santo_Domingo',''],
-		'-240,1,s' : ['America/Asuncion','s'],
-		'-210'     : ['America/St_Johns','n'],
-		'-180,1'   : ['America/Godthab','n'],
-		'-180,0'   : ['America/Argentina/Buenos_Aires','s'],
-		'-180,1,s' : ['America/Montevideo','s'],
-		'-120,0'   : ['America/Noronha','s'],
-		'-120,1'   : ['Atlantic/South_Georgia','s'],
-		'-60,1'    : ['Atlantic/Azores',''],
-		'-60,0'    : ['Atlantic/Cape_Verde','s'],
-		'0,0'      : ['Etc/UTC',''],
-		'0,1'      : ['Europe/London','n'],
-		'60,0'     : ['Africa/Lagos','n'],
-		'60,1'     : ['Europe/Berlin','n'],
-		'60,1,s'   : ['Africa/Windhoek','s'],
-		'120,1'    : ['Asia/Beirut','n'],
-		'120,0'    : ['Africa/Johannesburg','n'],
-		'180,1'    : ['Europe/Moscow','n'],
-		'180,0'    : ['Asia/Baghdad','s'],
-		'210,1'    : ['Asia/Tehran','n'],
-		'240,0'    : ['Asia/Dubai','n'],
-		'240,1'    : ['Asia/Yerevan','n'],
-		'240,1,s'  : ['Etc/UTC+4','s'],
-		'270'      : ['Asia/Kabul','n'],
-		'300,1'    : ['Asia/Yekaterinburg','n'],
-		'300,0'    : ['Asia/Karachi','n'],
-		'330'      : ['Asia/Kolkata','n'],
-		'345'      : ['Asia/Kathmandu','n'],
-		'360,0'    : ['Asia/Dhaka','n'],
-		'360,1'    : ['Asia/Omsk','n'],
-		'390,0'    : ['Asia/Rangoon','n'],
-		'420,1'    : ['Asia/Krasnoyarsk','n'],
-		'420,0'    : ['Asia/Jakarta','n'],
-		'480,0'    : ['Asia/Shanghai','n'],
-		'480,1'    : ['Asia/Irkutsk','n'],
-		'480,1,s'  : ['Australia/Perth','s'],
-		'525,0'    : ['Australia/Eucla','n'],
-		'525,1'    : ['Australia/Eucla','s'],
-		'540,1'    : ['Asia/Yakutsk','n'],
-		'540,0'    : ['Asia/Tokyo','n'],
-		'570,0'    : ['Australia/Darwin','n'],
-		'570,1'    : ['Australia/Adelaide','s'],
-		'600,0'    : ['Australia/Brisbane','n'],
-		'600,1'    : ['Asia/Vladivostok','n'],
-		'600,1,s'  : ['Australia/Sydney','s'],
-		'630'      : ['Australia/Lord_Howe','s'],
-		'660,1'    : ['Asia/Kamchatka','n'],
-		'660,0'    : ['Pacific/Noumea','n'],
-		'690'      : ['Pacific/Norfolk','n'],
-		'720,1'    : ['Etc/GMT+12','n'],
-		'720,1,s'  : ['Pacific/Auckland','s'],
-		'720,0'    : ['Pacific/Tarawa','n'],
-		'765'      : ['Pacific/Chatham','s'],
-		'780,0'    : ['Pacific/Tongatapu','n'],
-		'780,1,s'  : ['Pacific/Pago_Pago','s'],
-		'840,0'    : ['Pacific/Kiritimati','n']
-	},
-	/**
-	 * Checks if it is possible that the timezone is ambiguous.
-	 */
-	is_ambiguous : function (timezone_name) {
-		return typeof (this.ambiguity_list[timezone_name]) !== 'undefined';
-	},
-	/**
-	 * The keys in this object are timezones that we know may be ambiguous after
-	 * a preliminary scan.
-	 * 
-	 * The array of timezones to compare must be in the order that daylight savings
-	 * starts for the regions.
-	 */
-	ambiguity_list : {
-		'America/Denver' : ['America/Denver', 'America/Mazatlan'],
-		'America/Chicago' : ['America/Chicago', 'America/Mexico_City'],
-		'America/Asuncion' : ['Atlantic/Stanley', 'America/Asuncion', 'America/Santiago', 'America/Campo_Grande'],
-		'America/Montevideo' : ['America/Montevideo', 'America/Sao_Paulo'],
-		'Asia/Beirut' : ['Asia/Gaza', 'Asia/Beirut', 'Europe/Minsk', 'Europe/Helsinki', 'Europe/Istanbul', 'Asia/Damascus', 'Asia/Jerusalem', 'Africa/Cairo'],
-		'Asia/Yerevan' : ['Asia/Yerevan', 'Asia/Baku'],
-		'Pacific/Auckland' : ['Pacific/Auckland', 'Pacific/Fiji'],
-		'America/Los_Angeles' : ['America/Los_Angeles', 'America/Santa_Isabel'],
-		'America/Halifax' : ['America/Goose_Bay', 'America/Halifax'],
-		'America/Godthab' : ['America/Miquelon', 'America/Godthab']
-	},
-	/**
-	 * Contains information on when DST starts for different timezones.
-	 * Each value is a date denoting when daylight savings starts for that timezone.
-	 */
-	dst_start_dates : {
-		'America/Denver' : new Date(2011, 2, 13, 3, 0, 0, 0),
-		'America/Mazatlan' : new Date(2011, 3, 3, 3, 0, 0, 0),
-		'America/Chicago' : new Date(2011, 2, 13, 3, 0, 0, 0),
-		'America/Mexico_City' : new Date(2011, 3, 3, 3, 0, 0, 0),
-		'Atlantic/Stanley' : new Date(2011, 8, 4, 7, 0, 0, 0),
-		'America/Asuncion' : new Date(2011, 9, 2, 3, 0, 0, 0),
-		'America/Santiago' : new Date(2011, 9, 9, 3, 0, 0, 0),
-		'America/Campo_Grande' : new Date(2011, 9, 16, 5, 0, 0, 0),
-		'America/Montevideo' : new Date(2011, 9, 2, 3, 0, 0, 0),
-		'America/Sao_Paulo' : new Date(2011, 9, 16, 5, 0, 0, 0),
-		'America/Los_Angeles' : new Date(2011, 2, 13, 8, 0, 0, 0),
-		'America/Santa_Isabel' : new Date(2011, 3, 5, 8, 0, 0, 0),
-		'Asia/Gaza' : new Date(2011, 2, 26, 23, 0, 0, 0),
-		'Asia/Beirut' : new Date(2011, 2, 27, 1, 0, 0, 0),
-		'Europe/Minsk' : new Date(2011, 2, 27, 3, 0, 0, 0),
-		'Europe/Helsinki' : new Date(2011, 2, 27, 4, 0, 0, 0),
-		'Europe/Istanbul' : new Date(2011, 2, 28, 5, 0, 0, 0),
-		'Asia/Damascus' : new Date(2011, 3, 1, 2, 0, 0, 0),
-		'Asia/Jerusalem' : new Date(2011, 3, 1, 6, 0, 0, 0),
-		'Africa/Cairo' : new Date(2010, 3, 30, 4, 0, 0, 0),
-		'Asia/Yerevan' : new Date(2011, 2, 27, 4, 0, 0, 0),
-		'Asia/Baku'    : new Date(2011, 2, 27, 8, 0, 0, 0),
-		'Pacific/Auckland' : new Date(2011, 8, 26, 7, 0, 0, 0),
-		'Pacific/Fiji' : new Date(2010, 11, 29, 23, 0, 0, 0),
-		'America/Halifax' : new Date(2011, 2, 13, 6, 0, 0, 0),
-		'America/Goose_Bay' : new Date(2011, 2, 13, 2, 1, 0, 0),
-		'America/Miquelon' : new Date(2011, 2, 13, 5, 0, 0, 0),
-		'America/Godthab' : new Date(2011, 2, 27, 1, 0, 0, 0)
-	}
-};
+          /**
+           * This function does some basic calculations to create information about
+           * the user's timezone. It uses REFERENCE_YEAR as a solid year for which
+           * the script has been tested rather than depend on the year set by the
+           * client device.
+           *
+           * Returns a key that can be used to do lookups in jstz.olson.timezones.
+           * eg: "720,1,2". 
+           *
+           * @returns {String}
+           */
+
+          lookup_key = function () {
+              var january_offset = get_january_offset(),
+                  june_offset = get_june_offset(),
+                  diff = january_offset - june_offset;
+
+              if (diff < 0) {
+                  return january_offset + ",1";
+              } else if (diff > 0) {
+                  return june_offset + ",1," + HEMISPHERE_SOUTH;
+              }
+
+              return january_offset + ",0";
+          },
+
+          /**
+           * Uses get_timezone_info() to formulate a key to use in the olson.timezones dictionary.
+           *
+           * Returns a primitive object on the format:
+           * {'timezone': TimeZone, 'key' : 'the key used to find the TimeZone object'}
+           *
+           * @returns Object
+           */
+          determine = function () {
+              var key = lookup_key();
+              return new jstz.TimeZone(jstz.olson.timezones[key]);
+          },
+
+          /**
+           * This object contains information on when daylight savings starts for
+           * different timezones.
+           *
+           * The list is short for a reason. Often we do not have to be very specific
+           * to single out the correct timezone. But when we do, this list comes in
+           * handy.
+           *
+           * Each value is a date denoting when daylight savings starts for that timezone.
+           */
+          dst_start_for = function (tz_name) {
+
+            var ru_pre_dst_change = new Date(2010, 6, 15, 1, 0, 0, 0), // In 2010 Russia had DST, this allows us to detect Russia :)
+                dst_starts = {
+                    'America/Denver': new Date(2011, 2, 13, 3, 0, 0, 0),
+                    'America/Mazatlan': new Date(2011, 3, 3, 3, 0, 0, 0),
+                    'America/Chicago': new Date(2011, 2, 13, 3, 0, 0, 0),
+                    'America/Mexico_City': new Date(2011, 3, 3, 3, 0, 0, 0),
+                    'America/Asuncion': new Date(2012, 9, 7, 3, 0, 0, 0),
+                    'America/Santiago': new Date(2012, 9, 3, 3, 0, 0, 0),
+                    'America/Campo_Grande': new Date(2012, 9, 21, 5, 0, 0, 0),
+                    'America/Montevideo': new Date(2011, 9, 2, 3, 0, 0, 0),
+                    'America/Sao_Paulo': new Date(2011, 9, 16, 5, 0, 0, 0),
+                    'America/Los_Angeles': new Date(2011, 2, 13, 8, 0, 0, 0),
+                    'America/Santa_Isabel': new Date(2011, 3, 5, 8, 0, 0, 0),
+                    'America/Havana': new Date(2012, 2, 10, 2, 0, 0, 0),
+                    'America/New_York': new Date(2012, 2, 10, 7, 0, 0, 0),
+                    'Europe/Helsinki': new Date(2013, 2, 31, 5, 0, 0, 0),
+                    'Pacific/Auckland': new Date(2011, 8, 26, 7, 0, 0, 0),
+                    'America/Halifax': new Date(2011, 2, 13, 6, 0, 0, 0),
+                    'America/Goose_Bay': new Date(2011, 2, 13, 2, 1, 0, 0),
+                    'America/Miquelon': new Date(2011, 2, 13, 5, 0, 0, 0),
+                    'America/Godthab': new Date(2011, 2, 27, 1, 0, 0, 0),
+                    'Europe/Moscow': ru_pre_dst_change,
+                    'Asia/Amman': new Date(2013, 2, 29, 1, 0, 0, 0),
+                    'Asia/Beirut': new Date(2013, 2, 31, 2, 0, 0, 0),
+                    'Asia/Damascus': new Date(2013, 3, 6, 2, 0, 0, 0),
+                    'Asia/Jerusalem': new Date(2013, 2, 29, 5, 0, 0, 0),
+                    'Asia/Yekaterinburg': ru_pre_dst_change,
+                    'Asia/Omsk': ru_pre_dst_change,
+                    'Asia/Krasnoyarsk': ru_pre_dst_change,
+                    'Asia/Irkutsk': ru_pre_dst_change,
+                    'Asia/Yakutsk': ru_pre_dst_change,
+                    'Asia/Vladivostok': ru_pre_dst_change,
+                    'Asia/Baku': new Date(2013, 2, 31, 4, 0, 0),
+                    'Asia/Yerevan': new Date(2013, 2, 31, 3, 0, 0),
+                    'Asia/Kamchatka': ru_pre_dst_change,
+                    'Asia/Gaza': new Date(2010, 2, 27, 4, 0, 0),
+                    'Africa/Cairo': new Date(2010, 4, 1, 3, 0, 0),
+                    'Europe/Minsk': ru_pre_dst_change,
+                    'Pacific/Apia': new Date(2010, 10, 1, 1, 0, 0, 0),
+                    'Pacific/Fiji': new Date(2010, 11, 1, 0, 0, 0),
+                    'Australia/Perth': new Date(2008, 10, 1, 1, 0, 0, 0)
+                };
+
+              return dst_starts[tz_name];
+          };
+
+      return {
+          determine: determine,
+          date_is_dst: date_is_dst,
+          dst_start_for: dst_start_for 
+      };
+  }());
+
+  /**
+   * Simple object to perform ambiguity check and to return name of time zone.
+   */
+  jstz.TimeZone = function (tz_name) {
+      'use strict';
+        /**
+         * The keys in this object are timezones that we know may be ambiguous after
+         * a preliminary scan through the olson_tz object.
+         *
+         * The array of timezones to compare must be in the order that daylight savings
+         * starts for the regions.
+         */
+      var AMBIGUITIES = {
+              'America/Denver':       ['America/Denver', 'America/Mazatlan'],
+              'America/Chicago':      ['America/Chicago', 'America/Mexico_City'],
+              'America/Santiago':     ['America/Santiago', 'America/Asuncion', 'America/Campo_Grande'],
+              'America/Montevideo':   ['America/Montevideo', 'America/Sao_Paulo'],
+              'Asia/Beirut':          ['Asia/Amman', 'Asia/Jerusalem', 'Asia/Beirut', 'Europe/Helsinki','Asia/Damascus'],
+              'Pacific/Auckland':     ['Pacific/Auckland', 'Pacific/Fiji'],
+              'America/Los_Angeles':  ['America/Los_Angeles', 'America/Santa_Isabel'],
+              'America/New_York':     ['America/Havana', 'America/New_York'],
+              'America/Halifax':      ['America/Goose_Bay', 'America/Halifax'],
+              'America/Godthab':      ['America/Miquelon', 'America/Godthab'],
+              'Asia/Dubai':           ['Europe/Moscow'],
+              'Asia/Dhaka':           ['Asia/Yekaterinburg'],
+              'Asia/Jakarta':         ['Asia/Omsk'],
+              'Asia/Shanghai':        ['Asia/Krasnoyarsk', 'Australia/Perth'],
+              'Asia/Tokyo':           ['Asia/Irkutsk'],
+              'Australia/Brisbane':   ['Asia/Yakutsk'],
+              'Pacific/Noumea':       ['Asia/Vladivostok'],
+              'Pacific/Tarawa':       ['Asia/Kamchatka', 'Pacific/Fiji'],
+              'Pacific/Tongatapu':    ['Pacific/Apia'],
+              'Asia/Baghdad':         ['Europe/Minsk'],
+              'Asia/Baku':            ['Asia/Yerevan','Asia/Baku'],
+              'Africa/Johannesburg':  ['Asia/Gaza', 'Africa/Cairo']
+          },
+
+          timezone_name = tz_name,
+          
+          /**
+           * Checks if a timezone has possible ambiguities. I.e timezones that are similar.
+           *
+           * For example, if the preliminary scan determines that we're in America/Denver.
+           * We double check here that we're really there and not in America/Mazatlan.
+           *
+           * This is done by checking known dates for when daylight savings start for different
+           * timezones during 2010 and 2011.
+           */
+          ambiguity_check = function () {
+              var ambiguity_list = AMBIGUITIES[timezone_name],
+                  length = ambiguity_list.length,
+                  i = 0,
+                  tz = ambiguity_list[0];
+
+              for (; i < length; i += 1) {
+                  tz = ambiguity_list[i];
+
+                  if (jstz.date_is_dst(jstz.dst_start_for(tz))) {
+                      timezone_name = tz;
+                      return;
+                  }
+              }
+          },
+
+          /**
+           * Checks if it is possible that the timezone is ambiguous.
+           */
+          is_ambiguous = function () {
+              return typeof (AMBIGUITIES[timezone_name]) !== 'undefined';
+          };
+
+      if (is_ambiguous()) {
+          ambiguity_check();
+      }
+
+      return {
+          name: function () {
+              return timezone_name;
+          }
+      };
+  };
+
+  jstz.olson = {};
+
+  /*
+   * The keys in this dictionary are comma separated as such:
+   *
+   * First the offset compared to UTC time in minutes.
+   *
+   * Then a flag which is 0 if the timezone does not take daylight savings into account and 1 if it
+   * does.
+   *
+   * Thirdly an optional 's' signifies that the timezone is in the southern hemisphere,
+   * only interesting for timezones with DST.
+   *
+   * The mapped arrays is used for constructing the jstz.TimeZone object from within
+   * jstz.determine_timezone();
+   */
+  jstz.olson.timezones = {
+      '-720,0'   : 'Pacific/Majuro',
+      '-660,0'   : 'Pacific/Pago_Pago',
+      '-600,1'   : 'America/Adak',
+      '-600,0'   : 'Pacific/Honolulu',
+      '-570,0'   : 'Pacific/Marquesas',
+      '-540,0'   : 'Pacific/Gambier',
+      '-540,1'   : 'America/Anchorage',
+      '-480,1'   : 'America/Los_Angeles',
+      '-480,0'   : 'Pacific/Pitcairn',
+      '-420,0'   : 'America/Phoenix',
+      '-420,1'   : 'America/Denver',
+      '-360,0'   : 'America/Guatemala',
+      '-360,1'   : 'America/Chicago',
+      '-360,1,s' : 'Pacific/Easter',
+      '-300,0'   : 'America/Bogota',
+      '-300,1'   : 'America/New_York',
+      '-270,0'   : 'America/Caracas',
+      '-240,1'   : 'America/Halifax',
+      '-240,0'   : 'America/Santo_Domingo',
+      '-240,1,s' : 'America/Santiago',
+      '-210,1'   : 'America/St_Johns',
+      '-180,1'   : 'America/Godthab',
+      '-180,0'   : 'America/Argentina/Buenos_Aires',
+      '-180,1,s' : 'America/Montevideo',
+      '-120,0'   : 'America/Noronha',
+      '-120,1'   : 'America/Noronha',
+      '-60,1'    : 'Atlantic/Azores',
+      '-60,0'    : 'Atlantic/Cape_Verde',
+      '0,0'      : 'Etc/UTC',
+      '0,1'      : 'Europe/London',
+      '60,1'     : 'Europe/Berlin',
+      '60,0'     : 'Africa/Lagos',
+      '60,1,s'   : 'Africa/Windhoek',
+      '120,1'    : 'Asia/Beirut',
+      '120,0'    : 'Africa/Johannesburg',
+      '180,0'    : 'Asia/Baghdad',
+      '180,1'    : 'Europe/Moscow',
+      '210,1'    : 'Asia/Tehran',
+      '240,0'    : 'Asia/Dubai',
+      '240,1'    : 'Asia/Baku',
+      '270,0'    : 'Asia/Kabul',
+      '300,1'    : 'Asia/Yekaterinburg',
+      '300,0'    : 'Asia/Karachi',
+      '330,0'    : 'Asia/Kolkata',
+      '345,0'    : 'Asia/Kathmandu',
+      '360,0'    : 'Asia/Dhaka',
+      '360,1'    : 'Asia/Omsk',
+      '390,0'    : 'Asia/Rangoon',
+      '420,1'    : 'Asia/Krasnoyarsk',
+      '420,0'    : 'Asia/Jakarta',
+      '480,0'    : 'Asia/Shanghai',
+      '480,1'    : 'Asia/Irkutsk',
+      '525,0'    : 'Australia/Eucla',
+      '525,1,s'  : 'Australia/Eucla',
+      '540,1'    : 'Asia/Yakutsk',
+      '540,0'    : 'Asia/Tokyo',
+      '570,0'    : 'Australia/Darwin',
+      '570,1,s'  : 'Australia/Adelaide',
+      '600,0'    : 'Australia/Brisbane',
+      '600,1'    : 'Asia/Vladivostok',
+      '600,1,s'  : 'Australia/Sydney',
+      '630,1,s'  : 'Australia/Lord_Howe',
+      '660,1'    : 'Asia/Kamchatka',
+      '660,0'    : 'Pacific/Noumea',
+      '690,0'    : 'Pacific/Norfolk',
+      '720,1,s'  : 'Pacific/Auckland',
+      '720,0'    : 'Pacific/Tarawa',
+      '765,1,s'  : 'Pacific/Chatham',
+      '780,0'    : 'Pacific/Tongatapu',
+      '780,1,s'  : 'Pacific/Apia',
+      '840,0'    : 'Pacific/Kiritimati'
+  };
+
+  if (typeof exports !== 'undefined') {
+    exports.jstz = jstz;
+  } else {
+    root.jstz = jstz;
+  }
+})(this);
 
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.io=e()}}(function(){var define,module,exports;return function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}({1:[function(_dereq_,module,exports){module.exports=_dereq_("./lib/")},{"./lib/":2}],2:[function(_dereq_,module,exports){var url=_dereq_("./url");var parser=_dereq_("socket.io-parser");var Manager=_dereq_("./manager");var debug=_dereq_("debug")("socket.io-client");module.exports=exports=lookup;var cache=exports.managers={};function lookup(uri,opts){if(typeof uri=="object"){opts=uri;uri=undefined}opts=opts||{};var parsed=url(uri);var source=parsed.source;var id=parsed.id;var io;if(opts.forceNew||opts["force new connection"]||false===opts.multiplex){debug("ignoring socket cache for %s",source);io=Manager(source,opts)}else{if(!cache[id]){debug("new io instance for %s",source);cache[id]=Manager(source,opts)}io=cache[id]}return io.socket(parsed.path)}exports.protocol=parser.protocol;exports.connect=lookup;exports.Manager=_dereq_("./manager");exports.Socket=_dereq_("./socket")},{"./manager":3,"./socket":5,"./url":6,debug:9,"socket.io-parser":40}],3:[function(_dereq_,module,exports){var url=_dereq_("./url");var eio=_dereq_("engine.io-client");var Socket=_dereq_("./socket");var Emitter=_dereq_("component-emitter");var parser=_dereq_("socket.io-parser");var on=_dereq_("./on");var bind=_dereq_("component-bind");var object=_dereq_("object-component");var debug=_dereq_("debug")("socket.io-client:manager");var indexOf=_dereq_("indexof");module.exports=Manager;function Manager(uri,opts){if(!(this instanceof Manager))return new Manager(uri,opts);if(uri&&"object"==typeof uri){opts=uri;uri=undefined}opts=opts||{};opts.path=opts.path||"/socket.io";this.nsps={};this.subs=[];this.opts=opts;this.reconnection(opts.reconnection!==false);this.reconnectionAttempts(opts.reconnectionAttempts||Infinity);this.reconnectionDelay(opts.reconnectionDelay||1e3);this.reconnectionDelayMax(opts.reconnectionDelayMax||5e3);this.timeout(null==opts.timeout?2e4:opts.timeout);this.readyState="closed";this.uri=uri;this.connected=[];this.attempts=0;this.encoding=false;this.packetBuffer=[];this.encoder=new parser.Encoder;this.decoder=new parser.Decoder;this.autoConnect=opts.autoConnect!==false;if(this.autoConnect)this.open()}Manager.prototype.emitAll=function(){this.emit.apply(this,arguments);for(var nsp in this.nsps){this.nsps[nsp].emit.apply(this.nsps[nsp],arguments)}};Emitter(Manager.prototype);Manager.prototype.reconnection=function(v){if(!arguments.length)return this._reconnection;this._reconnection=!!v;return this};Manager.prototype.reconnectionAttempts=function(v){if(!arguments.length)return this._reconnectionAttempts;this._reconnectionAttempts=v;return this};Manager.prototype.reconnectionDelay=function(v){if(!arguments.length)return this._reconnectionDelay;this._reconnectionDelay=v;return this};Manager.prototype.reconnectionDelayMax=function(v){if(!arguments.length)return this._reconnectionDelayMax;this._reconnectionDelayMax=v;return this};Manager.prototype.timeout=function(v){if(!arguments.length)return this._timeout;this._timeout=v;return this};Manager.prototype.maybeReconnectOnOpen=function(){if(!this.openReconnect&&!this.reconnecting&&this._reconnection&&this.attempts===0){this.openReconnect=true;this.reconnect()}};Manager.prototype.open=Manager.prototype.connect=function(fn){debug("readyState %s",this.readyState);if(~this.readyState.indexOf("open"))return this;debug("opening %s",this.uri);this.engine=eio(this.uri,this.opts);var socket=this.engine;var self=this;this.readyState="opening";this.skipReconnect=false;var openSub=on(socket,"open",function(){self.onopen();fn&&fn()});var errorSub=on(socket,"error",function(data){debug("connect_error");self.cleanup();self.readyState="closed";self.emitAll("connect_error",data);if(fn){var err=new Error("Connection error");err.data=data;fn(err)}self.maybeReconnectOnOpen()});if(false!==this._timeout){var timeout=this._timeout;debug("connect attempt will timeout after %d",timeout);var timer=setTimeout(function(){debug("connect attempt timed out after %d",timeout);openSub.destroy();socket.close();socket.emit("error","timeout");self.emitAll("connect_timeout",timeout)},timeout);this.subs.push({destroy:function(){clearTimeout(timer)}})}this.subs.push(openSub);this.subs.push(errorSub);return this};Manager.prototype.onopen=function(){debug("open");this.cleanup();this.readyState="open";this.emit("open");var socket=this.engine;this.subs.push(on(socket,"data",bind(this,"ondata")));this.subs.push(on(this.decoder,"decoded",bind(this,"ondecoded")));this.subs.push(on(socket,"error",bind(this,"onerror")));this.subs.push(on(socket,"close",bind(this,"onclose")))};Manager.prototype.ondata=function(data){this.decoder.add(data)};Manager.prototype.ondecoded=function(packet){this.emit("packet",packet)};Manager.prototype.onerror=function(err){debug("error",err);this.emitAll("error",err)};Manager.prototype.socket=function(nsp){var socket=this.nsps[nsp];if(!socket){socket=new Socket(this,nsp);this.nsps[nsp]=socket;var self=this;socket.on("connect",function(){if(!~indexOf(self.connected,socket)){self.connected.push(socket)}})}return socket};Manager.prototype.destroy=function(socket){var index=indexOf(this.connected,socket);if(~index)this.connected.splice(index,1);if(this.connected.length)return;this.close()};Manager.prototype.packet=function(packet){debug("writing packet %j",packet);var self=this;if(!self.encoding){self.encoding=true;this.encoder.encode(packet,function(encodedPackets){for(var i=0;i<encodedPackets.length;i++){self.engine.write(encodedPackets[i])}self.encoding=false;self.processPacketQueue()})}else{self.packetBuffer.push(packet)}};Manager.prototype.processPacketQueue=function(){if(this.packetBuffer.length>0&&!this.encoding){var pack=this.packetBuffer.shift();this.packet(pack)}};Manager.prototype.cleanup=function(){var sub;while(sub=this.subs.shift())sub.destroy();this.packetBuffer=[];this.encoding=false;this.decoder.destroy()};Manager.prototype.close=Manager.prototype.disconnect=function(){this.skipReconnect=true;this.readyState="closed";this.engine&&this.engine.close()};Manager.prototype.onclose=function(reason){debug("close");this.cleanup();this.readyState="closed";this.emit("close",reason);if(this._reconnection&&!this.skipReconnect){this.reconnect()}};Manager.prototype.reconnect=function(){if(this.reconnecting||this.skipReconnect)return this;var self=this;this.attempts++;if(this.attempts>this._reconnectionAttempts){debug("reconnect failed");this.emitAll("reconnect_failed");this.reconnecting=false}else{var delay=this.attempts*this.reconnectionDelay();delay=Math.min(delay,this.reconnectionDelayMax());debug("will wait %dms before reconnect attempt",delay);this.reconnecting=true;var timer=setTimeout(function(){if(self.skipReconnect)return;debug("attempting reconnect");self.emitAll("reconnect_attempt",self.attempts);self.emitAll("reconnecting",self.attempts);if(self.skipReconnect)return;self.open(function(err){if(err){debug("reconnect attempt error");self.reconnecting=false;self.reconnect();self.emitAll("reconnect_error",err.data)}else{debug("reconnect success");self.onreconnect()}})},delay);this.subs.push({destroy:function(){clearTimeout(timer)}})}};Manager.prototype.onreconnect=function(){var attempt=this.attempts;this.attempts=0;this.reconnecting=false;this.emitAll("reconnect",attempt)}},{"./on":4,"./socket":5,"./url":6,"component-bind":7,"component-emitter":8,debug:9,"engine.io-client":10,indexof:36,"object-component":37,"socket.io-parser":40}],4:[function(_dereq_,module,exports){module.exports=on;function on(obj,ev,fn){obj.on(ev,fn);return{destroy:function(){obj.removeListener(ev,fn)}}}},{}],5:[function(_dereq_,module,exports){var parser=_dereq_("socket.io-parser");var Emitter=_dereq_("component-emitter");var toArray=_dereq_("to-array");var on=_dereq_("./on");var bind=_dereq_("component-bind");var debug=_dereq_("debug")("socket.io-client:socket");var hasBin=_dereq_("has-binary");module.exports=exports=Socket;var events={connect:1,connect_error:1,connect_timeout:1,disconnect:1,error:1,reconnect:1,reconnect_attempt:1,reconnect_failed:1,reconnect_error:1,reconnecting:1};var emit=Emitter.prototype.emit;function Socket(io,nsp){this.io=io;this.nsp=nsp;this.json=this;this.ids=0;this.acks={};if(this.io.autoConnect)this.open();this.receiveBuffer=[];this.sendBuffer=[];this.connected=false;this.disconnected=true}Emitter(Socket.prototype);Socket.prototype.subEvents=function(){if(this.subs)return;var io=this.io;this.subs=[on(io,"open",bind(this,"onopen")),on(io,"packet",bind(this,"onpacket")),on(io,"close",bind(this,"onclose"))]};Socket.prototype.open=Socket.prototype.connect=function(){if(this.connected)return this;this.subEvents();this.io.open();if("open"==this.io.readyState)this.onopen();return this};Socket.prototype.send=function(){var args=toArray(arguments);args.unshift("message");this.emit.apply(this,args);return this};Socket.prototype.emit=function(ev){if(events.hasOwnProperty(ev)){emit.apply(this,arguments);return this}var args=toArray(arguments);var parserType=parser.EVENT;if(hasBin(args)){parserType=parser.BINARY_EVENT}var packet={type:parserType,data:args};if("function"==typeof args[args.length-1]){debug("emitting packet with ack id %d",this.ids);this.acks[this.ids]=args.pop();packet.id=this.ids++}if(this.connected){this.packet(packet)}else{this.sendBuffer.push(packet)}return this};Socket.prototype.packet=function(packet){packet.nsp=this.nsp;this.io.packet(packet)};Socket.prototype.onopen=function(){debug("transport is open - connecting");if("/"!=this.nsp){this.packet({type:parser.CONNECT})}};Socket.prototype.onclose=function(reason){debug("close (%s)",reason);this.connected=false;this.disconnected=true;this.emit("disconnect",reason)};Socket.prototype.onpacket=function(packet){if(packet.nsp!=this.nsp)return;switch(packet.type){case parser.CONNECT:this.onconnect();break;case parser.EVENT:this.onevent(packet);break;case parser.BINARY_EVENT:this.onevent(packet);break;case parser.ACK:this.onack(packet);break;case parser.BINARY_ACK:this.onack(packet);break;case parser.DISCONNECT:this.ondisconnect();break;case parser.ERROR:this.emit("error",packet.data);break}};Socket.prototype.onevent=function(packet){var args=packet.data||[];debug("emitting event %j",args);if(null!=packet.id){debug("attaching ack callback to event");args.push(this.ack(packet.id))}if(this.connected){emit.apply(this,args)}else{this.receiveBuffer.push(args)}};Socket.prototype.ack=function(id){var self=this;var sent=false;return function(){if(sent)return;sent=true;var args=toArray(arguments);debug("sending ack %j",args);var type=hasBin(args)?parser.BINARY_ACK:parser.ACK;self.packet({type:type,id:id,data:args})}};Socket.prototype.onack=function(packet){debug("calling ack %s with %j",packet.id,packet.data);var fn=this.acks[packet.id];fn.apply(this,packet.data);delete this.acks[packet.id]};Socket.prototype.onconnect=function(){this.connected=true;this.disconnected=false;this.emit("connect");this.emitBuffered()};Socket.prototype.emitBuffered=function(){var i;for(i=0;i<this.receiveBuffer.length;i++){emit.apply(this,this.receiveBuffer[i])}this.receiveBuffer=[];for(i=0;i<this.sendBuffer.length;i++){this.packet(this.sendBuffer[i])}this.sendBuffer=[]};Socket.prototype.ondisconnect=function(){debug("server disconnect (%s)",this.nsp);this.destroy();this.onclose("io server disconnect")};Socket.prototype.destroy=function(){if(this.subs){for(var i=0;i<this.subs.length;i++){this.subs[i].destroy()}this.subs=null}this.io.destroy(this)};Socket.prototype.close=Socket.prototype.disconnect=function(){if(this.connected){debug("performing disconnect (%s)",this.nsp);this.packet({type:parser.DISCONNECT})}this.destroy();if(this.connected){this.onclose("io client disconnect")}return this}},{"./on":4,"component-bind":7,"component-emitter":8,debug:9,"has-binary":32,"socket.io-parser":40,"to-array":44}],6:[function(_dereq_,module,exports){(function(global){var parseuri=_dereq_("parseuri");var debug=_dereq_("debug")("socket.io-client:url");module.exports=url;function url(uri,loc){var obj=uri;var loc=loc||global.location;if(null==uri)uri=loc.protocol+"//"+loc.hostname;if("string"==typeof uri){if("/"==uri.charAt(0)){if("/"==uri.charAt(1)){uri=loc.protocol+uri}else{uri=loc.hostname+uri}}if(!/^(https?|wss?):\/\//.test(uri)){debug("protocol-less url %s",uri);if("undefined"!=typeof loc){uri=loc.protocol+"//"+uri}else{uri="https://"+uri}}debug("parse %s",uri);obj=parseuri(uri)}if(!obj.port){if(/^(http|ws)$/.test(obj.protocol)){obj.port="80"}else if(/^(http|ws)s$/.test(obj.protocol)){obj.port="443"}}obj.path=obj.path||"/";obj.id=obj.protocol+"://"+obj.host+":"+obj.port;obj.href=obj.protocol+"://"+obj.host+(loc&&loc.port==obj.port?"":":"+obj.port);return obj}}).call(this,typeof self!=="undefined"?self:typeof window!=="undefined"?window:{})},{debug:9,parseuri:38}],7:[function(_dereq_,module,exports){var slice=[].slice;module.exports=function(obj,fn){if("string"==typeof fn)fn=obj[fn];if("function"!=typeof fn)throw new Error("bind() requires a function");var args=slice.call(arguments,2);return function(){return fn.apply(obj,args.concat(slice.call(arguments)))}}},{}],8:[function(_dereq_,module,exports){module.exports=Emitter;function Emitter(obj){if(obj)return mixin(obj)}function mixin(obj){for(var key in Emitter.prototype){obj[key]=Emitter.prototype[key]}return obj}Emitter.prototype.on=Emitter.prototype.addEventListener=function(event,fn){this._callbacks=this._callbacks||{};(this._callbacks[event]=this._callbacks[event]||[]).push(fn);return this};Emitter.prototype.once=function(event,fn){var self=this;this._callbacks=this._callbacks||{};function on(){self.off(event,on);fn.apply(this,arguments)}on.fn=fn;this.on(event,on);return this};Emitter.prototype.off=Emitter.prototype.removeListener=Emitter.prototype.removeAllListeners=Emitter.prototype.removeEventListener=function(event,fn){this._callbacks=this._callbacks||{};if(0==arguments.length){this._callbacks={};return this}var callbacks=this._callbacks[event];if(!callbacks)return this;if(1==arguments.length){delete this._callbacks[event];return this}var cb;for(var i=0;i<callbacks.length;i++){cb=callbacks[i];if(cb===fn||cb.fn===fn){callbacks.splice(i,1);break}}return this};Emitter.prototype.emit=function(event){this._callbacks=this._callbacks||{};var args=[].slice.call(arguments,1),callbacks=this._callbacks[event];if(callbacks){callbacks=callbacks.slice(0);for(var i=0,len=callbacks.length;i<len;++i){callbacks[i].apply(this,args)}}return this};Emitter.prototype.listeners=function(event){this._callbacks=this._callbacks||{};return this._callbacks[event]||[]};Emitter.prototype.hasListeners=function(event){return!!this.listeners(event).length}},{}],9:[function(_dereq_,module,exports){module.exports=debug;function debug(name){if(!debug.enabled(name))return function(){};return function(fmt){fmt=coerce(fmt);var curr=new Date;var ms=curr-(debug[name]||curr);debug[name]=curr;fmt=name+" "+fmt+" +"+debug.humanize(ms);window.console&&console.log&&Function.prototype.apply.call(console.log,console,arguments)}}debug.names=[];debug.skips=[];debug.enable=function(name){try{localStorage.debug=name}catch(e){}var split=(name||"").split(/[\s,]+/),len=split.length;for(var i=0;i<len;i++){name=split[i].replace("*",".*?");if(name[0]==="-"){debug.skips.push(new RegExp("^"+name.substr(1)+"$"))}else{debug.names.push(new RegExp("^"+name+"$"))}}};debug.disable=function(){debug.enable("")};debug.humanize=function(ms){var sec=1e3,min=60*1e3,hour=60*min;if(ms>=hour)return(ms/hour).toFixed(1)+"h";if(ms>=min)return(ms/min).toFixed(1)+"m";if(ms>=sec)return(ms/sec|0)+"s";return ms+"ms"};debug.enabled=function(name){for(var i=0,len=debug.skips.length;i<len;i++){if(debug.skips[i].test(name)){return false}}for(var i=0,len=debug.names.length;i<len;i++){if(debug.names[i].test(name)){return true}}return false};function coerce(val){if(val instanceof Error)return val.stack||val.message;return val}try{if(window.localStorage)debug.enable(localStorage.debug)}catch(e){}},{}],10:[function(_dereq_,module,exports){module.exports=_dereq_("./lib/")},{"./lib/":11}],11:[function(_dereq_,module,exports){module.exports=_dereq_("./socket");module.exports.parser=_dereq_("engine.io-parser")},{"./socket":12,"engine.io-parser":21}],12:[function(_dereq_,module,exports){(function(global){var transports=_dereq_("./transports");var Emitter=_dereq_("component-emitter");var debug=_dereq_("debug")("engine.io-client:socket");var index=_dereq_("indexof");var parser=_dereq_("engine.io-parser");var parseuri=_dereq_("parseuri");var parsejson=_dereq_("parsejson");var parseqs=_dereq_("parseqs");module.exports=Socket;function noop(){}function Socket(uri,opts){if(!(this instanceof Socket))return new Socket(uri,opts);opts=opts||{};if(uri&&"object"==typeof uri){opts=uri;uri=null}if(uri){uri=parseuri(uri);opts.host=uri.host;opts.secure=uri.protocol=="https"||uri.protocol=="wss";opts.port=uri.port;if(uri.query)opts.query=uri.query}this.secure=null!=opts.secure?opts.secure:global.location&&"https:"==location.protocol;if(opts.host){var pieces=opts.host.split(":");opts.hostname=pieces.shift();if(pieces.length)opts.port=pieces.pop()}this.agent=opts.agent||false;this.hostname=opts.hostname||(global.location?location.hostname:"localhost");this.port=opts.port||(global.location&&location.port?location.port:this.secure?443:80);this.query=opts.query||{};if("string"==typeof this.query)this.query=parseqs.decode(this.query);this.upgrade=false!==opts.upgrade;this.path=(opts.path||"/engine.io").replace(/\/$/,"")+"/";this.forceJSONP=!!opts.forceJSONP;this.jsonp=false!==opts.jsonp;this.forceBase64=!!opts.forceBase64;this.enablesXDR=!!opts.enablesXDR;this.timestampParam=opts.timestampParam||"t";this.timestampRequests=opts.timestampRequests;this.transports=opts.transports||["polling","websocket"];this.readyState="";this.writeBuffer=[];this.callbackBuffer=[];this.policyPort=opts.policyPort||843;this.rememberUpgrade=opts.rememberUpgrade||false;this.open();this.binaryType=null;this.onlyBinaryUpgrades=opts.onlyBinaryUpgrades}Socket.priorWebsocketSuccess=false;Emitter(Socket.prototype);Socket.protocol=parser.protocol;Socket.Socket=Socket;Socket.Transport=_dereq_("./transport");Socket.transports=_dereq_("./transports");Socket.parser=_dereq_("engine.io-parser");Socket.prototype.createTransport=function(name){debug('creating transport "%s"',name);var query=clone(this.query);query.EIO=parser.protocol;query.transport=name;if(this.id)query.sid=this.id;var transport=new transports[name]({agent:this.agent,hostname:this.hostname,port:this.port,secure:this.secure,path:this.path,query:query,forceJSONP:this.forceJSONP,jsonp:this.jsonp,forceBase64:this.forceBase64,enablesXDR:this.enablesXDR,timestampRequests:this.timestampRequests,timestampParam:this.timestampParam,policyPort:this.policyPort,socket:this});return transport};function clone(obj){var o={};for(var i in obj){if(obj.hasOwnProperty(i)){o[i]=obj[i]}}return o}Socket.prototype.open=function(){var transport;if(this.rememberUpgrade&&Socket.priorWebsocketSuccess&&this.transports.indexOf("websocket")!=-1){transport="websocket"}else if(0==this.transports.length){var self=this;setTimeout(function(){self.emit("error","No transports available")},0);return}else{transport=this.transports[0]}this.readyState="opening";var transport;try{transport=this.createTransport(transport)}catch(e){this.transports.shift();this.open();return}transport.open();this.setTransport(transport)};Socket.prototype.setTransport=function(transport){debug("setting transport %s",transport.name);var self=this;if(this.transport){debug("clearing existing transport %s",this.transport.name);this.transport.removeAllListeners()}this.transport=transport;transport.on("drain",function(){self.onDrain()}).on("packet",function(packet){self.onPacket(packet)}).on("error",function(e){self.onError(e)}).on("close",function(){self.onClose("transport close")})};Socket.prototype.probe=function(name){debug('probing transport "%s"',name);var transport=this.createTransport(name,{probe:1}),failed=false,self=this;Socket.priorWebsocketSuccess=false;function onTransportOpen(){if(self.onlyBinaryUpgrades){var upgradeLosesBinary=!this.supportsBinary&&self.transport.supportsBinary;failed=failed||upgradeLosesBinary}if(failed)return;debug('probe transport "%s" opened',name);transport.send([{type:"ping",data:"probe"}]);transport.once("packet",function(msg){if(failed)return;if("pong"==msg.type&&"probe"==msg.data){debug('probe transport "%s" pong',name);self.upgrading=true;self.emit("upgrading",transport);if(!transport)return;Socket.priorWebsocketSuccess="websocket"==transport.name;debug('pausing current transport "%s"',self.transport.name);self.transport.pause(function(){if(failed)return;if("closed"==self.readyState)return;debug("changing transport and sending upgrade packet");cleanup();self.setTransport(transport);transport.send([{type:"upgrade"}]);self.emit("upgrade",transport);transport=null;self.upgrading=false;self.flush()})}else{debug('probe transport "%s" failed',name);var err=new Error("probe error");err.transport=transport.name;self.emit("upgradeError",err)}})}function freezeTransport(){if(failed)return;failed=true;cleanup();transport.close();transport=null}function onerror(err){var error=new Error("probe error: "+err);error.transport=transport.name;freezeTransport();debug('probe transport "%s" failed because of error: %s',name,err);self.emit("upgradeError",error)}function onTransportClose(){onerror("transport closed")}function onclose(){onerror("socket closed")}function onupgrade(to){if(transport&&to.name!=transport.name){debug('"%s" works - aborting "%s"',to.name,transport.name);freezeTransport()}}function cleanup(){transport.removeListener("open",onTransportOpen);transport.removeListener("error",onerror);transport.removeListener("close",onTransportClose);self.removeListener("close",onclose);self.removeListener("upgrading",onupgrade)}transport.once("open",onTransportOpen);transport.once("error",onerror);transport.once("close",onTransportClose);this.once("close",onclose);this.once("upgrading",onupgrade);transport.open()};Socket.prototype.onOpen=function(){debug("socket open");this.readyState="open";Socket.priorWebsocketSuccess="websocket"==this.transport.name;this.emit("open");this.flush();if("open"==this.readyState&&this.upgrade&&this.transport.pause){debug("starting upgrade probes");for(var i=0,l=this.upgrades.length;i<l;i++){this.probe(this.upgrades[i])}}};Socket.prototype.onPacket=function(packet){if("opening"==this.readyState||"open"==this.readyState){debug('socket receive: type "%s", data "%s"',packet.type,packet.data);this.emit("packet",packet);this.emit("heartbeat");switch(packet.type){case"open":this.onHandshake(parsejson(packet.data));break;case"pong":this.setPing();break;case"error":var err=new Error("server error");err.code=packet.data;this.emit("error",err);break;case"message":this.emit("data",packet.data);this.emit("message",packet.data);break}}else{debug('packet received with socket readyState "%s"',this.readyState)}};Socket.prototype.onHandshake=function(data){this.emit("handshake",data);this.id=data.sid;this.transport.query.sid=data.sid;this.upgrades=this.filterUpgrades(data.upgrades);this.pingInterval=data.pingInterval;this.pingTimeout=data.pingTimeout;this.onOpen();if("closed"==this.readyState)return;this.setPing();this.removeListener("heartbeat",this.onHeartbeat);this.on("heartbeat",this.onHeartbeat)};Socket.prototype.onHeartbeat=function(timeout){clearTimeout(this.pingTimeoutTimer);var self=this;self.pingTimeoutTimer=setTimeout(function(){if("closed"==self.readyState)return;self.onClose("ping timeout")},timeout||self.pingInterval+self.pingTimeout)};Socket.prototype.setPing=function(){var self=this;clearTimeout(self.pingIntervalTimer);self.pingIntervalTimer=setTimeout(function(){debug("writing ping packet - expecting pong within %sms",self.pingTimeout);self.ping();self.onHeartbeat(self.pingTimeout)},self.pingInterval)};Socket.prototype.ping=function(){this.sendPacket("ping")};Socket.prototype.onDrain=function(){for(var i=0;i<this.prevBufferLen;i++){if(this.callbackBuffer[i]){this.callbackBuffer[i]()}}this.writeBuffer.splice(0,this.prevBufferLen);this.callbackBuffer.splice(0,this.prevBufferLen);this.prevBufferLen=0;if(this.writeBuffer.length==0){this.emit("drain")}else{this.flush()}};Socket.prototype.flush=function(){if("closed"!=this.readyState&&this.transport.writable&&!this.upgrading&&this.writeBuffer.length){debug("flushing %d packets in socket",this.writeBuffer.length);this.transport.send(this.writeBuffer);this.prevBufferLen=this.writeBuffer.length;this.emit("flush")}};Socket.prototype.write=Socket.prototype.send=function(msg,fn){this.sendPacket("message",msg,fn);return this};Socket.prototype.sendPacket=function(type,data,fn){if("closing"==this.readyState||"closed"==this.readyState){return}var packet={type:type,data:data};this.emit("packetCreate",packet);this.writeBuffer.push(packet);this.callbackBuffer.push(fn);this.flush()};Socket.prototype.close=function(){if("opening"==this.readyState||"open"==this.readyState){this.readyState="closing";var self=this;function close(){self.onClose("forced close");debug("socket closing - telling transport to close");self.transport.close()}function cleanupAndClose(){self.removeListener("upgrade",cleanupAndClose);self.removeListener("upgradeError",cleanupAndClose);close()}function waitForUpgrade(){self.once("upgrade",cleanupAndClose);self.once("upgradeError",cleanupAndClose)}if(this.writeBuffer.length){this.once("drain",function(){if(this.upgrading){waitForUpgrade()}else{close()}})}else if(this.upgrading){waitForUpgrade()}else{close()}}return this};Socket.prototype.onError=function(err){debug("socket error %j",err);Socket.priorWebsocketSuccess=false;this.emit("error",err);this.onClose("transport error",err)};Socket.prototype.onClose=function(reason,desc){if("opening"==this.readyState||"open"==this.readyState||"closing"==this.readyState){debug('socket close with reason: "%s"',reason);var self=this;clearTimeout(this.pingIntervalTimer);clearTimeout(this.pingTimeoutTimer);setTimeout(function(){self.writeBuffer=[];self.callbackBuffer=[];self.prevBufferLen=0},0);this.transport.removeAllListeners("close");this.transport.close();this.transport.removeAllListeners();this.readyState="closed";this.id=null;this.emit("close",reason,desc)}};Socket.prototype.filterUpgrades=function(upgrades){var filteredUpgrades=[];for(var i=0,j=upgrades.length;i<j;i++){if(~index(this.transports,upgrades[i]))filteredUpgrades.push(upgrades[i])}return filteredUpgrades}}).call(this,typeof self!=="undefined"?self:typeof window!=="undefined"?window:{})},{"./transport":13,"./transports":14,"component-emitter":8,debug:9,"engine.io-parser":21,indexof:36,parsejson:28,parseqs:29,parseuri:30}],13:[function(_dereq_,module,exports){var parser=_dereq_("engine.io-parser");var Emitter=_dereq_("component-emitter");module.exports=Transport;function Transport(opts){this.path=opts.path;this.hostname=opts.hostname;this.port=opts.port;this.secure=opts.secure;this.query=opts.query;this.timestampParam=opts.timestampParam;this.timestampRequests=opts.timestampRequests;this.readyState="";this.agent=opts.agent||false;this.socket=opts.socket;this.enablesXDR=opts.enablesXDR}Emitter(Transport.prototype);Transport.timestamps=0;Transport.prototype.onError=function(msg,desc){var err=new Error(msg);err.type="TransportError";err.description=desc;this.emit("error",err);return this};Transport.prototype.open=function(){if("closed"==this.readyState||""==this.readyState){this.readyState="opening";this.doOpen()}return this};Transport.prototype.close=function(){if("opening"==this.readyState||"open"==this.readyState){this.doClose();this.onClose()}return this};Transport.prototype.send=function(packets){if("open"==this.readyState){this.write(packets)}else{throw new Error("Transport not open")}};Transport.prototype.onOpen=function(){this.readyState="open";this.writable=true;this.emit("open")};Transport.prototype.onData=function(data){var packet=parser.decodePacket(data,this.socket.binaryType);this.onPacket(packet)};Transport.prototype.onPacket=function(packet){this.emit("packet",packet)};Transport.prototype.onClose=function(){this.readyState="closed";this.emit("close")}},{"component-emitter":8,"engine.io-parser":21}],14:[function(_dereq_,module,exports){(function(global){var XMLHttpRequest=_dereq_("xmlhttprequest");var XHR=_dereq_("./polling-xhr");var JSONP=_dereq_("./polling-jsonp");var websocket=_dereq_("./websocket");exports.polling=polling;exports.websocket=websocket;function polling(opts){var xhr;var xd=false;var xs=false;var jsonp=false!==opts.jsonp;if(global.location){var isSSL="https:"==location.protocol;var port=location.port;if(!port){port=isSSL?443:80}xd=opts.hostname!=location.hostname||port!=opts.port;xs=opts.secure!=isSSL}opts.xdomain=xd;opts.xscheme=xs;xhr=new XMLHttpRequest(opts);if("open"in xhr&&!opts.forceJSONP){return new XHR(opts)}else{if(!jsonp)throw new Error("JSONP disabled");return new JSONP(opts)}}}).call(this,typeof self!=="undefined"?self:typeof window!=="undefined"?window:{})},{"./polling-jsonp":15,"./polling-xhr":16,"./websocket":18,xmlhttprequest:19}],15:[function(_dereq_,module,exports){(function(global){var Polling=_dereq_("./polling");var inherit=_dereq_("component-inherit");module.exports=JSONPPolling;var rNewline=/\n/g;var rEscapedNewline=/\\n/g;var callbacks;var index=0;function empty(){}function JSONPPolling(opts){Polling.call(this,opts);this.query=this.query||{};if(!callbacks){if(!global.___eio)global.___eio=[];callbacks=global.___eio}this.index=callbacks.length;var self=this;callbacks.push(function(msg){self.onData(msg)});this.query.j=this.index;if(global.document&&global.addEventListener){global.addEventListener("beforeunload",function(){if(self.script)self.script.onerror=empty})}}inherit(JSONPPolling,Polling);JSONPPolling.prototype.supportsBinary=false;JSONPPolling.prototype.doClose=function(){if(this.script){this.script.parentNode.removeChild(this.script);this.script=null}if(this.form){this.form.parentNode.removeChild(this.form);this.form=null;this.iframe=null}Polling.prototype.doClose.call(this)};JSONPPolling.prototype.doPoll=function(){var self=this;var script=document.createElement("script");if(this.script){this.script.parentNode.removeChild(this.script);this.script=null}script.async=true;script.src=this.uri();script.onerror=function(e){self.onError("jsonp poll error",e)};var insertAt=document.getElementsByTagName("script")[0];insertAt.parentNode.insertBefore(script,insertAt);this.script=script;var isUAgecko="undefined"!=typeof navigator&&/gecko/i.test(navigator.userAgent);if(isUAgecko){setTimeout(function(){var iframe=document.createElement("iframe");document.body.appendChild(iframe);document.body.removeChild(iframe)},100)}};JSONPPolling.prototype.doWrite=function(data,fn){var self=this;if(!this.form){var form=document.createElement("form");var area=document.createElement("textarea");var id=this.iframeId="eio_iframe_"+this.index;var iframe;form.className="socketio";form.style.position="absolute";form.style.top="-1000px";form.style.left="-1000px";form.target=id;form.method="POST";form.setAttribute("accept-charset","utf-8");area.name="d";form.appendChild(area);document.body.appendChild(form);this.form=form;this.area=area}this.form.action=this.uri();function complete(){initIframe();fn()}function initIframe(){if(self.iframe){try{self.form.removeChild(self.iframe)
 }catch(e){self.onError("jsonp polling iframe removal error",e)}}try{var html='<iframe src="javascript:0" name="'+self.iframeId+'">';iframe=document.createElement(html)}catch(e){iframe=document.createElement("iframe");iframe.name=self.iframeId;iframe.src="javascript:0"}iframe.id=self.iframeId;self.form.appendChild(iframe);self.iframe=iframe}initIframe();data=data.replace(rEscapedNewline,"\\\n");this.area.value=data.replace(rNewline,"\\n");try{this.form.submit()}catch(e){}if(this.iframe.attachEvent){this.iframe.onreadystatechange=function(){if(self.iframe.readyState=="complete"){complete()}}}else{this.iframe.onload=complete}}}).call(this,typeof self!=="undefined"?self:typeof window!=="undefined"?window:{})},{"./polling":17,"component-inherit":20}],16:[function(_dereq_,module,exports){(function(global){var XMLHttpRequest=_dereq_("xmlhttprequest");var Polling=_dereq_("./polling");var Emitter=_dereq_("component-emitter");var inherit=_dereq_("component-inherit");var debug=_dereq_("debug")("engine.io-client:polling-xhr");module.exports=XHR;module.exports.Request=Request;function empty(){}function XHR(opts){Polling.call(this,opts);if(global.location){var isSSL="https:"==location.protocol;var port=location.port;if(!port){port=isSSL?443:80}this.xd=opts.hostname!=global.location.hostname||port!=opts.port;this.xs=opts.secure!=isSSL}}inherit(XHR,Polling);XHR.prototype.supportsBinary=true;XHR.prototype.request=function(opts){opts=opts||{};opts.uri=this.uri();opts.xd=this.xd;opts.xs=this.xs;opts.agent=this.agent||false;opts.supportsBinary=this.supportsBinary;opts.enablesXDR=this.enablesXDR;return new Request(opts)};XHR.prototype.doWrite=function(data,fn){var isBinary=typeof data!=="string"&&data!==undefined;var req=this.request({method:"POST",data:data,isBinary:isBinary});var self=this;req.on("success",fn);req.on("error",function(err){self.onError("xhr post error",err)});this.sendXhr=req};XHR.prototype.doPoll=function(){debug("xhr poll");var req=this.request();var self=this;req.on("data",function(data){self.onData(data)});req.on("error",function(err){self.onError("xhr poll error",err)});this.pollXhr=req};function Request(opts){this.method=opts.method||"GET";this.uri=opts.uri;this.xd=!!opts.xd;this.xs=!!opts.xs;this.async=false!==opts.async;this.data=undefined!=opts.data?opts.data:null;this.agent=opts.agent;this.isBinary=opts.isBinary;this.supportsBinary=opts.supportsBinary;this.enablesXDR=opts.enablesXDR;this.create()}Emitter(Request.prototype);Request.prototype.create=function(){var xhr=this.xhr=new XMLHttpRequest({agent:this.agent,xdomain:this.xd,xscheme:this.xs,enablesXDR:this.enablesXDR});var self=this;try{debug("xhr open %s: %s",this.method,this.uri);xhr.open(this.method,this.uri,this.async);if(this.supportsBinary){xhr.responseType="arraybuffer"}if("POST"==this.method){try{if(this.isBinary){xhr.setRequestHeader("Content-type","application/octet-stream")}else{xhr.setRequestHeader("Content-type","text/plain;charset=UTF-8")}}catch(e){}}if("withCredentials"in xhr){xhr.withCredentials=true}if(this.hasXDR()){xhr.onload=function(){self.onLoad()};xhr.onerror=function(){self.onError(xhr.responseText)}}else{xhr.onreadystatechange=function(){if(4!=xhr.readyState)return;if(200==xhr.status||1223==xhr.status){self.onLoad()}else{setTimeout(function(){self.onError(xhr.status)},0)}}}debug("xhr data %s",this.data);xhr.send(this.data)}catch(e){setTimeout(function(){self.onError(e)},0);return}if(global.document){this.index=Request.requestsCount++;Request.requests[this.index]=this}};Request.prototype.onSuccess=function(){this.emit("success");this.cleanup()};Request.prototype.onData=function(data){this.emit("data",data);this.onSuccess()};Request.prototype.onError=function(err){this.emit("error",err);this.cleanup()};Request.prototype.cleanup=function(){if("undefined"==typeof this.xhr||null===this.xhr){return}if(this.hasXDR()){this.xhr.onload=this.xhr.onerror=empty}else{this.xhr.onreadystatechange=empty}try{this.xhr.abort()}catch(e){}if(global.document){delete Request.requests[this.index]}this.xhr=null};Request.prototype.onLoad=function(){var data;try{var contentType;try{contentType=this.xhr.getResponseHeader("Content-Type").split(";")[0]}catch(e){}if(contentType==="application/octet-stream"){data=this.xhr.response}else{if(!this.supportsBinary){data=this.xhr.responseText}else{data="ok"}}}catch(e){this.onError(e)}if(null!=data){this.onData(data)}};Request.prototype.hasXDR=function(){return"undefined"!==typeof global.XDomainRequest&&!this.xs&&this.enablesXDR};Request.prototype.abort=function(){this.cleanup()};if(global.document){Request.requestsCount=0;Request.requests={};if(global.attachEvent){global.attachEvent("onunload",unloadHandler)}else if(global.addEventListener){global.addEventListener("beforeunload",unloadHandler)}}function unloadHandler(){for(var i in Request.requests){if(Request.requests.hasOwnProperty(i)){Request.requests[i].abort()}}}}).call(this,typeof self!=="undefined"?self:typeof window!=="undefined"?window:{})},{"./polling":17,"component-emitter":8,"component-inherit":20,debug:9,xmlhttprequest:19}],17:[function(_dereq_,module,exports){var Transport=_dereq_("../transport");var parseqs=_dereq_("parseqs");var parser=_dereq_("engine.io-parser");var inherit=_dereq_("component-inherit");var debug=_dereq_("debug")("engine.io-client:polling");module.exports=Polling;var hasXHR2=function(){var XMLHttpRequest=_dereq_("xmlhttprequest");var xhr=new XMLHttpRequest({xdomain:false});return null!=xhr.responseType}();function Polling(opts){var forceBase64=opts&&opts.forceBase64;if(!hasXHR2||forceBase64){this.supportsBinary=false}Transport.call(this,opts)}inherit(Polling,Transport);Polling.prototype.name="polling";Polling.prototype.doOpen=function(){this.poll()};Polling.prototype.pause=function(onPause){var pending=0;var self=this;this.readyState="pausing";function pause(){debug("paused");self.readyState="paused";onPause()}if(this.polling||!this.writable){var total=0;if(this.polling){debug("we are currently polling - waiting to pause");total++;this.once("pollComplete",function(){debug("pre-pause polling complete");--total||pause()})}if(!this.writable){debug("we are currently writing - waiting to pause");total++;this.once("drain",function(){debug("pre-pause writing complete");--total||pause()})}}else{pause()}};Polling.prototype.poll=function(){debug("polling");this.polling=true;this.doPoll();this.emit("poll")};Polling.prototype.onData=function(data){var self=this;debug("polling got data %s",data);var callback=function(packet,index,total){if("opening"==self.readyState){self.onOpen()}if("close"==packet.type){self.onClose();return false}self.onPacket(packet)};parser.decodePayload(data,this.socket.binaryType,callback);if("closed"!=this.readyState){this.polling=false;this.emit("pollComplete");if("open"==this.readyState){this.poll()}else{debug('ignoring poll - transport state "%s"',this.readyState)}}};Polling.prototype.doClose=function(){var self=this;function close(){debug("writing close packet");self.write([{type:"close"}])}if("open"==this.readyState){debug("transport open - closing");close()}else{debug("transport not open - deferring close");this.once("open",close)}};Polling.prototype.write=function(packets){var self=this;this.writable=false;var callbackfn=function(){self.writable=true;self.emit("drain")};var self=this;parser.encodePayload(packets,this.supportsBinary,function(data){self.doWrite(data,callbackfn)})};Polling.prototype.uri=function(){var query=this.query||{};var schema=this.secure?"https":"http";var port="";if(false!==this.timestampRequests){query[this.timestampParam]=+new Date+"-"+Transport.timestamps++}if(!this.supportsBinary&&!query.sid){query.b64=1}query=parseqs.encode(query);if(this.port&&("https"==schema&&this.port!=443||"http"==schema&&this.port!=80)){port=":"+this.port}if(query.length){query="?"+query}return schema+"://"+this.hostname+port+this.path+query}},{"../transport":13,"component-inherit":20,debug:9,"engine.io-parser":21,parseqs:29,xmlhttprequest:19}],18:[function(_dereq_,module,exports){var Transport=_dereq_("../transport");var parser=_dereq_("engine.io-parser");var parseqs=_dereq_("parseqs");var inherit=_dereq_("component-inherit");var debug=_dereq_("debug")("engine.io-client:websocket");var WebSocket=_dereq_("ws");module.exports=WS;function WS(opts){var forceBase64=opts&&opts.forceBase64;if(forceBase64){this.supportsBinary=false}Transport.call(this,opts)}inherit(WS,Transport);WS.prototype.name="websocket";WS.prototype.supportsBinary=true;WS.prototype.doOpen=function(){if(!this.check()){return}var self=this;var uri=this.uri();var protocols=void 0;var opts={agent:this.agent};this.ws=new WebSocket(uri,protocols,opts);if(this.ws.binaryType===undefined){this.supportsBinary=false}this.ws.binaryType="arraybuffer";this.addEventListeners()};WS.prototype.addEventListeners=function(){var self=this;this.ws.onopen=function(){self.onOpen()};this.ws.onclose=function(){self.onClose()};this.ws.onmessage=function(ev){self.onData(ev.data)};this.ws.onerror=function(e){self.onError("websocket error",e)}};if("undefined"!=typeof navigator&&/iPad|iPhone|iPod/i.test(navigator.userAgent)){WS.prototype.onData=function(data){var self=this;setTimeout(function(){Transport.prototype.onData.call(self,data)},0)}}WS.prototype.write=function(packets){var self=this;this.writable=false;for(var i=0,l=packets.length;i<l;i++){parser.encodePacket(packets[i],this.supportsBinary,function(data){try{self.ws.send(data)}catch(e){debug("websocket closed before onclose event")}})}function ondrain(){self.writable=true;self.emit("drain")}setTimeout(ondrain,0)};WS.prototype.onClose=function(){Transport.prototype.onClose.call(this)};WS.prototype.doClose=function(){if(typeof this.ws!=="undefined"){this.ws.close()}};WS.prototype.uri=function(){var query=this.query||{};var schema=this.secure?"wss":"ws";var port="";if(this.port&&("wss"==schema&&this.port!=443||"ws"==schema&&this.port!=80)){port=":"+this.port}if(this.timestampRequests){query[this.timestampParam]=+new Date}if(!this.supportsBinary){query.b64=1}query=parseqs.encode(query);if(query.length){query="?"+query}return schema+"://"+this.hostname+port+this.path+query};WS.prototype.check=function(){return!!WebSocket&&!("__initialize"in WebSocket&&this.name===WS.prototype.name)}},{"../transport":13,"component-inherit":20,debug:9,"engine.io-parser":21,parseqs:29,ws:31}],19:[function(_dereq_,module,exports){var hasCORS=_dereq_("has-cors");module.exports=function(opts){var xdomain=opts.xdomain;var xscheme=opts.xscheme;var enablesXDR=opts.enablesXDR;try{if("undefined"!=typeof XMLHttpRequest&&(!xdomain||hasCORS)){return new XMLHttpRequest}}catch(e){}try{if("undefined"!=typeof XDomainRequest&&!xscheme&&enablesXDR){return new XDomainRequest}}catch(e){}if(!xdomain){try{return new ActiveXObject("Microsoft.XMLHTTP")}catch(e){}}}},{"has-cors":34}],20:[function(_dereq_,module,exports){module.exports=function(a,b){var fn=function(){};fn.prototype=b.prototype;a.prototype=new fn;a.prototype.constructor=a}},{}],21:[function(_dereq_,module,exports){(function(global){var keys=_dereq_("./keys");var sliceBuffer=_dereq_("arraybuffer.slice");var base64encoder=_dereq_("base64-arraybuffer");var after=_dereq_("after");var utf8=_dereq_("utf8");var isAndroid=navigator.userAgent.match(/Android/i);exports.protocol=3;var packets=exports.packets={open:0,close:1,ping:2,pong:3,message:4,upgrade:5,noop:6};var packetslist=keys(packets);var err={type:"error",data:"parser error"};var Blob=_dereq_("blob");exports.encodePacket=function(packet,supportsBinary,utf8encode,callback){if("function"==typeof supportsBinary){callback=supportsBinary;supportsBinary=false}if("function"==typeof utf8encode){callback=utf8encode;utf8encode=null}var data=packet.data===undefined?undefined:packet.data.buffer||packet.data;if(global.ArrayBuffer&&data instanceof ArrayBuffer){return encodeArrayBuffer(packet,supportsBinary,callback)}else if(Blob&&data instanceof global.Blob){return encodeBlob(packet,supportsBinary,callback)}var encoded=packets[packet.type];if(undefined!==packet.data){encoded+=utf8encode?utf8.encode(String(packet.data)):String(packet.data)}return callback(""+encoded)};function encodeArrayBuffer(packet,supportsBinary,callback){if(!supportsBinary){return exports.encodeBase64Packet(packet,callback)}var data=packet.data;var contentArray=new Uint8Array(data);var resultBuffer=new Uint8Array(1+data.byteLength);resultBuffer[0]=packets[packet.type];for(var i=0;i<contentArray.length;i++){resultBuffer[i+1]=contentArray[i]}return callback(resultBuffer.buffer)}function encodeBlobAsArrayBuffer(packet,supportsBinary,callback){if(!supportsBinary){return exports.encodeBase64Packet(packet,callback)}var fr=new FileReader;fr.onload=function(){packet.data=fr.result;exports.encodePacket(packet,supportsBinary,true,callback)};return fr.readAsArrayBuffer(packet.data)}function encodeBlob(packet,supportsBinary,callback){if(!supportsBinary){return exports.encodeBase64Packet(packet,callback)}if(isAndroid){return encodeBlobAsArrayBuffer(packet,supportsBinary,callback)}var length=new Uint8Array(1);length[0]=packets[packet.type];var blob=new Blob([length.buffer,packet.data]);return callback(blob)}exports.encodeBase64Packet=function(packet,callback){var message="b"+exports.packets[packet.type];if(Blob&&packet.data instanceof Blob){var fr=new FileReader;fr.onload=function(){var b64=fr.result.split(",")[1];callback(message+b64)};return fr.readAsDataURL(packet.data)}var b64data;try{b64data=String.fromCharCode.apply(null,new Uint8Array(packet.data))}catch(e){var typed=new Uint8Array(packet.data);var basic=new Array(typed.length);for(var i=0;i<typed.length;i++){basic[i]=typed[i]}b64data=String.fromCharCode.apply(null,basic)}message+=global.btoa(b64data);return callback(message)};exports.decodePacket=function(data,binaryType,utf8decode){if(typeof data=="string"||data===undefined){if(data.charAt(0)=="b"){return exports.decodeBase64Packet(data.substr(1),binaryType)}if(utf8decode){try{data=utf8.decode(data)}catch(e){return err}}var type=data.charAt(0);if(Number(type)!=type||!packetslist[type]){return err}if(data.length>1){return{type:packetslist[type],data:data.substring(1)}}else{return{type:packetslist[type]}}}var asArray=new Uint8Array(data);var type=asArray[0];var rest=sliceBuffer(data,1);if(Blob&&binaryType==="blob"){rest=new Blob([rest])}return{type:packetslist[type],data:rest}};exports.decodeBase64Packet=function(msg,binaryType){var type=packetslist[msg.charAt(0)];if(!global.ArrayBuffer){return{type:type,data:{base64:true,data:msg.substr(1)}}}var data=base64encoder.decode(msg.substr(1));if(binaryType==="blob"&&Blob){data=new Blob([data])}return{type:type,data:data}};exports.encodePayload=function(packets,supportsBinary,callback){if(typeof supportsBinary=="function"){callback=supportsBinary;supportsBinary=null}if(supportsBinary){if(Blob&&!isAndroid){return exports.encodePayloadAsBlob(packets,callback)}return exports.encodePayloadAsArrayBuffer(packets,callback)}if(!packets.length){return callback("0:")}function setLengthHeader(message){return message.length+":"+message}function encodeOne(packet,doneCallback){exports.encodePacket(packet,supportsBinary,true,function(message){doneCallback(null,setLengthHeader(message))})}map(packets,encodeOne,function(err,results){return callback(results.join(""))})};function map(ary,each,done){var result=new Array(ary.length);var next=after(ary.length,done);var eachWithIndex=function(i,el,cb){each(el,function(error,msg){result[i]=msg;cb(error,result)})};for(var i=0;i<ary.length;i++){eachWithIndex(i,ary[i],next)}}exports.decodePayload=function(data,binaryType,callback){if(typeof data!="string"){return exports.decodePayloadAsBinary(data,binaryType,callback)}if(typeof binaryType==="function"){callback=binaryType;binaryType=null}var packet;if(data==""){return callback(err,0,1)}var length="",n,msg;for(var i=0,l=data.length;i<l;i++){var chr=data.charAt(i);if(":"!=chr){length+=chr}else{if(""==length||length!=(n=Number(length))){return callback(err,0,1)}msg=data.substr(i+1,n);if(length!=msg.length){return callback(err,0,1)}if(msg.length){packet=exports.decodePacket(msg,binaryType,true);if(err.type==packet.type&&err.data==packet.data){return callback(err,0,1)}var ret=callback(packet,i+n,l);if(false===ret)return}i+=n;length=""}}if(length!=""){return callback(err,0,1)}};exports.encodePayloadAsArrayBuffer=function(packets,callback){if(!packets.length){return callback(new ArrayBuffer(0))}function encodeOne(packet,doneCallback){exports.encodePacket(packet,true,true,function(data){return doneCallback(null,data)})}map(packets,encodeOne,function(err,encodedPackets){var totalLength=encodedPackets.reduce(function(acc,p){var len;if(typeof p==="string"){len=p.length}else{len=p.byteLength}return acc+len.toString().length+len+2},0);var resultArray=new Uint8Array(totalLength);var bufferIndex=0;encodedPackets.forEach(function(p){var isString=typeof p==="string";var ab=p;if(isString){var view=new Uint8Array(p.length);for(var i=0;i<p.length;i++){view[i]=p.charCodeAt(i)}ab=view.buffer}if(isString){resultArray[bufferIndex++]=0}else{resultArray[bufferIndex++]=1}var lenStr=ab.byteLength.toString();for(var i=0;i<lenStr.length;i++){resultArray[bufferIndex++]=parseInt(lenStr[i])}resultArray[bufferIndex++]=255;var view=new Uint8Array(ab);for(var i=0;i<view.length;i++){resultArray[bufferIndex++]=view[i]}});return callback(resultArray.buffer)})};exports.encodePayloadAsBlob=function(packets,callback){function encodeOne(packet,doneCallback){exports.encodePacket(packet,true,true,function(encoded){var binaryIdentifier=new Uint8Array(1);binaryIdentifier[0]=1;if(typeof encoded==="string"){var view=new Uint8Array(encoded.length);for(var i=0;i<encoded.length;i++){view[i]=encoded.charCodeAt(i)}encoded=view.buffer;binaryIdentifier[0]=0}var len=encoded instanceof ArrayBuffer?encoded.byteLength:encoded.size;var lenStr=len.toString();var lengthAry=new Uint8Array(lenStr.length+1);for(var i=0;i<lenStr.length;i++){lengthAry[i]=parseInt(lenStr[i])}lengthAry[lenStr.length]=255;if(Blob){var blob=new Blob([binaryIdentifier.buffer,lengthAry.buffer,encoded]);doneCallback(null,blob)}})}map(packets,encodeOne,function(err,results){return callback(new Blob(results))})};exports.decodePayloadAsBinary=function(data,binaryType,callback){if(typeof binaryType==="function"){callback=binaryType;binaryType=null}var bufferTail=data;var buffers=[];var numberTooLong=false;while(bufferTail.byteLength>0){var tailArray=new Uint8Array(bufferTail);var isString=tailArray[0]===0;var msgLength="";for(var i=1;;i++){if(tailArray[i]==255)break;if(msgLength.length>310){numberTooLong=true;break}msgLength+=tailArray[i]}if(numberTooLong)return callback(err,0,1);bufferTail=sliceBuffer(bufferTail,2+msgLength.length);msgLength=parseInt(msgLength);var msg=sliceBuffer(bufferTail,0,msgLength);if(isString){try{msg=String.fromCharCode.apply(null,new Uint8Array(msg))}catch(e){var typed=new Uint8Array(msg);msg="";for(var i=0;i<typed.length;i++){msg+=String.fromCharCode(typed[i])}}}buffers.push(msg);bufferTail=sliceBuffer(bufferTail,msgLength)}var total=buffers.length;buffers.forEach(function(buffer,i){callback(exports.decodePacket(buffer,binaryType,true),i,total)})}}).call(this,typeof self!=="undefined"?self:typeof window!=="undefined"?window:{})},{"./keys":22,after:23,"arraybuffer.slice":24,"base64-arraybuffer":25,blob:26,utf8:27}],22:[function(_dereq_,module,exports){module.exports=Object.keys||function keys(obj){var arr=[];var has=Object.prototype.hasOwnProperty;for(var i in obj){if(has.call(obj,i)){arr.push(i)}}return arr}},{}],23:[function(_dereq_,module,exports){module.exports=after;function after(count,callback,err_cb){var bail=false;err_cb=err_cb||noop;proxy.count=count;return count===0?callback():proxy;function proxy(err,result){if(proxy.count<=0){throw new Error("after called too many times")}--proxy.count;if(err){bail=true;callback(err);callback=err_cb}else if(proxy.count===0&&!bail){callback(null,result)}}}function noop(){}},{}],24:[function(_dereq_,module,exports){module.exports=function(arraybuffer,start,end){var bytes=arraybuffer.byteLength;start=start||0;end=end||bytes;if(arraybuffer.slice){return arraybuffer.slice(start,end)}if(start<0){start+=bytes}if(end<0){end+=bytes}if(end>bytes){end=bytes}if(start>=bytes||start>=end||bytes===0){return new ArrayBuffer(0)}var abv=new Uint8Array(arraybuffer);var result=new Uint8Array(end-start);for(var i=start,ii=0;i<end;i++,ii++){result[ii]=abv[i]}return result.buffer}},{}],25:[function(_dereq_,module,exports){(function(chars){"use strict";exports.encode=function(arraybuffer){var bytes=new Uint8Array(arraybuffer),i,len=bytes.length,base64="";for(i=0;i<len;i+=3){base64+=chars[bytes[i]>>2];base64+=chars[(bytes[i]&3)<<4|bytes[i+1]>>4];base64+=chars[(bytes[i+1]&15)<<2|bytes[i+2]>>6];base64+=chars[bytes[i+2]&63]}if(len%3===2){base64=base64.substring(0,base64.length-1)+"="}else if(len%3===1){base64=base64.substring(0,base64.length-2)+"=="}return base64};exports.decode=function(base64){var bufferLength=base64.length*.75,len=base64.length,i,p=0,encoded1,encoded2,encoded3,encoded4;if(base64[base64.length-1]==="="){bufferLength--;if(base64[base64.length-2]==="="){bufferLength--}}var arraybuffer=new ArrayBuffer(bufferLength),bytes=new Uint8Array(arraybuffer);for(i=0;i<len;i+=4){encoded1=chars.indexOf(base64[i]);encoded2=chars.indexOf(base64[i+1]);encoded3=chars.indexOf(base64[i+2]);encoded4=chars.indexOf(base64[i+3]);bytes[p++]=encoded1<<2|encoded2>>4;bytes[p++]=(encoded2&15)<<4|encoded3>>2;bytes[p++]=(encoded3&3)<<6|encoded4&63}return arraybuffer}})("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")},{}],26:[function(_dereq_,module,exports){(function(global){var BlobBuilder=global.BlobBuilder||global.WebKitBlobBuilder||global.MSBlobBuilder||global.MozBlobBuilder;var blobSupported=function(){try{var b=new Blob(["hi"]);return b.size==2}catch(e){return false}}();var blobBuilderSupported=BlobBuilder&&BlobBuilder.prototype.append&&BlobBuilder.prototype.getBlob;function BlobBuilderConstructor(ary,options){options=options||{};var bb=new BlobBuilder;for(var i=0;i<ary.length;i++){bb.append(ary[i])}return options.type?bb.getBlob(options.type):bb.getBlob()}module.exports=function(){if(blobSupported){return global.Blob}else if(blobBuilderSupported){return BlobBuilderConstructor}else{return undefined}}()}).call(this,typeof self!=="undefined"?self:typeof window!=="undefined"?window:{})},{}],27:[function(_dereq_,module,exports){(function(global){(function(root){var freeExports=typeof exports=="object"&&exports;var freeModule=typeof module=="object"&&module&&module.exports==freeExports&&module;var freeGlobal=typeof global=="object"&&global;if(freeGlobal.global===freeGlobal||freeGlobal.window===freeGlobal){root=freeGlobal}var stringFromCharCode=String.fromCharCode;function ucs2decode(string){var output=[];var counter=0;var length=string.length;var value;var extra;while(counter<length){value=string.charCodeAt(counter++);if(value>=55296&&value<=56319&&counter<length){extra=string.charCodeAt(counter++);if((extra&64512)==56320){output.push(((value&1023)<<10)+(extra&1023)+65536)}else{output.push(value);counter--}}else{output.push(value)}}return output}function ucs2encode(array){var length=array.length;var index=-1;var value;var output="";while(++index<length){value=array[index];if(value>65535){value-=65536;output+=stringFromCharCode(value>>>10&1023|55296);value=56320|value&1023}output+=stringFromCharCode(value)}return output}function createByte(codePoint,shift){return stringFromCharCode(codePoint>>shift&63|128)}function encodeCodePoint(codePoint){if((codePoint&4294967168)==0){return stringFromCharCode(codePoint)}var symbol="";if((codePoint&4294965248)==0){symbol=stringFromCharCode(codePoint>>6&31|192)}else if((codePoint&4294901760)==0){symbol=stringFromCharCode(codePoint>>12&15|224);symbol+=createByte(codePoint,6)}else if((codePoint&4292870144)==0){symbol=stringFromCharCode(codePoint>>18&7|240);symbol+=createByte(codePoint,12);symbol+=createByte(codePoint,6)}symbol+=stringFromCharCode(codePoint&63|128);return symbol}function utf8encode(string){var codePoints=ucs2decode(string);var length=codePoints.length;var index=-1;var codePoint;var byteString="";while(++index<length){codePoint=codePoints[index];byteString+=encodeCodePoint(codePoint)}return byteString}function readContinuationByte(){if(byteIndex>=byteCount){throw Error("Invalid byte index")}var continuationByte=byteArray[byteIndex]&255;byteIndex++;if((continuationByte&192)==128){return continuationByte&63}throw Error("Invalid continuation byte")}function decodeSymbol(){var byte1;var byte2;var byte3;var byte4;var codePoint;if(byteIndex>byteCount){throw Error("Invalid byte index")}if(byteIndex==byteCount){return false}byte1=byteArray[byteIndex]&255;byteIndex++;if((byte1&128)==0){return byte1}if((byte1&224)==192){var byte2=readContinuationByte();codePoint=(byte1&31)<<6|byte2;if(codePoint>=128){return codePoint}else{throw Error("Invalid continuation byte")}}if((byte1&240)==224){byte2=readContinuationByte();byte3=readContinuationByte();codePoint=(byte1&15)<<12|byte2<<6|byte3;if(codePoint>=2048){return codePoint}else{throw Error("Invalid continuation byte")}}if((byte1&248)==240){byte2=readContinuationByte();byte3=readContinuationByte();byte4=readContinuationByte();codePoint=(byte1&15)<<18|byte2<<12|byte3<<6|byte4;if(codePoint>=65536&&codePoint<=1114111){return codePoint}}throw Error("Invalid UTF-8 detected")}var byteArray;var byteCount;var byteIndex;function utf8decode(byteString){byteArray=ucs2decode(byteString);byteCount=byteArray.length;byteIndex=0;var codePoints=[];var tmp;while((tmp=decodeSymbol())!==false){codePoints.push(tmp)}return ucs2encode(codePoints)}var utf8={version:"2.0.0",encode:utf8encode,decode:utf8decode};if(typeof define=="function"&&typeof define.amd=="object"&&define.amd){define(function(){return utf8})}else if(freeExports&&!freeExports.nodeType){if(freeModule){freeModule.exports=utf8}else{var object={};var hasOwnProperty=object.hasOwnProperty;for(var key in utf8){hasOwnProperty.call(utf8,key)&&(freeExports[key]=utf8[key])}}}else{root.utf8=utf8}})(this)}).call(this,typeof self!=="undefined"?self:typeof window!=="undefined"?window:{})},{}],28:[function(_dereq_,module,exports){(function(global){var rvalidchars=/^[\],:{}\s]*$/;var rvalidescape=/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g;var rvalidtokens=/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g;var rvalidbraces=/(?:^|:|,)(?:\s*\[)+/g;var rtrimLeft=/^\s+/;var rtrimRight=/\s+$/;module.exports=function parsejson(data){if("string"!=typeof data||!data){return null}data=data.replace(rtrimLeft,"").replace(rtrimRight,"");if(global.JSON&&JSON.parse){return JSON.parse(data)}if(rvalidchars.test(data.replace(rvalidescape,"@").replace(rvalidtokens,"]").replace(rvalidbraces,""))){return new Function("return "+data)()}}}).call(this,typeof self!=="undefined"?self:typeof window!=="undefined"?window:{})},{}],29:[function(_dereq_,module,exports){exports.encode=function(obj){var str="";for(var i in obj){if(obj.hasOwnProperty(i)){if(str.length)str+="&";str+=encodeURIComponent(i)+"="+encodeURIComponent(obj[i])}}return str};exports.decode=function(qs){var qry={};var pairs=qs.split("&");for(var i=0,l=pairs.length;i<l;i++){var pair=pairs[i].split("=");qry[decodeURIComponent(pair[0])]=decodeURIComponent(pair[1])}return qry}},{}],30:[function(_dereq_,module,exports){var re=/^(?:(?![^:@]+:[^:@\/]*@)(http|https|ws|wss):\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?((?:[a-f0-9]{0,4}:){2,7}[a-f0-9]{0,4}|[^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/;var parts=["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"];module.exports=function parseuri(str){var src=str,b=str.indexOf("["),e=str.indexOf("]");if(b!=-1&&e!=-1){str=str.substring(0,b)+str.substring(b,e).replace(/:/g,";")+str.substring(e,str.length)}var m=re.exec(str||""),uri={},i=14;while(i--){uri[parts[i]]=m[i]||""}if(b!=-1&&e!=-1){uri.source=src;uri.host=uri.host.substring(1,uri.host.length-1).replace(/;/g,":");uri.authority=uri.authority.replace("[","").replace("]","").replace(/;/g,":");uri.ipv6uri=true}return uri}},{}],31:[function(_dereq_,module,exports){var global=function(){return this}();var WebSocket=global.WebSocket||global.MozWebSocket;module.exports=WebSocket?ws:null;function ws(uri,protocols,opts){var instance;if(protocols){instance=new WebSocket(uri,protocols)}else{instance=new WebSocket(uri)}return instance}if(WebSocket)ws.prototype=WebSocket.prototype},{}],32:[function(_dereq_,module,exports){(function(global){var isArray=_dereq_("isarray");module.exports=hasBinary;function hasBinary(data){function _hasBinary(obj){if(!obj)return false;if(global.Buffer&&global.Buffer.isBuffer(obj)||global.ArrayBuffer&&obj instanceof ArrayBuffer||global.Blob&&obj instanceof Blob||global.File&&obj instanceof File){return true}if(isArray(obj)){for(var i=0;i<obj.length;i++){if(_hasBinary(obj[i])){return true}}}else if(obj&&"object"==typeof obj){if(obj.toJSON){obj=obj.toJSON()}for(var key in obj){if(obj.hasOwnProperty(key)&&_hasBinary(obj[key])){return true}}}return false}return _hasBinary(data)}}).call(this,typeof self!=="undefined"?self:typeof window!=="undefined"?window:{})},{isarray:33}],33:[function(_dereq_,module,exports){module.exports=Array.isArray||function(arr){return Object.prototype.toString.call(arr)=="[object Array]"}},{}],34:[function(_dereq_,module,exports){var global=_dereq_("global");try{module.exports="XMLHttpRequest"in global&&"withCredentials"in new global.XMLHttpRequest}catch(err){module.exports=false}},{global:35}],35:[function(_dereq_,module,exports){module.exports=function(){return this}()},{}],36:[function(_dereq_,module,exports){var indexOf=[].indexOf;module.exports=function(arr,obj){if(indexOf)return arr.indexOf(obj);for(var i=0;i<arr.length;++i){if(arr[i]===obj)return i}return-1}},{}],37:[function(_dereq_,module,exports){var has=Object.prototype.hasOwnProperty;exports.keys=Object.keys||function(obj){var keys=[];for(var key in obj){if(has.call(obj,key)){keys.push(key)}}return keys};exports.values=function(obj){var vals=[];for(var key in obj){if(has.call(obj,key)){vals.push(obj[key])}}return vals};exports.merge=function(a,b){for(var key in b){if(has.call(b,key)){a[key]=b[key]}}return a};exports.length=function(obj){return exports.keys(obj).length};exports.isEmpty=function(obj){return 0==exports.length(obj)}},{}],38:[function(_dereq_,module,exports){var re=/^(?:(?![^:@]+:[^:@\/]*@)(http|https|ws|wss):\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?((?:[a-f0-9]{0,4}:){2,7}[a-f0-9]{0,4}|[^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/;var parts=["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"];module.exports=function parseuri(str){var m=re.exec(str||""),uri={},i=14;while(i--){uri[parts[i]]=m[i]||""}return uri}},{}],39:[function(_dereq_,module,exports){(function(global){var isArray=_dereq_("isarray");var isBuf=_dereq_("./is-buffer");exports.deconstructPacket=function(packet){var buffers=[];var packetData=packet.data;function _deconstructPacket(data){if(!data)return data;if(isBuf(data)){var placeholder={_placeholder:true,num:buffers.length};buffers.push(data);return placeholder}else if(isArray(data)){var newData=new Array(data.length);for(var i=0;i<data.length;i++){newData[i]=_deconstructPacket(data[i])}return newData}else if("object"==typeof data&&!(data instanceof Date)){var newData={};for(var key in data){newData[key]=_deconstructPacket(data[key])}return newData}return data}var pack=packet;pack.data=_deconstructPacket(packetData);pack.attachments=buffers.length;return{packet:pack,buffers:buffers}};exports.reconstructPacket=function(packet,buffers){var curPlaceHolder=0;function _reconstructPacket(data){if(data&&data._placeholder){var buf=buffers[data.num];return buf
@@ -15742,7 +17009,8 @@ angular.module('chattapp')
                 var clickRoomUserData = {
                     "name":roomData.user_data.name,
                     "id":roomData.user_data.id,
-                    "pic":roomData.user_data.profile_image
+                    "pic":roomData.user_data.profile_image,
+                    "lastSeen":roomData.user_data.last_seenInTimestamp
                 }
                 timeStorage.set('chatWithUserData', clickRoomUserData, 1);
                 socketService.create_room(roomData.user_data.id);
@@ -15764,7 +17032,7 @@ angular.module('chattapp')
      angular.module('chattapp')
          .factory('chatsService', chatsService);
 
-     function chatsService($q, timeStorage, chatsFactory, $rootScope) {
+     function chatsService($q, timeStorage, chatsFactory, $rootScope, timeZoneService) {
          var service = {};
          var q = $q.defer();
          service.privateRooms = function(roomData, callback) {
@@ -15774,6 +17042,8 @@ angular.module('chattapp')
                 var newRoomData = {};
                 for(var j = 0; j < roomData[i].room_users.length; j++){
                     if(roomData[i].room_users[j].id != userData.data.user_id){
+                        roomData[i].room_users[j].last_seenInTimestamp = roomData[i].room_users[j].last_seen;
+                        roomData[i].room_users[j].last_seen = moment(parseInt(roomData[i].room_users[j].last_seen)).format("hh:mm a");
                         newRoomData.user_data = roomData[i].room_users[j];
                         newRoomData.room_id = roomData[i].id;
                         returnData.push(newRoomData);
@@ -15791,6 +17061,7 @@ angular.module('chattapp')
              var userData =  timeStorage.get('userData');
              var query = chatsFactory.save({
                  accessToken: userData.data.access_token,
+                 room_type:'private',
                  timestamp:_.now(),
              });
              query.$promise.then(function(data) {
@@ -15829,6 +17100,77 @@ angular.module('chattapp')
          }
          return directive;
      });
+ })();
+ (function() {
+     'use strict';
+
+     angular.module('chattapp')
+         .controller('contactsController', contactsController);
+
+     function contactsController($scope, contactsFactory, contactsService, $ionicLoading, timeStorage, $localStorage, $state, socketService) {
+         delete $localStorage.chatWithUserData;
+         var self = this;
+         var userData =  timeStorage.get('userData');
+         var accessToken = userData.data.access_token;
+         self.displaycontacts = timeStorage.get('listUsers');
+         contactsService.listUsers();
+         $scope.$on('updatedlistUsers', function (event, response) {
+            self.displaycontacts = response.data;
+            $scope.$evalAsync();
+         });
+         self.chatWithUser = function(chatWithUser){
+            timeStorage.set('chatWithUserData', chatWithUser, 1);
+            socketService.create_room(chatWithUser.id).then(function(data){
+                $state.go('app.chatpage', {roomId:data.data.room_id});
+            });
+         }
+         self.isSearchOpen = false;
+         self.searchOpen = function(){
+            if(self.isSearchOpen){
+                self.isSearchOpen = false;
+            } else{
+                self.isSearchOpen = true;
+            }
+         }
+     }
+ })();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('contactsFactory', contactsFactory);
+
+   function contactsFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/users/list_users', {},{});
+   };
+})();
+ (function() {
+     'use strict';
+     angular.module('chattapp')
+         .factory('contactsService', contactsService);
+
+     function contactsService(timeStorage, $rootScope, contactsFactory, timeZoneService) {
+         var service = {};
+         service.listUsers = function() {
+            var userData =  timeStorage.get('userData');
+            var query = contactsFactory.save({
+                 accessToken: userData.data.access_token,
+                 page: 0,
+                 limit:100,
+                 currentTimestamp: _.now()
+             });
+             query.$promise.then(function(data) {
+                 var newData = [];
+                 for(var i = 0; i < data.data.length; i++){
+                    data.data[i].lastSeen = moment.unix(data.data[i].lastSeen).tz(timeZoneService.getTimeZone()).format("hh:mm a");
+                    newData.push(data.data[i]); 
+                 }
+                 timeStorage.set('listUsers', newData, 1);
+                 $rootScope.$broadcast('updatedlistUsers', { data: newData });
+             });
+         }
+         return service;
+     };
+
  })();
  (function() {
      'use strict';
@@ -16229,7 +17571,7 @@ googleLoginService.factory('googleLogin', [
              return {
                  restrict: 'E',
                  link: function(scope, element, attr) {
-                     if (attr.ngSrc == '') {
+                     if (attr.ngSrc == '' || attr.ngSrc) {
                         var chatPageClass = '';
                          if (scope.contact) {
                              var name = scope.contact.name;
@@ -16247,6 +17589,10 @@ googleLoginService.factory('googleLogin', [
                          }
                          if(scope.chat){
                             var name = scope.chat.user_data.name;
+                            var firstLetter = name.charAt(0).toUpperCase();
+                         }
+                         if(scope.publicChat){
+                            var name = scope.publicChat.room_name;
                             var firstLetter = name.charAt(0).toUpperCase();
                          }
                          var colorClass = Math.floor((Math.random() * 10) + 1);
@@ -16449,6 +17795,16 @@ angular.module('chattapp')
                  });
                  return q.promise;
              },
+             service.create_public_room = function(roomName, roomDescription) {
+                 var q = $q.defer();
+                 var userData = timeStorage.get('userData');
+                 var accessToken = userData.data.access_token;
+                 socket.emit('create_room', accessToken, 'public', '', roomName, roomDescription, _.now());
+                 service.new_private_room().then(function(data) {
+                     q.resolve(data);
+                 });
+                 return q.promise;
+             },
              service.room_message = function(msg_local_id, roomId, message, currentTimestamp) {
                  socket.emit('room_message', msg_local_id, accessToken, roomId, message, currentTimestamp);
              },
@@ -16578,63 +17934,6 @@ angular.module('chattapp')
      'use strict';
 
      angular.module('chattapp')
-         .controller('contactsController', contactsController);
-
-     function contactsController($scope, contactsFactory, contactsService, $ionicLoading, timeStorage, $localStorage, $state, socketService) {
-         delete $localStorage.chatWithUserData;
-         var self = this;
-         var userData =  timeStorage.get('userData');
-         var accessToken = userData.data.access_token;
-         self.displaycontacts = timeStorage.get('listUsers');
-         contactsService.listUsers();
-         $scope.$on('updatedlistUsers', function (event, response) {
-            self.displaycontacts = response.data;
-            $scope.$evalAsync();
-         });
-         self.chatWithUser = function(chatWithUser){
-            timeStorage.set('chatWithUserData', chatWithUser, 1);
-            socketService.create_room(chatWithUser.id).then(function(data){
-                $state.go('app.chatpage', {roomId:data.data.room_id});
-            });
-         }
-     }
- })();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('contactsFactory', contactsFactory);
-
-   function contactsFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/users/list_users', {},{});
-   };
-})();
- (function() {
-     'use strict';
-     angular.module('chattapp')
-         .factory('contactsService', contactsService);
-
-     function contactsService(timeStorage, $rootScope, contactsFactory) {
-         var service = {};
-         var userData =  timeStorage.get('userData');
-         service.listUsers = function() {
-            var query = contactsFactory.save({
-                 page: 0,
-                 limit:100,
-                 currentTimestamp: _.now()
-             });
-             query.$promise.then(function(data) {
-                 timeStorage.set('listUsers', data.data, 1);
-                 $rootScope.$broadcast('updatedlistUsers', { data: data.data });
-             });
-         }
-         return service;
-     };
-
- })();
- (function() {
-     'use strict';
-
-     angular.module('chattapp')
          .controller('forgotPasswordController', forgotPasswordController);
 
      function forgotPasswordController($state, forgotPasswordFactory, tostService, $ionicLoading) {
@@ -16672,8 +17971,6 @@ angular.module('chattapp')
         return $resource(Configurations.api_url + '/users/forgot_password/:email', {}, {});
     };
 })();
-/* jstz.min.js Version: 1.0.6 Build date: 2015-11-04 */
-!function(e){var a=function(){"use strict";var e="s",s={DAY:864e5,HOUR:36e5,MINUTE:6e4,SECOND:1e3,BASELINE_YEAR:2014,MAX_SCORE:864e6,AMBIGUITIES:{"America/Denver":["America/Mazatlan"],"Europe/London":["Africa/Casablanca"],"America/Chicago":["America/Mexico_City"],"America/Asuncion":["America/Campo_Grande","America/Santiago"],"America/Montevideo":["America/Sao_Paulo","America/Santiago"],"Asia/Beirut":["Asia/Amman","Asia/Jerusalem","Europe/Helsinki","Asia/Damascus","Africa/Cairo","Asia/Gaza","Europe/Minsk"],"Pacific/Auckland":["Pacific/Fiji"],"America/Los_Angeles":["America/Santa_Isabel"],"America/New_York":["America/Havana"],"America/Halifax":["America/Goose_Bay"],"America/Godthab":["America/Miquelon"],"Asia/Dubai":["Asia/Yerevan"],"Asia/Jakarta":["Asia/Krasnoyarsk"],"Asia/Shanghai":["Asia/Irkutsk","Australia/Perth"],"Australia/Sydney":["Australia/Lord_Howe"],"Asia/Tokyo":["Asia/Yakutsk"],"Asia/Dhaka":["Asia/Omsk"],"Asia/Baku":["Asia/Yerevan"],"Australia/Brisbane":["Asia/Vladivostok"],"Pacific/Noumea":["Asia/Vladivostok"],"Pacific/Majuro":["Asia/Kamchatka","Pacific/Fiji"],"Pacific/Tongatapu":["Pacific/Apia"],"Asia/Baghdad":["Europe/Minsk","Europe/Moscow"],"Asia/Karachi":["Asia/Yekaterinburg"],"Africa/Johannesburg":["Asia/Gaza","Africa/Cairo"]}},i=function(e){var a=-e.getTimezoneOffset();return null!==a?a:0},r=function(){var a=i(new Date(s.BASELINE_YEAR,0,2)),r=i(new Date(s.BASELINE_YEAR,5,2)),n=a-r;return 0>n?a+",1":n>0?r+",1,"+e:a+",0"},n=function(){var e,a;if("undefined"!=typeof Intl&&"undefined"!=typeof Intl.DateTimeFormat&&(e=Intl.DateTimeFormat(),"undefined"!=typeof e&&"undefined"!=typeof e.resolvedOptions))return a=e.resolvedOptions().timeZone,a&&(a.indexOf("/")>-1||"UTC"===a)?a:void 0},o=function(e){for(var a=new Date(e,0,1,0,0,1,0).getTime(),s=new Date(e,12,31,23,59,59).getTime(),i=a,r=new Date(i).getTimezoneOffset(),n=null,o=null;s-864e5>i;){var t=new Date(i),A=t.getTimezoneOffset();A!==r&&(r>A&&(n=t),A>r&&(o=t),r=A),i+=864e5}return n&&o?{s:u(n).getTime(),e:u(o).getTime()}:!1},u=function l(e,a,i){"undefined"==typeof a&&(a=s.DAY,i=s.HOUR);for(var r=new Date(e.getTime()-a).getTime(),n=e.getTime()+a,o=new Date(r).getTimezoneOffset(),u=r,t=null;n-i>u;){var A=new Date(u),c=A.getTimezoneOffset();if(c!==o){t=A;break}u+=i}return a===s.DAY?l(t,s.HOUR,s.MINUTE):a===s.HOUR?l(t,s.MINUTE,s.SECOND):t},t=function(e,a,s,i){if("N/A"!==s)return s;if("Asia/Beirut"===a){if("Africa/Cairo"===i.name&&13983768e5===e[6].s&&14116788e5===e[6].e)return 0;if("Asia/Jerusalem"===i.name&&13959648e5===e[6].s&&14118588e5===e[6].e)return 0}else if("America/Santiago"===a){if("America/Asuncion"===i.name&&14124816e5===e[6].s&&1397358e6===e[6].e)return 0;if("America/Campo_Grande"===i.name&&14136912e5===e[6].s&&13925196e5===e[6].e)return 0}else if("America/Montevideo"===a){if("America/Sao_Paulo"===i.name&&14136876e5===e[6].s&&1392516e6===e[6].e)return 0}else if("Pacific/Auckland"===a&&"Pacific/Fiji"===i.name&&14142456e5===e[6].s&&13961016e5===e[6].e)return 0;return s},A=function(e,i){for(var r=function(a){for(var r=0,n=0;n<e.length;n++)if(a.rules[n]&&e[n]){if(!(e[n].s>=a.rules[n].s&&e[n].e<=a.rules[n].e)){r="N/A";break}if(r=0,r+=Math.abs(e[n].s-a.rules[n].s),r+=Math.abs(a.rules[n].e-e[n].e),r>s.MAX_SCORE){r="N/A";break}}return r=t(e,i,r,a)},n={},o=a.olson.dst_rules.zones,u=o.length,A=s.AMBIGUITIES[i],c=0;u>c;c++){var m=o[c],l=r(o[c]);"N/A"!==l&&(n[m.name]=l)}for(var f in n)if(n.hasOwnProperty(f))for(var d=0;d<A.length;d++)if(A[d]===f)return f;return i},c=function(e){var s=function(){for(var e=[],s=0;s<a.olson.dst_rules.years.length;s++){var i=o(a.olson.dst_rules.years[s]);e.push(i)}return e},i=function(e){for(var a=0;a<e.length;a++)if(e[a]!==!1)return!0;return!1},r=s(),n=i(r);return n?A(r,e):e},m=function(){var e=n();return e||(e=a.olson.timezones[r()],"undefined"!=typeof s.AMBIGUITIES[e]&&(e=c(e))),{name:function(){return e}}};return{determine:m}}();a.olson=a.olson||{},a.olson.timezones={"-720,0":"Etc/GMT+12","-660,0":"Pacific/Pago_Pago","-660,1,s":"Pacific/Apia","-600,1":"America/Adak","-600,0":"Pacific/Honolulu","-570,0":"Pacific/Marquesas","-540,0":"Pacific/Gambier","-540,1":"America/Anchorage","-480,1":"America/Los_Angeles","-480,0":"Pacific/Pitcairn","-420,0":"America/Phoenix","-420,1":"America/Denver","-360,0":"America/Guatemala","-360,1":"America/Chicago","-360,1,s":"Pacific/Easter","-300,0":"America/Bogota","-300,1":"America/New_York","-270,0":"America/Caracas","-240,1":"America/Halifax","-240,0":"America/Santo_Domingo","-240,1,s":"America/Asuncion","-210,1":"America/St_Johns","-180,1":"America/Godthab","-180,0":"America/Argentina/Buenos_Aires","-180,1,s":"America/Montevideo","-120,0":"America/Noronha","-120,1":"America/Noronha","-60,1":"Atlantic/Azores","-60,0":"Atlantic/Cape_Verde","0,0":"UTC","0,1":"Europe/London","60,1":"Europe/Berlin","60,0":"Africa/Lagos","60,1,s":"Africa/Windhoek","120,1":"Asia/Beirut","120,0":"Africa/Johannesburg","180,0":"Asia/Baghdad","180,1":"Europe/Moscow","210,1":"Asia/Tehran","240,0":"Asia/Dubai","240,1":"Asia/Baku","270,0":"Asia/Kabul","300,1":"Asia/Yekaterinburg","300,0":"Asia/Karachi","330,0":"Asia/Kolkata","345,0":"Asia/Kathmandu","360,0":"Asia/Dhaka","360,1":"Asia/Omsk","390,0":"Asia/Rangoon","420,1":"Asia/Krasnoyarsk","420,0":"Asia/Jakarta","480,0":"Asia/Shanghai","480,1":"Asia/Irkutsk","525,0":"Australia/Eucla","525,1,s":"Australia/Eucla","540,1":"Asia/Yakutsk","540,0":"Asia/Tokyo","570,0":"Australia/Darwin","570,1,s":"Australia/Adelaide","600,0":"Australia/Brisbane","600,1":"Asia/Vladivostok","600,1,s":"Australia/Sydney","630,1,s":"Australia/Lord_Howe","660,1":"Asia/Kamchatka","660,0":"Pacific/Noumea","690,0":"Pacific/Norfolk","720,1,s":"Pacific/Auckland","720,0":"Pacific/Majuro","765,1,s":"Pacific/Chatham","780,0":"Pacific/Tongatapu","780,1,s":"Pacific/Apia","840,0":"Pacific/Kiritimati"},a.olson.dst_rules={years:[2008,2009,2010,2011,2012,2013,2014],zones:[{name:"Africa/Cairo",rules:[{e:12199572e5,s:12090744e5},{e:1250802e6,s:1240524e6},{e:12858804e5,s:12840696e5},!1,!1,!1,{e:14116788e5,s:1406844e6}]},{name:"Africa/Casablanca",rules:[{e:12202236e5,s:12122784e5},{e:12508092e5,s:12438144e5},{e:1281222e6,s:12727584e5},{e:13120668e5,s:13017888e5},{e:13489704e5,s:1345428e6},{e:13828392e5,s:13761e8},{e:14142888e5,s:14069448e5}]},{name:"America/Asuncion",rules:[{e:12050316e5,s:12243888e5},{e:12364812e5,s:12558384e5},{e:12709548e5,s:12860784e5},{e:13024044e5,s:1317528e6},{e:1333854e6,s:13495824e5},{e:1364094e6,s:1381032e6},{e:13955436e5,s:14124816e5}]},{name:"America/Campo_Grande",rules:[{e:12032172e5,s:12243888e5},{e:12346668e5,s:12558384e5},{e:12667212e5,s:1287288e6},{e:12981708e5,s:13187376e5},{e:13302252e5,s:1350792e6},{e:136107e7,s:13822416e5},{e:13925196e5,s:14136912e5}]},{name:"America/Goose_Bay",rules:[{e:122559486e4,s:120503526e4},{e:125704446e4,s:123648486e4},{e:128909886e4,s:126853926e4},{e:13205556e5,s:129998886e4},{e:13520052e5,s:13314456e5},{e:13834548e5,s:13628952e5},{e:14149044e5,s:13943448e5}]},{name:"America/Havana",rules:[{e:12249972e5,s:12056436e5},{e:12564468e5,s:12364884e5},{e:12885012e5,s:12685428e5},{e:13211604e5,s:13005972e5},{e:13520052e5,s:13332564e5},{e:13834548e5,s:13628916e5},{e:14149044e5,s:13943412e5}]},{name:"America/Mazatlan",rules:[{e:1225008e6,s:12074724e5},{e:12564576e5,s:1238922e6},{e:1288512e6,s:12703716e5},{e:13199616e5,s:13018212e5},{e:13514112e5,s:13332708e5},{e:13828608e5,s:13653252e5},{e:14143104e5,s:13967748e5}]},{name:"America/Mexico_City",rules:[{e:12250044e5,s:12074688e5},{e:1256454e6,s:12389184e5},{e:12885084e5,s:1270368e6},{e:1319958e6,s:13018176e5},{e:13514076e5,s:13332672e5},{e:13828572e5,s:13653216e5},{e:14143068e5,s:13967712e5}]},{name:"America/Miquelon",rules:[{e:12255984e5,s:12050388e5},{e:1257048e6,s:12364884e5},{e:12891024e5,s:12685428e5},{e:1320552e6,s:12999924e5},{e:13520016e5,s:1331442e6},{e:13834512e5,s:13628916e5},{e:14149008e5,s:13943412e5}]},{name:"America/Santa_Isabel",rules:[{e:12250116e5,s:1207476e6},{e:12564612e5,s:12389256e5},{e:12885156e5,s:12703752e5},{e:13199652e5,s:13018248e5},{e:13514148e5,s:13332744e5},{e:13828644e5,s:13653288e5},{e:1414314e6,s:13967784e5}]},{name:"America/Santiago",rules:[{e:1206846e6,s:1223784e6},{e:1237086e6,s:12552336e5},{e:127035e7,s:12866832e5},{e:13048236e5,s:13138992e5},{e:13356684e5,s:13465584e5},{e:1367118e6,s:13786128e5},{e:13985676e5,s:14100624e5}]},{name:"America/Sao_Paulo",rules:[{e:12032136e5,s:12243852e5},{e:12346632e5,s:12558348e5},{e:12667176e5,s:12872844e5},{e:12981672e5,s:1318734e6},{e:13302216e5,s:13507884e5},{e:13610664e5,s:1382238e6},{e:1392516e6,s:14136876e5}]},{name:"Asia/Amman",rules:[{e:1225404e6,s:12066552e5},{e:12568536e5,s:12381048e5},{e:12883032e5,s:12695544e5},{e:13197528e5,s:13016088e5},!1,!1,{e:14147064e5,s:13959576e5}]},{name:"Asia/Damascus",rules:[{e:12254868e5,s:120726e7},{e:125685e7,s:12381048e5},{e:12882996e5,s:12701592e5},{e:13197492e5,s:13016088e5},{e:13511988e5,s:13330584e5},{e:13826484e5,s:1364508e6},{e:14147028e5,s:13959576e5}]},{name:"Asia/Dubai",rules:[!1,!1,!1,!1,!1,!1,!1]},{name:"Asia/Gaza",rules:[{e:12199572e5,s:12066552e5},{e:12520152e5,s:12381048e5},{e:1281474e6,s:126964086e4},{e:1312146e6,s:130160886e4},{e:13481784e5,s:13330584e5},{e:13802292e5,s:1364508e6},{e:1414098e6,s:13959576e5}]},{name:"Asia/Irkutsk",rules:[{e:12249576e5,s:12068136e5},{e:12564072e5,s:12382632e5},{e:12884616e5,s:12697128e5},!1,!1,!1,!1]},{name:"Asia/Jerusalem",rules:[{e:12231612e5,s:12066624e5},{e:1254006e6,s:1238112e6},{e:1284246e6,s:12695616e5},{e:131751e7,s:1301616e6},{e:13483548e5,s:13330656e5},{e:13828284e5,s:13645152e5},{e:1414278e6,s:13959648e5}]},{name:"Asia/Kamchatka",rules:[{e:12249432e5,s:12067992e5},{e:12563928e5,s:12382488e5},{e:12884508e5,s:12696984e5},!1,!1,!1,!1]},{name:"Asia/Krasnoyarsk",rules:[{e:12249612e5,s:12068172e5},{e:12564108e5,s:12382668e5},{e:12884652e5,s:12697164e5},!1,!1,!1,!1]},{name:"Asia/Omsk",rules:[{e:12249648e5,s:12068208e5},{e:12564144e5,s:12382704e5},{e:12884688e5,s:126972e7},!1,!1,!1,!1]},{name:"Asia/Vladivostok",rules:[{e:12249504e5,s:12068064e5},{e:12564e8,s:1238256e6},{e:12884544e5,s:12697056e5},!1,!1,!1,!1]},{name:"Asia/Yakutsk",rules:[{e:1224954e6,s:120681e7},{e:12564036e5,s:12382596e5},{e:1288458e6,s:12697092e5},!1,!1,!1,!1]},{name:"Asia/Yekaterinburg",rules:[{e:12249684e5,s:12068244e5},{e:1256418e6,s:1238274e6},{e:12884724e5,s:12697236e5},!1,!1,!1,!1]},{name:"Asia/Yerevan",rules:[{e:1224972e6,s:1206828e6},{e:12564216e5,s:12382776e5},{e:1288476e6,s:12697272e5},{e:13199256e5,s:13011768e5},!1,!1,!1]},{name:"Australia/Lord_Howe",rules:[{e:12074076e5,s:12231342e5},{e:12388572e5,s:12545838e5},{e:12703068e5,s:12860334e5},{e:13017564e5,s:1317483e6},{e:1333206e6,s:13495374e5},{e:13652604e5,s:1380987e6},{e:139671e7,s:14124366e5}]},{name:"Australia/Perth",rules:[{e:12068136e5,s:12249576e5},!1,!1,!1,!1,!1,!1]},{name:"Europe/Helsinki",rules:[{e:12249828e5,s:12068388e5},{e:12564324e5,s:12382884e5},{e:12884868e5,s:1269738e6},{e:13199364e5,s:13011876e5},{e:1351386e6,s:13326372e5},{e:13828356e5,s:13646916e5},{e:14142852e5,s:13961412e5}]},{name:"Europe/Minsk",rules:[{e:12249792e5,s:12068352e5},{e:12564288e5,s:12382848e5},{e:12884832e5,s:12697344e5},!1,!1,!1,!1]},{name:"Europe/Moscow",rules:[{e:12249756e5,s:12068316e5},{e:12564252e5,s:12382812e5},{e:12884796e5,s:12697308e5},!1,!1,!1,!1]},{name:"Pacific/Apia",rules:[!1,!1,!1,{e:13017528e5,s:13168728e5},{e:13332024e5,s:13489272e5},{e:13652568e5,s:13803768e5},{e:13967064e5,s:14118264e5}]},{name:"Pacific/Fiji",rules:[!1,!1,{e:12696984e5,s:12878424e5},{e:13271544e5,s:1319292e6},{e:1358604e6,s:13507416e5},{e:139005e7,s:1382796e6},{e:14215032e5,s:14148504e5}]},{name:"Europe/London",rules:[{e:12249828e5,s:12068388e5},{e:12564324e5,s:12382884e5},{e:12884868e5,s:1269738e6},{e:13199364e5,s:13011876e5},{e:1351386e6,s:13326372e5},{e:13828356e5,s:13646916e5},{e:14142852e5,s:13961412e5}]}]},"undefined"!=typeof module&&"undefined"!=typeof module.exports?module.exports=a:"undefined"!=typeof define&&null!==define&&null!=define.amd?define([],function(){return a}):"undefined"==typeof e?window.jstz=a:e.jstz=a}();
 (function() {
     'use strict';
 
@@ -16882,23 +18179,59 @@ angular.module('chattapp')
      }
  })();
  (function() {
+     'use strict';
+     angular.module('chattapp')
+         .factory('publicChatService', publicChatService);
+
+     function publicChatService($q, timeStorage, chatsFactory, $rootScope, timeZoneService) {
+         var service = {};
+         var q = $q.defer();
+         service.listRooms = function() {
+             var userData = timeStorage.get('userData');
+             var query = chatsFactory.save({
+                 accessToken: userData.data.access_token,
+                 room_type:'public',
+                 timestamp:_.now(),
+             });
+             query.$promise.then(function(data) {
+                if(data.data.rooms){
+                    timeStorage.set('displayPublicChats', data.data.rooms, 1);
+                } else{
+                    timeStorage.set('displayPublicChats', false, 1);
+                }
+             });
+         }
+         return service;
+     };
+
+ })();
+ (function() {
     'use strict';
 
     angular.module('chattapp')
         .controller('publicChatsController', publicChatsController);
 
-    function publicChatsController($ionicModal, $scope) {
-            var self = this;
-
-    // Load the modal from the given template URL
+    function publicChatsController($ionicModal, $scope, socketService, tostService, publicChatService, timeStorage) {
+        var self = this;
+        self.displayPublicChat = timeStorage.get('displayPublicChats');
+        publicChatService.listRooms();
+        self.createGroup = function(){
+            if(self.groupName && self.groupDescription){
+                socketService.create_public_room(self.groupName, self.groupDescription).then(function(resopnse){
+                    tostService.notify(resopnse.message, 'top');
+                    publicChatService.listRooms();
+                    self.displayPublicChat = timeStorage.get('displayPublicChats');
+                    $scope.modal.hide();
+                });
+            } else{
+                tostService.notify('Please fill details', 'top');
+            }
+        }
     $ionicModal.fromTemplateUrl('modal.html', function($ionicModal) {
         $scope.modal = $ionicModal;
-    }, {
-        // Use our scope for the scope of the modal to keep it simple
-        scope: $scope,
-        // The animation we want to use for the modal entrance
-        // animation: 'slide-in-up'
-    }); 
+        }, {
+            scope: $scope,
+        }); 
     }
 })();
  (function() {

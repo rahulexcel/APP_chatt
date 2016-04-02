@@ -26,6 +26,10 @@
                             var name = scope.chat.user_data.name;
                             var firstLetter = name.charAt(0).toUpperCase();
                          }
+                         if(scope.publicChat){
+                            var name = scope.publicChat.room_name;
+                            var firstLetter = name.charAt(0).toUpperCase();
+                         }
                          var colorClass = Math.floor((Math.random() * 10) + 1);
                          element.replaceWith("<button class='no-image circleColor"+colorClass+" "+chatPageClass+"'><i class='i-24 white'>" + firstLetter + "</i><div class='md-ripple-container'></div></button>");
                      }
