@@ -9,10 +9,10 @@
    <ion-content scroll="true">
       <div class="list">
          <div class="user-container" ng-repeat="contact in contacts.displaycontacts">
-            <a class="item item-avatar hover item-icon-right" on-tap="contacts.chatWithUser(contact)">
+            <a class="item item-avatar hover item-icon-right" ng-click="contacts.openUserProfile(contact, $index)">
                <img class="avatar" ng-src="{{contact.pic}}">
                <i class="fa fa-circle user-status"></i>
-               <h3>{{contact.name}}</h3>
+               <h3>{{contact.name}} <span class="fa fa-spin fa-spinner" ng-show="contacts.spinnerIndex==$index"></span></h3>
                <p>{{contact.lastSeen}}</p>
             </a>
          </div>
@@ -21,7 +21,7 @@
    <ion-footer-bar class="bar-stable">
    <div class="tabs tabs-icon-top" id="background">
       <a class="tab-item" href="#/app/chats">
-         <i class="icon ion-chatbubble tabs-icon-color"></i> Private
+         <i class="icon ion-chatbubble tabs-icon-color"></i> Chats
       </a>
       <a class="tab-item" href="#/app/publicChats">
          <i class="icon ion-person-stalker tabs-icon-color"></i> Public
@@ -34,3 +34,35 @@
       </a>
    </ion-fotter-bar>
 </ion-view>
+<script id="contactUser.html" type="text/ng-template">
+    <div class="modal">
+        <header class="bar bar-header bar-positive">
+          <h1 class="title">{{contacts.displayUserProfileName}}</h1>
+          <div class="button btn-xs button-clear" ng-click="modal.hide()"><span class="icon ion-close"></span></div>
+        </header>
+        <content has-header="true" padding="true">
+            <div style="width:100%;" class="pad-top-40">
+               <div class="col-md-12 col-sm-12 col-xs-12 no-pad-left-right">
+                   <div class="panel panel-card">
+                       <div class="r-t pos-rlt" md-ink-ripple style="background:url({{contacts.displayUserProfileImage}}) center center; background-size:cover">
+                           <div class="p-lg bg-white-overlay text-center r-t chatuser-profile">
+                               <a href class="w-xs inline">
+                                   <img id="profileImage" ng-src="{{contacts.displayUserProfileImage}}" class="img-circle profile-pic">
+                               </a>
+                               <div class="m-b m-t-sm h2">
+                                   <span class="">{{contacts.displayUserProfileName}}</span>
+                               </div>
+                               <div class="m-b m-t-sm h4">
+                                   <p class="">User Status</p>
+                                   <p class="">Private Rooms: {{contacts.displayUserProfilePrivateRooms}}</p>
+                                   <p class="">Public Rooms: {{contacts.displayUserProfilePublicRooms}}</p>
+                               </div>
+                               <a class="btn btn-md btn-success m-b p-h no-border" ng-click="contacts.chatWithUser(contacts.displayUserProfileName, contacts.displayUserProfileId, contacts.displayUserProfileImage, contacts.displayUserProfileLastSeen)">Start Chat <span class="fa fa-spin fa-spinner" ng-show="contacts.startChatspinner"></span></a>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+            </div>
+        </content>
+    </div>
+</script>

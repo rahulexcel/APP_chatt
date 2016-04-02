@@ -16,6 +16,7 @@
              query.$promise.then(function(data) {
                 if(data.data.rooms){
                     timeStorage.set('displayPublicChats', data.data.rooms, 1);
+                    $rootScope.$broadcast('updatedDisplayPublicChats', { data: data.data.rooms });
                 } else{
                     timeStorage.set('displayPublicChats', false, 1);
                 }

@@ -32,7 +32,7 @@
              var userData =  timeStorage.get('userData');
              var query = chatsFactory.save({
                  accessToken: userData.data.access_token,
-                 room_type:'private',
+                 room_type:'all',
                  timestamp:_.now(),
              });
              query.$promise.then(function(data) {

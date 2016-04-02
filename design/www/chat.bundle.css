@@ -74013,10 +74013,6 @@ span.name input {
   background-color: #3F51B5;
 }
 
-.activated {
-  border-top: 2px solid #fff;
-}
-
 .search-box-open {
   width: 77%;
   position: absolute;
@@ -74044,6 +74040,26 @@ span.name input {
 
 .group-box {
   margin-top: 25px;
+}
+
+a.active {
+  border-top: 2px solid #fff!important;
+}
+
+.pad-top-40 {
+  padding-top: 40px;
+}
+
+.chatuser-profile {
+  padding-top: 30%;
+}
+
+.chatuser-profile .btn-md {
+  margin-top: 30%;
+}
+
+.chatuser-profile .m-t-sm {
+  margin-top: 5%;
 }
 
 @media all and (max-width: 1024px) and (min-width: 768px) {
