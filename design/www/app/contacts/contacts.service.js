@@ -5,9 +5,10 @@
 
      function contactsService(timeStorage, $rootScope, contactsFactory, timeZoneService) {
          var service = {};
-         var userData =  timeStorage.get('userData');
          service.listUsers = function() {
+            var userData =  timeStorage.get('userData');
             var query = contactsFactory.save({
+                 accessToken: userData.data.access_token,
                  page: 0,
                  limit:100,
                  currentTimestamp: _.now()

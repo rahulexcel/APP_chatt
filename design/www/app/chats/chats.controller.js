@@ -23,7 +23,8 @@
                 var clickRoomUserData = {
                     "name":roomData.user_data.name,
                     "id":roomData.user_data.id,
-                    "pic":roomData.user_data.profile_image
+                    "pic":roomData.user_data.profile_image,
+                    "lastSeen":roomData.user_data.last_seenInTimestamp
                 }
                 timeStorage.set('chatWithUserData', clickRoomUserData, 1);
                 socketService.create_room(roomData.user_data.id);

@@ -1,11 +1,10 @@
 <ion-view view-title="Public Chats" id="background" hide-back-button="true">
     <ion-content>
         <div class="list" id="chats">
-            <div class="user-container" ng-repeat="chat in chats.displayChats">
-                <a class="item item-avatar hover" href="#/app/chatpage">
-                    <img class="avatar" ng-src="{{chat.image}}">
-                    <h3>{{chat.name}} <span class="pull-right time">{{chat.messageTime}}</span></h3>
-                    <p>{{chat.message}}</p>
+            <div class="user-container" ng-repeat="publicChat in publicChats.displayPublicChat | orderBy:'-registration_time'">
+                <a class="item item-avatar hover" href="#">
+                    <img class="avatar" ng-src="{{publicChat.room_image}}">
+                    <h3>{{publicChat.room_name}}</h3>
                 </a>
             </div>
         </div>
@@ -34,20 +33,20 @@
     <div class="modal">
         <header class="bar bar-header bar-positive">
           <h1 class="title">Create a group</h1>
-          <div class="button button-clear" ng-click="modal.hide()"><span class="icon ion-close"></span></div>
+          <div class="button btn-xs button-clear" ng-click="modal.hide()"><span class="icon ion-close"></span></div>
         </header>
         <content has-header="true" padding="true">
             <div class="p-lg panel md-whiteframe-z1 text-color group-box">
               <form>
                 <div class="md-form-group float-label">
-                  <input type="text" class="md-input" autocomplete="off" required>
+                  <input type="text" class="md-input" ng-model="publicChats.groupName" autocomplete="off" required>
                   <label>Name</label>
                 </div>
                 <div class="md-form-group float-label">
-                  <input type="text" class="md-input" autocomplete="off" required>
+                  <input type="text" class="md-input" ng-model="publicChats.groupDescription" autocomplete="off" required>
                   <label>Description</label>
                 </div>
-                <button md-ink-ripple type="submit" class="md-btn md-raised pink btn-block p-h-md">Create</button>
+                <button ng-click="publicChats.createGroup()" class="md-btn md-raised pink btn-block p-h-md">Create</button>
               </form>
             </div>
         </content>
