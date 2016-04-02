@@ -281,11 +281,20 @@ module.exports = function (Room) {
                 }else{
                     var userId = accessToken.userId
                     userId = new ObjectID( userId );
-                    Room.find({
-                        "where": {
+                    
+                    if( room_type == 'all' ){
+                        var wh = {
+                            room_users : {'in':[userId]},
+                        }
+                    }else{
+                        var wh = {
                             room_users : {'in':[userId]},
                             room_type : room_type,
-                        },
+                        }
+                    }
+                    
+                    Room.find({
+                        "where": wh,
                         "include": [{
                             relation: 'room_owner', 
                             scope: {
