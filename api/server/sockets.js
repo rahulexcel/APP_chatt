@@ -128,7 +128,8 @@ module.exports.listen = function(app){
                         type : 'alert',
                         data : response
                     }
-                    socket.to( room_id ).emit( 'response_room', d );
+                    socket.emit( 'RESPONSE_join_public_room', d );
+                    socket.to( room_id ).emit( 'response_room', d ); // this is not using yet
                 }
             });
         })
