@@ -35,6 +35,17 @@ module.exports.listen = function(app){
             callback( response );
         })
     }
+    function FN_leave_public_group( accessToken, room_id, currentTimestamp, callback ){
+        Room.leave_public_group( accessToken, room_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            var response = {
+                'status' : res_status,
+                'message' : res_message,
+                'data' : res_data
+            };
+            callback( response );
+        })
+    }
+    
     
     
     io = socketio.listen(app);
@@ -151,6 +162,22 @@ module.exports.listen = function(app){
             })
         });
         
+        //sockets events ( trying to create generic )
+        socket.on('APP_SOCKET_EMIT',function( type, info ){
+            if( type == 'leave_public_group' ){
+                var accessToken = info.accessToken;
+                var room_id = info.room_id;
+                var currentTimestamp = info.currentTimestamp;
+                FN_leave_public_group( accessToken, room_id, currentTimestamp, function( response ){
+                    var d = {
+                        type : 'alert',
+                        data : response
+                    }
+                    socket.emit( 'RESPONSE_APP_SOCKET_EMIT', 'leave_public_group', d );
+                    socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT', 'left_public_group',d ); // this is for others users to show msg if they are online they will get this
+                });
+            }
+        });
         
     });
     //return io;
