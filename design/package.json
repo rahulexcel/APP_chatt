@@ -27,7 +27,15 @@
       "locator": "/var/www/html/facebook_plugin",
       "id": "phonegap-facebook-plugin"
     },
-    "cordova-plugin-network-information"
+    "cordova-plugin-network-information",
+    {
+      "locator": "https://github.com/litehelpers/cordova-sqlite-ext.git",
+      "id": "cordova-sqlite-ext"
+    },
+    {
+      "locator": "https://github.com/apache/cordova-plugin-inappbrowser.git",
+      "id": "cordova-plugin-inappbrowser"
+    }
   ],
   "cordovaPlatforms": [
     "android"

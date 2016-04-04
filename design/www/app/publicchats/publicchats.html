@@ -33,11 +33,25 @@
 <script id="modal.html" type="text/ng-template">
     <div class="modal">
         <header class="bar bar-header bar-positive">
-          <h1 class="title">I'm A Modal</h1>
+          <h1 class="title">Create a group</h1>
           <div class="button button-clear" ng-click="modal.hide()"><span class="icon ion-close"></span></div>
         </header>
         <content has-header="true" padding="true">
-          <p>This is a modal</p>
+            <div class="p-lg panel md-whiteframe-z1 text-color group-box">
+              <form>
+                <div class="md-form-group float-label">
+                  <input type="text" class="md-input" autocomplete="off" required>
+                  <label>Name</label>
+                </div>
+                <div class="md-form-group float-label">
+                  <input type="text" class="md-input" autocomplete="off" required>
+                  <label>Description</label>
+                </div>
+                <button md-ink-ripple type="submit" class="md-btn md-raised pink btn-block p-h-md">Create</button>
+              </form>
+            </div>
         </content>
+    </div>
+</script>
     </div>
 </script>

@@ -17,7 +17,11 @@
                 StatusBar.styleDefault();
             }
         });
-
+                    if($localStorage.userData){
+                        $state.go('app.chats');
+                        } else{
+                        $state.go('login');
+                     }
        
         window.socket = io(Configurations.socketApi);
         document.addEventListener("online", onOnline, false);
