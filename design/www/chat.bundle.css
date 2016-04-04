@@ -73427,6 +73427,15 @@ button.close {
   font-family: 'Montserrat', sans-serif;
 }
 
+.app-name {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.p-lg {
+  padding: 18px;
+}
+
 .no-image {
   position: absolute;
   vertical-align: middle;
@@ -73439,6 +73448,13 @@ button.close {
   width: 100%;
   height: 100%;
   border-radius: 50%;
+}
+
+.user-status {
+  position: absolute;
+  top: 40px;
+  font-size: 12px;
+  left: 48px;
 }
 
 .chatPageheader {
@@ -73497,7 +73513,11 @@ button.close {
 }
 
 .white {
-  color: #ffffff;
+  color: #ffffff!important;
+}
+
+.scroll-content {
+  background-color: #fff;
 }
 
 /*Placeholder css*/
@@ -73533,6 +73553,18 @@ button.close {
 }
 
 /*login page css*/
+
+.login {
+  display: table;
+  position: absolute;
+  width: 100%;
+  height: 101%;
+}
+
+.login .center-block {
+  display: table-cell;
+  vertical-align: middle;
+}
 
 #loginPage {
   height: auto;
@@ -73598,11 +73630,6 @@ button.close {
 #registerPage {
   background: #BDBDBD;
   height: auto;
-}
-
-.title {
-  text-align: center!important;
-  left: 0px!important;
 }
 
 #registerPage .main-container h1 {
@@ -73721,6 +73748,7 @@ a.tab-item:hover {
 
 .chatpage-header p {
   line-height: 16px;
+  padding-left: 6px;
 }
 
 .chatpage-header img {
@@ -73943,12 +73971,16 @@ span.name input {
 
 /*Chats Css*/
 
+#chats h4 {
+  margin-top: 50%;
+}
+
 #chats .time {
   font-size: 12px;
 }
 
 #chats .item {
-  border-bottom: 1px solid #ddd!important;
+  /*border-bottom:1px solid #ddd!important;*/
   margin-top: 1px;
 }
 
@@ -73964,8 +73996,9 @@ span.name input {
 
 .add-public-chat {
   position: absolute;
-  bottom: 12px;
-  right: 0;
+  bottom: 60px;
+  right: 0px;
+  z-index: 2;
 }
 
 .add-public-chat .i-24 {
@@ -73978,4 +74011,101 @@ span.name input {
 
 .modal-backdrop {
   background-color: #3F51B5;
+}
+
+.search-box-open {
+  width: 77%;
+  position: absolute;
+  top: 4px;
+  right: 5em;
+  -webkit-transition: width 0.4s ease-in-out;
+  -moz-transition: width 0.4s ease-in-out;
+  -o-transition: width 0.4s ease-in-out;
+  transition: width 0.4s ease-in-out;
+  border-radius: 5px;
+}
+
+.search-box-close {
+  width: 0px;
+  border-radius: 5px;
+  right: 5em;
+  padding: 0px!important;
+  -webkit-transition: width 0.4s ease-in-out;
+  -moz-transition: width 0.4s ease-in-out;
+  -o-transition: width 0.4s ease-in-out;
+  transition: width 0.4s ease-in-out;
+  position: absolute;
+  top: 4px;
+}
+
+.group-box {
+  margin-top: 25px;
+}
+
+a.active {
+  border-top: 2px solid #fff!important;
+}
+
+.pad-top-40 {
+  padding-top: 40px;
+}
+
+.chatuser-profile {
+  padding-top: 30%;
+}
+
+.chatuser-profile .btn-md {
+  margin-top: 30%;
+}
+
+.chatuser-profile .m-t-sm {
+  margin-top: 5%;
+}
+
+@media all and (max-width: 1024px) and (min-width: 768px) {
+  .search-box-open {
+    width: 90%;
+  }
+}
+
+@media all and (max-width: 1024px) and (min-width: 600px) {
+  .search-box-open {
+    width: 86%;
+  }
+}
+
+@media all and (max-width: 1280px) and (min-width: 800px) {
+  .search-box-open {
+    width: 91%;
+  }
+}
+
+@media all and (max-width: 567px) and (min-width: 384px) {
+  .search-box-open {
+    width: 81%;
+  }
+}
+
+@media all and (max-width: 567px) and (min-width: 360px) {
+  .search-box-open {
+    width: 79%;
+  }
+}
+
+@media all and (max-width: 659px) and (min-width: 412px) {
+  .search-box-open {
+    width: 82%;
+  }
+}
+
+@media all and (max-width: 960px) and (min-width: 600px) {
+  .search-box-open {
+    width: 88%;
+  }
+}
+
+@media all and (max-width: 640px) and (min-width: 384px) {
+  .search-box-open {
+    width: 81%;
+  }
 }

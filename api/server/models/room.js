@@ -1,5 +1,4 @@
 var UTIL = require('../modules/generic');
-var PUSH_NOTIFICATIONS = require('../modules/push_notifications');
 var ObjectID = require('mongodb').ObjectID;
 
 module.exports = function (Room) {
@@ -142,6 +141,7 @@ module.exports = function (Room) {
     ///////////////////////////////////////////////////////////////////////////////////
     Room.room_message = function ( msg_local_id,  accessToken, room_id, message, currentTimestamp, callback) {
         var User = Room.app.models.User;
+        var Pushmessage = Room.app.models.Pushmessage;
         User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
             if( err ){
                 callback(null, 0, 'UnAuthorized', {});
@@ -224,14 +224,15 @@ module.exports = function (Room) {
                                                     //----start---for push notification message--------
                                                     if( TOKENS.length > 0 ){
                                                         var push_msg_info = {
+                                                            'message_id' : new_message.id.toString(),
                                                             'room_id' : room_id,
                                                             'message_owner_name' : msg_by_name,
                                                             'message_profile_image' : msg_by_profile_image,
                                                             'message_type' : 'text',
                                                             'message_body' : message,
-                                                        };
-                                                        PUSH_NOTIFICATIONS.PUSH_MESSAGE( TOKENS, push_msg_info, function( push_status, push_response ){
-                                                        });   
+                                                        }
+                                                        Pushmessage.create_push_message( 'room_message', TOKENS , push_msg_info, function( ignore_param, p_status, p_message, p_data){
+                                                        })  
                                                     }
                                                     //----end---for push notification message--------
                                                     callback(null, 1, 'Message posted', data );
@@ -280,20 +281,29 @@ module.exports = function (Room) {
                 }else{
                     var userId = accessToken.userId
                     userId = new ObjectID( userId );
-                    Room.find({
-                        "where": {
+                    
+                    if( room_type == 'all' ){
+                        var wh = {
+                            room_users : {'in':[userId]},
+                        }
+                    }else{
+                        var wh = {
                             room_users : {'in':[userId]},
                             room_type : room_type,
-                        },
+                        }
+                    }
+                    
+                    Room.find({
+                        "where": wh,
                         "include": [{
                             relation: 'room_owner', 
                             scope: {
-                                fields: ['name','profile_image'],
+                                fields: ['name','profile_image','last_seen'],
                             }
                         },{
                             relation: 'room_users', 
                             scope: {
-                                fields: ['name','profile_image'],
+                                fields: ['name','profile_image','last_seen'],
                             }
                         }]
                     },function (err, result) {
@@ -598,4 +608,156 @@ module.exports = function (Room) {
                 }
             }
     );
+    
+    //********************************* START LIST OF ALL public rooms **********************************
+    Room.get_public_rooms = function ( accessToken, page, limit, currentTimestamp, callback) {
+        var User = Room.app.models.User;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 401, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 401, 'UnAuthorized', {});
+                }else{
+                    var access_token_userid = accessToken.userId
+                    
+                    var num = 0;
+                    num = page * 1;
+                    User.findById(access_token_userid, function (err, user) {
+                        if (err) {
+                            callback(null, 0, 'UnAuthorized', err);
+                        } else {
+                            var where = {
+                                'room_type' : 'public',
+                                'room_users': {neq: [new ObjectID( access_token_userid )] },
+                            };
+                            Room.find({
+                                "where": where,
+                                "limit": limit,
+                                "skip": num * limit,
+                                "order": 'registration_time DESC',
+                                "include": [{
+                                    relation: 'room_owner', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen'],
+                                    }
+                                },{
+                                    relation: 'room_users', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen'],
+                                    }
+                                }]
+                            },function (err, result) {
+                                if( err ){
+                                    callback(null, 0, 'try again', {});
+                                }else{
+                                    if( result.length > 0 ){
+                                        var data = {
+                                            'rooms' : result
+                                        };
+                                        callback( null, 1, 'Rooms found', data );
+                                    }else{
+                                        callback( null, 0, 'No rooms found', {} );
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    };
+    Room.remoteMethod(
+            'get_public_rooms', {
+                description: 'get all public rooms',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'page', type: 'number'},
+                    {arg: 'limit', type: 'number'},
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/get_public_rooms',
+                }
+            }
+    );
+    //********************************* END LIST OF ALL USERS ************************************ 
+    
+    //********************************* START get room info **********************************
+    Room.get_room_info = function ( accessToken, room_id, currentTimestamp, callback) {
+        var User = Room.app.models.User;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 401, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 401, 'UnAuthorized', {});
+                }else{
+                    var access_token_userid = accessToken.userId
+                    User.findById(access_token_userid, function (err, user) {
+                        if (err) {
+                            callback(null, 401, 'UnAuthorized', err);
+                        } else {
+                            var where = {
+                                'id' : new ObjectID( room_id )
+                            };
+                            Room.find({
+                                "where": where,
+                                "include": [{
+                                    relation: 'room_owner', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen'],
+                                    }
+                                },{
+                                    relation: 'room_users', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen'],
+                                    }
+                                }]
+                            },function (err, result) {
+                                if( err ){
+                                    callback(null, 0, 'try again', {});
+                                }else{
+                                    if( result.length > 0 ){
+                                        result = result[0];
+                                        var data = {
+                                            'room' : result
+                                        };
+                                        callback( null, 1, 'Room found', data );
+                                    }else{
+                                        callback( null, 0, 'No room found', {} );
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    };
+    Room.remoteMethod(
+            'get_room_info', {
+                description: 'get room info',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'room_id', type: 'string'},
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/get_room_info',
+                }
+            }
+    );
+    //********************************* END get room info ************************************ 
+    
 };

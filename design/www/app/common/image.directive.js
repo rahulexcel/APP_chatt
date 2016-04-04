@@ -6,7 +6,7 @@
              return {
                  restrict: 'E',
                  link: function(scope, element, attr) {
-                     if (attr.ngSrc == '') {
+                     if (attr.ngSrc == '' || attr.ngSrc) {
                         var chatPageClass = '';
                          if (scope.contact) {
                              var name = scope.contact.name;
@@ -24,6 +24,10 @@
                          }
                          if(scope.chat){
                             var name = scope.chat.user_data.name;
+                            var firstLetter = name.charAt(0).toUpperCase();
+                         }
+                         if(scope.publicChat){
+                            var name = scope.publicChat.room_name;
                             var firstLetter = name.charAt(0).toUpperCase();
                          }
                          var colorClass = Math.floor((Math.random() * 10) + 1);

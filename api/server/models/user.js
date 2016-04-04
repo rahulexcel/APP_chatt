@@ -6,6 +6,7 @@ var ObjectID = require('mongodb').ObjectID;
 module.exports = function (User) {
     //********************************* START REGISTER AND LOGIN **********************************
     User.register_login = function (action, action_type, social_id, platform, device_id, token, email_id, name, password, profile_image, currentTimestamp, callback) {
+        var LIFE_OF_ACCESS_TOKEN = 60 * 60 * 24 * 1000;
         if (action && action_type && email_id) {
             if (typeof name == 'undefined' || name == '') {
                 name = '';
@@ -32,7 +33,7 @@ module.exports = function (User) {
                                 callback(null, 0, 'Email id already exists.', {});
                             } else if (action_type == 'manual_login' || action_type == 'facebook' || action_type == 'google') {
                                 if (action_type == 'facebook' || action_type == 'google') {
-                                    result.createAccessToken(86400, function (err, accessToken) {
+                                    result.createAccessToken(LIFE_OF_ACCESS_TOKEN, function (err, accessToken) {
                                         if (err) {
                                             callback(null, 0, 'Invalid login', {});
                                         } else {
@@ -52,7 +53,8 @@ module.exports = function (User) {
                                         //-START--get access token---------
                                         User.login({
                                             email: email_id,
-                                            password: password
+                                            password: password,
+                                            ttl: LIFE_OF_ACCESS_TOKEN
                                         }, function (err, accessToken) {
                                             if (err) {
                                                 callback(null, 0, 'Invalid login', {});
@@ -105,7 +107,8 @@ module.exports = function (User) {
                                     registration_time: currentTimestamp,
                                     registration_date: UTIL.currentDate(currentTimestamp),
                                     registration_date_time: UTIL.currentDateTimeDay(currentTimestamp),
-                                    profile_image: profile_image
+                                    profile_image: profile_image,
+                                    profile_status: '',
                                 }, function (err, user) {
                                     if (err) {
                                         callback(null, 0, err, {});
@@ -120,7 +123,7 @@ module.exports = function (User) {
                                         User.app.models.email.newRegisteration({email: email_id, name: name, verification_code: verification_code}, function () {
                                             //--send access token if register is via facebook or google
                                             if (action_type == 'facebook' || action_type == 'google') {
-                                                user.createAccessToken(86400, function (err, accessToken) {
+                                                user.createAccessToken(LIFE_OF_ACCESS_TOKEN, function (err, accessToken) {
                                                     if (err) {
                                                         callback(null, 0, 'Invalid login', {});
                                                     } else {
@@ -355,61 +358,68 @@ module.exports = function (User) {
 //********************************* END RESET PASSWORD **********************************
 
 //********************************* START LIST OF ALL USERS **********************************
-    User.list_users = function (req, page, limit, currentTimestamp, callback) {
-        if (typeof req.accessToken == 'undefined' || req.accessToken == null || req.accessToken == '' || typeof req.accessToken.userId == 'undefined' || req.accessToken.userId == '') {
-            callback(null, 0, 'UnAuthorized', {});
-        } else {
-            var access_token_userid = req.accessToken.userId;
-            if (lodash.isUndefined(page) && lodash.isUndefined(limit)) {
-                callback(null, 0, 'Invalid Request Parameters', {});
-            }
-            else {
-                var num = 0;
-                num = page * 1;
-                User.findById(access_token_userid, function (err, user) {
-                    if (err) {
-                        callback(null, 0, 'UnAuthorized 1', err);
-                    } else {
-                        var where = {
-                            id: {neq: access_token_userid},
-                            verification_status: 1*1
-                        };
-                        User.find({
-                            where: where,
-                            limit: limit,
-                            skip: num * limit,
-                            order: 'last_seen DESC'
-                        }, function (err, result) {
+    User.list_users = function ( accessToken, page, limit, currentTimestamp, callback) {
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 401, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 401, 'UnAuthorized', {});
+                }else{
+                    var access_token_userid = accessToken.userId
+                    if (lodash.isUndefined(page) && lodash.isUndefined(limit)) {
+                        callback(null, 0, 'Invalid Request Parameters', {});
+                    }
+                    else {
+                        var num = 0;
+                        num = page * 1;
+                        User.findById(access_token_userid, function (err, user) {
                             if (err) {
-                                callback(null, 0, 'Try Again', err);
-                            }
-                            else {
-                                var userInfo = [];
-                                if (result.length > 0) {
-                                    lodash.forEach(result, function (value) {
-                                        var userName = value.name;
-                                        var userId = value.id;
-                                        var pic = value.profile_image;
-                                        var lastSeen = value.last_seen;
-                                        userInfo.push({name: userName, id: userId, pic: pic, lastSeen: lastSeen});
-                                    });
-                                    callback(null, 1, 'Users List', userInfo);
-                                }
-                                else {
-                                    callback(null, 0, 'No Record Found', {});
-                                }
+                                callback(null, 0, 'UnAuthorized 1', err);
+                            } else {
+                                var where = {
+                                    id: {neq: access_token_userid},
+                                    verification_status: 1*1
+                                };
+                                User.find({
+                                    where: where,
+                                    limit: limit,
+                                    skip: num * limit,
+                                    order: 'last_seen DESC'
+                                }, function (err, result) {
+                                    if (err) {
+                                        callback(null, 0, 'Try Again', err);
+                                    }
+                                    else {
+                                        var userInfo = [];
+                                        if (result.length > 0) {
+                                            lodash.forEach(result, function (value) {
+                                                var userName = value.name;
+                                                var userId = value.id;
+                                                var pic = value.profile_image;
+                                                var lastSeen = value.last_seen;
+                                                userInfo.push({name: userName, id: userId, pic: pic, lastSeen: lastSeen});
+                                            });
+                                            callback(null, 1, 'Users List', userInfo);
+                                        }
+                                        else {
+                                            callback(null, 0, 'No Record Found', {});
+                                        }
+                                    }
+                                });
                             }
                         });
                     }
-                });
+                }
             }
-        }
+        });
     };
     User.remoteMethod(
             'list_users', {
                 description: 'Show the list of all Users',
                 accepts: [
-                    {arg: 'req', type: 'object', 'http': {source: 'req'}},
+                    //{arg: 'req', type: 'object', 'http': {source: 'req'}},
+                    {arg: 'accessToken', type: 'string'}, 
                     {arg: 'page', type: 'number'},
                     {arg: 'limit', type: 'number'},
                     {arg: 'currentTimestamp', type: 'number'}
@@ -418,7 +428,10 @@ module.exports = function (User) {
                     {arg: 'status', type: 'number'},
                     {arg: 'message', type: 'string'},
                     {arg: 'data', type: 'array'}
-                ]
+                ],
+                http: {
+                    verb: 'post', path: '/list_users',
+                }
             }
     );
 //********************************* END LIST OF ALL USERS ************************************  
@@ -468,6 +481,161 @@ module.exports = function (User) {
             }
     );
 //********************************* END LAST SEEN **********************************
+
+//********************************* START my profile ( logged user profile) **********************************
+    User.my_profile = function ( accessToken, currentTimestamp, callback) {
+        var Room = User.app.models.Room;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 0, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 0, 'UnAuthorized', {});
+                }else{
+                    var userId = accessToken.userId
+                    User.findById(userId, function (err, user) {
+                        if (err) {
+                            callback(null, 0, 'UnAuthorized', {});
+                        } else {
+                            Room.find({
+                                'where':{
+                                    room_users : {'all':[new ObjectID( userId )]}
+                                }
+                            },function( err1, rooms ){
+                                if( err1 ){
+                                    callback(null, 0, 'try again', {});
+                                }else{
+                                    var user_private_rooms = 0;
+                                    var user_public_rooms = 0;
+                                    if( rooms.length > 0 ){
+                                        for( var k in rooms){
+                                            r_type = rooms[k].room_type;
+                                            if( r_type == 'public' ){
+                                                user_public_rooms += 1;
+                                            }else if( r_type == 'private' ){
+                                                user_private_rooms += 1;
+                                            }
+                                        }
+                                    }
+                                    var USER_PROFILE = {
+                                        'user_id' : user.id,
+                                        'name' : user.name,
+                                        'profile_image' : user.profile_image,
+                                        'profile_status' : user.profile_status,
+                                        'last_seen' : user.last_seen,
+                                        'user_private_rooms' : user_private_rooms,
+                                        'user_public_rooms' : user_public_rooms,
+                                    }
+                                    callback(null, 1, 'User profile details', USER_PROFILE);
+                                }
+                            })
+                        }
+                    });
+                }
+            }
+        });
+    };
+    User.remoteMethod(
+            'my_profile', {
+                description: 'get logged user profile',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/my_profile',
+                }
+            }
+    );
+//********************************* END my profile ( logged user profile) **********************************
+
+
+//********************************* START user profile ( any user profile on user_id basis ) **********************************
+    User.get_user_profile = function ( accessToken, user_id, currentTimestamp, callback) {
+        var Room = User.app.models.Room;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 0, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 0, 'UnAuthorized', {});
+                }else{
+                    User.find({
+                        'where' : {
+                            '_id' : new ObjectID( user_id )
+                        }
+                    }, function (err, results) {
+                        if (err) {
+                            callback(null, 0, 'try again', {});
+                        } else {
+                            if( results.length == 0 ){
+                                callback(null, 0, 'No user Found', {});
+                            }else{
+                                user = results[0];
+                                Room.find({
+                                    'where':{
+                                        room_users : {'all':[new ObjectID( user_id )]}
+                                    }
+                                },function( err1, rooms ){
+                                    if( err1 ){
+                                        callback(null, 0, 'try again', {});
+                                    }else{
+                                        var user_private_rooms = 0;
+                                        var user_public_rooms = 0;
+                                        if( rooms.length > 0 ){
+                                            for( var k in rooms){
+                                                r_type = rooms[k].room_type;
+                                                if( r_type == 'public' ){
+                                                    user_public_rooms += 1;
+                                                }else if( r_type == 'private' ){
+                                                    user_private_rooms += 1;
+                                                }
+                                            }
+                                        }
+                                        var USER_PROFILE = {
+                                            'user_id' : user.id,
+                                            'name' : user.name,
+                                            'profile_image' : user.profile_image,
+                                            'profile_status' : user.profile_status,
+                                            'last_seen' : user.last_seen,
+                                            'user_private_rooms' : user_private_rooms,
+                                            'user_public_rooms' : user_public_rooms,
+                                        }
+                                        callback(null, 1, 'User profile details', USER_PROFILE);
+                                    }
+                                })
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    };
+    User.remoteMethod(
+            'get_user_profile', {
+                description: 'get any user profile info',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'user_id', type: 'string'}, 
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/get_user_profile',
+                }
+            }
+    );
+//********************************* START user profile ( any user profile on user_id basis ) **********************************
+
 
 
 };
