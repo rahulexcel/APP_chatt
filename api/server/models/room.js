@@ -764,4 +764,109 @@ module.exports = function (Room) {
     );
     //********************************* END get room info ************************************ 
     
+    
+    //********************************* START get room info **********************************
+    Room.leave_public_group = function ( accessToken, room_id, currentTimestamp, callback) {
+        var User = Room.app.models.User;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 401, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 401, 'UnAuthorized', {});
+                }else{
+                    var access_token_userid = accessToken.userId
+                    User.findById(access_token_userid, function (err, user) {
+                        if (err) {
+                            callback(null, 401, 'UnAuthorized', err);
+                        } else {
+                            userId = new ObjectID( access_token_userid );
+                            var wh = {
+                                id : new ObjectID( room_id ),
+                                room_users : {'in':[userId]}
+                            }
+                            Room.find({
+                                "where": wh,
+                                "include": [{
+                                    relation: 'room_owner', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen'],
+                                    }
+                                },{
+                                    relation: 'room_users', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen'],
+                                    }
+                                }]
+                            },function (err, result) {
+                                if( err ){
+                                    callback(null, 0, 'try again', {});
+                                }else{
+                                    if( result.length > 0 ){
+                                        result = result[0];
+                                        result = result.toJSON();
+                                        room_owner = result.room_owner;
+                                        room_users = result.room_users;
+                                        if( room_owner.id.toString() == access_token_userid.toString() ){
+                                            callback( null, 0, "Admin can't leave group", data );
+                                        }else{
+                                            left_user_info = {};
+                                            for( var k in room_users ){
+                                                if( room_users[k].id.toString() == access_token_userid.toString() ){
+                                                    left_user_info = {
+                                                        user_id : room_users[k].id,
+                                                        name : room_users[k].name,
+                                                        profile_image : room_users[k].profile_image,
+                                                    }
+                                                }
+                                            }
+                                            Room.update({
+                                                id : new ObjectID( room_id ),
+                                            },{
+                                                '$pull': {'room_users': userId }
+                                            },{ 
+                                                allowExtendedOperators: true 
+                                            },function (err, result2) {
+                                                if (err) {
+                                                    callback(null, 0, 'try again', {});
+                                                } else {
+                                                    var data = {
+                                                        room_id : room_id,
+                                                        left_user_info : left_user_info
+                                                    }
+                                                    callback(null, 1, 'Public room left', data );
+                                                }
+                                            });
+                                        }
+                                    }else{
+                                        callback( null, 0, 'No permission', {} );
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    };
+    Room.remoteMethod(
+            'leave_public_group', {
+                description: 'user will able to leave a public group',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'room_id', type: 'string'},
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/leave_public_group',
+                }
+            }
+    );
+    //********************************* END get room info ************************************ 
+    
 };
