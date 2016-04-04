@@ -37,6 +37,8 @@ module.exports = function (Room) {
                 }else{
                     var owner_user_id = accessToken.userId;
                     if( room_type == 'public'){
+                        room_name = room_name.trim();
+                        room_name_capital = room_name.toUpperCase();
                         room_users = [ new ObjectID( owner_user_id ) ];
                         var new_room = new Room({
                             room_type : 'public',
@@ -44,6 +46,7 @@ module.exports = function (Room) {
                             room_users_limit : 10*1,
                             room_users : room_users,
                             room_name : room_name,
+                            room_name_capital : room_name_capital,
                             room_description : room_description,
                             room_image : '',
                             room_background : '',
@@ -72,6 +75,7 @@ module.exports = function (Room) {
                         }
                         var check_where = {
                             where : {
+                                room_type : 'private',
                                 room_users : {'all':room_users}
                             }
                         };
@@ -629,13 +633,13 @@ module.exports = function (Room) {
                         } else {
                             var where = {
                                 'room_type' : 'public',
-                                'room_users': {neq: [new ObjectID( access_token_userid )] },
+                                'room_users': {'nin': [new ObjectID( access_token_userid )] },
                             };
                             Room.find({
                                 "where": where,
                                 "limit": limit,
                                 "skip": num * limit,
-                                "order": 'registration_time DESC',
+                                "order": 'room_name_capital ASC',
                                 "include": [{
                                     relation: 'room_owner', 
                                     scope: {
