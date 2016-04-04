@@ -686,5 +686,78 @@ module.exports = function (Room) {
                 }
             }
     );
-//********************************* END LIST OF ALL USERS ************************************ 
+    //********************************* END LIST OF ALL USERS ************************************ 
+    
+    //********************************* START get room info **********************************
+    Room.get_room_info = function ( accessToken, room_id, currentTimestamp, callback) {
+        var User = Room.app.models.User;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 401, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 401, 'UnAuthorized', {});
+                }else{
+                    var access_token_userid = accessToken.userId
+                    User.findById(access_token_userid, function (err, user) {
+                        if (err) {
+                            callback(null, 401, 'UnAuthorized', err);
+                        } else {
+                            var where = {
+                                'id' : new ObjectID( room_id )
+                            };
+                            Room.find({
+                                "where": where,
+                                "include": [{
+                                    relation: 'room_owner', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen'],
+                                    }
+                                },{
+                                    relation: 'room_users', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen'],
+                                    }
+                                }]
+                            },function (err, result) {
+                                if( err ){
+                                    callback(null, 0, 'try again', {});
+                                }else{
+                                    if( result.length > 0 ){
+                                        result = result[0];
+                                        var data = {
+                                            'room' : result
+                                        };
+                                        callback( null, 1, 'Room found', data );
+                                    }else{
+                                        callback( null, 0, 'No room found', {} );
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    };
+    Room.remoteMethod(
+            'get_room_info', {
+                description: 'get room info',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'room_id', type: 'string'},
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/get_room_info',
+                }
+            }
+    );
+    //********************************* END get room info ************************************ 
+    
 };
