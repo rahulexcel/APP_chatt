@@ -628,7 +628,8 @@ module.exports = function (Room) {
                             callback(null, 0, 'UnAuthorized', err);
                         } else {
                             var where = {
-                                'room_type' : 'public'
+                                'room_type' : 'public',
+                                'room_users': {neq: [new ObjectID( access_token_userid )] },
                             };
                             Room.find({
                                 "where": where,
