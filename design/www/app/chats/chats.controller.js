@@ -9,7 +9,6 @@
             var userData = timeStorage.get('userData');
             chatsService.listMyRooms();
             self.displayChats = timeStorage.get('displayPrivateChats');
-            console.log(self.displayChats);
             $scope.$on('updatedRoomData', function (event, response) {
                 self.displayChats = response.data;
                 $scope.$evalAsync();
@@ -27,8 +26,13 @@
                     "lastSeen":roomData.user_data.last_seenInTimestamp
                 }
                 timeStorage.set('chatWithUserData', clickRoomUserData, 1);
-                socketService.create_room(roomData.user_data.id);
-                $state.go('app.chatpage', {roomId:roomData.room_id});
+                if(roomData.user_data.id){
+                    socketService.create_room(roomData.user_data.id);
+                    $state.go('app.chatpage', {roomId:roomData.room_id});
+                } else{
+                    socket.emit('room_open', roomData.room_id);
+                    $state.go('app.chatpage', {roomId:roomData.room_id});
+                }
              }
     }
 })();
