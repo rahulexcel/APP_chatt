@@ -73709,6 +73709,8 @@ button.close {
 
 .user-container {
   position: relative;
+  border-top: 1px solid #ddd!important;
+  border-bottom: 1px solid #ddd!important;
 }
 
 .icon-container {
@@ -73996,9 +73998,9 @@ span.name input {
 
 .add-public-chat {
   position: absolute;
-  bottom: 12px;
-  right: 0;
-  /*top:37em;*/
+  bottom: 60px;
+  right: 0px;
+  z-index: 2;
 }
 
 .add-public-chat .i-24 {
@@ -74060,6 +74062,15 @@ a.active {
 
 .chatuser-profile .m-t-sm {
   margin-top: 5%;
+}
+
+.lastSeen {
+  font-size: 12px!important;
+  font-style: italic!important;
+}
+
+.chat-page-list {
+  padding-top: 10px;
 }
 
 @media all and (max-width: 1024px) and (min-width: 768px) {

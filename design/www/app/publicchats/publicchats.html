@@ -1,18 +1,18 @@
 <ion-view view-title="Groups" id="background" hide-back-button="true">
     <ion-content>
         <div class="list" id="chats">
-            <div class="user-container" ng-click="publicChats.clickOnRoom(publicChat)" ng-repeat="publicChat in publicChats.displayPublicChat | orderBy:'-registration_time'">
+            <div class="user-container" ng-click="publicChats.clickOnRoom(publicChat, $index)" ng-repeat="publicChat in publicChats.displayPublicChat">
                 <a class="item item-avatar hover">
                     <img class="avatar" ng-src="{{publicChat.room_image}}">
-                    <h3>{{publicChat.room_name}}</h3>
+                    <h3>{{publicChat.room_name}} <span class="fa fa-spin fa-spinner" ng-show="publicChats.clickRoomSpinner==$index"></span></h3>
                 </a>
             </div>
         </div>
+    </ion-content>
+    <ion-footer-bar class="bar-stable">
         <div class="md-list-item-left circle green add-public-chat" ng-click="modal.show()">
             <i class="ion-plus-round i-24"></i>
         </div>
-    </ion-content>
-    <ion-footer-bar class="bar-stable">
         <div class="tabs tabs-icon-top" id="background">
             <a class="tab-item" href="#/app/chats">
                 <i class="icon ion-chatbubble tabs-icon-color"></i> Chats
@@ -39,15 +39,60 @@
             <div class="p-lg panel md-whiteframe-z1 text-color group-box">
               <form>
                 <div class="md-form-group float-label">
-                  <input type="text" class="md-input" ng-model="publicChats.groupName" autocomplete="off" required>
+                  <input type="text" class="md-input" ng-model="publicChats.userGroupName" autocomplete="off" required>
                   <label>Name</label>
                 </div>
                 <div class="md-form-group float-label">
-                  <input type="text" class="md-input" ng-model="publicChats.groupDescription" autocomplete="off" required>
+                  <input type="text" class="md-input" ng-model="publicChats.userGroupDescription" autocomplete="off" required>
                   <label>Description</label>
                 </div>
-                <button ng-click="publicChats.createGroup()" class="md-btn md-raised pink btn-block p-h-md">Create</button>
+                <button ng-disabled="publicChats.createGroupOption" ng-click="publicChats.createGroup()" class="md-btn md-raised pink btn-block p-h-md">Create</button>
               </form>
+            </div>
+        </content>
+    </div>
+</script>
+
+<script id="groupDetails.html" type="text/ng-template">
+    <div class="modal">
+        <header class="bar bar-header bar-positive">
+          <h1 class="title">{{publicChats.groupName}}</h1>
+          <div class="button btn-xs button-clear" ng-click="groupModel.hide()"><span class="icon ion-close"></span></div>
+        </header>
+        <content has-header="true" padding="true">
+            <div style="width:100%;" class="pad-top-40">
+               <div class="col-md-12 col-sm-12 col-xs-12 no-pad-left-right">
+                   <div class="panel panel-card">
+                       <div class="r-t pos-rlt" md-ink-ripple style="background:url({{publicChats.groupBackground}}) center center; background-size:cover">
+                           <div class="bg-white-overlay r-t">
+                               <div class="text-center"> 
+                                   <a href class="w-xs inline">
+                                       <img id="profileImage" ng-src="{{publicChats.groupImage}}" class="img-circle profile-pic">
+                                   </a>
+                                </div>
+                               <div class="m-b m-t-sm text-center">
+                                   <h4 class="">{{publicChats.groupName}}</h4>
+                                   <p class="">{{publicChats.groupDescription}}</p>
+                                   <p class="lastSeen">{{publicChats.groupCreatedOn}}</p>
+                               </div>
+                               <div class="text-center">
+                               <a class="btn btn-md btn-success m-b p-h no-border" ng-click="publicChats.joinRoom()">Join Room <span class="fa fa-spin fa-spinner" ng-show="publicChats.joinRoomSpinner"></span></a>
+                               </div>
+                               <div class="m-b m-t-sm h4">
+                                   <div class="list" id="chats">
+                                        <div class="user-container" ng-repeat="groupUser in publicChats.groupUserList | orderBy:'-last_seen'">
+                                            <a class="item item-avatar hover">
+                                                <img class="avatar" ng-src="{{groupUser.profile_image}}">
+                                                <h3>{{groupUser.name}}</h3>
+                                                <h3 class="lastSeen">{{groupUser.last_seen}}</h3>
+                                            </a>
+                                        </div>
+                                    </div>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               </div>
             </div>
         </content>
     </div>

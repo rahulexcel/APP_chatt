@@ -3,7 +3,7 @@
 		<i class='icon ion-ios-arrow-back'></i>
 	</button>
 	<img class='img-circle' ng-src='{{chatPageHeader.image}}' ng-click='chatPageHeader.goBack()'>
-	<p><strong>{{chatPageHeader.name}} </strong><br><span>{{chatPageHeader.lastSeen}}</span></p>
+	<p><strong>{{chatPageHeader.name}} </strong><br><span class="lastSeen" ng-hide="chatPageHeader.lastSeen == 'Invalid date'">{{chatPageHeader.lastSeen}}</span></p>
 	<button class='button button-clear pull-right' ng-click="chatPageHeader.popover.show($event)">
 		<i class='icon ion-android-more-vertical'></i>
 	</button>
@@ -16,21 +16,4 @@
       </div>
     </ion-content>
   </ion-popover-view>
-</script>
-<script id="groupModal.html" type="text/ng-template">
-    <div class="modal">
-        <header class="bar bar-header bar-positive">
-          <h1 class="title">Group Name</h1>
-          <div class="button btn-xs button-clear" ng-click="modal.hide()"><span class="icon ion-close"></span></div>
-        </header>
-        <content has-header="true" padding="true">
-			<div class="list pad-top-40">
-			    <a class="item item-avatar">
-			      <img src="https://keetonsonline.files.wordpress.com/2015/05/0753.png">
-			      <h2>Venkman</h2>
-			      <p>Back off, man. I'm a scientist.</p>
-			    </a>
-			</div>
-        </content>
-    </div>
 </script>
