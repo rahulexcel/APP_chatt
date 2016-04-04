@@ -16,6 +16,19 @@
                         roomData[i].room_users[j].last_seenInTimestamp = roomData[i].room_users[j].last_seen;
                         roomData[i].room_users[j].last_seen = moment(parseInt(roomData[i].room_users[j].last_seen)).format("hh:mm a");
                         newRoomData.user_data = roomData[i].room_users[j];
+                        newRoomData.user_data.roomType = '';
+                        newRoomData.room_id = roomData[i].id;
+                        returnData.push(newRoomData);
+                    } else if(roomData[i].room_name){
+                        var newUserData = {
+                            "id":'',
+                            "last_seen":'',
+                            "last_seenInTimestamp":'',
+                            "name":roomData[i].room_name,
+                            "profile_image":roomData[i].room_image,
+                            "roomType":'(Public)'
+                        }
+                        newRoomData.user_data = newUserData;
                         newRoomData.room_id = roomData[i].id;
                         returnData.push(newRoomData);
                     }
