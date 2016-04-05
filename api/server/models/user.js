@@ -4,6 +4,29 @@ var moment = require('moment');
 var generatePassword = require('password-generator');
 var ObjectID = require('mongodb').ObjectID;
 module.exports = function (User) {
+    //--start--USER GENERIC function------
+    User.FN_get_user_by_id = function( userId, callback ){
+        var where = {
+            'where' : {
+                'id' : new ObjectID( userId )
+            }
+        };
+        User.find( where, function (err, result) {
+            if( err ){
+                callback( 0, 'error occurs', {});
+            }else{
+                if( result.length > 0 ){
+                    result = result[0];
+                    callback( 1, 'user found', result );
+                }else{
+                    callback( 0, 'no user found', {} );
+                }
+            }
+        });
+    };
+    //--end--USER GENERIC function------
+    
+    
     //********************************* START REGISTER AND LOGIN **********************************
     User.register_login = function (action, action_type, social_id, platform, device_id, token, email_id, name, password, profile_image, currentTimestamp, callback) {
         var LIFE_OF_ACCESS_TOKEN = 60 * 60 * 24 * 1000;

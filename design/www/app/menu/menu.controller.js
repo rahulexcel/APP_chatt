@@ -19,6 +19,7 @@
             timeStorage.remove('displayPrivateChats');
             timeStorage.remove('listUsers');
             timeStorage.remove('chatWithUserData');
+            timeStorage.remove('displayPublicChats');
             $state.go('login');
          }
      }

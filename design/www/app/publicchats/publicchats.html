@@ -39,19 +39,20 @@
             <div class="p-lg panel md-whiteframe-z1 text-color group-box">
               <form>
                 <div class="md-form-group float-label">
-                  <input type="text" class="md-input" ng-model="publicChats.groupName" autocomplete="off" required>
+                  <input type="text" class="md-input" ng-model="publicChats.userGroupName" autocomplete="off" required>
                   <label>Name</label>
                 </div>
                 <div class="md-form-group float-label">
-                  <input type="text" class="md-input" ng-model="publicChats.groupDescription" autocomplete="off" required>
+                  <input type="text" class="md-input" ng-model="publicChats.userGroupDescription" autocomplete="off" required>
                   <label>Description</label>
                 </div>
-                <button ng-click="publicChats.createGroup()" class="md-btn md-raised pink btn-block p-h-md">Create</button>
+                <button ng-disabled="publicChats.createGroupOption" ng-click="publicChats.createGroup()" class="md-btn md-raised pink btn-block p-h-md">Create</button>
               </form>
             </div>
         </content>
     </div>
 </script>
+
 <script id="groupDetails.html" type="text/ng-template">
     <div class="modal">
         <header class="bar bar-header bar-positive">
@@ -72,7 +73,7 @@
                                <div class="m-b m-t-sm text-center">
                                    <h4 class="">{{publicChats.groupName}}</h4>
                                    <p class="">{{publicChats.groupDescription}}</p>
-                                   <p class="">{{publicChats.groupCreatedOn}}</p>
+                                   <p class="lastSeen">{{publicChats.groupCreatedOn}}</p>
                                </div>
                                <div class="text-center">
                                <a class="btn btn-md btn-success m-b p-h no-border" ng-click="publicChats.joinRoom()">Join Room <span class="fa fa-spin fa-spinner" ng-show="publicChats.joinRoomSpinner"></span></a>
@@ -83,7 +84,7 @@
                                             <a class="item item-avatar hover">
                                                 <img class="avatar" ng-src="{{groupUser.profile_image}}">
                                                 <h3>{{groupUser.name}}</h3>
-                                                <h3>{{groupUser.last_seen}}</h3>
+                                                <h3 class="lastSeen">{{groupUser.last_seen}}</h3>
                                             </a>
                                         </div>
                                     </div>

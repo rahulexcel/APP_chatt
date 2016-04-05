@@ -38,16 +38,16 @@
                  });
                  return q.promise;
              },
-             // service.create_public_room = function(roomName, roomDescription) {
-             //     var q = $q.defer();
-             //     var userData = timeStorage.get('userData');
-             //     var accessToken = userData.data.access_token;
-             //     socket.emit('create_room', accessToken, 'public', '', roomName, roomDescription, _.now());
-             //     service.new_private_room().then(function(data) {
-             //         q.resolve(data);
-             //     });
-             //     return q.promise;
-             // },
+             service.joinPublicRoom = function(roomid) {
+                 var q = $q.defer();
+                 var userData = timeStorage.get('userData');
+                 var accessToken = userData.data.access_token;
+                 socket.emit('join_public_room', accessToken, roomid, _.now());
+                 socket.on('RESPONSE_join_public_room', function(data) {
+                     q.resolve(data);
+                 });
+                 return q.promise;
+             },
              service.room_message = function(msg_local_id, roomId, message, currentTimestamp) {
                  socket.emit('room_message', msg_local_id, accessToken, roomId, message, currentTimestamp);
              },
