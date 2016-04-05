@@ -28,6 +28,7 @@ module.exports = function (Room) {
     
     Room.create_room = function ( accessToken, room_type, chat_with, room_name, room_description, currentTimestamp, callback) {
         var User = Room.app.models.User;
+        var Pushmessage = Room.app.models.Pushmessage;
         User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
             if( err ){
                 callback(null, 0, 'UnAuthorized', {});
@@ -107,6 +108,20 @@ module.exports = function (Room) {
                                                 'room_type' : room_type
                                             };
                                             callback(null, 1, 'Private Chat Room Created', data);
+                                            //-start-send push message to user 
+                                            User.FN_get_user_by_id( chat_with, function( u_status, u_message, u_data ){
+                                                if( u_status == 1 ){
+                                                    var TOKENS = [ u_data.token ];
+                                                    var push_msg_info = {
+                                                        name : u_data.name,
+                                                        profile_image : u_data.profile_image,
+                                                        room_id : room_id,
+                                                    }
+                                                    Pushmessage.create_push_message( 'private_room_created', TOKENS , push_msg_info, function( ignore_param, p_status, p_message, p_data){
+                                                    })  
+                                                }
+                                            })
+                                            //-end-send push message to user
                                         }
                                     });
                                 }
