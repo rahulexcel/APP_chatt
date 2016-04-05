@@ -284,6 +284,7 @@ module.exports = function (Room) {
                     callback(null, 0, 'UnAuthorized', {});
                 }else{
                     var userId = accessToken.userId
+                    var logged_user_id = userId;
                     userId = new ObjectID( userId );
                     
                     if( room_type == 'all' ){
@@ -315,8 +316,38 @@ module.exports = function (Room) {
                             callback(null, 0, 'try again', {});
                         }else{
                             if( result.length > 0 ){
+                                var new_result = [];
+                                for( var k in result ){
+                                    kr = result[k];
+                                    kr = kr.toJSON();
+                                    kr_room_type = kr.room_type;
+                                    kr_room_users = kr.room_users
+                                    
+                                    var show_details_for_list = {};
+                                    if( kr_room_type == 'private' ){
+                                        for( var k1 in kr_room_users ){
+                                            k1_user = kr_room_users[k1];
+                                            k1_user_id = k1_user.id;
+                                            if( logged_user_id.toString() != k1_user_id.toString() ){
+                                                show_details_for_list = {
+                                                    'icon' : k1_user.profile_image,
+                                                    'main_text' : k1_user.name,
+                                                    'sub_text' : k1_user.last_seen
+                                                }
+                                            }
+                                        }
+                                    }else if( kr_room_type == 'public' ){
+                                        show_details_for_list = {
+                                            'icon' : kr.room_image,
+                                            'main_text' : kr.room_name,
+                                            'sub_text' : kr.room_description,
+                                        }
+                                    }
+                                    kr.show_details_for_list = show_details_for_list;
+                                    new_result.push( kr );
+                                }
                                 var data = {
-                                    'rooms' : result
+                                    'rooms' : new_result
                                 };
                                 callback( null, 1, 'Rooms found', data );
                             }else{
