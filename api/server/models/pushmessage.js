@@ -60,7 +60,22 @@ module.exports = function (Pushmessage) {
                 }
             });
             callback( message );            
-        }else{
+        }
+        else if( type == 'private_room_created'){
+            var message = new gcm.Message({
+                priority: 'high',
+                data: {
+                    room_id: info.room_id
+                },
+                notification: {
+                    title: info.name,
+                    icon: info.profile_image,
+                    body: 'Initiate a chat with you'
+                }
+            });
+            callback( message );            
+        }
+        else{
             callback( false);
         }
     };
@@ -68,7 +83,10 @@ module.exports = function (Pushmessage) {
     ///////////////////////////////////////////////////////////////////////////////////
     //to insert a new info in push messagetable which will be used as for push message
     Pushmessage.create_push_message = function ( type, tokens, message_info, callback ) {
-        var valid_type = ['room_message'];
+        var valid_type = [
+            'room_message',
+            'private_room_created'
+        ];
         if( valid_type.indexOf(type) == -1 ){
             callback(null, 0, 'Invalid type', {});
         }else{
@@ -81,7 +99,11 @@ module.exports = function (Pushmessage) {
                 'message_info' : message_info,
                 'tokens' : TOKENS,
                 'STATUS_push_message' : 0*1,
-                'STATUS_response_push_message' : ''
+                'STATUS_response_push_message' : '',
+                'created_on' : UTIL.currentTimestamp(),
+                'created_on_date_time' : UTIL.currentDateTimeDay(),
+                'processed_on' : '',
+                'processed_on_date_time' : '',
             });
             new_push_message.save( function(err){
                 if( err ){
@@ -159,7 +181,9 @@ module.exports = function (Pushmessage) {
                                                 _id : new ObjectID( pm_mongo_id )
                                             },{
                                                 'STATUS_push_message': 1*1,
-                                                'STATUS_response_push_message' : gcm_response
+                                                'STATUS_response_push_message' : gcm_response,
+                                                'processed_on' : UTIL.currentTimestamp(),
+                                                'processed_on_date_time' : UTIL.currentDateTimeDay()
                                             },function (err, result2) {
                                                 if (err) {
                                                     Pushmessage.start_pushing( DATA, callback );
@@ -174,7 +198,34 @@ module.exports = function (Pushmessage) {
                         }
                     }
                 });
-            }else{
+            }
+            else if( pm_type == 'private_room_created'){
+                pm_data_info =  pm_data.message_info;
+                pm_data_tokens = pm_data.tokens;
+                Pushmessage.get_push_message_structure( pm_type, pm_data_info, function( gcm_message ){
+                    if( gcm_message == false ){
+                        Pushmessage.start_pushing( DATA, callback );
+                    }else{
+                        Pushmessage.push_message( pm_data_tokens, gcm_message, function( gcm_status, gcm_response ){
+                            Pushmessage.update({
+                                _id : new ObjectID( pm_mongo_id )
+                            },{
+                                'STATUS_push_message': 1*1,
+                                'STATUS_response_push_message' : gcm_response,
+                                'processed_on' : UTIL.currentTimestamp(),
+                                'processed_on_date_time' : UTIL.currentDateTimeDay()
+                            },function (err, result2) {
+                                if (err) {
+                                    Pushmessage.start_pushing( DATA, callback );
+                                } else {
+                                    Pushmessage.start_pushing( DATA, callback );
+                                }
+                            });
+                        });
+                    }
+                });
+            }
+            else{
                 Pushmessage.start_pushing( DATA, callback );
             }
         }
@@ -187,7 +238,8 @@ module.exports = function (Pushmessage) {
         Pushmessage.find(  {
             "where" : {
                 'STATUS_push_message' : 0*1,
-            }
+            },
+            "limit" : 10
         },function (err, results) {
             if( err ){
                 console.log( err );
