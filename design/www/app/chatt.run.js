@@ -20,10 +20,6 @@
 
        
         window.socket = io(Configurations.socketApi);
-        document.addEventListener("online", onOnline, false);
-         function onOnline() {
-            $rootScope.$broadcast('now_device_is_online', { data: '' });
-         }
         document.addEventListener("deviceready", function() {
             timeStorage.set('deviceUUID', deviceService.getuuid(),1);
             timeStorage.set('devicePlatform', deviceService.platform(),1);
@@ -38,6 +34,19 @@
             function onResume() {
                 // lastUsesTimeService.updateTime();
             }
+            if(navigator.connection.type != 'none'){
+                onOnline();
+            }
+            document.addEventListener("online", onOnline, false);
+             function onOnline() {
+                $rootScope.$broadcast('now_device_is_online', { data: '' });
+                timeStorage.remove('network');
+                sqliteService.deviceIsNowOnline();
+             }
+             document.addEventListener("offline", onOffline, false);
+                function onOffline() {
+                   timeStorage.set('network', 'offline', 24);
+             }
         });
 
 

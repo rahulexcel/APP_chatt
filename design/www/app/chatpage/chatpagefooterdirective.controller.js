@@ -16,9 +16,12 @@
             } else{
                 socket.emit('room_open', $stateParams.roomId);
                 var currentTimeStamp = _.now();
-                var offset = new Date().getTimezoneOffset();
-                sqliteService.messageToBeSend(self.message, userData.data.user_id, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId){
-                    socketService.room_message(lastInsertId, $stateParams.roomId, self.message, currentTimeStamp);
+                sqliteService.saveMessageInDb(self.message, 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId){
+                    if(timeStorage.get('network')){
+                        console.log('do not fire from here');
+                    } else{
+                        socketService.room_message(lastInsertId, $stateParams.roomId, self.message, currentTimeStamp);
+                    }
                     var currentMessage = {
                      "id": lastInsertId,
                      "image": userData.data.profile_image,
