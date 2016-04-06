@@ -7,17 +7,15 @@
     function chatsController($scope, chatsFactory, timeStorage, chatsService, $state, socketService) {
             var self = this;
             var userData = timeStorage.get('userData');
-            chatsService.listMyRooms();
+            chatsService.listMyRooms().then(function(data){
+                self.displayChats = data;
+                $scope.$evalAsync();
+            });
             self.displayChats = timeStorage.get('displayPrivateChats');
             $scope.$on('updatedRoomData', function (event, response) {
                 self.displayChats = response.data;
                 $scope.$evalAsync();
              });
-            if(!self.displayChats){
-                chatsService.listMyRooms().then(function(data){
-                    self.displayChats = data;
-                });
-            }
              self.roomClick = function(roomData){
                 var clickRoomUserData = {
                     "name":roomData.user_data.name,

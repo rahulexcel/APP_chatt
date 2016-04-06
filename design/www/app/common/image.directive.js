@@ -34,6 +34,10 @@
                             var name = scope.groupUser.name;
                             var firstLetter = name.charAt(0).toUpperCase();
                          }
+                         if(scope.msg){
+                            var name = scope.msg.name;
+                            var firstLetter = name.charAt(0).toUpperCase();
+                         }
                          var colorClass = Math.floor((Math.random() * 10) + 1);
                          element.replaceWith("<button class='no-image circleColor"+colorClass+" "+chatPageClass+"'><i class='i-24 white'>" + firstLetter + "</i><div class='md-ripple-container'></div></button>");
                      }

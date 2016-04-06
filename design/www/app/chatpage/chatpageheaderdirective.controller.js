@@ -18,10 +18,5 @@
          }).then(function(popover) {
              self.popover = popover;
          });
-         $ionicModal.fromTemplateUrl('groupModal.html', function($ionicModal) {
-            $scope.modal = $ionicModal;
-            }, {
-                scope: $scope,
-         }); 
      }
  })();
