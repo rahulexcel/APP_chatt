@@ -16668,15 +16668,12 @@ Zn._=Jn):Vn._=Jn}).call(this);
             if (window.cordova && window.cordova.plugins.Keyboard) {
                 cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
                 cordova.plugins.Keyboard.disableScroll(true);
-
             }
             if (window.StatusBar) {
                 // org.apache.cordova.statusbar required
                 StatusBar.styleDefault();
             }
         });
-
-       
         window.socket = io(Configurations.socketApi);
         document.addEventListener("deviceready", function() {
             timeStorage.set('deviceUUID', deviceService.getuuid(),1);
@@ -16706,10 +16703,7 @@ Zn._=Jn):Vn._=Jn}).call(this);
                    timeStorage.set('network', 'offline', 24);
              }
         });
-
-
-    });
-
+     });
 })();
 (function() {
     'use strict';
@@ -17130,25 +17124,39 @@ angular.module('chattapp')
      };
 
  })();
- (function() {
-     'use strict';
+(function() {
+    'use strict';
 
-     angular.module('chattapp')
+    angular.module('chattapp')
 
-     .directive('chatsFooter', function() {
-         var directive = {};
-         directive.restrict = 'E';
-         directive.templateUrl = "app/chats/templates/footer.html";
-         directive.scope = {
-             chatsFooter: "=footer"
-         }
-         directive.compile = function(element, attributes) {
-             var linkFunction = function($scope, element, attributes) {}
-             return linkFunction;
-         }
-         return directive;
-     });
- })();
+            .directive('chatsFooter', function(timeStorage, tostService, $state) {
+                var directive = {};
+                directive.restrict = 'E';
+                directive.templateUrl = "app/chats/templates/footer.html";
+                directive.scope = {
+                    chatsFooter: "=footer"
+                },
+                directive.compile = function(element, attributes) {
+
+                    var linkFunction = function($scope, element, attributes) {
+                        $scope.search = function(state) {
+                           
+                            if (timeStorage.get('network')) {
+                              window.plugins.toast.showShortTop('You need to online to access this'); 
+                               
+                            }
+                            else
+                            {
+                                console.log('hii');
+                                $state.go(state);
+                            }
+                        };
+                    };
+                    return linkFunction;
+                };
+                return directive;
+            });
+})();
  (function() {
      'use strict';
 
@@ -18351,32 +18359,6 @@ angular.module('chattapp')
      'use strict';
 
      angular.module('chattapp')
-         .controller('menuController', menuController);
-
-     function menuController($scope, $ionicPopover, $localStorage, $state, timeStorage) {
-         console.log('menuController');
-         var self = this;
-         $ionicPopover.fromTemplateUrl('templates/popover.html', {
-             scope: $scope,
-         }).then(function(popover) {
-             self.popover = popover;
-         });
-         self.logout = function(){
-            timeStorage.remove('google_access_token');
-            timeStorage.remove('userEmail');
-            timeStorage.remove('userData');
-            timeStorage.remove('displayPrivateChats');
-            timeStorage.remove('listUsers');
-            timeStorage.remove('chatWithUserData');
-            timeStorage.remove('displayPublicChats');
-            $state.go('login');
-         }
-     }
- })();
- (function() {
-     'use strict';
-
-     angular.module('chattapp')
          .controller('profileController', profileController);
 
      function profileController(cameraService) {
@@ -18395,6 +18377,42 @@ angular.module('chattapp')
          };
      }
  })();
+(function() {
+    'use strict';
+
+    angular.module('chattapp')
+            .controller('menuController', menuController);
+
+    function menuController($scope, $ionicPopover, tostService, $localStorage, $state, timeStorage, $rootScope) {
+        console.log('menuController');
+        var self = this;
+
+        $ionicPopover.fromTemplateUrl('templates/popover.html', {
+            scope: $scope,
+        }).then(function(popover) {
+            self.popover = popover;
+        });
+        $scope.search = function(state) {
+            if (timeStorage.get('network')) {
+                window.plugins.toast.showShortTop('You need to online to access this');
+            }
+            else
+            {
+                $state.go(state);
+            }
+        };
+        self.logout = function() {
+            timeStorage.remove('google_access_token');
+            timeStorage.remove('userEmail');
+            timeStorage.remove('userData');
+            timeStorage.remove('displayPrivateChats');
+            timeStorage.remove('listUsers');
+            timeStorage.remove('chatWithUserData');
+            timeStorage.remove('displayPublicChats');
+            $state.go('login');
+        };
+    }
+})();
 (function() {
    'use strict';
    angular.module('chattapp')
