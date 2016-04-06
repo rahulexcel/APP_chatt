@@ -13,13 +13,13 @@
         }).then(function(popover) {
             self.popover = popover;
         });
-        $scope.search = function() {
+        $scope.search = function(state) {
             if (timeStorage.get('network')) {
                 window.plugins.toast.showShortTop('You need to online to access this');
             }
             else
             {
-                $state.go('app.contacts');
+                $state.go(state);
             }
         };
         self.logout = function() {

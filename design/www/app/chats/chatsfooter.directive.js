@@ -13,7 +13,7 @@
                 directive.compile = function(element, attributes) {
 
                     var linkFunction = function($scope, element, attributes) {
-                        $scope.search = function() {
+                        $scope.search = function(state) {
                            
                             if (timeStorage.get('network')) {
                               window.plugins.toast.showShortTop('You need to online to access this'); 
@@ -22,7 +22,7 @@
                             else
                             {
                                 console.log('hii');
-                                $state.go('app.contacts');
+                                $state.go(state);
                             }
                         };
                     };

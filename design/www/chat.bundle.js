@@ -16185,7 +16185,7 @@ angular.module('chattapp')
                 directive.compile = function(element, attributes) {
 
                     var linkFunction = function($scope, element, attributes) {
-                        $scope.search = function() {
+                        $scope.search = function(state) {
                            
                             if (timeStorage.get('network')) {
                               window.plugins.toast.showShortTop('You need to online to access this'); 
@@ -16194,7 +16194,7 @@ angular.module('chattapp')
                             else
                             {
                                 console.log('hii');
-                                $state.go('app.contacts');
+                                $state.go(state);
                             }
                         };
                     };
@@ -17293,13 +17293,13 @@ angular.module('chattapp')
         }).then(function(popover) {
             self.popover = popover;
         });
-        $scope.search = function() {
+        $scope.search = function(state) {
             if (timeStorage.get('network')) {
                 window.plugins.toast.showShortTop('You need to online to access this');
             }
             else
             {
-                $state.go('app.contacts');
+                $state.go(state);
             }
         };
         self.logout = function() {
