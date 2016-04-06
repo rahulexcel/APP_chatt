@@ -22,14 +22,7 @@
                 } else {
                     $state.go('login');
                 }
-//                $rootScope.$on('$stateChangeStart',
-//                        function(event, toState, toParams, fromState, fromParams, options) {
-//                            console.log(toState);
-//                          
-//                  
-//                            // transitionTo() promise will be rejected with 
-//                            // a 'transition prevented' error
-//                        })
+
                 window.socket = io(Configurations.socketApi);
 
                 document.addEventListener("deviceready", function() {
