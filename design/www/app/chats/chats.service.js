@@ -51,7 +51,6 @@
                     return q.promise;
                 }
         return service;
-    }
-    ;
+    };
 
 })();

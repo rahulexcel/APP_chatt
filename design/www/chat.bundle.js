@@ -15872,8 +15872,7 @@ angular.module('chattapp')
                     return q.promise;
                 }
         return service;
-    }
-    ;
+    };
 
 })();
 (function() {
@@ -15909,289 +15908,6 @@ angular.module('chattapp')
                 return directive;
             });
 })();
- (function() {
-     'use strict';
-
-     angular.module('chattapp')
-         .controller('chatPageController', chatPageController);
-
-     function chatPageController() {
-     }
- })();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('chatPageFactory', chatPageFactory);
-
-   function chatPageFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/rooms/list_room_messages/:accessToken/:room_id/:page/:limit/:currentTimestamp', {},{});
-   };
-})();
- (function() {
-     'use strict';
-     angular.module('chattapp')
-         .factory('chatpageService', chatpageService);
-
-     function chatpageService(timeZoneService) {
-         var service = {};
-         service.oldMessages = function(data) {
-             var roomMessages = [];
-             for (var i = 0; i < data.length; i++) {
-                 var newData = [];
-                 newData.id = data[i].id;
-                 newData.message = data[i].message.body;
-                 newData.messageTime = moment.unix(data[i].message_time).tz(timeZoneService.getTimeZone()).format("hh:mm a");
-                 newData.timeStamp = data[i].message_time;
-                 newData.name = data[i].message_owner.name;
-                 newData.user_id = data[i].message_owner.id;
-                 newData.image = data[i].message_owner.profile_image;
-                 newData.message_status = data[i].message_status;
-                 roomMessages.push(newData);
-             }
-             return roomMessages;
-         }
-         return service;
-     };
-
- })();
- (function() {
-     'use strict';
-
-     angular.module('chattapp')
-
-     .directive('chatPageCenter', function() {
-         var directive = {};
-         directive.restrict = 'E';
-         directive.templateUrl = "app/chatpage/templates/center.html";
-         directive.controller = 'chatPageCenterDirectiveController';
-         directive.controllerAs = 'chatPageCenter';
-         directive.compile = function(element, attributes) {
-             var linkFunction = function($scope, element, attributes) {}
-             return linkFunction;
-         }
-         return directive;
-     });
- })();
- (function() {
-     'use strict';
-
-     angular.module('chattapp')
-         .controller('chatPageCenterDirectiveController', chatPageCenterDirectiveController);
-
-     function chatPageCenterDirectiveController($scope, $state, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, sqliteService, chatpageService, timeZoneService) {
-         var self = this;
-         var chatWithUserData = timeStorage.get('chatWithUserData');
-         var userData = timeStorage.get('userData');
-         self.user_id = userData.data.user_id;
-         self.user_name = userData.data.name;
-         $scope.$on('newRoomMessage', function (event, response) {
-            if(response.data.room_id == $stateParams.roomId){
-                console.log(response);
-                socketService.update_message_status_room_open(response.data.message_id, $stateParams.roomId);
-                self.displayChatMessages.push({
-                     "image": response.data.profile_image,
-                     "message": response.data.message_body,
-                     "messageTime": moment.unix(response.data.message_time).tz(timeZoneService.getTimeZone()).format("hh:mm a"),
-                     "name": response.data.name,
-                     "timeStamp": response.data.message_time,
-                 });
-                $scope.$evalAsync();
-                $ionicScrollDelegate.scrollBottom(false);
-            }
-         });
-         $scope.$on('sentMessagesIds', function (event, response) {
-            for(var i =0; i < self.displayChatMessages.length; i++){
-                if(self.displayChatMessages[i].id == response.data.msg_local_id){
-                    self.displayChatMessages[i].message_status = 'sent';
-                    self.displayChatMessages[i].id = response.data.message_id;
-                    self.displayChatMessages[i].messageTime = moment.unix(response.data.message_time).tz(timeZoneService.getTimeZone()).format("hh:mm a");
-                    self.displayChatMessages[i].timeStamp = response.data.message_time;
-                }
-            }
-            $scope.$evalAsync();
-         });
-         $scope.$on('response_update_message_status_response', function (event, response) {
-            for(var i =0; i < self.displayChatMessages.length; i++){
-                for(var j = 0; j < response.data.length; j++){
-                    if(self.displayChatMessages[i].id == response.data[j]){
-                        self.displayChatMessages[i].message_status = 'seen';
-                    }
-                }
-            }
-            $scope.$evalAsync();
-         });
-         $scope.$on('displayChatMessages', function (event, response) {
-            self.displayChatMessages.push(response.data);
-            $scope.$evalAsync();
-         });
-         $scope.$on('now_device_is_online', function (event, response) {
-            socket.emit('room_open', $stateParams.roomId);
-            $timeout(function() {
-                roomOpenApi();
-            }, 3000);
-         });
-         sqliteService.getMessageDataFromDB($stateParams.roomId).then(function(response){
-            self.displayChatMessages = response;
-            $ionicScrollDelegate.scrollBottom(false);
-         });
-         roomOpenApi();
-         function roomOpenApi(){
-            var query = chatPageFactory.save({
-            accessToken:userData.data.access_token,
-            room_id:$stateParams.roomId,
-            page: 0,
-            limit:20,
-            currentTimestamp: _.now()
-            });
-            query.$promise.then(function(data) {
-                socketService.update_message_status(data.data.messages, $stateParams.roomId);
-                sqliteService.updateDbOnRoomOpen(data.data.messages, $stateParams.roomId).then(function(){
-                    sqliteService.getMessageDataFromDB($stateParams.roomId).then(function(response){
-                        self.displayChatMessages = response;
-                        $scope.$evalAsync();
-                        $ionicScrollDelegate.scrollBottom(false);
-                    });
-                });
-            });
-            $timeout(function() {
-                 $ionicScrollDelegate.scrollBottom(false);
-            });
-         }
-         var doRefreshPageValue = 0;
-         self.doRefresh = function(){
-            var query = chatPageFactory.save({
-                accessToken:userData.data.access_token,
-                room_id:$stateParams.roomId,
-                page: doRefreshPageValue,
-                limit:20,
-                currentTimestamp: _.now()
-            });
-            query.$promise.then(function(data) {
-                doRefreshPageValue++;
-                var oldData = chatpageService.oldMessages(data.data.messages);
-                for(var i = oldData.length-1; i >= 0; i--) {
-                    self.displayChatMessages.unshift(oldData[i]);
-                }
-                $scope.$broadcast('scroll.refreshComplete');
-            });
-         }
-     }
- })();
- (function() {
-     'use strict';
-
-     angular.module('chattapp')
-
-     .directive('chatPageFooter', function() {
-         var directive = {};
-         directive.restrict = 'E';
-         directive.templateUrl = "app/chatpage/templates/footer.html";
-         directive.controller = 'chatPageFooterDirectiveController';
-         directive.controllerAs = 'chatPageFooter';
-         directive.compile = function(element, attributes) {
-             var linkFunction = function($scope, element, attributes) {}
-             return linkFunction;
-         }
-         return directive;
-     });
- })();
- (function() {
-     'use strict';
-
-     angular.module('chattapp')
-         .controller('chatPageFooterDirectiveController', chatPageFooterDirectiveController);
-
-     function chatPageFooterDirectiveController($rootScope, $state, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, sqliteService, chatpageService) { 
-        var self = this;
-        var userData = timeStorage.get('userData');
-        self.image = userData.data.profile_image;
-        self.name = userData.data.name;
-        self.user_id = userData.data.user_id;
-        self.sendMessage = function() {
-            if(self.message == ''){
-                console.log('empty');
-            } else{
-                socket.emit('room_open', $stateParams.roomId);
-                var currentTimeStamp = _.now();
-                sqliteService.saveMessageInDb(self.message, 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId){
-                    if(timeStorage.get('network')){
-                        console.log('do not fire from here');
-                    } else{
-                        socketService.room_message(lastInsertId, $stateParams.roomId, self.message, currentTimeStamp);
-                    }
-                    var currentMessage = {
-                     "id": lastInsertId,
-                     "image": userData.data.profile_image,
-                     "message": self.message,
-                     "messageTime": moment(currentTimeStamp).format("hh:mm a"),
-                     "timeStamp": currentTimeStamp,
-                     "name": userData.data.name,
-                     "user_id":userData.data.user_id,
-                     "message_status":'post'
-                    }
-                    $rootScope.$broadcast('displayChatMessages', { data: currentMessage });
-                    $ionicScrollDelegate.scrollBottom(false);
-                    self.message = '';
-                })
-                 $ionicScrollDelegate.scrollBottom(false);
-            }
-         }
-         self.inputUp = function() {
-            console.log('inputUp');
-             $timeout(function() {
-                 $ionicScrollDelegate.scrollBottom(false);
-             }, 300);
-         };
-         self.inputDown = function() {
-            console.log('inputDown');
-             $ionicScrollDelegate.resize();
-         };
-     }
- })();
- (function() {
-     'use strict';
-
-     angular.module('chattapp')
-
-     .directive('chatPageHeader', function() {
-         var directive = {};
-         directive.restrict = 'E';
-         directive.templateUrl = "app/chatpage/templates/header.html";
-         directive.scope = {
-             chatPage: "=header"
-         }
-         directive.controller = 'chatPageHeaderDirectiveController';
-         directive.controllerAs = 'chatPageHeader';
-         directive.compile = function(element, attributes) {
-             var linkFunction = function($scope, element, attributes) {
-         }
-             return linkFunction;
-         }
-         return directive;
-     });
- })();
- (function() {
-     'use strict';
-
-     angular.module('chattapp')
-         .controller('chatPageHeaderDirectiveController', chatPageHeaderDirectiveController);
-
-     function chatPageHeaderDirectiveController($state, timeStorage, $ionicPopover, $scope, $ionicModal) { 
-         var self = this;
-         var chatWithUserData = timeStorage.get('chatWithUserData');
-         self.name = chatWithUserData.name;
-         self.image = chatWithUserData.pic;
-         self.lastSeen = moment(parseInt(chatWithUserData.lastSeen)).format("hh:mm a");
-         self.goBack = function() {
-             $state.go('app.chats');
-         }
-         $ionicPopover.fromTemplateUrl('templates/chatpagePopover.html', {
-             scope: $scope,
-         }).then(function(popover) {
-             self.popover = popover;
-         });
-     }
- })();
  (function() {
      'use strict';
      angular.module('chattapp')
@@ -17230,6 +16946,289 @@ angular.module('chattapp')
         return $resource(Configurations.api_url + '/users/forgot_password/:email', {}, {});
     };
 })();
+ (function() {
+     'use strict';
+
+     angular.module('chattapp')
+         .controller('chatPageController', chatPageController);
+
+     function chatPageController() {
+     }
+ })();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('chatPageFactory', chatPageFactory);
+
+   function chatPageFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/rooms/list_room_messages/:accessToken/:room_id/:page/:limit/:currentTimestamp', {},{});
+   };
+})();
+ (function() {
+     'use strict';
+     angular.module('chattapp')
+         .factory('chatpageService', chatpageService);
+
+     function chatpageService(timeZoneService) {
+         var service = {};
+         service.oldMessages = function(data) {
+             var roomMessages = [];
+             for (var i = 0; i < data.length; i++) {
+                 var newData = [];
+                 newData.id = data[i].id;
+                 newData.message = data[i].message.body;
+                 newData.messageTime = moment.unix(data[i].message_time).tz(timeZoneService.getTimeZone()).format("hh:mm a");
+                 newData.timeStamp = data[i].message_time;
+                 newData.name = data[i].message_owner.name;
+                 newData.user_id = data[i].message_owner.id;
+                 newData.image = data[i].message_owner.profile_image;
+                 newData.message_status = data[i].message_status;
+                 roomMessages.push(newData);
+             }
+             return roomMessages;
+         }
+         return service;
+     };
+
+ })();
+ (function() {
+     'use strict';
+
+     angular.module('chattapp')
+
+     .directive('chatPageCenter', function() {
+         var directive = {};
+         directive.restrict = 'E';
+         directive.templateUrl = "app/chatpage/templates/center.html";
+         directive.controller = 'chatPageCenterDirectiveController';
+         directive.controllerAs = 'chatPageCenter';
+         directive.compile = function(element, attributes) {
+             var linkFunction = function($scope, element, attributes) {}
+             return linkFunction;
+         }
+         return directive;
+     });
+ })();
+ (function() {
+     'use strict';
+
+     angular.module('chattapp')
+         .controller('chatPageCenterDirectiveController', chatPageCenterDirectiveController);
+
+     function chatPageCenterDirectiveController($scope, $state, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, sqliteService, chatpageService, timeZoneService) {
+         var self = this;
+         var chatWithUserData = timeStorage.get('chatWithUserData');
+         var userData = timeStorage.get('userData');
+         self.user_id = userData.data.user_id;
+         self.user_name = userData.data.name;
+         $scope.$on('newRoomMessage', function (event, response) {
+            if(response.data.room_id == $stateParams.roomId){
+                console.log(response);
+                socketService.update_message_status_room_open(response.data.message_id, $stateParams.roomId);
+                self.displayChatMessages.push({
+                     "image": response.data.profile_image,
+                     "message": response.data.message_body,
+                     "messageTime": moment.unix(response.data.message_time).tz(timeZoneService.getTimeZone()).format("hh:mm a"),
+                     "name": response.data.name,
+                     "timeStamp": response.data.message_time,
+                 });
+                $scope.$evalAsync();
+                $ionicScrollDelegate.scrollBottom(false);
+            }
+         });
+         $scope.$on('sentMessagesIds', function (event, response) {
+            for(var i =0; i < self.displayChatMessages.length; i++){
+                if(self.displayChatMessages[i].id == response.data.msg_local_id){
+                    self.displayChatMessages[i].message_status = 'sent';
+                    self.displayChatMessages[i].id = response.data.message_id;
+                    self.displayChatMessages[i].messageTime = moment.unix(response.data.message_time).tz(timeZoneService.getTimeZone()).format("hh:mm a");
+                    self.displayChatMessages[i].timeStamp = response.data.message_time;
+                }
+            }
+            $scope.$evalAsync();
+         });
+         $scope.$on('response_update_message_status_response', function (event, response) {
+            for(var i =0; i < self.displayChatMessages.length; i++){
+                for(var j = 0; j < response.data.length; j++){
+                    if(self.displayChatMessages[i].id == response.data[j]){
+                        self.displayChatMessages[i].message_status = 'seen';
+                    }
+                }
+            }
+            $scope.$evalAsync();
+         });
+         $scope.$on('displayChatMessages', function (event, response) {
+            self.displayChatMessages.push(response.data);
+            $scope.$evalAsync();
+         });
+         $scope.$on('now_device_is_online', function (event, response) {
+            socket.emit('room_open', $stateParams.roomId);
+            $timeout(function() {
+                roomOpenApi();
+            }, 3000);
+         });
+         sqliteService.getMessageDataFromDB($stateParams.roomId).then(function(response){
+            self.displayChatMessages = response;
+            $ionicScrollDelegate.scrollBottom(false);
+         });
+         roomOpenApi();
+         function roomOpenApi(){
+            var query = chatPageFactory.save({
+            accessToken:userData.data.access_token,
+            room_id:$stateParams.roomId,
+            page: 0,
+            limit:20,
+            currentTimestamp: _.now()
+            });
+            query.$promise.then(function(data) {
+                socketService.update_message_status(data.data.messages, $stateParams.roomId);
+                sqliteService.updateDbOnRoomOpen(data.data.messages, $stateParams.roomId).then(function(){
+                    sqliteService.getMessageDataFromDB($stateParams.roomId).then(function(response){
+                        self.displayChatMessages = response;
+                        $scope.$evalAsync();
+                        $ionicScrollDelegate.scrollBottom(false);
+                    });
+                });
+            });
+            $timeout(function() {
+                 $ionicScrollDelegate.scrollBottom(false);
+            });
+         }
+         var doRefreshPageValue = 0;
+         self.doRefresh = function(){
+            var query = chatPageFactory.save({
+                accessToken:userData.data.access_token,
+                room_id:$stateParams.roomId,
+                page: doRefreshPageValue,
+                limit:20,
+                currentTimestamp: _.now()
+            });
+            query.$promise.then(function(data) {
+                doRefreshPageValue++;
+                var oldData = chatpageService.oldMessages(data.data.messages);
+                for(var i = oldData.length-1; i >= 0; i--) {
+                    self.displayChatMessages.unshift(oldData[i]);
+                }
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+         }
+     }
+ })();
+ (function() {
+     'use strict';
+
+     angular.module('chattapp')
+
+     .directive('chatPageFooter', function() {
+         var directive = {};
+         directive.restrict = 'E';
+         directive.templateUrl = "app/chatpage/templates/footer.html";
+         directive.controller = 'chatPageFooterDirectiveController';
+         directive.controllerAs = 'chatPageFooter';
+         directive.compile = function(element, attributes) {
+             var linkFunction = function($scope, element, attributes) {}
+             return linkFunction;
+         }
+         return directive;
+     });
+ })();
+ (function() {
+     'use strict';
+
+     angular.module('chattapp')
+         .controller('chatPageFooterDirectiveController', chatPageFooterDirectiveController);
+
+     function chatPageFooterDirectiveController($rootScope, $state, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, sqliteService, chatpageService) { 
+        var self = this;
+        var userData = timeStorage.get('userData');
+        self.image = userData.data.profile_image;
+        self.name = userData.data.name;
+        self.user_id = userData.data.user_id;
+        self.sendMessage = function() {
+            if(self.message == ''){
+                console.log('empty');
+            } else{
+                socket.emit('room_open', $stateParams.roomId);
+                var currentTimeStamp = _.now();
+                sqliteService.saveMessageInDb(self.message, 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId){
+                    if(timeStorage.get('network')){
+                        console.log('do not fire from here');
+                    } else{
+                        socketService.room_message(lastInsertId, $stateParams.roomId, self.message, currentTimeStamp);
+                    }
+                    var currentMessage = {
+                     "id": lastInsertId,
+                     "image": userData.data.profile_image,
+                     "message": self.message,
+                     "messageTime": moment(currentTimeStamp).format("hh:mm a"),
+                     "timeStamp": currentTimeStamp,
+                     "name": userData.data.name,
+                     "user_id":userData.data.user_id,
+                     "message_status":'post'
+                    }
+                    $rootScope.$broadcast('displayChatMessages', { data: currentMessage });
+                    $ionicScrollDelegate.scrollBottom(false);
+                    self.message = '';
+                })
+                 $ionicScrollDelegate.scrollBottom(false);
+            }
+         }
+         self.inputUp = function() {
+            console.log('inputUp');
+             $timeout(function() {
+                 $ionicScrollDelegate.scrollBottom(false);
+             }, 300);
+         };
+         self.inputDown = function() {
+            console.log('inputDown');
+             $ionicScrollDelegate.resize();
+         };
+     }
+ })();
+ (function() {
+     'use strict';
+
+     angular.module('chattapp')
+
+     .directive('chatPageHeader', function() {
+         var directive = {};
+         directive.restrict = 'E';
+         directive.templateUrl = "app/chatpage/templates/header.html";
+         directive.scope = {
+             chatPage: "=header"
+         }
+         directive.controller = 'chatPageHeaderDirectiveController';
+         directive.controllerAs = 'chatPageHeader';
+         directive.compile = function(element, attributes) {
+             var linkFunction = function($scope, element, attributes) {
+         }
+             return linkFunction;
+         }
+         return directive;
+     });
+ })();
+ (function() {
+     'use strict';
+
+     angular.module('chattapp')
+         .controller('chatPageHeaderDirectiveController', chatPageHeaderDirectiveController);
+
+     function chatPageHeaderDirectiveController($state, timeStorage, $ionicPopover, $scope, $ionicModal) { 
+         var self = this;
+         var chatWithUserData = timeStorage.get('chatWithUserData');
+         self.name = chatWithUserData.name;
+         self.image = chatWithUserData.pic;
+         self.lastSeen = moment(parseInt(chatWithUserData.lastSeen)).format("hh:mm a");
+         self.goBack = function() {
+             $state.go('app.chats');
+         }
+         $ionicPopover.fromTemplateUrl('templates/chatpagePopover.html', {
+             scope: $scope,
+         }).then(function(popover) {
+             self.popover = popover;
+         });
+     }
+ })();
 (function() {
     'use strict';
 
@@ -17426,28 +17425,6 @@ angular.module('chattapp')
         };
     }
 })();
- (function() {
-     'use strict';
-
-     angular.module('chattapp')
-         .controller('profileController', profileController);
-
-     function profileController(cameraService) {
-         var self = this;
-         self.displayprofile = [{
-             "image": "https://s3.amazonaws.com/uifaces/faces/twitter/homka/128.jpg",
-             "status": "I am designing something.",
-             "userName": "David M."
-         }];
-         self.editProfilePic = function() {
-             cameraService.changePic().then(function(imageData) {
-                 self.displayprofile[0].image = "data:image/jpeg;base64," + imageData;
-             }, function(err) {
-                 console.log("Picture failure: " + err);
-             });
-         };
-     }
- })();
 (function() {
    'use strict';
    angular.module('chattapp')
@@ -17609,6 +17586,63 @@ angular.module('chattapp')
     }
 })();
  (function() {
+     'use strict';
+
+     angular.module('chattapp')
+         .controller('resetPasswordController', resetPasswordController);
+
+     function resetPasswordController($state, resetPasswordFactory, timeStorage, tostService, $ionicLoading, $localStorage) {
+         console.log('resetPasswordController');
+         var self = this;
+         self.email = timeStorage.get('userEmail');
+         self.resetPassword = function() {
+             if (self.password !== self.cpassword) {
+                 tostService.notify('Your Password and Confirm Password not Match', 'top');
+                 self.password = '';
+                 self.cpassword = '';
+             } else {
+                 $ionicLoading.show();
+                 var userData =  timeStorage.get('userData');
+                 var accessToken = userData.data.access_token;
+                 var query = resetPasswordFactory.save({
+                     password:self.password,
+                     access_token:accessToken
+                 });
+                 query.$promise.then(function(data) {
+                     $ionicLoading.hide();
+                     tostService.notify(data.message);
+                     if(data.status == 1){
+                        $localStorage.$reset();
+                        $state.go('login');
+                     }
+                 });
+             }
+         };
+     }
+ })();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('resetPasswordFactory', resetPasswordFactory);
+
+   function resetPasswordFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/users/reset_password?', {
+       	access_token:'@access_token'
+       },{});
+   };
+})();
+
+ (function() {
+    'use strict';
+
+    angular.module('chattapp')
+        .controller('settingController', settingController);
+
+    function settingController() {
+            console.log('settingController');
+    }
+})();
+ (function() {
     'use strict';
 
     angular.module('chattapp')
@@ -17668,59 +17702,24 @@ angular.module('chattapp')
      'use strict';
 
      angular.module('chattapp')
-         .controller('resetPasswordController', resetPasswordController);
+         .controller('profileController', profileController);
 
-     function resetPasswordController($state, resetPasswordFactory, timeStorage, tostService, $ionicLoading, $localStorage) {
-         console.log('resetPasswordController');
+     function profileController(cameraService) {
          var self = this;
-         self.email = timeStorage.get('userEmail');
-         self.resetPassword = function() {
-             if (self.password !== self.cpassword) {
-                 tostService.notify('Your Password and Confirm Password not Match', 'top');
-                 self.password = '';
-                 self.cpassword = '';
-             } else {
-                 $ionicLoading.show();
-                 var userData =  timeStorage.get('userData');
-                 var accessToken = userData.data.access_token;
-                 var query = resetPasswordFactory.save({
-                     password:self.password,
-                     access_token:accessToken
-                 });
-                 query.$promise.then(function(data) {
-                     $ionicLoading.hide();
-                     tostService.notify(data.message);
-                     if(data.status == 1){
-                        $localStorage.$reset();
-                        $state.go('login');
-                     }
-                 });
-             }
+         self.displayprofile = [{
+             "image": "https://s3.amazonaws.com/uifaces/faces/twitter/homka/128.jpg",
+             "status": "I am designing something.",
+             "userName": "David M."
+         }];
+         self.editProfilePic = function() {
+             cameraService.changePic().then(function(imageData) {
+                 self.displayprofile[0].image = "data:image/jpeg;base64," + imageData;
+             }, function(err) {
+                 console.log("Picture failure: " + err);
+             });
          };
      }
  })();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('resetPasswordFactory', resetPasswordFactory);
-
-   function resetPasswordFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/users/reset_password?', {
-       	access_token:'@access_token'
-       },{});
-   };
-})();
-
- (function() {
-    'use strict';
-
-    angular.module('chattapp')
-        .controller('settingController', settingController);
-
-    function settingController() {
-            console.log('settingController');
-    }
-})();
 (function() {
    'use strict';
    angular.module('chattapp')
