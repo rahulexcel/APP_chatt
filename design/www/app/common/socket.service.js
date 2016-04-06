@@ -8,15 +8,17 @@
          var userData = timeStorage.get('userData');
          var accessToken = userData.data.access_token;
          socket.on('new_room_message', function(data) {
+                    sqliteService.gotNewRoomMessage(data.message_body, data.message_id, data.message_status, data.message_time, data.name, data.profile_image, data.room_id);
                     $rootScope.$broadcast('newRoomMessage', { data: data });
                 });
          socket.on('sent_message_response', function(data) {
                     $rootScope.$broadcast('sentMessagesIds', { data: data });
-                    sqliteService.deleteSentMessage(data.msg_local_id);
+                    sqliteService.updateMessageStatusToSent(data.msg_local_id, data.message_id, data.message_time);
                 });
          socket.on('response_update_message_status', function(data) {
                     var str = data.message_id;
                     var res = str.split(",");
+                    sqliteService.updateMessageStatusToSeen(data.message_id);
                     $rootScope.$broadcast('response_update_message_status_response', { data: res });
                 });
          service.new_private_room = function() {
@@ -64,10 +66,14 @@
                     console.log('empty');
                 } else{
                     socket.emit('update_message_status', accessToken, roomId, array.toString(), 'seen', _.now());
+                    for(var i = 0; i < array.length; i++){
+                        sqliteService.updateMessageStatusToSeen(array[i]);        
+                    }
                 }
              },
              service.update_message_status_room_open = function(message_id, roomId) {
                 socket.emit('update_message_status', accessToken, roomId, message_id, 'seen', _.now());
+                sqliteService.updateMessageStatusToSeen(message_id);
              }
          return service;
      };

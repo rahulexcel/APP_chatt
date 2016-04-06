@@ -9,6 +9,7 @@
          var chatWithUserData = timeStorage.get('chatWithUserData');
          var userData = timeStorage.get('userData');
          self.user_id = userData.data.user_id;
+         self.user_name = userData.data.name;
          $scope.$on('newRoomMessage', function (event, response) {
             if(response.data.room_id == $stateParams.roomId){
                 console.log(response);
@@ -51,6 +52,13 @@
          });
          $scope.$on('now_device_is_online', function (event, response) {
             socket.emit('room_open', $stateParams.roomId);
+            $timeout(function() {
+                roomOpenApi();
+            }, 3000);
+         });
+         sqliteService.getMessageDataFromDB($stateParams.roomId).then(function(response){
+            self.displayChatMessages = response;
+            $ionicScrollDelegate.scrollBottom(false);
          });
          roomOpenApi();
          function roomOpenApi(){
@@ -63,8 +71,13 @@
             });
             query.$promise.then(function(data) {
                 socketService.update_message_status(data.data.messages, $stateParams.roomId);
-                self.displayChatMessages = chatpageService.oldMessages(data.data.messages);
-                $ionicScrollDelegate.scrollBottom(false);
+                sqliteService.updateDbOnRoomOpen(data.data.messages, $stateParams.roomId).then(function(){
+                    sqliteService.getMessageDataFromDB($stateParams.roomId).then(function(response){
+                        self.displayChatMessages = response;
+                        $scope.$evalAsync();
+                        $ionicScrollDelegate.scrollBottom(false);
+                    });
+                });
             });
             $timeout(function() {
                  $ionicScrollDelegate.scrollBottom(false);

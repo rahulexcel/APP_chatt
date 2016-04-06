@@ -59,6 +59,7 @@
                         q.resolve(res);
                     }); 
                 } else{
+                    timeStorage.set('displayPrivateChats', NoRoomData, 1);
                     q.resolve(NoRoomData);
                 }               
              });
