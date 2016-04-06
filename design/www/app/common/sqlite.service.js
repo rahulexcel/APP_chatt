@@ -158,6 +158,7 @@
                         var accessToken = userData.data.access_token;
                         for (var i = 0; i < results.rows.length; i++) {
                             socket.emit('room_message', results.rows.item(i).id, accessToken, results.rows.item(i).roomId, results.rows.item(i).message, _.now());
+                            service.updateMessageStatusToSentWhenAppComesOnline(results.rows.item(i).id);
                             }
                      });
                  }
@@ -166,6 +167,21 @@
                  }
                  function success(results) {
                      console.log("Data is fetched from db");
+                 }
+             },
+             service.updateMessageStatusToSentWhenAppComesOnline = function(localMessageId) {
+                var dbobj = window.sqlitePlugin.openDatabase({
+                     name: "chattappDB"
+                 });
+                 dbobj.transaction(populateDB, error, success);
+                 function populateDB(tx) {
+                     tx.executeSql("UPDATE messages SET message_status='sent' WHERE id="+localMessageId);
+                 }
+                 function error(err) {
+                     console.log("Error processing SQL: " + err.code);
+                 }
+                 function success() {
+                     console.log("successfully updated to sent!");
                  }
              }
          return service;

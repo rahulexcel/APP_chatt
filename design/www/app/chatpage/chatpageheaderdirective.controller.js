@@ -13,10 +13,5 @@
          self.goBack = function() {
              $state.go('app.chats');
          }
-         $ionicPopover.fromTemplateUrl('templates/chatpagePopover.html', {
-             scope: $scope,
-         }).then(function(popover) {
-             self.popover = popover;
-         });
      }
  })();
