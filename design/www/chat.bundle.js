@@ -15710,49 +15710,62 @@ Zn._=Jn):Vn._=Jn}).call(this);
 
     angular.module('chattapp')
 
-    .run(function($rootScope, $ionicPlatform, timeStorage, $state, Configurations, deviceService, pushNotification, lastUsesTimeService, $localStorage, sqliteService) {
-        $ionicPlatform.ready(function() {
-            // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-            // for form inputs)
-            if (window.cordova && window.cordova.plugins.Keyboard) {
-                cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-                cordova.plugins.Keyboard.disableScroll(true);
+            .run(function($rootScope, $ionicPlatform, timeStorage, tostService, $state, Configurations, deviceService, pushNotification, lastUsesTimeService, $localStorage, sqliteService, $stateParams) {
+                $ionicPlatform.ready(function() {
+                    // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
+                    // for form inputs)
+                    if (window.cordova && window.cordova.plugins.Keyboard) {
+                        cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+                        cordova.plugins.Keyboard.disableScroll(true);
 
-            }
-            if (window.StatusBar) {
-                // org.apache.cordova.statusbar required
-                StatusBar.styleDefault();
-            }
-        });
-                    if($localStorage.userData){
-                        $state.go('app.chats');
-                        } else{
-                        $state.go('login');
-                     }
-       
-        window.socket = io(Configurations.socketApi);
-        document.addEventListener("online", onOnline, false);
-         function onOnline() {
-            $rootScope.$broadcast('now_device_is_online', { data: '' });
-         }
-        document.addEventListener("deviceready", function() {
-            timeStorage.set('deviceUUID', deviceService.getuuid(),1);
-            timeStorage.set('devicePlatform', deviceService.platform(),1);
-            pushNotification.push();
-            sqliteService.createTable();
-            // lastUsesTimeService.updateTimeWithHttp();
-            document.addEventListener("pause", onPause, false);
-            document.addEventListener("resume", onResume, false);
-            function onPause() {
-                // lastUsesTimeService.updateTime();
-            }
-            function onResume() {
-                // lastUsesTimeService.updateTime();
-            }
-        });
+                    }
+                    if (window.StatusBar) {
+                        // org.apache.cordova.statusbar required
+                        StatusBar.styleDefault();
+                    }
+                });
+                if ($localStorage.userData) {
+                    $state.go('app.chats');
+                } else {
+                    $state.go('login');
+                }
+//                $rootScope.$on('$stateChangeStart',
+//                        function(event, toState, toParams, fromState, fromParams, options) {
+//                            console.log(toState);
+//                          
+//                  
+//                            // transitionTo() promise will be rejected with 
+//                            // a 'transition prevented' error
+//                        })
+                window.socket = io(Configurations.socketApi);
+
+                document.addEventListener("deviceready", function() {
+                    document.addEventListener("online", onOnline, false);
+                    function onOnline() {
+                        $rootScope.$broadcast('now_device_is_online', {data: ''});
+                        timeStorage.remove('network');
+                    }
+                    document.addEventListener("offline", onOffline, false);
+                    function onOffline() {
+                        timeStorage.set('network', 'offline', 100);
+                    }
+                    timeStorage.set('deviceUUID', deviceService.getuuid(), 1);
+                    timeStorage.set('devicePlatform', deviceService.platform(), 1);
+                    pushNotification.push();
+                    sqliteService.createTable();
+                    // lastUsesTimeService.updateTimeWithHttp();
+                    document.addEventListener("pause", onPause, false);
+                    document.addEventListener("resume", onResume, false);
+                    function onPause() {
+                        // lastUsesTimeService.updateTime();
+                    }
+                    function onResume() {
+                        // lastUsesTimeService.updateTime();
+                    }
+                });
 
 
-    });
+            });
 
 })();
 (function() {
@@ -16164,136 +16177,38 @@ angular.module('chattapp')
      };
 
  })();
- (function() {
-     'use strict';
+(function() {
+    'use strict';
 
-     angular.module('chattapp')
+    angular.module('chattapp')
 
-     .directive('chatsFooter', function() {
-         var directive = {};
-         directive.restrict = 'E';
-         directive.templateUrl = "app/chats/templates/footer.html";
-         directive.scope = {
-             chatsFooter: "=footer"
-         }
-         directive.compile = function(element, attributes) {
-             var linkFunction = function($scope, element, attributes) {}
-             return linkFunction;
-         }
-         return directive;
-     });
- })();
- (function() {
-     'use strict';
+            .directive('chatsFooter', function(timeStorage, tostService, $state) {
+                var directive = {};
+                directive.restrict = 'E';
+                directive.templateUrl = "app/chats/templates/footer.html";
+                directive.scope = {
+                    chatsFooter: "=footer"
+                },
+                directive.compile = function(element, attributes) {
 
-     angular.module('chattapp')
-         .controller('contactsController', contactsController);
-
-     function contactsController($scope, contactsFactory, contactsService, $ionicLoading, timeStorage, $localStorage, $state, socketService, $ionicModal, getUserProfileFactory) {
-         delete $localStorage.chatWithUserData;
-         var self = this;
-         var userData =  timeStorage.get('userData');
-         var accessToken = userData.data.access_token;
-         self.displaycontacts = timeStorage.get('listUsers');
-         contactsService.listUsers();
-         $scope.$on('updatedlistUsers', function (event, response) {
-            self.displaycontacts = response.data;
-            $scope.$evalAsync();
-         });
-         self.chatWithUser = function(name, id, pic, lastSeen){
-            self.startChatspinner = true;
-            var chatWithUser = {
-                "name":name,
-                "id":id,
-                "pic":pic,
-                "lastSeen":lastSeen
-            }
-            timeStorage.set('chatWithUserData', chatWithUser, 1);
-            socketService.create_room(id).then(function(data){
-                $scope.modal.hide();
-                $state.go('app.chatpage', {roomId:data.data.room_id});
+                    var linkFunction = function($scope, element, attributes) {
+                        $scope.search = function() {
+                           
+                            if (timeStorage.get('network')) {
+                              window.plugins.toast.showShortTop('You need to online to access this'); 
+                               
+                            }
+                            else
+                            {
+                                console.log('hii');
+                                $state.go('app.contacts');
+                            }
+                        };
+                    };
+                    return linkFunction;
+                };
+                return directive;
             });
-         }
-         self.isSearchOpen = false;
-         self.searchOpen = function(){
-            if(self.isSearchOpen){
-                self.isSearchOpen = false;
-            } else{
-                self.isSearchOpen = true;
-            }
-         }
-         self.openUserProfile = function(clickData, index){
-            self.spinnerIndex = index;
-            var userData =  timeStorage.get('userData');
-            var query = getUserProfileFactory.save({
-                    accessToken: userData.data.access_token,
-                    user_id: clickData.id,
-                    currentTimestamp: _.now()
-                });
-                query.$promise.then(function(data) {
-                    self.spinnerIndex = -1;
-                    self.displayUserProfileName = data.data.name;
-                    self.displayUserProfileId = data.data.user_id;
-                    self.displayUserProfileImage = data.data.profile_image;
-                    self.displayUserProfileLastSeen = data.data.last_seen;
-                    self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
-                    self.displayUserProfilePublicRooms = data.data.user_public_rooms;
-                    $scope.modal.show();
-                });
-         }
-         $ionicModal.fromTemplateUrl('contactUser.html', function($ionicModal) {
-            $scope.modal = $ionicModal;
-            }, {
-            scope: $scope,
-         }); 
-     }
- })();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('contactsFactory', contactsFactory);
-
-   function contactsFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/users/list_users', {},{});
-   };
-})();
- (function() {
-     'use strict';
-     angular.module('chattapp')
-         .factory('contactsService', contactsService);
-
-     function contactsService(timeStorage, $rootScope, contactsFactory, timeZoneService) {
-         var service = {};
-         service.listUsers = function() {
-            var userData =  timeStorage.get('userData');
-            var query = contactsFactory.save({
-                 accessToken: userData.data.access_token,
-                 page: 0,
-                 limit:100,
-                 currentTimestamp: _.now()
-             });
-             query.$promise.then(function(data) {
-                 var newData = [];
-                 for(var i = 0; i < data.data.length; i++){
-                    data.data[i].lastSeen = moment(parseInt(data.data[i].lastSeen)).format("Do MMMM hh:mm a");
-                    newData.push(data.data[i]); 
-                 }
-                 timeStorage.set('listUsers', newData, 1);
-                 $rootScope.$broadcast('updatedlistUsers', { data: newData });
-             });
-         }
-         return service;
-     };
-
- })();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('getUserProfileFactory', getUserProfileFactory);
-
-   function getUserProfileFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/users/get_user_profile/:accessToken/:user_id/:currentTimestamp', {},{});
-   };
 })();
  (function() {
      'use strict';
@@ -17061,6 +16976,118 @@ angular.module('chattapp')
      'use strict';
 
      angular.module('chattapp')
+         .controller('contactsController', contactsController);
+
+     function contactsController($scope, contactsFactory, contactsService, $ionicLoading, timeStorage, $localStorage, $state, socketService, $ionicModal, getUserProfileFactory) {
+         delete $localStorage.chatWithUserData;
+         var self = this;
+         var userData =  timeStorage.get('userData');
+         var accessToken = userData.data.access_token;
+         self.displaycontacts = timeStorage.get('listUsers');
+         contactsService.listUsers();
+         $scope.$on('updatedlistUsers', function (event, response) {
+            self.displaycontacts = response.data;
+            $scope.$evalAsync();
+         });
+         self.chatWithUser = function(name, id, pic, lastSeen){
+            self.startChatspinner = true;
+            var chatWithUser = {
+                "name":name,
+                "id":id,
+                "pic":pic,
+                "lastSeen":lastSeen
+            }
+            timeStorage.set('chatWithUserData', chatWithUser, 1);
+            socketService.create_room(id).then(function(data){
+                $scope.modal.hide();
+                $state.go('app.chatpage', {roomId:data.data.room_id});
+            });
+         }
+         self.isSearchOpen = false;
+         self.searchOpen = function(){
+            if(self.isSearchOpen){
+                self.isSearchOpen = false;
+            } else{
+                self.isSearchOpen = true;
+            }
+         }
+         self.openUserProfile = function(clickData, index){
+            self.spinnerIndex = index;
+            var userData =  timeStorage.get('userData');
+            var query = getUserProfileFactory.save({
+                    accessToken: userData.data.access_token,
+                    user_id: clickData.id,
+                    currentTimestamp: _.now()
+                });
+                query.$promise.then(function(data) {
+                    self.spinnerIndex = -1;
+                    self.displayUserProfileName = data.data.name;
+                    self.displayUserProfileId = data.data.user_id;
+                    self.displayUserProfileImage = data.data.profile_image;
+                    self.displayUserProfileLastSeen = data.data.last_seen;
+                    self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
+                    self.displayUserProfilePublicRooms = data.data.user_public_rooms;
+                    $scope.modal.show();
+                });
+         }
+         $ionicModal.fromTemplateUrl('contactUser.html', function($ionicModal) {
+            $scope.modal = $ionicModal;
+            }, {
+            scope: $scope,
+         }); 
+     }
+ })();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('contactsFactory', contactsFactory);
+
+   function contactsFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/users/list_users', {},{});
+   };
+})();
+ (function() {
+     'use strict';
+     angular.module('chattapp')
+         .factory('contactsService', contactsService);
+
+     function contactsService(timeStorage, $rootScope, contactsFactory, timeZoneService) {
+         var service = {};
+         service.listUsers = function() {
+            var userData =  timeStorage.get('userData');
+            var query = contactsFactory.save({
+                 accessToken: userData.data.access_token,
+                 page: 0,
+                 limit:100,
+                 currentTimestamp: _.now()
+             });
+             query.$promise.then(function(data) {
+                 var newData = [];
+                 for(var i = 0; i < data.data.length; i++){
+                    data.data[i].lastSeen = moment(parseInt(data.data[i].lastSeen)).format("Do MMMM hh:mm a");
+                    newData.push(data.data[i]); 
+                 }
+                 timeStorage.set('listUsers', newData, 1);
+                 $rootScope.$broadcast('updatedlistUsers', { data: newData });
+             });
+         }
+         return service;
+     };
+
+ })();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('getUserProfileFactory', getUserProfileFactory);
+
+   function getUserProfileFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/users/get_user_profile/:accessToken/:user_id/:currentTimestamp', {},{});
+   };
+})();
+ (function() {
+     'use strict';
+
+     angular.module('chattapp')
          .controller('forgotPasswordController', forgotPasswordController);
 
      function forgotPasswordController($state, forgotPasswordFactory, tostService, $ionicLoading) {
@@ -17258,21 +17285,31 @@ angular.module('chattapp')
    };
 })();
 
- (function() {
-     'use strict';
+(function() {
+    'use strict';
 
-     angular.module('chattapp')
-         .controller('menuController', menuController);
+    angular.module('chattapp')
+            .controller('menuController', menuController);
 
-     function menuController($scope, $ionicPopover, $localStorage, $state, timeStorage) {
-         console.log('menuController');
-         var self = this;
-         $ionicPopover.fromTemplateUrl('templates/popover.html', {
-             scope: $scope,
-         }).then(function(popover) {
-             self.popover = popover;
-         });
-         self.logout = function(){
+    function menuController($scope, $ionicPopover, tostService, $localStorage, $state, timeStorage, $rootScope) {
+        console.log('menuController');
+        var self = this;
+
+        $ionicPopover.fromTemplateUrl('templates/popover.html', {
+            scope: $scope,
+        }).then(function(popover) {
+            self.popover = popover;
+        });
+        $scope.search = function() {
+            if (timeStorage.get('network')) {
+                window.plugins.toast.showShortTop('You need to online to access this');
+            }
+            else
+            {
+                $state.go('app.contacts');
+            }
+        };
+        self.logout = function() {
             timeStorage.remove('google_access_token');
             timeStorage.remove('userEmail');
             timeStorage.remove('userData');
@@ -17281,9 +17318,9 @@ angular.module('chattapp')
             timeStorage.remove('chatWithUserData');
             timeStorage.remove('displayPublicChats');
             $state.go('login');
-         }
-     }
- })();
+        };
+    }
+})();
  (function() {
      'use strict';
 
@@ -17306,62 +17343,6 @@ angular.module('chattapp')
          };
      }
  })();
- (function() {
-    'use strict';
-
-    angular.module('chattapp')
-        .controller('registerController', registerController);
-
-    function registerController($scope, $state, registerFactory,  $localStorage, tostService, deviceService, timeStorage, $ionicLoading) {
-            console.log('Register Controller');
-            var self = this;
-            this.user={
-                name:'',
-                email:'',
-                password:'',
-                };
-            var currentTimestamp = _.now();
-            var deviceUUID = deviceService.getuuid();
-            var devicePlatform = deviceService.platform();
-            this.register = function() {
-                if(_.isEmpty(this.user.name) || _.isEmpty(this.user.email) || _.isEmpty(this.user.password) ){
-                tostService.notify('Please fill all fields', 'top');
-            }else{
-                $ionicLoading.show();
-                timeStorage.set('userEmail',this.user.email,1);
-                var query = registerFactory.save({
-                    action_type:'manual_register',
-                    social_id:'',
-                    platform:devicePlatform,
-                    token:$localStorage.gcmToken,
-                    action:'login_register',
-                    device_id:deviceUUID,
-                    email: this.user.email,
-                    name: this.user.name,
-                    password: this.user.password,
-                    currentTimestamp:currentTimestamp
-                });
-                query.$promise.then(function(data) {
-                    $ionicLoading.hide();
-                    console.log(data);
-                    tostService.notify(data.message, 'top');
-                    if(data.data.show_verification == '1'){
-                        $state.go('verification');
-                    }
-                });
-            }
-        };
-    }
-})();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('registerFactory', registerFactory);
-
-   function registerFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/users/register_login/:action_type/:action/:social_id/:platform/:token/:email/:name/:password', {},{});
-   };
-})();
 (function() {
    'use strict';
    angular.module('chattapp')
@@ -17521,6 +17502,62 @@ angular.module('chattapp')
             scope: $scope,
         }); 
     }
+})();
+ (function() {
+    'use strict';
+
+    angular.module('chattapp')
+        .controller('registerController', registerController);
+
+    function registerController($scope, $state, registerFactory,  $localStorage, tostService, deviceService, timeStorage, $ionicLoading) {
+            console.log('Register Controller');
+            var self = this;
+            this.user={
+                name:'',
+                email:'',
+                password:'',
+                };
+            var currentTimestamp = _.now();
+            var deviceUUID = deviceService.getuuid();
+            var devicePlatform = deviceService.platform();
+            this.register = function() {
+                if(_.isEmpty(this.user.name) || _.isEmpty(this.user.email) || _.isEmpty(this.user.password) ){
+                tostService.notify('Please fill all fields', 'top');
+            }else{
+                $ionicLoading.show();
+                timeStorage.set('userEmail',this.user.email,1);
+                var query = registerFactory.save({
+                    action_type:'manual_register',
+                    social_id:'',
+                    platform:devicePlatform,
+                    token:$localStorage.gcmToken,
+                    action:'login_register',
+                    device_id:deviceUUID,
+                    email: this.user.email,
+                    name: this.user.name,
+                    password: this.user.password,
+                    currentTimestamp:currentTimestamp
+                });
+                query.$promise.then(function(data) {
+                    $ionicLoading.hide();
+                    console.log(data);
+                    tostService.notify(data.message, 'top');
+                    if(data.data.show_verification == '1'){
+                        $state.go('verification');
+                    }
+                });
+            }
+        };
+    }
+})();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('registerFactory', registerFactory);
+
+   function registerFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/users/register_login/:action_type/:action/:social_id/:platform/:token/:email/:name/:password', {},{});
+   };
 })();
  (function() {
      'use strict';
