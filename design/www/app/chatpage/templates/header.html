@@ -4,16 +4,7 @@
 	</button>
 	<img class='img-circle' ng-src='{{chatPageHeader.image}}' ng-click='chatPageHeader.goBack()'>
 	<p><strong>{{chatPageHeader.name}} </strong><br><span class="lastSeen" ng-hide="chatPageHeader.lastSeen == 'Invalid date'">{{chatPageHeader.lastSeen}}</span></p>
-	<button class='button button-clear pull-right' ng-click="chatPageHeader.popover.show($event)">
+	<!-- <button class='button button-clear pull-right' ng-click="chatPageHeader.popover.show($event)">
 		<i class='icon ion-android-more-vertical'></i>
-	</button>
+	</button> -->
 </ion-header-bar>
-<script id="templates/chatpagePopover.html" type="text/ng-template">
-  <ion-popover-view>
-    <ion-content scroll="false">
-      <div class="list">
-        <a class="item" ng-click="modal.show()">Group Info</a>
-      </div>
-    </ion-content>
-  </ion-popover-view>
-</script>
