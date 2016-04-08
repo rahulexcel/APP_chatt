@@ -15776,14 +15776,15 @@ angular.module('chattapp')
 
 })();
 (function() {
-    'use strict';
-    angular.module('chattapp')
-        .constant('Configurations', {
-            api_url: 'http://144.76.34.244:3033/api',
-            senderID: '157127377708',
-            icon: 'chatt',
-            socketApi: 'http://144.76.34.244:3033'
-        });
+   'use strict';
+   angular.module('chattapp')
+       .constant('Configurations', {
+           api_url: 'http://144.76.34.244:3033/api',
+           senderID: '157127377708',
+           icon: 'chatt',
+           socketApi: 'http://144.76.34.244:3033',
+           color: {"a":"#FA8072 ","b":"#00FFFF ","c":"#7FFFD4 ","d":"#000000 ","e":"#0000FF ","f":"#8A2BE2 ","g":"#A52A2A ","h":"#DEB887 ","i":"#5F9EA0 ","j":"#7FFF00 ","k":"#D2691E ","l":"#DC143C ","m":"#00008B ","n":"#008B8B ","o":"#B8860B ","p":"#006400 ","q":"#8B008B ","r":"#FF8C00 ","s":"#8B0000 ","t":"#8FBC8F ","u":"#483D8B ","v":"#2F4F4F ","w":"#9400D3 ","x":"#FF1493 ","y":"#696969 ","z":"#1E90FF ","0":"#FF00FF ","1":"#FFD700 ","2":"#ADFF2F ","3":"#FF69B4 ","4":"#4B0082 ","5":"#7CFC00 ","6":"#800000 ","7":"#800080 ","8":"#FF6347 ","9":"#6A5ACD "}
+       });
 })();
  (function() {
      'use strict';
@@ -16042,6 +16043,105 @@ angular.module('chattapp')
          return directive;
      });
  })();
+(function() {
+    'use strict';
+
+    angular.module('chattapp')
+            .controller('chatPageHeaderDirectiveController', chatPageHeaderDirectiveController);
+
+    function chatPageHeaderDirectiveController($state, timeStorage, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService) {
+        var self = this;
+        self.leaveGroupSpinner = false;
+        self.deleteGroupSpinner = false;
+        var chatWithUserData = timeStorage.get('chatWithUserData');
+        console.log(chatWithUserData);
+        self.name = chatWithUserData.name;
+        self.image = chatWithUserData.pic;
+        self.lastSeen = moment(parseInt(chatWithUserData.lastSeen)).format("hh:mm a");
+        self.goBack = function() {
+            $state.go('app.chats');
+        };
+        self.openModelWithSpinner = true;
+        infoApi();
+        function infoApi() {
+            var userData = timeStorage.get('userData');
+            var query = getRoomInfoFactory.save({
+                accessToken: userData.data.access_token,
+                room_id: $stateParams.roomId,
+                currentTimestamp: _.now()
+            });
+            query.$promise.then(function(data) {
+                self.openModelWithSpinner = false;
+                self.is_room_owner = data.data.room.is_room_owner;
+                self.infoName = data.data.room.room_name;
+                self.infoId = data.data.room.id;
+                if (data.data.room.room_image == '') {
+                    self.infoImage = 'lib/group.png';
+                } else {
+                    self.infoImage = data.data.room.room_image;
+                }
+                if (data.data.room.room_background == '') {
+                    self.infoBackground = 'lib/group.png';
+                } else {
+                    self.infoBackground = data.data.room.room_background;
+                }
+                self.infoCreatedOn = moment(parseInt(data.data.room.registration_time)).format("Do MMMM hh:mm a");
+                self.infoDescription = data.data.room.room_description;
+                for (var i = 0; i < data.data.room.room_users.length; i++) {
+                    if (data.data.room.room_users[i].id == data.data.room.room_owner.id) {
+                        data.data.room.room_users[i].name = data.data.room.room_users[i].name + ' (owner)';
+                    }
+                    data.data.room.room_users[i].last_seen = moment(parseInt(data.data.room.room_users[i].last_seen)).format("Do MMMM hh:mm a");
+                }
+                self.infoUserList = data.data.room.room_users;
+            });
+        }
+        self.openInfo = function() {
+            infoApi();
+            self.deleteIconRotate = -1;
+            if (!chatWithUserData.lastSeen) {
+                $scope.infoModel.show();
+            }
+        }
+        var hideSheet;
+        self.leaveGroup = function() {
+            $scope.infoModel.hide();
+            hideSheet = $ionicActionSheet.show({
+                buttons: [{
+                        text: '<p class="text-center">Yes</p>'
+                    }],
+                titleText: 'Confirm to leave ' + self.infoName + ' !',
+                cancelText: 'Cancel',
+                cancel: function() {
+
+                },
+                buttonClicked: function(index) {
+                    if (index == 0) {
+                        self.leaveGroupSpinner = true;
+                        socketService.leaveGroup($stateParams.roomId);
+                    }
+                }
+            });
+        }
+        $scope.$on('leaved_public_group', function(event, data) {
+            hideSheet();
+            tostService.notify(data.data.data.message, 'top');
+            $state.go('app.chats');
+        });
+        self.deleteUserFromGroup = function(userData, index) {
+            self.deleteIconRotate = index;
+            socketService.removeUserFromGroup(userData, $stateParams.roomId);
+        }
+        $scope.$on('removed_public_room_member', function(event, data) {
+            infoApi();
+        });
+        $ionicModal.fromTemplateUrl('infoModel.html', function($ionicModal) {
+            $scope.infoModel = $ionicModal;
+        }, {
+            scope: $scope
+        });
+    }
+})();
  (function() {
     'use strict';
 
@@ -16680,60 +16780,61 @@ googleLoginService.factory('googleLogin', [
                 return requestInterceptor;
             });
 })();
- (function() {
-     'use strict';
+(function() {
+    'use strict';
 
-     angular.module('chattapp')
-         .directive('img', function($timeout) {
-             return {
-                 restrict: 'E',
-                 link: function(scope, element, attr) {
-                     if (attr.ngSrc == '' || attr.ngSrc) {
-                        var chatPageClass = '';
-                         if (scope.contact) {
-                             var name = scope.contact.name;
-                             var firstLetter = name.charAt(0).toUpperCase();
-                         }
-                         if(scope.chatPageHeader){
-                            chatPageClass = 'chatPageheader';
-                            var name = scope.chatPageHeader.name;
-                            var firstLetter = name.charAt(0).toUpperCase();
-                         }
-                         if(scope.chatPageFooter){
-                            chatPageClass = 'chatPageheader';
-                            var name = scope.chatPageFooter.name;
-                            var firstLetter = name.charAt(0).toUpperCase();
-                         }
-                         if(scope.chat){
-                            var name = scope.chat.user_data.name;
-                            var firstLetter = name.charAt(0).toUpperCase();
-                         }
-                         if(scope.publicChat){
-                            var name = scope.publicChat.room_name;
-                            var firstLetter = name.charAt(0).toUpperCase();
-                         }
-                         if(scope.groupUser){
-                            var name = scope.groupUser.name;
-                            var firstLetter = name.charAt(0).toUpperCase();
-                         }
-                         if(scope.msg){
-                            var name = scope.msg.name;
-                            var firstLetter = name.charAt(0).toUpperCase();
-                         }
-                         // console.log(scope.chatPageHeader);
-                         // if(scope.chatPageHeader.infoUserList){
-                         //    for(var i = 0; i < scope.chatPageHeader.infoUserList.length; i++){
-                         //        var name = scope.chatPageHeader.infoUserList[i].name;
-                         //        var firstLetter = name.charAt(0).toUpperCase();
-                         //    }
-                         // }
-                         var colorClass = Math.floor((Math.random() * 10) + 1);
-                         element.replaceWith("<button class='no-image circleColor"+colorClass+" "+chatPageClass+"'><i class='i-24 white'>" + firstLetter + "</i><div class='md-ripple-container'></div></button>");
-                     }
-                 }
-             }
-         });
- })();
+    angular.module('chattapp')
+            .directive('img', function($timeout,Configurations) {
+                return {
+                    restrict: 'E',
+                    link: function(scope, element, attr) {
+                        if (attr.ngSrc == '' || attr.ngSrc) {
+                            var chatPageClass = '';
+                            if (scope.contact) {
+                                var name = scope.contact.name;
+                                var firstLetter = name.charAt(0).toUpperCase();
+                            }
+                            if (scope.chatPageHeader) {
+                                chatPageClass = 'chatPageheader';
+                                var name = scope.chatPageHeader.name;
+                                var firstLetter = name.charAt(0).toUpperCase();
+                            }
+                            if (scope.chatPageFooter) {
+                                chatPageClass = 'chatPageheader';
+                                var name = scope.chatPageFooter.name;
+                                var firstLetter = name.charAt(0).toUpperCase();
+                            }
+                            if (scope.chat) {
+                                var name = scope.chat.user_data.name;
+                                var firstLetter = name.charAt(0).toUpperCase();
+                            }
+                            if (scope.publicChat) {
+                                var name = scope.publicChat.room_name;
+                                var firstLetter = name.charAt(0).toUpperCase();
+                            }
+                            if (scope.groupUser) {
+                                var name = scope.groupUser.name;
+                                var firstLetter = name.charAt(0).toUpperCase();
+                            }
+                            if (scope.msg) {
+                                var name = scope.msg.name;
+                                var firstLetter = name.charAt(0).toUpperCase();
+                            }
+                            var color = Configurations.color;
+                            element.replaceWith("<button style='background:" + color[firstLetter.toLowerCase()] + "' class='no-image " + chatPageClass + "'><i class='i-24 white'>" + firstLetter + "</i><div class='md-ripple-container'></div></button>");
+                            // console.log(scope.chatPageHeader);
+                            // if(scope.chatPageHeader.infoUserList){
+                            //    for(var i = 0; i < scope.chatPageHeader.infoUserList.length; i++){
+                            //        var name = scope.chatPageHeader.infoUserList[i].name;
+                            //        var firstLetter = name.charAt(0).toUpperCase();
+                            //    }
+                            // }
+
+                        }
+                    }
+                }
+            });
+})();
 angular.module('chattapp')
     .directive('input', function($timeout) {
         return {

@@ -1,13 +1,14 @@
+
 <div>
     <button ng-click='chatPageHeader.goBack()' class='button back-button buttons button-clear header-item mybt'>
         <i class='icon ion-ios-arrow-back'></i>
     </button>
 
     <div class="userin">
-        <div class="imgCircle">
+        <div class="button button-clear imgCircle" ng-click='chatPageHeader.goBack()'>
             <img class='img-circle mycl' ng-src='{{chatPageHeader.image}}' ng-click='chatPageHeader.goBack()'>
         </div>
-        <p class="fontC" ng-click="chatPageHeader.openInfo()"> <strong>{{chatPageHeader.name}} </strong><br><span class="lastSeen" ng-hide="chatPageHeader.lastSeen == 'Invalid date'">{{chatPageHeader.lastSeen}}</span></p>
+        <p class='button button-clear fontC'  ng-click="chatPageHeader.openInfo()"> <strong>{{chatPageHeader.name}} </strong><br><span class="lastSeen" ng-hide="chatPageHeader.lastSeen == 'Invalid date'">{{chatPageHeader.lastSeen}}</span></p>
         <!-- <button class='button button-clear pull-right' ng-click="chatPageHeader.popover.show($event)">
                 <i class='icon ion-android-more-vertical'></i>
         </button> -->
@@ -60,5 +61,6 @@
     </div>
     </div>
     </content>
+
     </div>
 </script>

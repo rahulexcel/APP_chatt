@@ -97744,8 +97744,8 @@ a.active {
   color: #fff !important;
 }
 
-.fontC {
-  color: #fff;
+p.button.button-clear.fontC {
+  color: #fff !important;
 }
 
 button.button.back-button.buttons.button-clear.header-item.mybt {
@@ -97755,4 +97755,8 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
 .act {
   color: #fff;
   opacity: 1;
+}
+
+.myhide {
+  display: none;
 }

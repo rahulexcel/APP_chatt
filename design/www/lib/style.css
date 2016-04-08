@@ -687,8 +687,8 @@ padding-left: 56px; }
     margin-right: 10px !important;
     color:#fff !important;
 }
-.fontC{
-    color:#fff;
+p.button.button-clear.fontC{
+    color:#fff !important;
 }
 button.button.back-button.buttons.button-clear.header-item.mybt {
     margin-left: 5px;
@@ -696,4 +696,7 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
 .act{
     color:#fff;
     opacity:1;
+}
+.myhide{
+    display:none;
 }
