@@ -97246,7 +97246,7 @@ a.tab-item:hover {
   display: block!important;
   clear: both!important;
   color: red!important;
-  background-color: #e5b873!important;
+  background-color: #fff!important;
   width: 100%!important;
   margin: 0px 0px 10px 0px!important;
   padding: 0px!important;
@@ -97263,7 +97263,16 @@ a.tab-item:hover {
 
 .alert-message div.bubble-blue {
   text-align: center!important;
-  background-color: #e5b873!important;
+  background-color: #fff!important;
+}
+
+.alert-message div.bubble-blue p {
+  color: #A9A9A9;
+}
+
+.alert-message div.bubble-yellow p {
+  color: #A9A9A9;
+  font-style: italic!important;
 }
 
 .alert-message div.bubble-blue::before {
@@ -97280,7 +97289,7 @@ a.tab-item:hover {
 
 .alert-message div.bubble-yellow {
   text-align: center!important;
-  background-color: #e5b873!important;
+  background-color: #fff!important;
 }
 
 .left-chat {
