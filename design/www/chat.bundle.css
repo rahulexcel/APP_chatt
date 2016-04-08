@@ -97744,7 +97744,7 @@ a.active {
   color: #fff !important;
 }
 
-p.button.button-clear.fontC {
+.button.button-clear.fontC {
   color: #fff !important;
 }
 
@@ -97759,4 +97759,14 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
 
 .myhide {
   display: none;
+}
+
+.chatName {
+  margin: -6px 0 0 0;
+  font-weight: 900;
+}
+
+.headLast {
+  margin: -14px 0 0 0;
+  text-align: left;
 }
