@@ -3,7 +3,7 @@
 
     angular.module('chattapp')
 
-            .directive('chatsFooter', function(timeStorage, tostService, $state) {
+            .directive('chatsFooter', function(timeStorage, tostService, $state,$ionicViewSwitcher) {
                 var directive = {};
                 directive.restrict = 'E';
                 directive.templateUrl = "app/chats/templates/footer.html";
@@ -21,7 +21,7 @@
                             }
                             else
                             {
-                                console.log('hii');
+                                $ionicViewSwitcher.nextDirection('forward');
                                 $state.go(state);
                             }
                         };

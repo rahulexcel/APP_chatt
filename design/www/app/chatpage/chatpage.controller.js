@@ -4,6 +4,7 @@
      angular.module('chattapp')
          .controller('chatPageController', chatPageController);
 
-     function chatPageController() {
+     function chatPageController($ionicHistory) {
+         
      }
  })();

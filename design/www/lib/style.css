@@ -676,4 +676,27 @@ padding-left: 56px; }
 		width: 81%;
 	}
 }
-
+.userin{
+    width:350px;
+     position:absolute;
+    top:4px;
+    left:32px;
+}
+.imgCircle {
+    float: left !important;
+    margin-right: 10px !important;
+    color:#fff !important;
+}
+p.button.button-clear.fontC{
+    color:#fff !important;
+}
+button.button.back-button.buttons.button-clear.header-item.mybt {
+    margin-left: 5px;
+}
+.act{
+    color:#fff;
+    opacity:1;
+}
+.myhide{
+    display:none;
+}

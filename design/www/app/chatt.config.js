@@ -5,6 +5,7 @@ angular.module('chattapp')
 
 .config(function($ionicConfigProvider) {
     $ionicConfigProvider.backButton.previousTitleText(false).text(' ');
+    $ionicConfigProvider.views.transition('none');
 });
 
 })();
