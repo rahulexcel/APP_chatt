@@ -24,6 +24,11 @@
                     if(type == 'remove_public_room_member'){
                         $rootScope.$broadcast('removed_public_room_member', { data: data.data });
                     }
+                    if(type == 'remove_socket_from_room'){
+                        if(userData.data.user_id == data.user_id){
+                            socket.emit('APP_SOCKET_EMIT', 'remove_socket_from_room', { user_id: data.user_id, room_id: data.room_id });
+                        }
+                    }
                 });
          socket.on('response_update_message_status', function(data) {
                     var str = data.message_id;
@@ -46,7 +51,6 @@
                  socket.emit('create_room', accessToken, 'private', chatWithUserId, '', '', _.now());
                  service.new_private_room().then(function(data) {
                      socket.emit('APP_SOCKET_EMIT', 'room_open', { accessToken: accessToken, room_id: data.data.room_id, currentTimestamp: _.now() });
-                     roomData.room_id
                      q.resolve(data);
                  });
                  return q.promise;
