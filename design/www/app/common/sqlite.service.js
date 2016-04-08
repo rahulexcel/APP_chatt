@@ -115,13 +115,14 @@
                 return q.promise;
              },
              service.getMessageDataFromDB = function(roomId) {
+                
                 var q = $q.defer();
                 var dbobj = window.sqlitePlugin.openDatabase({
                      name: "chattappDB"
                  });
                  dbobj.transaction(populateDB, error, success);
                  function populateDB(tx) {
-                     tx.executeSql("select * from messages WHERE roomId= '"+roomId+"' order by id DESC;",[],function(tx, results){
+                     tx.executeSql("select * from messages WHERE roomId= '"+roomId+"' order by id DESC;",[],function(tx,results){
                         var roomMessages = [];
                         for (var i = 0; i < results.rows.length; i++) {
                                  var newData = {};
