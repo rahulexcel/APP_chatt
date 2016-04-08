@@ -546,6 +546,12 @@ a.active{
 .chat-page-list{
 	padding-top:10px;
 }
+.myhide{
+    display:none;
+}
+.act{
+    opacity:1;
+}
 @media all and (max-width: 1024px) and (min-width: 768px) {
 	.search-box-open{
 		width: 90%;
@@ -587,3 +593,20 @@ a.active{
 	}
 }
 
+.userin{
+    width:350px;
+     position:absolute;
+    top:4px;
+    left:32px;
+}
+.imgCircle {
+    float: left !important;
+    margin-right: 10px !important;
+    color:#fff !important;
+}
+.fontC{
+    color:#fff;
+}
+button.button.back-button.buttons.button-clear.header-item.mybt {
+    margin-left: 5px;
+}

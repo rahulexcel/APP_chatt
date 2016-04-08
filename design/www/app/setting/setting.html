@@ -1,4 +1,4 @@
-<ion-view view-title="SETTING">
+<ion-view hide-back-button="true"  view-title="SETTING">
   <ion-content scroll="false" id="setting">
         <div class="list">
             <a class="item item-icon-right" ui-sref="app.profile">
@@ -11,6 +11,14 @@
             </a>
             <a class="item item-icon-right" ui-sref="state1">
                     ABOUT
+               <i class="icon ion-chevron-right"></i>
+            </a>
+            <a class="item item-icon-right" href="#/app/resetpassword" >
+                    FORGET PASSWORD
+               <i class="icon ion-chevron-right"></i>
+            </a>
+             <a class="item item-icon-right" ng-click="menu.logout();">
+                   LOGOUT
                <i class="icon ion-chevron-right"></i>
             </a>
         </div>

@@ -1,10 +1,14 @@
-<ion-header-bar class='bar-stable chatpage-header'>
-	<button ng-click='chatPageHeader.goBack()' class='button back-button buttons button-clear header-item'>
+<div>
+	<button ng-click='chatPageHeader.goBack()' class='button back-button buttons button-clear header-item mybt'>
 		<i class='icon ion-ios-arrow-back'></i>
 	</button>
-	<img class='img-circle' ng-src='{{chatPageHeader.image}}' ng-click='chatPageHeader.goBack()'>
-	<p><strong>{{chatPageHeader.name}} </strong><br><span class="lastSeen" ng-hide="chatPageHeader.lastSeen == 'Invalid date'">{{chatPageHeader.lastSeen}}</span></p>
+    <div class="userin">
+        <div class="imgCircle">
+	<img class='img-circle mycl' ng-src='{{chatPageHeader.image}}' ng-click='chatPageHeader.goBack()'>
+        </div>
+        <p class="fontC"><strong>{{chatPageHeader.name}} </strong><br><span class="lastSeen" ng-hide="chatPageHeader.lastSeen == 'Invalid date'">{{chatPageHeader.lastSeen}}</span></p>
 	<!-- <button class='button button-clear pull-right' ng-click="chatPageHeader.popover.show($event)">
 		<i class='icon ion-android-more-vertical'></i>
 	</button> -->
-</ion-header-bar>
+    </div>
+</div>

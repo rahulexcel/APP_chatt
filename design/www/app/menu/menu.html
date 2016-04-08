@@ -3,14 +3,29 @@
     <ion-nav-bar class="bar-stable">
       <ion-nav-back-button>
       </ion-nav-back-button>
-      <ion-nav-buttons side="right">
+<!--      <ion-nav-buttons side="secondary">
         <button class="button button-icon ion-android-more-vertical" ng-click="menu.popover.show($event)">
         </button>
-      </ion-nav-buttons>
+      </ion-nav-buttons>-->
     </ion-nav-bar>
     <ion-nav-view name="menuContent"></ion-nav-view>
   </ion-side-menu-content>
 </ion-side-menus>
+
+<div class="tabs tabs-icon-top" id="background" ng-class="{'myhide':show==true}">
+    <a class="tab-item" ng-class="{'act':menu.chattab==true}" ng-click="menu.footer('chattab')" href="#/app/chats">
+        <i class="icon ion-chatbubble tabs-icon-color"></i> Chats
+    </a>
+    <a class="tab-item" nav-direction="swap" ng-class="{'act':menu.group==true}" ng-click="menu.search('app.publicChats')">
+        <i class="icon ion-person-stalker tabs-icon-color"></i> Rooms
+    </a>
+    <a class="tab-item" nav-direction="swap" ng-class="{'act':menu.searchb==true}" ng-click="menu.search('app.contacts')">
+        <i class="icon ion-person tabs-icon-color"></i> Search
+    </a>
+    <a class="tab-item" nav-direction="swap" ng-class="{'act':menu.setting==true}" ng-click="menu.footer('setting')" href="#/app/setting">
+        <i class="icon ion-android-settings tabs-icon-color"></i> Settings
+    </a>
+</div>
 <script id="templates/popover.html" type="text/ng-template">
   <ion-popover-view>
     <ion-content scroll="false">
