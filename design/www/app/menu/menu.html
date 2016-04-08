@@ -13,7 +13,7 @@
 </ion-side-menus>
 
 <div class="tabs tabs-icon-top" id="background" ng-class="{'myhide':show==true}">
-    <a class="tab-item" ng-class="{'act':menu.chattab==true}" ng-click="menu.footer('chattab')" href="#/app/chats">
+    <a class="tab-item" ng-class="{'act':menu.chattab==true}"  href="#/app/chats">
         <i class="icon ion-chatbubble tabs-icon-color"></i> Chats
     </a>
     <a class="tab-item" nav-direction="swap" ng-class="{'act':menu.group==true}" ng-click="menu.search('app.publicChats')">
@@ -22,7 +22,7 @@
     <a class="tab-item" nav-direction="swap" ng-class="{'act':menu.searchb==true}" ng-click="menu.search('app.contacts')">
         <i class="icon ion-person tabs-icon-color"></i> Search
     </a>
-    <a class="tab-item" nav-direction="swap" ng-class="{'act':menu.setting==true}" ng-click="menu.footer('setting')" href="#/app/setting">
+    <a class="tab-item" nav-direction="swap" ng-class="{'act':menu.setting==true}"  href="#/app/setting">
         <i class="icon ion-android-settings tabs-icon-color"></i> Settings
     </a>
 </div>
