@@ -10,6 +10,7 @@
          var userData = timeStorage.get('userData');
          self.user_id = userData.data.user_id;
          self.user_name = userData.data.name;
+        
          $scope.$on('newRoomMessage', function (event, response) {
             if(response.data.room_id == $stateParams.roomId){
                 socketService.update_message_status_room_open(response.data.message_id, $stateParams.roomId);
@@ -58,6 +59,7 @@
          });
          sqliteService.getMessageDataFromDB($stateParams.roomId).then(function(response){
             self.displayChatMessages = response;
+           
             $ionicScrollDelegate.scrollBottom(false);
          });
          roomOpenApi();

@@ -12,7 +12,7 @@
    <input type="text" ng-class="contacts.isSearchOpen ? 'search-box-open' : 'search-box-close'">
    </p>
 </ion-header-bar>
-   <ion-content scroll="true">
+   <ion-content scroll="true" class="has-footer">
       <div class="list">
          <div class="user-container" ng-repeat="contact in contacts.displaycontacts">
             <a class="item item-avatar hover item-icon-right" ng-click="contacts.openUserProfile(contact, $index)">
