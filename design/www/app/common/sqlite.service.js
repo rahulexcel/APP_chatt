@@ -27,7 +27,7 @@
                  });
                  dbobj.transaction(populateDB, error, success);
                  function populateDB(tx) {
-                     tx.executeSql('INSERT INTO messages(message, message_status, user_id, user_name,user_profile_image, roomId, messageTime) VALUES ("' + message + '","' + message_status + '","' + user_id + '","' + user_name + '", "' + user_profile_image + '", "' + roomId + '", "'+ messageTime +'")',[],function(tx, results){
+                     tx.executeSql('INSERT INTO messages(message, message_status, user_id, user_name,user_profile_image, roomId, messageTime, message_type) VALUES ("' + message + '","' + message_status + '","' + user_id + '","' + user_name + '", "' + user_profile_image + '", "' + roomId + '", "'+ messageTime +'", "text")',[],function(tx, results){
                         q.resolve(results.insertId);
                      });
                  }
@@ -70,13 +70,13 @@
                      console.log("successfully updated to SEEN!");
                  }
              },
-             service.gotNewRoomMessage = function(message, message_id, message_status, message_time, user_name, user_profile_image, room_id) {
+             service.gotNewRoomMessage = function(message, message_id, message_status, message_time, user_name, user_profile_image, room_id, message_type) {
                 var dbobj = window.sqlitePlugin.openDatabase({
                      name: "chattappDB"
                  });
                  dbobj.transaction(populateDB, error, success);
                  function populateDB(tx) {
-                     tx.executeSql('INSERT INTO messages(message, message_status, message_id, user_name,user_profile_image, roomId, messageTime) VALUES ("' + message + '","' + message_status + '","' + message_id + '","' + user_name + '", "' + user_profile_image + '", "' + room_id + '", "' + message_time + '")',[],function(tx, results){
+                     tx.executeSql('INSERT INTO messages(message, message_status, message_id, user_name,user_profile_image, roomId, messageTime, message_type) VALUES ("' + message + '","' + message_status + '","' + message_id + '","' + user_name + '", "' + user_profile_image + '", "' + room_id + '", "' + message_time + '", "' + message_type +'")',[],function(tx, results){
                         // console.log(results.insertId);
                      });
                  }
@@ -121,7 +121,7 @@
                  });
                  dbobj.transaction(populateDB, error, success);
                  function populateDB(tx) {
-                     tx.executeSql("select * from messages WHERE roomId= '"+roomId+"' order by id DESC limit 20;",[],function(tx, results){
+                     tx.executeSql("select * from messages WHERE roomId= '"+roomId+"' order by id DESC;",[],function(tx, results){
                         var roomMessages = [];
                         for (var i = 0; i < results.rows.length; i++) {
                                  var newData = {};
@@ -133,6 +133,7 @@
                                  newData.user_id = results.rows.item(i).user_id;
                                  newData.image = results.rows.item(i).user_profile_image;
                                  newData.message_status = results.rows.item(i).message_status;
+                                 newData.message_type = results.rows.item(i).message_type;
                                  roomMessages.push(newData);
                             }
                         q.resolve(roomMessages);
@@ -157,7 +158,7 @@
                         var userData = timeStorage.get('userData');
                         var accessToken = userData.data.access_token;
                         for (var i = 0; i < results.rows.length; i++) {
-                            socket.emit('room_message', results.rows.item(i).id, accessToken, results.rows.item(i).roomId, results.rows.item(i).message, _.now());
+                            socket.emit('APP_SOCKET_EMIT', 'room_message', { msg_local_id: results.rows.item(i).id, accessToken:  accessToken, room_id: results.rows.item(i).roomId, message_type:'text', message:results.rows.item(i).message, currentTimestamp: results.rows.item(i).messageTime});
                             service.updateMessageStatusToSentWhenAppComesOnline(results.rows.item(i).id);
                             }
                      });

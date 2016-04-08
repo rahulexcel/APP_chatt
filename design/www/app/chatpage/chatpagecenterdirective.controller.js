@@ -12,7 +12,6 @@
          self.user_name = userData.data.name;
          $scope.$on('newRoomMessage', function (event, response) {
             if(response.data.room_id == $stateParams.roomId){
-                console.log(response);
                 socketService.update_message_status_room_open(response.data.message_id, $stateParams.roomId);
                 self.displayChatMessages.push({
                      "image": response.data.profile_image,
@@ -20,6 +19,7 @@
                      "messageTime": moment.unix(response.data.message_time).tz(timeZoneService.getTimeZone()).format("hh:mm a"),
                      "name": response.data.name,
                      "timeStamp": response.data.message_time,
+                     "message_type": response.data.message_type,
                  });
                 $scope.$evalAsync();
                 $ionicScrollDelegate.scrollBottom(false);
@@ -51,7 +51,7 @@
             $scope.$evalAsync();
          });
          $scope.$on('now_device_is_online', function (event, response) {
-            socket.emit('room_open', $stateParams.roomId);
+            socket.emit('APP_SOCKET_EMIT', 'room_open', { accessToken:  userData.data.access_token, room_id: $stateParams.roomId, currentTimestamp: _.now() });
             $timeout(function() {
                 roomOpenApi();
             }, 3000);
@@ -94,10 +94,6 @@
             });
             query.$promise.then(function(data) {
                 doRefreshPageValue++;
-                var oldData = chatpageService.oldMessages(data.data.messages);
-                for(var i = oldData.length-1; i >= 0; i--) {
-                    self.displayChatMessages.unshift(oldData[i]);
-                }
                 $scope.$broadcast('scroll.refreshComplete');
             });
          }

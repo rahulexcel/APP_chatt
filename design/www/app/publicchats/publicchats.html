@@ -1,5 +1,5 @@
-<ion-view view-title="Groups" id="background" hide-back-button="true">
-    <ion-content>
+<ion-view view-title="Rooms" id="background" hide-back-button="true">
+    <ion-content class="has-footer">
         <div class="list" id="chats">
             <div class="user-container" ng-click="publicChats.clickOnRoom(publicChat, $index)" ng-repeat="publicChat in publicChats.displayPublicChat">
                 <a class="item item-avatar hover">
@@ -9,25 +9,25 @@
             </div>
         </div>
     </ion-content>
-    <ion-footer-bar class="bar-stable">
+<!--    <ion-footer-bar class="bar-stable">
         <div class="md-list-item-left circle green add-public-chat" ng-click="modal.show()">
             <i class="ion-plus-round i-24"></i>
         </div>
         <div class="tabs tabs-icon-top" id="background">
-            <a class="tab-item" href="#/app/chats">
+            <a class="tab-item" nav-direction="swap" href="#/app/chats">
                 <i class="icon ion-chatbubble tabs-icon-color"></i> Chats
             </a>
-            <a class="tab-item active" ng-click="search('app.publicChats')">
+            <a class="tab-item active" nav-direction="swap" ng-click="search('app.publicChats')">
                 <i class="icon ion-person-stalker tabs-icon-color"></i> Groups
             </a>
-            <a class="tab-item" ng-click="search('app.contacts')">
+            <a class="tab-item" nav-direction="swap" ng-click="search('app.contacts')">
                 <i class="icon ion-person tabs-icon-color"></i> Search
             </a>
-            <a class="tab-item" href="#/app/setting">
+            <a class="tab-item" nav-direction="swap" href="#/app/setting">
                 <i class="icon ion-android-settings tabs-icon-color"></i> Settings
             </a>
         </div>
-    </ion-fotter-bar>
+    </ion-fotter-bar>-->
 </ion-view>
 <script id="modal.html" type="text/ng-template">
     <div class="modal">

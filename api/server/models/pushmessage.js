@@ -75,6 +75,20 @@ module.exports = function (Pushmessage) {
             });
             callback( message );            
         }
+        else if( type == 'remove_public_room_member'){
+            var message = new gcm.Message({
+                priority: 'high',
+                data: {
+                    room_id: info.room_id
+                },
+                notification: {
+                    title: info.name,
+                    icon: info.profile_image,
+                    body: 'You are removed from room ' + info.room_id
+                }
+            });
+            callback( message );            
+        }
         else{
             callback( false);
         }
@@ -84,8 +98,9 @@ module.exports = function (Pushmessage) {
     //to insert a new info in push messagetable which will be used as for push message
     Pushmessage.create_push_message = function ( type, tokens, message_info, callback ) {
         var valid_type = [
-            'room_message',
-            'private_room_created'
+            'room_message', // when user get a message and is not seen at the time of push message
+            'private_room_created', // when user A create a private message with user B,  push message will be sent to user B
+            'remove_public_room_member' // when a user is removed from public group by admin, push message will be sent to removed user
         ];
         if( valid_type.indexOf(type) == -1 ){
             callback(null, 0, 'Invalid type', {});
@@ -168,7 +183,21 @@ module.exports = function (Pushmessage) {
                         }else{
                             result = results[0];
                             if( result.message_status == 'seen' ){
-                                console.log('seen ho gya hai');
+                                Pushmessage.update({
+                                    _id : new ObjectID( pm_mongo_id )
+                                },{
+                                    'STATUS_push_message': 1*1,
+                                    'STATUS_response_push_message' : 'Message is already seen',
+                                    'processed_on' : UTIL.currentTimestamp(),
+                                    'processed_on_date_time' : UTIL.currentDateTimeDay()
+                                },function (err, result2) {
+                                    if (err) {
+                                        Pushmessage.start_pushing( DATA, callback );
+                                    } else {
+                                        Pushmessage.start_pushing( DATA, callback );
+                                    }
+                                });
+                                
                             }else{
                                 pm_data_info =  pm_data.message_info;
                                 pm_data_tokens = pm_data.tokens;
@@ -199,7 +228,7 @@ module.exports = function (Pushmessage) {
                     }
                 });
             }
-            else if( pm_type == 'private_room_created'){
+            else if( pm_type == 'private_room_created' || pm_type == 'remove_public_room_member'){
                 pm_data_info =  pm_data.message_info;
                 pm_data_tokens = pm_data.tokens;
                 Pushmessage.get_push_message_structure( pm_type, pm_data_info, function( gcm_message ){
@@ -239,7 +268,7 @@ module.exports = function (Pushmessage) {
             "where" : {
                 'STATUS_push_message' : 0*1,
             },
-            "limit" : 10
+            "limit" : 5
         },function (err, results) {
             if( err ){
                 console.log( err );

@@ -1,19 +1,19 @@
-<ion-view view-title="CHATS" id="background" hide-back-button="true">
-    <ion-content>
+<ion-view view-title="CHATS" id="background" hide-back-button="true" >
+    <ion-content class="has-footer">
         <div class="list" id="chats">
             <h4 ng-hide="chats.displayChats.length > 0" class="text-center">'No Chats Yet!'</h4>
             <div class="user-container" ng-repeat="chat in chats.displayChats">
                 <a class="item item-avatar hover" ng-click="chats.roomClick(chat)">
                     <img class="avatar" ng-src="{{chat.user_data.profile_image}}">
                     <i class="fa fa-circle user-status"></i>
-                    <h3>{{chat.user_data.name}} <i class="lastSeen">{{chat.user_data.roomType}}</i></h3>
+                    <h3>{{chat.user_data.name}}</h3>
                     <span class="time lastSeen">{{chat.user_data.last_seen}}</span>
                     <p>{{chat.message}}</p>
                 </a>
             </div>
         </div>
     </ion-content>
-    <ion-footer-bar class="bar-stable">
+<!--    <ion-footer-bar class="bar-stable">
       <chats-Footer></chats-Footer>
-    </ion-fotter-bar>
+    </ion-fotter-bar>-->
 </ion-view>

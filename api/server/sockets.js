@@ -45,6 +45,50 @@ module.exports.listen = function(app){
             callback( response );
         })
     }
+    function FN_remove_public_room_member( accessToken, room_id, user_id, currentTimestamp, callback ){
+        Room.remove_public_room_member( accessToken, room_id, user_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            var response = {
+                'status' : res_status,
+                'message' : res_message,
+                'data' : res_data
+            };
+            callback( response );
+        })
+    }
+    function FN_room_message( msg_local_id, accessToken, room_id, message_type, message, currentTimestamp, callback ){
+        Room.room_message( msg_local_id, accessToken, room_id, message_type, message, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            var broadcast_data = {};
+            var user_data = {};
+            if( res_status == 1 ){
+                var broadcast_data = {
+                    'room_id' : room_id,
+                    'message_id' : res_data.message_id,
+                    'message_status' : res_data.message_status,
+                    'name' : res_data.name,
+                    'profile_image' : res_data.profile_image,
+                    'message_type' : res_data.message.type,
+                    'message_body' : res_data.message.body,
+                    'message_time' : res_data.message_time,
+                };
+                var user_data = {
+                    'msg_local_id' : res_data.msg_local_id,
+                    'room_id' : room_id,
+                    'message_id' : res_data.message_id,
+                    'message_status' : res_data.message_status,
+                    'message_time' : res_data.message_time,
+                };
+            }
+            var response = {
+                'status' : res_status,
+                'message' : res_message,
+                'data' : {
+                    'broadcast_data' : broadcast_data,
+                    'user_data' : user_data
+                }
+            };
+            callback( response );
+        })
+    }
     
     
     
@@ -90,38 +134,6 @@ module.exports.listen = function(app){
             }
         });
         
-        socket.on('room_message', function( msg_local_id, accessToken, room_id, message, currentTimestamp ){
-            console.log('message: ' + message);
-            Room.room_message( msg_local_id, accessToken, room_id, message, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
-                if( res_status == 1 ){
-                    var broadcast_data = {
-                        'room_id' : room_id,
-                        'message_id' : res_data.message_id,
-                        'message_status' : res_data.message_status,
-                        'name' : res_data.name,
-                        'profile_image' : res_data.profile_image,
-                        'message_type' : res_data.message.type,
-                        'message_body' : res_data.message.body,
-                        'message_time' : res_data.message_time,
-                    };
-                    console.log( broadcast_data );
-                    // will be available on other users of room
-                    socket.to( room_id ).emit( 'new_room_message', broadcast_data );
-                    
-                    var user_data = {
-                        'msg_local_id' : res_data.msg_local_id,
-                        'room_id' : room_id,
-                        'message_id' : res_data.message_id,
-                        'message_status' : res_data.message_status,
-                        'message_time' : res_data.message_time,
-                    };
-                    
-                    // will have status of message sent by user
-                    socket.emit( 'sent_message_response', user_data );
-                }
-            })
-        });
-        
         //when room users view a message, update message_status to seen
         socket.on('update_message_status', function(accessToken, room_id, message_id, status, currentTimestamp ){
             Room.update_message_status( accessToken, room_id, message_id, status, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
@@ -164,7 +176,31 @@ module.exports.listen = function(app){
         
         //sockets events ( trying to create generic )
         socket.on('APP_SOCKET_EMIT',function( type, info ){
-            if( type == 'leave_public_group' ){
+            if( type == 'room_message' ){
+                var msg_local_id = info.msg_local_id;
+                var accessToken = info.accessToken;
+                var room_id = info.room_id;
+                var message_type = info.message_type;
+                var message = info.message;
+                var currentTimestamp = info.currentTimestamp;
+                FN_room_message( msg_local_id, accessToken, room_id, message_type, message, currentTimestamp, function( response ){
+                    if( response.status == 1 ){
+                        // will be available on other users of room
+                        var d1 = {
+                            type : 'alert',
+                            data : response.data.broadcast_data
+                        }
+                        socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT','new_room_message', d1 );
+                        // will have status of message sent by user
+                        var d2 = {
+                            type : 'alert',
+                            data : response.data.user_data
+                        }
+                        socket.emit( 'RESPONSE_APP_SOCKET_EMIT','sent_message_response', d2 );
+                    }
+                });
+            }
+            else if( type == 'leave_public_group' ){
                 var accessToken = info.accessToken;
                 var room_id = info.room_id;
                 var currentTimestamp = info.currentTimestamp;
@@ -174,7 +210,21 @@ module.exports.listen = function(app){
                         data : response
                     }
                     socket.emit( 'RESPONSE_APP_SOCKET_EMIT', 'leave_public_group', d );
-                    socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT', 'left_public_group',d ); // this is for others users to show msg if they are online they will get this
+                    //socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT', 'left_public_group',d ); // this is for others users to show msg if they are online they will get this
+                });
+            }
+            else if( type == 'remove_public_room_member' ){
+                var accessToken = info.accessToken;
+                var room_id = info.room_id;
+                var user_id = info.user_id;
+                var currentTimestamp = info.currentTimestamp;
+                FN_remove_public_room_member( accessToken, room_id, user_id, currentTimestamp, function( response ){
+                    var d = {
+                        type : 'alert',
+                        data : response
+                    }
+                    socket.emit( 'RESPONSE_APP_SOCKET_EMIT', 'remove_public_room_member', d ); // to the admin who removed the message
+                    //socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT', 'remove_public_room_member',d ); // this is for others users to show msg if they are online they will get this
                 });
             }
         });

@@ -14,7 +14,6 @@
             if(self.message == ''){
                 console.log('empty');
             } else{
-                socket.emit('room_open', $stateParams.roomId);
                 var currentTimeStamp = _.now();
                 sqliteService.saveMessageInDb(self.message, 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId){
                     if(timeStorage.get('network')){

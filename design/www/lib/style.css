@@ -283,6 +283,46 @@ text-decoration: none;
 .chatpage-header p span{
 	font-size: 10px;
 }
+.alert-message{
+	display: block!important;
+	clear: both!important;
+	color: red!important;
+	background-color: #fff!important;
+	width: 100%!important;
+	margin: 0px 0px 10px 0px!important;
+	padding: 0px!important;
+	text-align: center!important;
+}
+.alert-message button{
+	display: none!important;
+}
+.alert-message img{
+	display: none!important;
+}
+.alert-message div.bubble-blue{
+	text-align: center!important;
+	background-color: #fff!important;
+}
+.alert-message div.bubble-blue p{
+	color: #A9A9A9;
+}
+.alert-message div.bubble-yellow p{
+	color: #A9A9A9;
+	font-style: italic!important;
+}
+.alert-message div.bubble-blue::before{
+	display: none!important;
+}
+.alert-message div.bubble-yellow::before{
+	display: none!important;
+}
+.alert-message div p.chat-time{
+	display: none!important;
+}
+.alert-message div.bubble-yellow{
+	text-align: center!important;
+	background-color: #fff!important;
+}
 .left-chat{
 	float:left; 
 	clear:both; 
@@ -546,6 +586,56 @@ a.active{
 .chat-page-list{
 	padding-top:10px;
 }
+.infoModel-button .chatPageheader{
+	position: absolute!important;
+	max-width: 39px!important;
+}
+.trash-icon{
+	position: absolute;
+	right: 8px;
+	top: 16px;
+	font-size: 30px!important;
+	color: #ff3232!important;
+}
+.infoModel-spinner{
+	font-size: 50px;
+	color: #fff;
+	margin-top: 60%!important;
+}
+
+.platform-android .action-sheet .action-sheet-title,
+.platform-android .action-sheet .button{
+	text-align: center!important;
+	text-align:-webkit-center!important;
+	display: block!important;
+}
+.platform-android .action-sheet-cancel {
+	display: block!important;
+	text-align: center!important;
+ }
+.platform-android .action-sheet-has-icons .button {
+padding-left: 56px; }
+.delete-icon-rotate {
+    position: absolute;
+    top: 18%;
+    left: 90%;
+    -webkit-animation:spin 0.8s linear infinite;
+    -moz-animation:spin 0.8s linear infinite;
+    animation:spin 0.8s linear infinite;
+}
+@-moz-keyframes spin {
+  50% { -webkit-transform: rotate(30deg); transform:rotate(30deg); } 
+ 100% { -webkit-transform: rotate(-30deg); transform:rotate(-30deg); } 
+}
+@-webkit-keyframes spin {
+ 50% { -webkit-transform: rotate(30deg); transform:rotate(30deg); } 
+ 100% { -webkit-transform: rotate(-30deg); transform:rotate(-30deg); }  
+}
+@keyframes spin {
+ 50% { -webkit-transform: rotate(30deg); transform:rotate(30deg); } 
+ 100% { -webkit-transform: rotate(-30deg); transform:rotate(-30deg); } 
+}
+
 @media all and (max-width: 1024px) and (min-width: 768px) {
 	.search-box-open{
 		width: 90%;
@@ -586,4 +676,27 @@ a.active{
 		width: 81%;
 	}
 }
-
+.userin{
+    width:350px;
+     position:absolute;
+    top:4px;
+    left:32px;
+}
+.imgCircle {
+    float: left !important;
+    margin-right: 10px !important;
+    color:#fff !important;
+}
+p.button.button-clear.fontC{
+    color:#fff !important;
+}
+button.button.back-button.buttons.button-clear.header-item.mybt {
+    margin-left: 5px;
+}
+.act{
+    color:#fff;
+    opacity:1;
+}
+.myhide{
+    display:none;
+}
