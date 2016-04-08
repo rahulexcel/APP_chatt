@@ -89,12 +89,27 @@ module.exports.listen = function(app){
             callback( response );
         })
     }
-    
+    function FN_add_socket_to_room_and_user( info, callback ){
+        var accessToken = info.accessToken;
+        var room_id = info.room_id; 
+        var socket_id = info.socket_id;
+        
+        Room.FN_add_socket_to_room_and_user( info, function( ignore_param, res_status, res_message, res_data ){
+            response = {
+                status : res_status,
+                message : res_message,
+                data : res_data
+            }
+            callback( response );
+        })
+    }
     
     
     io = socketio.listen(app);
     io.on('connection', function(socket){
-        console.log('a user connected');
+        console.log('----------------------------------------');
+        console.log('App is opened somewhere in this world !!');
+        console.log('----------------------------------------');
         
         socket.on( 'create_room', function( accessToken, room_type, chat_with, room_name, room_description, currentTimestamp ){
             create_room( accessToken, room_type, chat_with, room_name, room_description, currentTimestamp, function( response ){
@@ -111,27 +126,6 @@ module.exports.listen = function(app){
             list_my_rooms( accessToken, currentTimestamp, function( response ){
                 socket.emit( 'show_my_rooms', response );
             });
-        });
-        
-        //room_open means whenever a room is open in app/ will also be called when a room is created.
-        socket.on('room_open', function( room_id ){
-            console.log(' A Room is opened with id :  '+ room_id );
-            var join_room = true;
-            if( typeof io.sockets.adapter.rooms[room_id] != 'undefined' ){
-                if( typeof io.sockets.adapter.rooms[room_id].sockets != 'undefined'){
-                    var exist_sockets = io.sockets.adapter.rooms[room_id].sockets;
-                    var user_socket_id = socket.id;
-                    for( var k in exist_sockets ){
-                        if( k == user_socket_id ){
-                            join_room = false;
-                        }
-                    }
-                }
-            }
-            if( join_room == true ){
-                console.log( '--- Room is in Socket JOIN');
-                socket.join( room_id );
-            }
         });
         
         //when room users view a message, update message_status to seen
@@ -176,7 +170,42 @@ module.exports.listen = function(app){
         
         //sockets events ( trying to create generic )
         socket.on('APP_SOCKET_EMIT',function( type, info ){
-            if( type == 'room_message' ){
+            //whenever a room is open 'room_open' will be emit on mobile app.
+            if( type == 'room_open' ){
+                console.log('----------------------------------------');
+                var accessToken = info.accessToken;
+                var room_id = info.room_id;
+                var currentTimestamp = info.currentTimestamp;
+                console.log( 'SOCKET CALL :: room_open :: A Room is opened with id : '+ room_id );
+                var join_room = true;
+                if( typeof io.sockets.adapter.rooms[room_id] != 'undefined' ){
+                    if( typeof io.sockets.adapter.rooms[room_id].sockets != 'undefined'){
+                        var exist_sockets = io.sockets.adapter.rooms[room_id].sockets;
+                        var user_socket_id = socket.id;
+                        for( var k in exist_sockets ){
+                            if( k == user_socket_id ){
+                                join_room = false;
+                            }
+                        }
+                    }
+                }
+                if( join_room == true ){
+                    socket.join( room_id );
+                    console.log( 'SOCKET CALL :: room_open :: Socket ID is assign to room : '+ room_id );
+                    var add_socket_info = {
+                        accessToken : accessToken,
+                        room_id : room_id,
+                        socket_id : socket.id
+                    }
+                    FN_add_socket_to_room_and_user( add_socket_info, function( response ){
+                        console.log( 'SOCKET CALL :: room_open :: Socket ID update to room and user in DB : '+ response.message );
+                        console.log('----------------------------------------');
+                    });
+                }else{
+                    console.log('----------------------------------------');
+                }
+            }
+            else if( type == 'room_message' ){
                 var msg_local_id = info.msg_local_id;
                 var accessToken = info.accessToken;
                 var room_id = info.room_id;
@@ -210,7 +239,38 @@ module.exports.listen = function(app){
                         data : response
                     }
                     socket.emit( 'RESPONSE_APP_SOCKET_EMIT', 'leave_public_group', d );
-                    //socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT', 'left_public_group',d ); // this is for others users to show msg if they are online they will get this
+                    //-start--send a room message, message_type=room_alert_message that user left this group---------
+                    if( response.status == 1 ){
+                        var left_user_info = response.data.left_user_info;
+                        var left_user_info_name = left_user_info.name;
+                        var msg_local_id = '';
+                        var message_type = 'room_alert_message';
+                        var message = left_user_info_name + ' left the room';
+                        FN_room_message( msg_local_id, accessToken, room_id, message_type, message, currentTimestamp, function( response ){
+                            if( response.status == 1 ){
+                                console.log( message_type +' :: '+ message );
+                                // will be available on other users of room
+                                var d1 = {
+                                    type : 'alert',
+                                    data : response.data.broadcast_data
+                                }
+                                socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT','new_room_message', d1 );
+                            }
+                        });
+                        //--to emit from client side so that scoket can be removed  from room
+                        var remove_socket_from_room_data = {
+                            user_id : left_user_info.user_id,
+                            room_id : room_id
+                        };
+                        socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT','remove_socket_from_room', remove_socket_from_room_data );
+                        //--remove token
+                        if( typeof io.sockets.adapter.rooms[room_id] != 'undefined' ){
+                            if( typeof io.sockets.adapter.rooms[room_id].sockets != 'undefined'){
+                                socket.leave( room_id );
+                            }
+                        }
+                    }
+                    //-start--send a room message, message_type=room_alert_message that user left this group---------
                 });
             }
             else if( type == 'remove_public_room_member' ){
@@ -224,9 +284,48 @@ module.exports.listen = function(app){
                         data : response
                     }
                     socket.emit( 'RESPONSE_APP_SOCKET_EMIT', 'remove_public_room_member', d ); // to the admin who removed the message
-                    //socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT', 'remove_public_room_member',d ); // this is for others users to show msg if they are online they will get this
+                    //-start--send a room message, message_type=room_alert_message that admin remove the user from group---------
+                    if( response.status == 1 ){
+                        var left_user_info = response.data.left_user_info;
+                        var left_user_info_name = left_user_info.name;
+                        var msg_local_id = '';
+                        var message_type = 'room_alert_message';
+                        var message = 'Admin removed '+ left_user_info_name + ' from Room';
+                        FN_room_message( msg_local_id, accessToken, room_id, message_type, message, currentTimestamp, function( response ){
+                            if( response.status == 1 ){
+                                console.log( message_type +' :: '+ message );
+                                // will be available on other users of room
+                                var d1 = {
+                                    type : 'alert',
+                                    data : response.data.broadcast_data
+                                }
+                                socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT','new_room_message', d1 );
+                            }
+                        });
+                        //--to emit from client side so that scoket can be removed  from room
+                        var remove_socket_from_room_data = {
+                            user_id : left_user_info.user_id,
+                            room_id : room_id
+                        };
+                        console.log( 'remove_socket_from_room_data 2' );
+                        console.log( remove_socket_from_room_data);
+                        socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT','remove_socket_from_room', remove_socket_from_room_data );
+                    }
+                    //-start--send a room message, message_type=room_alert_message that admin remove the user from group---------
                 });
             }
+            else if( type == 'remove_socket_from_room' ){
+                var user_id = info.user_id;
+                var room_id = info.room_id;
+                console.log( 'SOCKET CALL :: remove_socket_from_room :: user_id - '+ room_id + ' :: room_id - ' + room_id );
+                if( typeof io.sockets.adapter.rooms[room_id] != 'undefined' ){
+                    if( typeof io.sockets.adapter.rooms[room_id].sockets != 'undefined'){
+                        socket.leave( room_id );
+                        console.log( 'SOCKET CALL :: remove_socket_from_room :: user_id - '+ room_id + ' :: room_id - ' + room_id + ' :: REMOVED');
+                    }
+                }
+            }
+            
         });
         
     });

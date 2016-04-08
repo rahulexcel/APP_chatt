@@ -26,6 +26,77 @@ module.exports = function (Room) {
     Room.disableRemoteMethod('__updateById__accessTokens', false);
     //-------------------------------------------------------------
     
+    //--start--ROOM GENERIC function------
+    Room.FN_add_socket_to_room_and_user = function( info, callback ){
+        var User = Room.app.models.User;
+        var accessToken = info.accessToken;
+        var room_id = info.room_id;
+        var socket_id = info.socket_id;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 0, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 0, 'UnAuthorized', {});
+                }else{
+                    var userId = accessToken.userId
+                    User.findById(userId, function (err, userInfo) {
+                        if (err) {
+                            callback(null, 0, 'try again', {});
+                        } else {
+                            if( userInfo == null ){
+                                callback(null, 0, 'User not found', {});
+                            }else{
+                                var check_where = {
+                                    where : {
+                                        '_id' : new ObjectID( room_id ),
+                                        room_users : {'in':[new ObjectID( userId )]}
+                                    }
+                                };
+                                Room.find( check_where, function (err, result) {
+                                    if( err ){
+                                        callback(null, 0, 'try again', {});
+                                    }else{
+                                        if( result.length == 0 ){
+                                            callback(null, 0, 'Room or User not exists', {});
+                                        }else {
+                                            User.update({
+                                                _id : new ObjectID( userId )
+                                            },{
+                                                '$addToSet': {'sockets': socket_id }
+                                            },{ 
+                                                allowExtendedOperators: true 
+                                            },function (err, result2) {
+                                                if (err) {
+                                                    callback(null, 0, 'try again', {});
+                                                } else {
+                                                    Room.update({
+                                                        _id : new ObjectID( room_id )
+                                                    },{
+                                                        '$addToSet': {'sockets': socket_id }
+                                                    },{ 
+                                                        allowExtendedOperators: true 
+                                                    },function (err, result2) {
+                                                        if (err) {
+                                                            callback(null, 0, 'try again', {});
+                                                        } else {
+                                                            callback(null, 1, 'Socket updated for room and user', {});
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    }
+                                })   
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    };
+    //--end--ROOM GENERIC function------
+    
     Room.create_room = function ( accessToken, room_type, chat_with, room_name, room_description, currentTimestamp, callback) {
         var User = Room.app.models.User;
         var Pushmessage = Room.app.models.Pushmessage;
@@ -177,11 +248,18 @@ module.exports = function (Room) {
                             if( typeof userInfo == 'undefined' || userInfo == null ){
                                 callback(null, 0, 'message user not found', {});
                             }else{
-                                var check_where = {
-                                    where : {
+                                if( message_type == 'room_alert_message' ){
+                                    where_check = {
+                                        '_id' : new ObjectID( room_id )
+                                    }
+                                }else{
+                                    where_check = {
                                         room_users : {'in':[new ObjectID( userId )]},
                                         '_id' : new ObjectID( room_id )
-                                    },
+                                    }
+                                }
+                                var check_where = {
+                                    where : where_check,
                                     "include": [{
                                         relation: 'room_users'
                                     }]
@@ -842,12 +920,12 @@ module.exports = function (Room) {
                                 "include": [{
                                     relation: 'room_owner', 
                                     scope: {
-                                        fields: ['name','profile_image','last_seen'],
+                                        fields: ['name','profile_image','last_seen','sockets'],
                                     }
                                 },{
                                     relation: 'room_users', 
                                     scope: {
-                                        fields: ['name','profile_image','last_seen'],
+                                        fields: ['name','profile_image','last_seen','sockets'],
                                     }
                                 }]
                             },function (err, result) {
@@ -859,12 +937,16 @@ module.exports = function (Room) {
                                         result = result.toJSON();
                                         room_owner = result.room_owner;
                                         room_users = result.room_users;
+                                        room_sockets = user_sockets = [];
+                                        room_sockets = result.sockets;
                                         if( room_owner.id.toString() == access_token_userid.toString() ){
                                             callback( null, 0, "Admin can't leave group", data );
                                         }else{
+                                            var sockets_to_remove = [];
                                             left_user_info = {};
                                             for( var k in room_users ){
                                                 if( room_users[k].id.toString() == access_token_userid.toString() ){
+                                                    user_sockets = room_users[k].sockets;
                                                     left_user_info = {
                                                         user_id : room_users[k].id,
                                                         name : room_users[k].name,
@@ -872,10 +954,20 @@ module.exports = function (Room) {
                                                     }
                                                 }
                                             }
+                                            if( room_sockets.length > 0 && user_sockets.length > 0 ){
+                                                for( var k in room_sockets ){
+                                                    if( user_sockets.indexOf(room_sockets[k]) != -1 ){
+                                                        sockets_to_remove.push( room_sockets[k] );
+                                                    }
+                                                }
+                                            }
                                             Room.update({
                                                 id : new ObjectID( room_id ),
                                             },{
-                                                '$pull': {'room_users': userId }
+                                                '$pull': {
+                                                    'room_users': userId,
+                                                    'sockets' : { '$in' : sockets_to_remove }
+                                                }
                                             },{ 
                                                 allowExtendedOperators: true 
                                             },function (err, result2) {
@@ -884,9 +976,22 @@ module.exports = function (Room) {
                                                 } else {
                                                     var data = {
                                                         room_id : room_id,
-                                                        left_user_info : left_user_info
+                                                        left_user_info : left_user_info,
+                                                        sockets_to_remove : sockets_to_remove
                                                     }
                                                     callback(null, 1, 'Public room left', data );
+                                                    //------------------
+                                                    User.update({
+                                                        id : new ObjectID( access_token_userid ),
+                                                    },{
+                                                        '$pull': {'sockets': { '$in' : sockets_to_remove } }
+                                                    },{ 
+                                                        allowExtendedOperators: true 
+                                                    },function (err, result2) {
+                                                        if (err) {
+                                                        } else {
+                                                        }
+                                                    });
                                                 }
                                             });
                                         }
@@ -1002,18 +1107,18 @@ module.exports = function (Room) {
                                                             }
                                                             callback(null, 1, 'User removed from room', data );
                                                             //-start-send push message to removed user 
-                                                            User.FN_get_user_by_id( user_id, function( u_status, u_message, u_data ){
-                                                                if( u_status == 1 ){
-                                                                    var TOKENS = [ u_data.token ];
-                                                                    var push_msg_info = {
-                                                                        name : u_data.name,
-                                                                        profile_image : u_data.profile_image,
-                                                                        room_id : room_id,
-                                                                    }
-                                                                    Pushmessage.create_push_message( 'remove_public_room_member', TOKENS , push_msg_info, function( ignore_param, p_status, p_message, p_data){
-                                                                    })  
-                                                                }
-                                                            })
+//                                                            User.FN_get_user_by_id( user_id, function( u_status, u_message, u_data ){
+//                                                                if( u_status == 1 ){
+//                                                                    var TOKENS = [ u_data.token ];
+//                                                                    var push_msg_info = {
+//                                                                        name : u_data.name,
+//                                                                        profile_image : u_data.profile_image,
+//                                                                        room_id : room_id,
+//                                                                    }
+//                                                                    Pushmessage.create_push_message( 'remove_public_room_member', TOKENS , push_msg_info, function( ignore_param, p_status, p_message, p_data){
+//                                                                    })  
+//                                                                }
+//                                                            })
                                                             //-end-send push message to removed user 
                                                         }
                                                     });
