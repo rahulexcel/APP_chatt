@@ -38,6 +38,13 @@
                             var name = scope.msg.name;
                             var firstLetter = name.charAt(0).toUpperCase();
                          }
+                         // console.log(scope.chatPageHeader);
+                         // if(scope.chatPageHeader.infoUserList){
+                         //    for(var i = 0; i < scope.chatPageHeader.infoUserList.length; i++){
+                         //        var name = scope.chatPageHeader.infoUserList[i].name;
+                         //        var firstLetter = name.charAt(0).toUpperCase();
+                         //    }
+                         // }
                          var colorClass = Math.floor((Math.random() * 10) + 1);
                          element.replaceWith("<button class='no-image circleColor"+colorClass+" "+chatPageClass+"'><i class='i-24 white'>" + firstLetter + "</i><div class='md-ripple-container'></div></button>");
                      }

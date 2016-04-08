@@ -3,8 +3,55 @@
 		<i class='icon ion-ios-arrow-back'></i>
 	</button>
 	<img class='img-circle' ng-src='{{chatPageHeader.image}}' ng-click='chatPageHeader.goBack()'>
-	<p><strong>{{chatPageHeader.name}} </strong><br><span class="lastSeen" ng-hide="chatPageHeader.lastSeen == 'Invalid date'">{{chatPageHeader.lastSeen}}</span></p>
+	<p ng-click="chatPageHeader.openInfo()"><strong>{{chatPageHeader.name}} </strong><br><span class="lastSeen" ng-hide="chatPageHeader.lastSeen == 'Invalid date'">{{chatPageHeader.lastSeen}}</span></p>
 	<!-- <button class='button button-clear pull-right' ng-click="chatPageHeader.popover.show($event)">
 		<i class='icon ion-android-more-vertical'></i>
 	</button> -->
 </ion-header-bar>
+<script id="infoModel.html" type="text/ng-template">
+    <h1 class="text-center infoModel-spinner"><span class="fa fa-spin fa-spinner" ng-show="chatPageHeader.openModelWithSpinner"></span></h1>
+    <div class="modal" ng-hide="chatPageHeader.openModelWithSpinner">
+        <header class="bar bar-header bar-positive">
+          <h1 class="title">{{chatPageHeader.infoName}}</h1>
+          <div class="button btn-xs button-clear" ng-click="infoModel.hide()"><span class="icon ion-close"></span></div>
+        </header>
+        <content has-header="true" padding="true">
+            <div style="width:100%;" class="pad-top-40">
+               <div class="col-md-12 col-sm-12 col-xs-12 no-pad-left-right">
+                   <div class="panel panel-card">
+                       <div class="r-t pos-rlt" md-ink-ripple style="background:url({{chatPageHeader.infoBackground}}) center center; background-size:cover">
+                           <div class="bg-white-overlay r-t">
+                               <div class="text-center"> 
+                                   <a href class="w-xs inline">
+                                       <img id="profileImage" ng-src="{{chatPageHeader.infoImage}}" class="img-circle profile-pic">
+                                   </a>
+                                </div>
+                               <div class="m-b m-t-sm text-center">
+                                   <h4 class="">{{chatPageHeader.infoName}}</h4>
+                                   <p class="">{{chatPageHeader.infoDescription}}</p>
+                                   <p class="lastSeen">Created On: {{chatPageHeader.infoCreatedOn}}</p>
+                               </div>
+                               <div class="text-center">
+                               <a class="btn btn-md btn-danger m-b p-h no-border" ng-if="chatPageHeader.is_room_owner == 1">Delete Group <span class="fa fa-spin fa-spinner" ng-show="chatPageHeader.deleteGroupSpinner"></span></a>
+                               <a class="btn btn-md btn-danger m-b p-h no-border" ng-if="chatPageHeader.is_room_owner == 0" ng-click="chatPageHeader.leaveGroup()">Leave Group <span class="fa fa-spin fa-spinner" ng-show="chatPageHeader.leaveGroupSpinner"></span></a>
+                               </div>
+                               <div class="m-b m-t-sm h4">
+                                   <div class="list" id="chats">
+                                        <div class="user-container" ng-repeat="infoUser in chatPageHeader.infoUserList | orderBy:'-last_seen'">
+                                            <a class="item item-avatar hover infoModel-button">
+                                                <img class="avatar" ng-src="{{infoUser.profile_image}}">
+                                                <h3>{{infoUser.name}}</h3>
+                                                <h3 class="lastSeen">{{infoUser.last_seen}}</h3>
+                                                <p class="pull-right trash-icon" ng-if="chatPageHeader.is_room_owner == 1" ng-click="chatPageHeader.deleteUserFromGroup(infoUser, $index)" ng-class="{'delete-icon-rotate': $index==chatPageHeader.deleteIconRotate}"><i class="fa fa-trash"></i></p>
+                                            </a>
+                                        </div>
+                                    </div>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+            </div>
+        </content>
+    </div>
+</script>

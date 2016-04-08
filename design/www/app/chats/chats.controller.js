@@ -28,7 +28,7 @@
                     socketService.create_room(roomData.user_data.id);
                     $state.go('app.chatpage', {roomId:roomData.room_id});
                 } else{
-                    socket.emit('room_open', roomData.room_id);
+                    socket.emit('APP_SOCKET_EMIT', 'room_open', { accessToken: userData.data.access_token, room_id: roomData.room_id, currentTimestamp: _.now() });
                     $state.go('app.chatpage', {roomId:roomData.room_id});
                 }
              }
