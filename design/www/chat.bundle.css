@@ -97768,6 +97768,7 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
 .chatName {
   margin: -6px 0 0 0;
   font-weight: 900;
+  text-align: left;
 }
 
 .headLast {

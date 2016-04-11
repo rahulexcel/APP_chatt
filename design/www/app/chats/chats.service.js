@@ -19,6 +19,7 @@
                        }
                        room_users.profile_image = roomData[i].show_details_for_list.icon;
                        room_users.name = roomData[i].show_details_for_list.main_text;
+                       room_users.id = roomData[i].show_details_for_list.user_id;
                        newRoomData.user_data = room_users;
                        newRoomData.room_id = roomData[i].id;
                        returnData.push(newRoomData);

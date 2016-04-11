@@ -108,6 +108,9 @@
         $scope.$on('removed_public_room_member', function(event, data) {
             infoApi();
         });
+        $scope.$on('got_user_profile_for_room', function(event, data) {
+            self.lastSeen = moment(parseInt(data.data.data.last_seen)).format("hh:mm a");
+        });
         $ionicModal.fromTemplateUrl('infoModel.html', function($ionicModal) {
             $scope.infoModel = $ionicModal;
         }, {
@@ -117,9 +120,11 @@
             if($ionicHistory.currentView().stateName != 'app.chatpage'){
                 $interval.cancel(getUserProfileForRoomInterval);
             } else{
-                socketService.getUserProfileForRoom($stateParams.roomId, self.id)                
+                if(self.id){
+                    socketService.getUserProfileForRoom($stateParams.roomId, self.id);
+                }
             }
-        }, 6000);
+        }, 60000);
         self.deleteRoom = function(){
             $scope.infoModel.hide();
             var deleteRoomSheet = $ionicActionSheet.show({
