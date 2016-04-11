@@ -1052,12 +1052,12 @@ module.exports = function (Room) {
                                 "include": [{
                                     relation: 'room_owner', 
                                     scope: {
-                                        fields: ['name','profile_image','last_seen'],
+                                        fields: ['name','profile_image','last_seen','sockets'],
                                     }
                                 },{
                                     relation: 'room_users', 
                                     scope: {
-                                        fields: ['name','profile_image','last_seen'],
+                                        fields: ['name','profile_image','last_seen','sockets'],
                                     }
                                 }]
                             },function (err, result) {
@@ -1069,24 +1069,38 @@ module.exports = function (Room) {
                                         result = result.toJSON();
                                         room_owner = result.room_owner;
                                         room_users = result.room_users;
+                                        room_sockets = [];
+                                        user_sockets = [];
+                                        room_sockets = result.sockets;
                                         
                                         if( room_owner.id.toString() == access_token_userid.toString() ){
                                             if( access_token_userid.toString() == user_id.toString() ){
                                                 callback( null, 0, "Admin can't remove", {} );
                                             }else{
+                                                var sockets_to_remove = [];
                                                 var remove_user_info = {};
                                                 var remove_users_exists = false;
                                                 for( var k in room_users ){
                                                     kr = room_users[k];
                                                     if( kr.id.toString() == user_id.toString() ){
+                                                        user_sockets = kr.sockets;
                                                         remove_users_exists = true;
                                                         remove_user_info = {
                                                             user_id : kr.id,
                                                             name : kr.name,
                                                             profile_image : kr.profile_image,
                                                         }
+                                                        
                                                     }
                                                 }
+                                                if( typeof room_sockets != 'undefined' && typeof user_sockets != 'undefined' && room_sockets.length > 0 && user_sockets.length > 0 ){
+                                                    for( var k in room_sockets ){
+                                                        if( user_sockets.indexOf(room_sockets[k]) != -1 ){
+                                                            sockets_to_remove.push( room_sockets[k] );
+                                                        }
+                                                    }
+                                                }
+                                                
                                                 if( remove_users_exists == false ){
                                                     callback( null, 0, "User is not room member", {} );
                                                 }else{
@@ -1094,7 +1108,10 @@ module.exports = function (Room) {
                                                     Room.update({
                                                         id : new ObjectID( room_id ),
                                                     },{
-                                                        '$pull': {'room_users': new ObjectID( user_id ) }
+                                                        '$pull': {
+                                                            'room_users': new ObjectID( user_id ),
+                                                            'sockets' : { '$in' : sockets_to_remove }
+                                                        }
                                                     },{ 
                                                         allowExtendedOperators: true 
                                                     },function (err, result2) {
@@ -1106,20 +1123,18 @@ module.exports = function (Room) {
                                                                 left_user_info : remove_user_info
                                                             }
                                                             callback(null, 1, 'User removed from room', data );
-                                                            //-start-send push message to removed user 
-//                                                            User.FN_get_user_by_id( user_id, function( u_status, u_message, u_data ){
-//                                                                if( u_status == 1 ){
-//                                                                    var TOKENS = [ u_data.token ];
-//                                                                    var push_msg_info = {
-//                                                                        name : u_data.name,
-//                                                                        profile_image : u_data.profile_image,
-//                                                                        room_id : room_id,
-//                                                                    }
-//                                                                    Pushmessage.create_push_message( 'remove_public_room_member', TOKENS , push_msg_info, function( ignore_param, p_status, p_message, p_data){
-//                                                                    })  
-//                                                                }
-//                                                            })
-                                                            //-end-send push message to removed user 
+                                                            //---remove sockets from user---------------
+                                                            User.update({
+                                                                id : new ObjectID( user_id ),
+                                                            },{
+                                                                '$pull': {'sockets': { '$in' : sockets_to_remove } }
+                                                            },{ 
+                                                                allowExtendedOperators: true 
+                                                            },function (err, result2) {
+                                                                if (err) {
+                                                                } else {
+                                                                }
+                                                            });
                                                         }
                                                     });
                                                 }
