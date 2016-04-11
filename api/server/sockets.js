@@ -342,7 +342,7 @@ module.exports.listen = function(app){
                             user_id : user_id,
                             data : response
                         }
-                        socket.emit( 'get_user_profile_for_room', d );
+                        socket.emit( 'RESPONSE_APP_SOCKET_EMIT','get_user_profile_for_room', d );
                     }
                 });
             }

@@ -424,6 +424,7 @@ module.exports = function (Room) {
                                             k1_user_id = k1_user.id;
                                             if( logged_user_id.toString() != k1_user_id.toString() ){
                                                 show_details_for_list = {
+                                                    'user_id' : k1_user.id,
                                                     'icon' : k1_user.profile_image,
                                                     'main_text' : k1_user.name,
                                                     'sub_text' : k1_user.last_seen
