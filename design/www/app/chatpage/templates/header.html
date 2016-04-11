@@ -40,7 +40,7 @@
     <p class="lastSeen">Created On: {{chatPageHeader.infoCreatedOn}}</p>
     </div>
     <div class="text-center">
-    <a class="btn btn-md btn-danger m-b p-h no-border" ng-if="chatPageHeader.is_room_owner == 1">Delete Group <span class="fa fa-spin fa-spinner" ng-show="chatPageHeader.deleteGroupSpinner"></span></a>
+    <a class="btn btn-md btn-danger m-b p-h no-border" ng-if="chatPageHeader.is_room_owner == 1" ng-click="chatPageHeader.deleteRoom()">Delete Room <span class="fa fa-spin fa-spinner" ng-show="chatPageHeader.deleteGroupSpinner"></span></a>
     <a class="btn btn-md btn-danger m-b p-h no-border" ng-if="chatPageHeader.is_room_owner == 0" ng-click="chatPageHeader.leaveGroup()">Leave Group <span class="fa fa-spin fa-spinner" ng-show="chatPageHeader.leaveGroupSpinner"></span></a>
     </div>
     <div class="m-b m-t-sm h4">

@@ -29,6 +29,12 @@
                             socket.emit('APP_SOCKET_EMIT', 'remove_socket_from_room', { user_id: data.user_id, room_id: data.room_id });
                         }
                     }
+                    if(type == 'RESPONSE_get_user_profile_for_room'){
+                        console.log(data);
+                    }
+                    if(type == 'delete_public_room'){
+                        $rootScope.$broadcast('deleted_public_room', { data: data.data });
+                    }
                 });
          socket.on('response_update_message_status', function(data) {
                     var str = data.message_id;
@@ -97,6 +103,19 @@
              service.removeUserFromGroup = function(removingUserData, roomId) {
                 var userData = timeStorage.get('userData');
                 socket.emit('APP_SOCKET_EMIT', 'remove_public_room_member', {  accessToken : userData.data.access_token, room_id: roomId, user_id:removingUserData.id, currentTimestamp : _.now() });
+             },
+             service.getUserProfileForRoom = function(roomId, userId) {
+                var userData = timeStorage.get('userData');
+                // socket.emit('APP_SOCKET_EMIT', 'get_user_profile_for_room', {  accessToken: userData.data.access_token, room_id: roomId, user_id:userId, currentTimestamp: _.now() });
+                // console.log(userId);
+                // console.log(roomId);
+                // console.log(userData.data.access_token);
+             },
+             service.deleteRoom = function(roomId) {
+                var userData = timeStorage.get('userData');
+                socket.emit('APP_SOCKET_EMIT', 'delete_public_room', { accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now() });
+                console.log(roomId);
+                console.log(userData.data.access_token);
              }
          return service;
      };
