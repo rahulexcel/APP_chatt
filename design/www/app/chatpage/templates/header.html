@@ -50,7 +50,7 @@
     <img class="avatar" ng-src="{{infoUser.profile_image}}">
     <h3>{{infoUser.name}}</h3>
     <h3 class="lastSeen">{{infoUser.last_seen}}</h3>
-    <p class="pull-right trash-icon" ng-if="chatPageHeader.is_room_owner == 1" ng-click="chatPageHeader.deleteUserFromGroup(infoUser, $index)" ng-class="{'delete-icon-rotate': $index==chatPageHeader.deleteIconRotate}"><i class="fa fa-trash"></i></p>
+    <p class="pull-right trash-icon" ng-if="chatPageHeader.is_room_owner == 1" ng-hide="infoUser.owner" ng-click="chatPageHeader.deleteUserFromGroup(infoUser, $index)" ng-class="{'delete-icon-rotate': $index==chatPageHeader.deleteIconRotate}"><i class="fa fa-trash"></i></p>
     </a>
     </div>
     </div>
