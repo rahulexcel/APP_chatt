@@ -106,7 +106,10 @@
              },
              service.getUserProfileForRoom = function(roomId, userId) {
                 var userData = timeStorage.get('userData');
-                socket.emit('APP_SOCKET_EMIT', 'get_user_profile_for_room', {  accessToken: userData.data.access_token, room_id: roomId, user_id:userId, currentTimestamp: _.now() });
+                // socket.emit('APP_SOCKET_EMIT', 'get_user_profile_for_room', {  accessToken: userData.data.access_token, room_id: roomId, user_id:userId, currentTimestamp: _.now() });
+                // console.log(userId);
+                // console.log(roomId);
+                // console.log(userData.data.access_token);
              },
              service.deleteRoom = function(roomId) {
                 var userData = timeStorage.get('userData');
