@@ -4,14 +4,14 @@
     angular.module('chattapp')
             .controller('chatPageHeaderDirectiveController', chatPageHeaderDirectiveController);
 
-    function chatPageHeaderDirectiveController($state, timeStorage, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService) {
+    function chatPageHeaderDirectiveController($state, timeStorage, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService) {
         var self = this;
         self.leaveGroupSpinner = false;
         self.deleteGroupSpinner = false;
         var chatWithUserData = timeStorage.get('chatWithUserData');
-        console.log(chatWithUserData);
         self.name = chatWithUserData.name;
         self.image = chatWithUserData.pic;
+        self.id = chatWithUserData.id;
         self.lastSeen = moment(parseInt(chatWithUserData.lastSeen)).format("hh:mm a");
         self.goBack = function() {
             $state.go('app.chats');
@@ -112,6 +112,40 @@
             $scope.infoModel = $ionicModal;
         }, {
             scope: $scope
+        });
+        var getUserProfileForRoomInterval = $interval(function () {
+            if($ionicHistory.currentView().stateName != 'app.chatpage'){
+                $interval.cancel(getUserProfileForRoomInterval);
+            } else{
+                socketService.getUserProfileForRoom($stateParams.roomId, self.id)                
+            }
+        }, 6000);
+        self.deleteRoom = function(){
+            $scope.infoModel.hide();
+            var deleteRoomSheet = $ionicActionSheet.show({
+                buttons: [{
+                        text: '<p class="text-center">Yes</p>'
+                    }],
+                titleText: 'Confirm to delete ' + self.infoName + ' !',
+                cancelText: 'Cancel',
+                cancel: function() {
+                    $scope.infoModel.show();
+                },
+                buttonClicked: function(index) {
+                    if (index == 0) {
+                        self.deleteGroupSpinner = true;
+                        deleteRoomSheet();
+                        socketService.deleteRoom($stateParams.roomId);
+                        $scope.infoModel.show();
+                    }
+                }
+            });
+        }
+        $scope.$on('deleted_public_room', function(event, data) {
+            $scope.infoModel.hide();
+            chatsService.listMyRooms();
+            tostService.notify(data.data.message, 'top');
+            $state.go('app.chats');
         });
     }
 })();
