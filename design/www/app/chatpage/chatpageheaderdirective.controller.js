@@ -85,8 +85,25 @@
             $state.go('app.chats');
         });
         self.deleteUserFromGroup = function(userData, index) {
-            self.deleteIconRotate = index;
-            socketService.removeUserFromGroup(userData, $stateParams.roomId);
+            $scope.infoModel.hide();
+            var deleteUserFromGroupSheet = $ionicActionSheet.show({
+                buttons: [{
+                        text: '<p class="text-center">Yes</p>'
+                    }],
+                titleText: 'Confirm to delete ' + userData.name + ' From ' + self.infoName + ' !',
+                cancelText: 'Cancel',
+                cancel: function() {
+
+                },
+                buttonClicked: function(index) {
+                    if (index == 0) {
+                        deleteUserFromGroupSheet();
+                        $scope.infoModel.show();
+                        self.deleteIconRotate = index;
+                        socketService.removeUserFromGroup(userData, $stateParams.roomId);
+                    }
+                }
+            });
         }
         $scope.$on('removed_public_room_member', function(event, data) {
             infoApi();

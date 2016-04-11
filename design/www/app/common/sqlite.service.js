@@ -103,7 +103,7 @@
                         }
                     }
                     for(var k = 0; k < newmes.length; k++){
-                        service.gotNewRoomMessage(newmes[k].message.body, newmes[k].id, newmes[k].message_status, newmes[k].message_time, newmes[k].message_owner.name, newmes[k].message_owner.profile_image, newmes[k].room_id);
+                        service.gotNewRoomMessage(newmes[k].message.body, newmes[k].id, newmes[k].message_status, newmes[k].message_time, newmes[k].message_owner.name, newmes[k].message_owner.profile_image, newmes[k].room_id, newmes[k].message.type);
                     }
                     for(var x = 0; x < messages.length; x++){
                         if(messages[x].message_status == 'seen'){

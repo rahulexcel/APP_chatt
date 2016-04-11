@@ -96947,6 +96947,10 @@ button.close {
   max-width: 40px;
 }
 
+.userin div button.chatPageheader {
+  min-width: 35px;
+}
+
 .right-chat button.no-image {
   float: right;
   margin-left: 13px;
