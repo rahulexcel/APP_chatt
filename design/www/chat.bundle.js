@@ -17083,8 +17083,25 @@ angular.module('chattapp')
             $state.go('app.chats');
         });
         self.deleteUserFromGroup = function(userData, index) {
-            self.deleteIconRotate = index;
-            socketService.removeUserFromGroup(userData, $stateParams.roomId);
+            $scope.infoModel.hide();
+            var deleteUserFromGroupSheet = $ionicActionSheet.show({
+                buttons: [{
+                        text: '<p class="text-center">Yes</p>'
+                    }],
+                titleText: 'Confirm to delete ' + userData.name + ' From ' + self.infoName + ' !',
+                cancelText: 'Cancel',
+                cancel: function() {
+
+                },
+                buttonClicked: function(index) {
+                    if (index == 0) {
+                        deleteUserFromGroupSheet();
+                        $scope.infoModel.show();
+                        self.deleteIconRotate = index;
+                        socketService.removeUserFromGroup(userData, $stateParams.roomId);
+                    }
+                }
+            });
         }
         $scope.$on('removed_public_room_member', function(event, data) {
             infoApi();
@@ -17662,13 +17679,10 @@ googleLoginService.factory('googleLogin', [
                                 var name = scope.msg.name;
                                 var firstLetter = name.charAt(0).toUpperCase();
                             }
-                            // console.log(scope.chatPageHeader);
-                            // if(scope.chatPageHeader && scope.chatPageHeader.infoUserList){
-                            //    for(var i = 0; i < scope.chatPageHeader.infoUserList.length; i++){
-                            //        var name = scope.chatPageHeader.infoUserList[i].name;
-                            //        var firstLetter = name.charAt(0).toUpperCase();
-                            //    }
-                            // }
+                            if(scope.infoUser){
+                                var name = scope.infoUser.name;
+                                var firstLetter = name.charAt(0).toUpperCase();
+                            }
                             var color = Configurations.color;
                             element.replaceWith("<button style='background:" + color[firstLetter.toLowerCase()] + "' class='no-image " + chatPageClass + "'><i class='i-24 white'>" + firstLetter + "</i><div class='md-ripple-container'></div></button>");
                         }
@@ -18077,7 +18091,7 @@ angular.module('chattapp')
                         }
                     }
                     for(var k = 0; k < newmes.length; k++){
-                        service.gotNewRoomMessage(newmes[k].message.body, newmes[k].id, newmes[k].message_status, newmes[k].message_time, newmes[k].message_owner.name, newmes[k].message_owner.profile_image, newmes[k].room_id);
+                        service.gotNewRoomMessage(newmes[k].message.body, newmes[k].id, newmes[k].message_status, newmes[k].message_time, newmes[k].message_owner.name, newmes[k].message_owner.profile_image, newmes[k].room_id, newmes[k].message.type);
                     }
                     for(var x = 0; x < messages.length; x++){
                         if(messages[x].message_status == 'seen'){
@@ -18208,6 +18222,47 @@ angular.module('chattapp')
      'use strict';
 
      angular.module('chattapp')
+         .controller('forgotPasswordController', forgotPasswordController);
+
+     function forgotPasswordController($state, forgotPasswordFactory, tostService, $ionicLoading) {
+         console.log('forgotPasswordController');
+         var self = this;
+         self.data = {
+             email: ''
+         }
+         self.forgotPassword = function() {
+             if (_.isEmpty(self.data.email)) {
+                 tostService.notify('Email Address Required', 'top');
+             } else {
+                 $ionicLoading.show();
+                 var query = forgotPasswordFactory.save({
+                     email: self.data.email
+                 });
+                 query.$promise.then(function(data) {
+                     console.log(data);
+                     $ionicLoading.hide();
+                     tostService.notify(data.message, 'top');
+                     if (data.status == 1) {
+                         $state.go('login');
+                     }
+                 });
+             }
+         };
+     }
+ })();
+(function() {
+    'use strict';
+    angular.module('chattapp')
+        .factory('forgotPasswordFactory', forgotPasswordFactory);
+
+    function forgotPasswordFactory($resource, Configurations) {
+        return $resource(Configurations.api_url + '/users/forgot_password/:email', {}, {});
+    };
+})();
+ (function() {
+     'use strict';
+
+     angular.module('chattapp')
          .controller('contactsController', contactsController);
 
      function contactsController($scope, contactsFactory, contactsService, $ionicLoading, timeStorage, $localStorage, $state, socketService, $ionicModal, getUserProfileFactory) {
@@ -18315,92 +18370,6 @@ angular.module('chattapp')
    function getUserProfileFactory($resource, Configurations) {
        return $resource(Configurations.api_url+'/users/get_user_profile/:accessToken/:user_id/:currentTimestamp', {},{});
    };
-})();
- (function() {
-     'use strict';
-
-     angular.module('chattapp')
-         .controller('forgotPasswordController', forgotPasswordController);
-
-     function forgotPasswordController($state, forgotPasswordFactory, tostService, $ionicLoading) {
-         console.log('forgotPasswordController');
-         var self = this;
-         self.data = {
-             email: ''
-         }
-         self.forgotPassword = function() {
-             if (_.isEmpty(self.data.email)) {
-                 tostService.notify('Email Address Required', 'top');
-             } else {
-                 $ionicLoading.show();
-                 var query = forgotPasswordFactory.save({
-                     email: self.data.email
-                 });
-                 query.$promise.then(function(data) {
-                     console.log(data);
-                     $ionicLoading.hide();
-                     tostService.notify(data.message, 'top');
-                     if (data.status == 1) {
-                         $state.go('login');
-                     }
-                 });
-             }
-         };
-     }
- })();
-(function() {
-    'use strict';
-    angular.module('chattapp')
-        .factory('forgotPasswordFactory', forgotPasswordFactory);
-
-    function forgotPasswordFactory($resource, Configurations) {
-        return $resource(Configurations.api_url + '/users/forgot_password/:email', {}, {});
-    };
-})();
-(function() {
-    'use strict';
-
-    angular.module('chattapp')
-            .controller('menuController', menuController);
-
-    function menuController($scope, $ionicPopover, tostService, $localStorage, Onsuccess, $state, timeStorage, $rootScope) {
-        console.log('menuController');
-        var self = this;
-        self.chattab = true;
-        $ionicPopover.fromTemplateUrl('templates/popover.html', {
-            scope: $scope,
-        }).then(function(popover) {
-            self.popover = popover;
-        });
-        self.search = function(state) {
-            if (timeStorage.get('network')) {
-                window.plugins.toast.showShortTop('You need to online to access this');
-            }
-            else
-            {
-                $state.go(state);
-            }
-        };
-        self.logout = function() {
-            timeStorage.remove('google_access_token');
-            timeStorage.remove('userEmail');
-            timeStorage.remove('userData');
-            timeStorage.remove('displayPrivateChats');
-            timeStorage.remove('listUsers');
-            timeStorage.remove('chatWithUserData');
-            timeStorage.remove('displayPublicChats');
-            $state.go('login');
-        };
-        Onsuccess.footerTab(function(a, b, c, d) {
-            self.chattab = a;
-            self.searchb = b;
-            self.setting = c;
-            self.group = d;
-        });
-//        self.footer = function(state) {
-//            
-//        }
-    }
 })();
 (function() {
     'use strict';
@@ -18562,6 +18531,51 @@ angular.module('chattapp')
    };
 })();
 
+(function() {
+    'use strict';
+
+    angular.module('chattapp')
+            .controller('menuController', menuController);
+
+    function menuController($scope, $ionicPopover, tostService, $localStorage, Onsuccess, $state, timeStorage, $rootScope) {
+        console.log('menuController');
+        var self = this;
+        self.chattab = true;
+        $ionicPopover.fromTemplateUrl('templates/popover.html', {
+            scope: $scope,
+        }).then(function(popover) {
+            self.popover = popover;
+        });
+        self.search = function(state) {
+            if (timeStorage.get('network')) {
+                window.plugins.toast.showShortTop('You need to online to access this');
+            }
+            else
+            {
+                $state.go(state);
+            }
+        };
+        self.logout = function() {
+            timeStorage.remove('google_access_token');
+            timeStorage.remove('userEmail');
+            timeStorage.remove('userData');
+            timeStorage.remove('displayPrivateChats');
+            timeStorage.remove('listUsers');
+            timeStorage.remove('chatWithUserData');
+            timeStorage.remove('displayPublicChats');
+            $state.go('login');
+        };
+        Onsuccess.footerTab(function(a, b, c, d) {
+            self.chattab = a;
+            self.searchb = b;
+            self.setting = c;
+            self.group = d;
+        });
+//        self.footer = function(state) {
+//            
+//        }
+    }
+})();
  (function() {
      'use strict';
 
