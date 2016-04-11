@@ -45,6 +45,7 @@
                 for (var i = 0; i < data.data.room.room_users.length; i++) {
                     if (data.data.room.room_users[i].id == data.data.room.room_owner.id) {
                         data.data.room.room_users[i].name = data.data.room.room_users[i].name + ' (owner)';
+                        data.data.room.room_users[i].owner = true;
                     }
                     data.data.room.room_users[i].last_seen = moment(parseInt(data.data.room.room_users[i].last_seen)).format("Do MMMM hh:mm a");
                 }
