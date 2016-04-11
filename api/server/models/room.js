@@ -180,17 +180,21 @@ module.exports = function (Room) {
                                                 'room_type' : room_type
                                             };
                                             callback(null, 1, 'Private Chat Room Created', data);
-                                            //-start-send push message to user 
-                                            User.FN_get_user_by_id( chat_with, function( u_status, u_message, u_data ){
+                                            //-start-send push message to use
+                                            User.FN_get_user_by_id( owner_user_id, function( u_status, u_message, u_data_owner ){
                                                 if( u_status == 1 ){
-                                                    var TOKENS = [ u_data.token ];
-                                                    var push_msg_info = {
-                                                        name : u_data.name,
-                                                        profile_image : u_data.profile_image,
-                                                        room_id : room_id,
-                                                    }
-                                                    Pushmessage.create_push_message( 'private_room_created', TOKENS , push_msg_info, function( ignore_param, p_status, p_message, p_data){
-                                                    })  
+                                                    User.FN_get_user_by_id( chat_with, function( u_status, u_message, u_data_chat_with ){
+                                                        if( u_status == 1 ){
+                                                            var TOKENS = [ u_data_chat_with.token ];
+                                                            var push_msg_info = {
+                                                                name : u_data_owner.name,
+                                                                profile_image : u_data_owner.profile_image,
+                                                                room_id : room_id,
+                                                            }
+                                                            Pushmessage.create_push_message( 'private_room_created', TOKENS , push_msg_info, function( ignore_param, p_status, p_message, p_data){
+                                                            })  
+                                                        }
+                                                    })
                                                 }
                                             })
                                             //-end-send push message to user
@@ -984,6 +988,7 @@ module.exports = function (Room) {
                                                 } else {
                                                     var data = {
                                                         room_id : room_id,
+                                                        room_name : result.room_name,
                                                         left_user_info : left_user_info,
                                                         sockets_to_remove : sockets_to_remove
                                                     }
