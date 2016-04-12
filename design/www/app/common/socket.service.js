@@ -111,6 +111,10 @@
              service.deleteRoom = function(roomId) {
                 var userData = timeStorage.get('userData');
                 socket.emit('APP_SOCKET_EMIT', 'delete_public_room', { accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now() });
+             },
+             service.logout = function() {
+                var userData = timeStorage.get('userData');
+                socket.emit('APP_SOCKET_EMIT', 'do_logout', { accessToken: userData.data.access_token, currentTimestamp: _.now() });
              }
          return service;
      };
