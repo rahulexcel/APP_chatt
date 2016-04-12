@@ -1,0 +1,14 @@
+<ion-modal-view class="mymodal">
+    <div class="cropArea">
+        <img-crop ng-if="myimage" image="myimage" result-image="myCroppedImage" on-change="result(myCroppedImage)"></img-crop>
+    </div>
+    <div class="cancelbt" ng-click="imgCancel()">
+        <span class="mysize ion-close-round"></span>
+    </div>
+    <div class="primage">Profile Pic</div>
+    <div class="prpicim"><img ng-src="{{myCroppedImage}}" />
+    </div>
+    <div class="mybtim">
+        <button md-ink-ripple class="md-btn md-raised btn-block p-h-md btn-primary" ng-click="imgChange()">ok</button>
+    </div>
+</ion-modal-view>

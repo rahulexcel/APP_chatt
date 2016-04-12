@@ -26,6 +26,7 @@ var paths = {
         './bower_components/jquery/dist/jquery.js',
         './www/lib/socket.io.js',
         './bower_components/lodash/dist/lodash.min.js',
+        './bower_components/ng-img-crop/compile/minified/ng-img-crop.js',
         './www/app/chatt.route.js',
         './www/app/chatt.run.js',
         './www/app/chatt.config.js',
@@ -40,6 +41,7 @@ var paths = {
         './www/css/*.css',
         './bower_components/bootstrap/dist/css/bootstrap.min.css',
         './bower_components/font-awesome/css/font-awesome.css',
+        './bower_components/ng-img-crop/compile/minified/ng-img-crop.css',
         './www/lib/style.css'
     ]
 };

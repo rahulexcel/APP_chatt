@@ -16,7 +16,8 @@
         "font-awesome": "4.5.0",
         "moment-timezone": "0.5.3",
         "jstz": "38263a9e22",
-        "jstzdetect": "1.0.6"
+        "jstzdetect": "1.0.6",
+        "ng-img-crop": "0.3.2"
 
     }
 }

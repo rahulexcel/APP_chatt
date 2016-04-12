@@ -498,8 +498,8 @@ span.name input{
     border: 1px solid #3F51B5!important;
 }
 .profile-pic{
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
 }
 .no-pad-left-right{
     padding:0;
@@ -582,7 +582,7 @@ a.active{
 .lastSeen{
     font-size: 12px!important;
     font-style: italic!important;
-   
+
 }
 .chat-page-list{
     padding-top:10px;
@@ -706,6 +706,50 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
     font-weight:900;
 }
 .headLast{
-     margin: -14px 0 0 0;
+    margin: -14px 0 0 0;
     text-align: left;
 }
+/*==============================*/
+span.satusedit.ion-android-create {
+    padding: 0 0 0 8px;
+}
+span.status_edit {
+    margin-left: 20px;
+    border-left: 1px solid;
+}
+input#statustxt {
+    border: 0;
+    border-bottom: 2px solid #3F51B5;
+}
+.cropArea {
+    background: #E4E4E4;
+    overflow: hidden;
+    width:400px;
+    height:300px;
+}
+/*ion-modal-view.mymodal.modal.slide-in-up.ng-enter.active.ng-enter-active {
+    background-color: transparent;
+}*/
+.primage {
+    width: 100%;
+    text-align: center;
+}
+.cancelbt {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+}
+.mybtim{
+    margin-top:10px;
+}
+.camerach {
+    text-align:center;
+}
+span.mysize{
+    font-size:22px;
+}
+span.mysize1{
+    font-size:15px;
+    margin-left:10px;
+}
+/*=========================*/
