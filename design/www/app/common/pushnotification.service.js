@@ -42,7 +42,11 @@
                             pic:data.additionalData.icon,
                         }
                         timeStorage.set('chatWithUserData', chatWithUser, 1);
-                        $state.go('app.chatpage', {roomId:data.additionalData.room_id});
+                        if(data.additionalData.room_id){
+                            $state.go('app.chatpage', {roomId:data.additionalData.room_id});                            
+                        } else{
+                            $state.go('app.chats');
+                        }
                     }
                 });
                 push.on('error', function(e) {

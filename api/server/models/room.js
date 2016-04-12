@@ -122,7 +122,8 @@ module.exports = function (Room) {
                             room_description : room_description,
                             room_image : '',
                             room_background : '',
-                            registration_time: currentTimestamp
+                            registration_time: currentTimestamp,
+                            is_deleted: 0 * 1
                         });
                         new_room.save( function(err){
                             if( err ){
@@ -148,7 +149,7 @@ module.exports = function (Room) {
                         var check_where = {
                             where : {
                                 room_type : 'private',
-                                room_users : {'all':room_users}
+                                room_users : {'all':room_users},
                             }
                         };
                         Room.find( check_where, function (err, result) {
@@ -179,17 +180,21 @@ module.exports = function (Room) {
                                                 'room_type' : room_type
                                             };
                                             callback(null, 1, 'Private Chat Room Created', data);
-                                            //-start-send push message to user 
-                                            User.FN_get_user_by_id( chat_with, function( u_status, u_message, u_data ){
+                                            //-start-send push message to use
+                                            User.FN_get_user_by_id( owner_user_id, function( u_status, u_message, u_data_owner ){
                                                 if( u_status == 1 ){
-                                                    var TOKENS = [ u_data.token ];
-                                                    var push_msg_info = {
-                                                        name : u_data.name,
-                                                        profile_image : u_data.profile_image,
-                                                        room_id : room_id,
-                                                    }
-                                                    Pushmessage.create_push_message( 'private_room_created', TOKENS , push_msg_info, function( ignore_param, p_status, p_message, p_data){
-                                                    })  
+                                                    User.FN_get_user_by_id( chat_with, function( u_status, u_message, u_data_chat_with ){
+                                                        if( u_status == 1 ){
+                                                            var TOKENS = [ u_data_chat_with.token ];
+                                                            var push_msg_info = {
+                                                                name : u_data_owner.name,
+                                                                profile_image : u_data_owner.profile_image,
+                                                                room_id : room_id,
+                                                            }
+                                                            Pushmessage.create_push_message( 'private_room_created', TOKENS , push_msg_info, function( ignore_param, p_status, p_message, p_data){
+                                                            })  
+                                                        }
+                                                    })
                                                 }
                                             })
                                             //-end-send push message to user
@@ -423,6 +428,7 @@ module.exports = function (Room) {
                                             k1_user_id = k1_user.id;
                                             if( logged_user_id.toString() != k1_user_id.toString() ){
                                                 show_details_for_list = {
+                                                    'user_id' : k1_user.id,
                                                     'icon' : k1_user.profile_image,
                                                     'main_text' : k1_user.name,
                                                     'sub_text' : k1_user.last_seen
@@ -437,7 +443,12 @@ module.exports = function (Room) {
                                         }
                                     }
                                     kr.show_details_for_list = show_details_for_list;
-                                    new_result.push( kr );
+                                    
+                                    if( typeof kr.is_deleted != 'undefined' && kr.is_deleted == 1 ){
+                                        
+                                    }else{
+                                        new_result.push( kr );
+                                    }
                                 }
                                 var data = {
                                     'rooms' : new_result
@@ -758,6 +769,7 @@ module.exports = function (Room) {
                             var where = {
                                 'room_type' : 'public',
                                 'room_users': {'nin': [new ObjectID( access_token_userid )] },
+                                'is_deleted': 0 * 1
                             };
                             Room.find({
                                 "where": where,
@@ -976,6 +988,7 @@ module.exports = function (Room) {
                                                 } else {
                                                     var data = {
                                                         room_id : room_id,
+                                                        room_name : result.room_name,
                                                         left_user_info : left_user_info,
                                                         sockets_to_remove : sockets_to_remove
                                                     }
@@ -1052,12 +1065,12 @@ module.exports = function (Room) {
                                 "include": [{
                                     relation: 'room_owner', 
                                     scope: {
-                                        fields: ['name','profile_image','last_seen'],
+                                        fields: ['name','profile_image','last_seen','sockets'],
                                     }
                                 },{
                                     relation: 'room_users', 
                                     scope: {
-                                        fields: ['name','profile_image','last_seen'],
+                                        fields: ['name','profile_image','last_seen','sockets'],
                                     }
                                 }]
                             },function (err, result) {
@@ -1069,24 +1082,38 @@ module.exports = function (Room) {
                                         result = result.toJSON();
                                         room_owner = result.room_owner;
                                         room_users = result.room_users;
+                                        room_sockets = [];
+                                        user_sockets = [];
+                                        room_sockets = result.sockets;
                                         
                                         if( room_owner.id.toString() == access_token_userid.toString() ){
                                             if( access_token_userid.toString() == user_id.toString() ){
                                                 callback( null, 0, "Admin can't remove", {} );
                                             }else{
+                                                var sockets_to_remove = [];
                                                 var remove_user_info = {};
                                                 var remove_users_exists = false;
                                                 for( var k in room_users ){
                                                     kr = room_users[k];
                                                     if( kr.id.toString() == user_id.toString() ){
+                                                        user_sockets = kr.sockets;
                                                         remove_users_exists = true;
                                                         remove_user_info = {
                                                             user_id : kr.id,
                                                             name : kr.name,
                                                             profile_image : kr.profile_image,
                                                         }
+                                                        
                                                     }
                                                 }
+                                                if( typeof room_sockets != 'undefined' && typeof user_sockets != 'undefined' && room_sockets.length > 0 && user_sockets.length > 0 ){
+                                                    for( var k in room_sockets ){
+                                                        if( user_sockets.indexOf(room_sockets[k]) != -1 ){
+                                                            sockets_to_remove.push( room_sockets[k] );
+                                                        }
+                                                    }
+                                                }
+                                                
                                                 if( remove_users_exists == false ){
                                                     callback( null, 0, "User is not room member", {} );
                                                 }else{
@@ -1094,7 +1121,10 @@ module.exports = function (Room) {
                                                     Room.update({
                                                         id : new ObjectID( room_id ),
                                                     },{
-                                                        '$pull': {'room_users': new ObjectID( user_id ) }
+                                                        '$pull': {
+                                                            'room_users': new ObjectID( user_id ),
+                                                            'sockets' : { '$in' : sockets_to_remove }
+                                                        }
                                                     },{ 
                                                         allowExtendedOperators: true 
                                                     },function (err, result2) {
@@ -1106,20 +1136,18 @@ module.exports = function (Room) {
                                                                 left_user_info : remove_user_info
                                                             }
                                                             callback(null, 1, 'User removed from room', data );
-                                                            //-start-send push message to removed user 
-//                                                            User.FN_get_user_by_id( user_id, function( u_status, u_message, u_data ){
-//                                                                if( u_status == 1 ){
-//                                                                    var TOKENS = [ u_data.token ];
-//                                                                    var push_msg_info = {
-//                                                                        name : u_data.name,
-//                                                                        profile_image : u_data.profile_image,
-//                                                                        room_id : room_id,
-//                                                                    }
-//                                                                    Pushmessage.create_push_message( 'remove_public_room_member', TOKENS , push_msg_info, function( ignore_param, p_status, p_message, p_data){
-//                                                                    })  
-//                                                                }
-//                                                            })
-                                                            //-end-send push message to removed user 
+                                                            //---remove sockets from user---------------
+                                                            User.update({
+                                                                id : new ObjectID( user_id ),
+                                                            },{
+                                                                '$pull': {'sockets': { '$in' : sockets_to_remove } }
+                                                            },{ 
+                                                                allowExtendedOperators: true 
+                                                            },function (err, result2) {
+                                                                if (err) {
+                                                                } else {
+                                                                }
+                                                            });
                                                         }
                                                     });
                                                 }
@@ -1158,5 +1186,136 @@ module.exports = function (Room) {
             }
     );
     //********************************* END remove public member by admin **********************************
+    
+    
+    //********************************* START remove public member by admin **********************************
+    Room.delete_public_room = function ( accessToken, room_id, currentTimestamp, callback) {
+        var User = Room.app.models.User;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 401, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 401, 'UnAuthorized', {});
+                }else{
+                    var access_token_userid = accessToken.userId
+                    User.findById(access_token_userid, function (err, user) {
+                        if (err) {
+                            callback(null, 401, 'UnAuthorized', err);
+                        } else {
+                            userId = new ObjectID( access_token_userid );
+                            var wh = {
+                                id : new ObjectID( room_id )
+                            }
+                            Room.find({
+                                "where": wh,
+                                "include": [{
+                                    relation: 'room_owner', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen','sockets'],
+                                    }
+                                },{
+                                    relation: 'room_users', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen','sockets'],
+                                    }
+                                }]
+                            },function (err, result) {
+                                if( err ){
+                                    callback(null, 0, 'try again', {});
+                                }else{
+                                    if( result.length > 0 ){
+                                        result = result[0];
+                                        result = result.toJSON();
+                                        var IS_DELETED_ROOM = 0;
+                                        if( typeof result.is_deleted != 'undefined' ){
+                                            IS_DELETED_ROOM = result.is_deleted;
+                                        }
+                                        if( IS_DELETED_ROOM == 1 ){
+                                            callback( null, 0, 'Room not exists', {} );                                                
+                                        }else{
+                                            room_owner = result.room_owner;
+                                            room_users = result.room_users;
+                                            if( room_owner.id.toString() != access_token_userid.toString() ){
+                                                callback( null, 0, 'You are not admin of this group', {} );
+                                            }else{
+                                                var LIST_sockets_to_remove = result.sockets;
+                                                var LIST_room_users = [];
+                                                var LIST_room_users_object_id = [];
+                                                
+                                                for( var k in room_users ){
+                                                    kr = room_users[k];
+                                                    LIST_room_users.push( kr.id );
+                                                    LIST_room_users_object_id.push( new ObjectID( kr.id ) )
+                                                }
+                                                
+                                                Room.update({
+                                                    id : new ObjectID( room_id ),
+                                                },{
+                                                    '$set' :{
+                                                        'is_deleted' : 1*1,
+                                                    },
+                                                    '$pull': {
+                                                        'sockets' : { '$in' : LIST_sockets_to_remove }
+                                                    }
+                                                },{ 
+                                                    allowExtendedOperators: true 
+                                                },function (err, result2) {
+                                                    if (err) {
+                                                        callback(null, 0, 'try again', {});
+                                                    } else {
+                                                        var data = {
+                                                            room_id : room_id,
+                                                        }
+                                                        //---remove sockets from users---------------
+                                                        for( var u in LIST_room_users ){
+                                                            User.update({
+                                                                'id' : new ObjectID( LIST_room_users[k] ),
+                                                            },{
+                                                                '$pull': {'sockets': { '$in' : LIST_sockets_to_remove } },
+                                                            },{ 
+                                                                allowExtendedOperators: true,
+                                                            },function (err, result2) {
+                                                                if (err) {
+                                                                } else {
+                                                                }
+                                                            });
+                                                        }
+                                                        callback(null, 1, 'Room deleted by admin', data );
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    }else{
+                                        callback( null, 0, 'Room not found', {} );
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    };
+    Room.remoteMethod(
+            'delete_public_room', {
+                description: 'Admin power to delete own group',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'room_id', type: 'string'},
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/delete_public_room',
+                }
+            }
+    );
+    //********************************* END remove public member by admin **********************************
+    
     
 };
