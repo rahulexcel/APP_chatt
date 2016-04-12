@@ -263,6 +263,7 @@ module.exports = function (Pushmessage) {
     ///////////////////////////////////////////////////////////////////////////////////
     //cron url to start pushing messages, by getting records fron pushmessage collection
     Pushmessage.cron_push_message = function ( callback ) {
+        console.log('CRON :: cron_push_message');
         var Message = Pushmessage.app.models.Message;
         Pushmessage.find(  {
             "where" : {

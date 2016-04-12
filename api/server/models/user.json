@@ -82,6 +82,11 @@
             "principalType": "ROLE",
             "principalId": "$everyone",
             "property": "update_profile_status"
+        },{
+            "permission": "ALLOW",
+            "principalType": "ROLE",
+            "principalId": "$everyone",
+            "property": "do_logout"
         }],
     "methods": {}
 }

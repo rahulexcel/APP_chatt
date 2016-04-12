@@ -113,7 +113,6 @@ module.exports.listen = function(app){
             callback( response );
         })
     }
-    
     function FN_get_user_profile( accessToken, user_id, currentTimestamp, callback ){
         User.get_user_profile( accessToken, user_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
             var response = {
@@ -124,8 +123,20 @@ module.exports.listen = function(app){
             callback( response );
         })
     }
+    function FN_do_logout( accessToken, currentTimestamp, callback ){
+        User.do_logout( accessToken, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            var response = {
+                'status' : res_status,
+                'message' : res_message,
+                'data' : res_data
+            };
+            callback( response );
+        })
+    }
     
-    
+    //------------------------------------
+    //------------------------------------
+    //------------------------------------
     io = socketio.listen(app);
     io.on('connection', function(socket){
         console.log('----------------------------------------');
@@ -388,7 +399,17 @@ module.exports.listen = function(app){
                     }
                 })
             }
-            
+            else if( type == 'do_logout' ){
+                var accessToken = info.accessToken;
+                var currentTimestamp = info.currentTimestamp;
+                console.log( 'SOCKET CALL :: do_logout :: with accessToken of user: '+ accessToken );
+                FN_do_logout( accessToken, currentTimestamp, function( response ){
+                    if( response.status == 1 ){
+                        d_user_id = response.data.user_id;
+                        console.log( 'SOCKET CALL :: do_logout :: user logout with : '+ d_user_id );
+                    }
+                });
+            }
         });
         
     });
