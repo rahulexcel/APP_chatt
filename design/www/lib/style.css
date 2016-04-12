@@ -56,6 +56,9 @@
     position: static;
     max-width: 40px;
 }
+.userin div button.chatPageheader{
+    min-width: 35px;
+}
 .right-chat button.no-image{
     float: right;
     margin-left: 13px;
@@ -704,6 +707,7 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
 .chatName{
     margin:-6px 0 0 0;
     font-weight:900;
+    text-align: left;
 }
 .headLast{
      margin: -14px 0 0 0;

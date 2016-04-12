@@ -1,8 +1,9 @@
 (function() {
     'use strict';
     angular.module('chattapp')
-            .factory('myInterceptor', function($localStorage) {
+            .factory('myInterceptor', function($localStorage, $injector) {
                 var requestInterceptor = {
+                    data: null,
                     request: function(config) {
                         var currentUser = $localStorage.userData;
                         if (currentUser) {
@@ -17,6 +18,22 @@
                             $localStorage.lastTimeStampFireApi = _.now();
                         }
                         return config;
+                    },
+                    response: function(response){
+                        if(response.data.status == 401 || response.data.message == 'UnAuthorized'){
+                            var timeStorage = $injector.get('timeStorage');
+                            $injector.get('socketService').logout();
+                            $injector.get('tostService').notify(response.data.message+ ' Please login again !', 'top');
+                            timeStorage.remove('google_access_token');
+                            timeStorage.remove('userEmail');
+                            timeStorage.remove('userData');
+                            timeStorage.remove('displayPrivateChats');
+                            timeStorage.remove('listUsers');
+                            timeStorage.remove('chatWithUserData');
+                            timeStorage.remove('displayPublicChats');
+                            $injector.get('$state').go('login');
+                        }
+                        return response;
                     }
                 };
                 return requestInterceptor;

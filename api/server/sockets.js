@@ -103,8 +103,40 @@ module.exports.listen = function(app){
             callback( response );
         })
     }
+    function FN_delete_public_room( accessToken, room_id, currentTimestamp, callback){
+        Room.delete_public_room( accessToken, room_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            var response = {
+                'status' : res_status,
+                'message' : res_message,
+                'data' : res_data
+            };
+            callback( response );
+        })
+    }
+    function FN_get_user_profile( accessToken, user_id, currentTimestamp, callback ){
+        User.get_user_profile( accessToken, user_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            var response = {
+                'status' : res_status,
+                'message' : res_message,
+                'data' : res_data
+            };
+            callback( response );
+        })
+    }
+    function FN_do_logout( accessToken, currentTimestamp, callback ){
+        User.do_logout( accessToken, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            var response = {
+                'status' : res_status,
+                'message' : res_message,
+                'data' : res_data
+            };
+            callback( response );
+        })
+    }
     
-    
+    //------------------------------------
+    //------------------------------------
+    //------------------------------------
     io = socketio.listen(app);
     io.on('connection', function(socket){
         console.log('----------------------------------------');
@@ -150,23 +182,6 @@ module.exports.listen = function(app){
                 }
             });
         })
-        
-        //get_user_profile
-        socket.on('get_user_profile_for_room', function( accessToken, room_id, user_id, currentTimestamp ){
-            User.get_user_profile( accessToken, user_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
-                console.log( res_message );
-                console.log( res_data)
-                if( res_status == 1 ){
-                    var d = {
-                        type : 'info',
-                        room_id : room_id,
-                        user_id : user_id,
-                        data : res_data
-                    }
-                    socket.emit( 'RESPONSE_get_user_profile_for_room', d );
-                }
-            })
-        });
         
         //sockets events ( trying to create generic )
         socket.on('APP_SOCKET_EMIT',function( type, info ){
@@ -325,7 +340,92 @@ module.exports.listen = function(app){
                     }
                 }
             }
-            
+            else if( type == 'get_user_profile_for_room' ){
+                var accessToken = info.accessToken;
+                var room_id = info.room_id;
+                var user_id = info.user_id;
+                var currentTimestamp = info.currentTimestamp;
+                FN_get_user_profile( accessToken, user_id, currentTimestamp, function( response ){
+                    if( response.status == 1 ){
+                        var d = {
+                            type : 'info',
+                            room_id : room_id,
+                            user_id : user_id,
+                            data : response
+                        }
+                        socket.emit( 'RESPONSE_APP_SOCKET_EMIT','get_user_profile_for_room', d );
+                    }
+                });
+            }
+            else if( type == 'delete_public_room' ){
+                var accessToken = info.accessToken;
+                var room_id = info.room_id;
+                var currentTimestamp = info.currentTimestamp;
+                console.log( 'SOCKET CALL :: delete_public_room :: Admin deleted the room with id: '+ room_id );
+                FN_delete_public_room( accessToken, room_id, currentTimestamp, function( response ){
+                    if( response.status == 1 ){
+                        var d = {
+                            type : 'info',
+                            room_id : room_id,
+                            data : response
+                        }
+                        socket.emit( 'RESPONSE_APP_SOCKET_EMIT','delete_public_room', d );
+                        //-----------------------------------
+                        var msg_local_id = '';
+                        var message_type = 'room_alert_message';
+                        var message = 'Room deleted by admin';
+                        FN_room_message( msg_local_id, accessToken, room_id, message_type, message, currentTimestamp, function( response ){
+                            if( response.status == 1 ){
+                                console.log( message_type +' :: '+ message );
+                                // will be available on other users of room
+                                var d1 = {
+                                    type : 'alert',
+                                    data : response.data.broadcast_data
+                                }
+                                socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT','new_room_message', d1 );
+                            }
+                        });
+                        //--to emit from client side so that scoket can be removed  from room
+                        var remove_room_data = {
+                            room_id : room_id
+                        };
+                        socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT','remove_socket_from_room', remove_room_data );
+                        //--remove token
+                        if( typeof io.sockets.adapter.rooms[room_id] != 'undefined' ){
+                            if( typeof io.sockets.adapter.rooms[room_id].sockets != 'undefined'){
+                                socket.leave( room_id );
+                            }
+                        }
+                    }
+                })
+            }
+            else if( type == 'do_logout' ){
+                var accessToken = info.accessToken;
+                var currentTimestamp = info.currentTimestamp;
+                console.log( 'SOCKET CALL :: do_logout :: with accessToken of user: '+ accessToken );
+                FN_do_logout( accessToken, currentTimestamp, function( response ){
+                    if( response.status == 1 ){
+                        d_user_id = response.data.user_id;
+                        console.log( 'SOCKET CALL :: do_logout :: user logout with : '+ d_user_id );
+                    }
+                });
+            }
+            else if( type == 'room_user_typing' ){
+                var user_id = info.user_id;
+                var user_name = info.name;
+                var room_id = info.room_id;
+                if( user_name != '' && room_id != '' ){
+                    console.log( 'SOCKET CALL :: room_user_typing :: name - '+ user_name + ' :: for room_id - ' + room_id );
+                    d1 = {
+                        user_id : user_id,
+                        name : user_name,
+                        room_id : room_id,
+                        message : user_name + ' is_typing...',
+                        message_type : 'room_temporary_message'
+                    }
+                    socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT','room_user_typing', d1 );
+                }
+            }
         });
         
     });
