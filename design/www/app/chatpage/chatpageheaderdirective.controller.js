@@ -12,7 +12,8 @@
         self.name = chatWithUserData.name;
         self.image = chatWithUserData.pic;
         self.id = chatWithUserData.id;
-        if(angular.isNumber(chatWithUserData.lastSeen)){
+        console.log(typeof(chatWithUserData.lastSeen))
+        if(!isNaN(chatWithUserData.lastSeen)){
             self.lastSeen = moment(parseInt(chatWithUserData.lastSeen)).format("hh:mm a");
         } else{
             self.lastSeen = chatWithUserData.lastSeen;
@@ -57,9 +58,8 @@
             });
         }
         self.openInfo = function() {
-            infoApi();
             self.deleteIconRotate = -1;
-            if (!chatWithUserData.lastSeen) {
+            if (!chatWithUserData.id) {
                 $scope.infoModel.show();
             }
         }
