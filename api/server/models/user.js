@@ -715,6 +715,59 @@ module.exports = function (User) {
 //********************************* END logged in user can update his profile **********************************
 
 
+//********************************* START Logout**********************************
+    User.do_logout = function ( accessToken, currentTimestamp, callback) {
+        var accessToken_original = accessToken;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 0, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 0, 'UnAuthorized', {});
+                }else{
+                    var userId = accessToken.userId
+                    User.logout(accessToken_original, function(err) {
+                        if( err ){
+                            callback(null, 0, 'error occurs', {});
+                        }else{
+                            User.update({
+                                id: new ObjectID( userId )
+                            }, {
+                                status : 'offline'
+                            }, function (err, result) {
+                                if (err) {
+                                } else {
+                                }
+                            });
+                            var d = {
+                                user_id : userId
+                            }
+                            callback(null, 1, 'Success logout', d );
+                        }
+                    });
+                }
+            }
+        });
+    };
+    User.remoteMethod(
+            'do_logout', {
+                description: 'logout user',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'},
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/do_logout',
+                }
+            }
+    );
+//********************************* END log out **********************************
+
 
 
 
