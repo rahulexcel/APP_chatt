@@ -17010,7 +17010,11 @@ angular.module('chattapp')
         self.name = chatWithUserData.name;
         self.image = chatWithUserData.pic;
         self.id = chatWithUserData.id;
-        self.lastSeen = moment(parseInt(chatWithUserData.lastSeen)).format("hh:mm a");
+        if(angular.isNumber(chatWithUserData.lastSeen)){
+            self.lastSeen = moment(parseInt(chatWithUserData.lastSeen)).format("hh:mm a");
+        } else{
+            self.lastSeen = chatWithUserData.lastSeen;
+        }
         self.goBack = function() {
             $state.go('app.chats');
         };
@@ -17212,6 +17216,7 @@ angular.module('chattapp')
                        var room_users = {};
                        if (roomData[i].room_type == "public") {
                            room_users.last_seen = roomData[i].show_details_for_list.sub_text;
+                           room_users.last_seenInTimestamp = roomData[i].show_details_for_list.sub_text;
                        } else {
                            room_users.last_seenInTimestamp = roomData[i].show_details_for_list.sub_text;
                            room_users.last_seen = moment(parseInt(roomData[i].show_details_for_list.sub_text)).format("Do MMMM hh:mm a");
