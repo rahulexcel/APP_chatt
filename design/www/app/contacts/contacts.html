@@ -1,74 +1,99 @@
 <ion-view view-title="CONTACTS" id="background" hide-back-button="true">
-<!--    <ion-nav-buttons side="right">
-   <button class="button button-icon ion-ios-search-strong pull-right white" ng-click="contacts.searchOpen()"></button>
- </ion-nav-buttons>
-    <ion-nav-buttons side="left">
-           <input type="text" ng-class="contacts.isSearchOpen ? 'search-box-open' : 'search-box-close'">
-    </ion-nav-buttons>-->
-<ion-header-bar class='bar-stable'>
-   <p class="title">CONTACTS
-   <button class="button button-icon ion-android-more-vertical pull-right" style="margin-top: 5px;" ng-click="menu.popover.show($event)"></button>
-   <button class="button button-icon ion-ios-search-strong pull-right white" style="margin-top: 5px;" ng-click="contacts.searchOpen()"></button>
-   <input type="text" ng-class="contacts.isSearchOpen ? 'search-box-open' : 'search-box-close'">
-   </p>
-</ion-header-bar>
-   <ion-content scroll="true" class="has-footer">
-      <div class="list">
-         <div class="user-container" ng-repeat="contact in contacts.displaycontacts">
-            <a class="item item-avatar hover item-icon-right" ng-click="contacts.openUserProfile(contact, $index)">
-               <img class="avatar" ng-src="{{contact.pic}}">
-               <i class="fa fa-circle user-status"></i>
-               <h3>{{contact.name}} <span class="fa fa-spin fa-spinner" ng-show="contacts.spinnerIndex==$index"></span></h3>
-               <p class="lastSeen">{{contact.lastSeen}}</p>
-            </a>
-         </div>
-      </div>
-   </ion-content>
-<!--   <ion-footer-bar class="bar-stable">
-   <div class="tabs tabs-icon-top" id="background">
-      <a class="tab-item" nav-direction="swap" href="#/app/chats">
-         <i class="icon ion-chatbubble tabs-icon-color"></i> Chats
-      </a>
-      <a class="tab-item" nav-direction="swap" ng-click="search('app.publicChats')">
-         <i class="icon ion-person-stalker tabs-icon-color"></i> Groups
-      </a>
-      <a class="tab-item active" nav-direction="swap" ng-click="search('app.contacts')">
-         <i class="icon ion-person tabs-icon-color"></i> Search
-      </a>
-      <a class="tab-item" nav-direction="swap" href="#/app/setting">
-         <i class="icon ion-android-settings tabs-icon-color"></i> Settings
-      </a>
-   </ion-fotter-bar>-->
+    <!--    <ion-nav-buttons side="right">
+       <button class="button button-icon ion-ios-search-strong pull-right white" ng-click="contacts.searchOpen()"></button>
+     </ion-nav-buttons>
+        <ion-nav-buttons side="left">
+               <input type="text" ng-class="contacts.isSearchOpen ? 'search-box-open' : 'search-box-close'">
+        </ion-nav-buttons>-->
+    <ion-header-bar class='bar-stable'>
+        <p class="title">CONTACTS
+            <button class="button button-icon ion-android-more-vertical pull-right" style="margin-top: 5px;" ng-click="menu.popover.show($event)"></button>
+            <button class="button button-icon ion-ios-search-strong pull-right white" style="margin-top: 5px;" ng-click="contacts.searchOpen()"></button>
+            <input type="text" ng-class="contacts.isSearchOpen ? 'search-box-open' : 'search - box - close'">
+        </p>
+    </ion-header-bar>
+    <ion-content scroll="true" class="has-footer">
+        <div class="list">
+            <div class="user-container" ng-repeat="contact in contacts.displaycontacts">
+                <a class="item item-avatar hover item-icon-right" ng-click="contacts.openUserProfile(contact, $index)">
+                    <img class="avatar" ng-src="{{contact.pic}}">
+                    <i class="fa fa-circle user-status"></i>
+                    <h3>{{contact.name}} <span class="fa fa-spin fa-spinner" ng-show="contacts.spinnerIndex == $index"></span></h3>
+                    <p class="lastSeen">{{contact.lastSeen}}</p>
+                </a>
+            </div>
+        </div>
+    </ion-content>
+    <!--   <ion-footer-bar class="bar-stable">
+       <div class="tabs tabs-icon-top" id="background">
+          <a class="tab-item" nav-direction="swap" href="#/app/chats">
+             <i class="icon ion-chatbubble tabs-icon-color"></i> Chats
+          </a>
+          <a class="tab-item" nav-direction="swap" ng-click="search('app.publicChats')">
+             <i class="icon ion-person-stalker tabs-icon-color"></i> Groups
+          </a>
+          <a class="tab-item active" nav-direction="swap" ng-click="search('app.contacts')">
+             <i class="icon ion-person tabs-icon-color"></i> Search
+          </a>
+          <a class="tab-item" nav-direction="swap" href="#/app/setting">
+             <i class="icon ion-android-settings tabs-icon-color"></i> Settings
+          </a>
+       </ion-fotter-bar>-->
 </ion-view>
 <script id="contactUser.html" type="text/ng-template">
-    <div class="modal">
+   <div class="modal">
         <header class="bar bar-header bar-positive">
           <h1 class="title">{{contacts.displayUserProfileName}}</h1>
           <div class="button btn-xs button-clear" ng-click="modal.hide()"><span class="icon ion-close"></span></div>
         </header>
-        <content has-header="true" padding="true">
-            <div style="width:100%;" class="pad-top-40">
-               <div class="col-md-12 col-sm-12 col-xs-12 no-pad-left-right">
-                   <div class="panel panel-card">
-                       <div class="r-t pos-rlt" md-ink-ripple style="background:url({{contacts.displayUserProfileImage}}) center center; background-size:cover">
-                           <div class="p-lg bg-white-overlay text-center r-t chatuser-profile">
-                               <a href class="w-xs inline">
-                                   <img id="profileImage" ng-src="{{contacts.displayUserProfileImage}}" class="img-circle profile-pic">
-                               </a>
-                               <div class="m-b m-t-sm h2">
-                                   <span class="">{{contacts.displayUserProfileName}}</span>
-                               </div>
-                               <div class="m-b m-t-sm h4">
-                                   <p class="">User Status</p>
-                                   <p class="">Private Rooms: {{contacts.displayUserProfilePrivateRooms}}</p>
-                                   <p class="">Public Rooms: {{contacts.displayUserProfilePublicRooms}}</p>
-                               </div>
-                               <a class="btn btn-md btn-success m-b p-h no-border" ng-click="contacts.chatWithUser(contacts.displayUserProfileName, contacts.displayUserProfileId, contacts.displayUserProfileImage, contacts.displayUserProfileLastSeen)">Start Chat <span class="fa fa-spin fa-spinner" ng-show="contacts.startChatspinner"></span></a>
-                           </div>
-                       </div>
-                   </div>
-               </div>
+        <ion-content class="has-header">
+
+    <div style="width:100%;">
+
+            <div class="col-md-12 col-sm-12 col-xs-12 no-pad-left-right">
+                <div class="panel panel-card mypanel">
+
+                    <div class="r-t pos-rlt" md-ink-ripple style="background:url({{contacts.displayUserProfileImage}})  center; background-size:cover;background-repeat: no-repeat;height:280px;">
+                        <div class="p-lg bg-white-overlay text-center r-t myimage">
+                            <a href class="w-xs inline myim" >
+                                <img id="profileImage" ng-src="{{contacts.displayUserProfileImage}}" class="img-circle profile-pic">
+                            </a>
+                        
+                            <div class="m-b m-t-sm h2">
+                                <span class="">{{contacts.displayUserProfileName}}</span>
+                            </div>
+                          <div class="m-b m-t-sm h4" >
+                                <span class="">{{contacts.displayUserProfileStatus}}</span>
+                                
+                              
+                          </div>
+
+                        </div>
+                      
+                    </div>
+                </div>
+        <div style="clear:both"></div>
             </div>
-        </content>
+                <div class="userstatus">
+                        <div class="m-b m-t-sm h5 pull-right">
+                           <span class="">last seen</span>:<span class="">{{contacts.displayUserProfileLastSeen}}</span>
+                        </div>
+                <div style="clear:both"></div>
+                </div>
+        <div style="clear:both"></div>
+            <div class="list">
+                <a class="item item-icon-right" >
+                    <span>Private Rooms</span><span class="pull-right">{{contacts.displayUserProfilePrivateRooms}}</span>
+                    <!--<i class="icon ion-chevron-right"></i>-->
+                </a>
+                <a class="item item-icon-right">
+                    <span>Public Rooms</span><span class="pull-right">{{contacts.displayUserProfilePublicRooms}}</span>
+                    <!--<i class="icon ion-chevron-right"></i>-->
+                </a>
+            </div>
+ <a class="md-btn md-raised btn-block p-h-md btn-success myprbt" ng-click="contacts.chatWithUser(contacts.displayUserProfileName, contacts.displayUserProfileId, contacts.displayUserProfileImage, contacts.displayUserProfileLastSeen)">Start Chat <span class="fa fa-spin fa-spinner" ng-show="contacts.startChatspinner"></span></a>
+        </div>
+        </ion-content>
     </div>
+                         
 </script>
