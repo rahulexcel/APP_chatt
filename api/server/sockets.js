@@ -410,6 +410,22 @@ module.exports.listen = function(app){
                     }
                 });
             }
+            else if( type == 'room_user_typing' ){
+                var user_id = info.user_id;
+                var user_name = info.name;
+                var room_id = info.room_id;
+                if( user_name != '' && room_id != '' ){
+                    console.log( 'SOCKET CALL :: room_user_typing :: name - '+ user_name + ' :: for room_id - ' + room_id );
+                    d1 = {
+                        user_id : user_id,
+                        name : user_name,
+                        room_id : room_id,
+                        message : user_name + ' is_typing...',
+                        message_type : 'room_temporary_message'
+                    }
+                    socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT','room_user_typing', d1 );
+                }
+            }
         });
         
     });
