@@ -39,6 +39,10 @@
     {
       "locator": "https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin.git",
       "id": "cordova-plugin-x-toast"
+    },
+    {
+      "locator": "https://github.com/katzer/cordova-plugin-local-notifications.git",
+      "id": "cordova-plugin-facebook4"
     }
   ],
   "cordovaPlatforms": [
