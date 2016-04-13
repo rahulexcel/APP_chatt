@@ -2,29 +2,34 @@
     'use strict';
     angular.module('chattapp')
             .factory('pushNotification', pushNotification);
-    function pushNotification($http, $q, $log,Configurations, timeStorage, $state, $localStorage) {
+    function pushNotification($http, $q, $log, Configurations, timeStorage, $state, $localStorage) {
         return {
             push: function () {
                 console.log('push is calling');
                 var flag = 0;
-                    var push = PushNotification.init({
-                    "android": {
-                        "senderID": Configurations.senderID,
-                        "icon": Configurations.icon,
-                        "iconColor": "grey"
-                    },
+
+                var android = {
+                    "senderID": Configurations.senderID,
+                    "icon": Configurations.icon,
+                    "iconColor": "grey",
+                    "forceShow": "true"
+                }
+                console.log(android);
+                var push = PushNotification.init({
+                    "android": android,
                     "ios": {
                         "alert": "true",
                         "badge": "true",
-                        "sound": "true"
+                        "sound": "true",
+                        forceShow: true
                     },
                     "windows": {}
                 });
-                push.on('registration', function(data) {
+                push.on('registration', function (data) {
                     console.log(data.registrationId);
-                    timeStorage.set('gcmToken',data.registrationId)
+                    timeStorage.set('gcmToken', data.registrationId)
                 });
-                push.on('notification', function(data) {
+                push.on('notification', function (data) {
                     if (data.additionalData.foreground) {
                         console.log(data);
                     } else {
@@ -35,29 +40,29 @@
                         //     data.image,
                         //     data.additionalData
                     }
-                    if(data.additionalData.coldstart){
+                    if (data.additionalData.coldstart) {
                         flag = 1;
                         var chatWithUser = {
-                            name:data.title,
-                            pic:data.additionalData.icon,
+                            name: data.title,
+                            pic: data.additionalData.icon,
                         }
                         timeStorage.set('chatWithUserData', chatWithUser, 1);
-                        if(data.additionalData.room_id){
-                            $state.go('app.chatpage', {roomId:data.additionalData.room_id});                            
-                        } else{
+                        if (data.additionalData.room_id) {
+                            $state.go('app.chatpage', {roomId: data.additionalData.room_id});
+                        } else {
                             $state.go('app.chats');
                         }
                     }
                 });
-                push.on('error', function(e) {
+                push.on('error', function (e) {
                     console.log(e.message);
                 });
-                if(flag == 0){
-                     if($localStorage.userData){
+                if (flag == 0) {
+                    if ($localStorage.userData) {
                         $state.go('app.chats');
-                        } else{
+                    } else {
                         $state.go('login');
-                     }
+                    }
                 }
             }
         };

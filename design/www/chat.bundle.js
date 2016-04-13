@@ -5613,7 +5613,7 @@ angular.module('ngResource', ['ng']).
 })(window, window.angular);
 
 /*!
- * jQuery JavaScript Library v2.2.2
+ * jQuery JavaScript Library v2.2.3
  * http://jquery.com/
  *
  * Includes Sizzle.js
@@ -5623,7 +5623,7 @@ angular.module('ngResource', ['ng']).
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2016-03-17T17:51Z
+ * Date: 2016-04-05T19:26Z
  */
 
 (function( global, factory ) {
@@ -5679,7 +5679,7 @@ var support = {};
 
 
 var
-	version = "2.2.2",
+	version = "2.2.3",
 
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {
@@ -15089,7 +15089,7 @@ jQuery.fn.load = function( url, params, callback ) {
 		// If it fails, this function gets "jqXHR", "status", "error"
 		} ).always( callback && function( jqXHR, status ) {
 			self.each( function() {
-				callback.apply( self, response || [ jqXHR.responseText, status, jqXHR ] );
+				callback.apply( this, response || [ jqXHR.responseText, status, jqXHR ] );
 			} );
 		} );
 	}
@@ -17296,29 +17296,34 @@ angular.module('chattapp')
     'use strict';
     angular.module('chattapp')
             .factory('pushNotification', pushNotification);
-    function pushNotification($http, $q, $log,Configurations, timeStorage, $state, $localStorage) {
+    function pushNotification($http, $q, $log, Configurations, timeStorage, $state, $localStorage) {
         return {
             push: function () {
                 console.log('push is calling');
                 var flag = 0;
-                    var push = PushNotification.init({
-                    "android": {
-                        "senderID": Configurations.senderID,
-                        "icon": Configurations.icon,
-                        "iconColor": "grey"
-                    },
+
+                var android = {
+                    "senderID": Configurations.senderID,
+                    "icon": Configurations.icon,
+                    "iconColor": "grey",
+                    "forceShow": "true"
+                }
+                console.log(android);
+                var push = PushNotification.init({
+                    "android": android,
                     "ios": {
                         "alert": "true",
                         "badge": "true",
-                        "sound": "true"
+                        "sound": "true",
+                        forceShow: true
                     },
                     "windows": {}
                 });
-                push.on('registration', function(data) {
+                push.on('registration', function (data) {
                     console.log(data.registrationId);
-                    timeStorage.set('gcmToken',data.registrationId)
+                    timeStorage.set('gcmToken', data.registrationId)
                 });
-                push.on('notification', function(data) {
+                push.on('notification', function (data) {
                     if (data.additionalData.foreground) {
                         console.log(data);
                     } else {
@@ -17329,29 +17334,29 @@ angular.module('chattapp')
                         //     data.image,
                         //     data.additionalData
                     }
-                    if(data.additionalData.coldstart){
+                    if (data.additionalData.coldstart) {
                         flag = 1;
                         var chatWithUser = {
-                            name:data.title,
-                            pic:data.additionalData.icon,
+                            name: data.title,
+                            pic: data.additionalData.icon,
                         }
                         timeStorage.set('chatWithUserData', chatWithUser, 1);
-                        if(data.additionalData.room_id){
-                            $state.go('app.chatpage', {roomId:data.additionalData.room_id});                            
-                        } else{
+                        if (data.additionalData.room_id) {
+                            $state.go('app.chatpage', {roomId: data.additionalData.room_id});
+                        } else {
                             $state.go('app.chats');
                         }
                     }
                 });
-                push.on('error', function(e) {
+                push.on('error', function (e) {
                     console.log(e.message);
                 });
-                if(flag == 0){
-                     if($localStorage.userData){
+                if (flag == 0) {
+                    if ($localStorage.userData) {
                         $state.go('app.chats');
-                        } else{
+                    } else {
                         $state.go('login');
-                     }
+                    }
                 }
             }
         };
@@ -17879,6 +17884,166 @@ angular.module('chattapp')
     'use strict';
 
     angular.module('chattapp')
+        .controller('loginController', loginController);
+
+    function loginController($state, loginFactory, timeStorage, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService, $ionicLoading) {
+        console.log('login');
+        var self = this;
+        self.data = {
+            email: '',
+            password: ''
+        }
+        var deviceUUID = timeStorage.get('deviceUUID');
+        var devicePlatform = timeStorage.get('devicePlatform');
+        self.login = function() {
+            if (_.isEmpty(self.data.email) || _.isEmpty(self.data.password) || !self.data.email) {
+                tostService.notify('Please enter your correct email and password', 'top');
+            } else {
+                $ionicLoading.show();
+                var query = loginFactory.save({
+                    action_type: 'manual_login',
+                    social_id: '',
+                    platform: devicePlatform,
+                    token: $localStorage.gcmToken,
+                    action: 'login_register',
+                    device_id: deviceUUID,
+                    email: self.data.email,
+                    password: self.data.password,
+                    name: '',
+                    currentTimestamp: _.now(),
+                    profile_image:''
+                });
+                query.$promise.then(function(data) {
+                    $ionicLoading.hide();
+                    if (data.status == 3) {
+                        tostService.notify(data.message, 'top');
+                        timeStorage.set('userEmail', self.data.email, 1);
+                        $state.go('verification');
+                    } else if (data.status == 1) {
+                        tostService.notify('Welcome "'+data.data.name+'"', 'top');
+                        timeStorage.set('userEmail', self.data.email, 1);
+                        timeStorage.set('userData', data, 1);
+                        // lastUsesTimeService.updateTime();
+                        $state.go('app.chats');
+                    } else if(data.status == 0){
+                        tostService.notify(data.message, 'top');
+                    }
+                });
+            }
+        };
+
+        self.googleRegister = function() {
+            var promise = googleLogin.startLogin();
+            promise.then(function(googleData) {
+                $ionicLoading.show();
+                console.log(googleData);
+                timeStorage.set('userEmail', googleData.email, 1);
+                var query = loginFactory.save({
+                    action_type: 'google',
+                    social_id: googleData.google_id,
+                    platform: devicePlatform,
+                    token: $localStorage.gcmToken,
+                    action: 'login_register',
+                    device_id: deviceUUID,
+                    email: googleData.email,
+                    name: googleData.name,
+                    currentTimestamp: _.now(),
+                    password: '',
+                    profile_image:googleData.picture
+                });
+                query.$promise.then(function(data) {
+                    $ionicLoading.hide();
+                    console.log(data);
+                    tostService.notify('Welcome "'+data.data.name+'"', 'top');
+                    timeStorage.set('userEmail', googleData.email, 1);
+                    timeStorage.set('userData', data, 1);
+                    // lastUsesTimeService.updateTime();
+                    $state.go('app.chats');
+                });
+            }, function(data) {
+                console.log(data);
+            });
+        };
+        self.facebookRegister = function() {
+            facebookLogin.login().then(function(fbData) {
+                console.log(fbData);
+                if (fbData.id) {
+                    loginWithFBApi(fbData);
+                    $ionicLoading.show();
+                }
+                if (fbData == 'unknown') {
+                    facebookLogin.fbLoginSuccess().then(function(fbData1) {
+                        console.log(fbData1);
+                        loginWithFBApi(fbData1);
+                        $ionicLoading.show();
+                    }, function(data) {
+                        console.log(data);
+                    });
+                }
+            }, function(data) {
+                console.log(data);
+            });
+        };
+
+        function loginWithFBApi(fbData) {
+            timeStorage.set('userEmail', fbData.email, 1);
+            var query = loginFactory.save({
+                action_type: 'facebook',
+                social_id: fbData.id,
+                platform: devicePlatform,
+                token: $localStorage.gcmToken,
+                action: 'login_register',
+                device_id: deviceUUID,
+                email: fbData.email,
+                name: fbData.name,
+                currentTimestamp: _.now(),
+                password: '',
+                profile_image:'http://graph.facebook.com/' + fbData.id + '/picture?type=large'
+            });
+            query.$promise.then(function(data) {
+                $ionicLoading.hide();
+                console.log(data);
+                tostService.notify('Welcome "'+data.data.name+'"', 'top');
+                timeStorage.set('userEmail', fbData.email, 1);
+                timeStorage.set('userData', data, 1);
+                // lastUsesTimeService.updateTime();
+                $state.go('app.chats');
+            });
+        };
+        var count = 0;
+        $ionicPlatform.registerBackButtonAction(function() {
+            var view = $ionicHistory.currentView();
+            if (view.stateId == 'login' && count == 0) {
+                tostService.notify('Press Back Button Again To Exit The App!', 'center');
+                count++;
+                $timeout(function() {
+                    count = 0;
+                }, 3000);
+            } else if (view.stateId == 'login' && count == 1) {
+                navigator.app.exitApp();
+                count = 0;
+            } else {
+                $ionicHistory.goBack();
+                count = 0;
+            }
+        }, 100);
+
+    }
+})();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('loginFactory', loginFactory);
+
+   function loginFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/users/register_login/:action_type/:action/:social_id/:platform/:device_id/:token/:email/:password', {},{});
+   };
+})();
+
+(function() {
+    'use strict';
+
+    angular.module('chattapp')
             .controller('menuController', menuController);
 
     function menuController($scope, $ionicPopover, tostService, $localStorage, Onsuccess, $state, timeStorage, $rootScope) {
@@ -18196,6 +18361,27 @@ angular.module('chattapp')
    };
 })();
 
+ (function() {
+    'use strict';
+
+    angular.module('chattapp')
+        .controller('settingController', settingController);
+
+    function settingController(socketService, timeStorage, $state) {
+            var self = this;
+            self.logout = function() {
+	            socketService.logout();
+	            timeStorage.remove('google_access_token');
+	            timeStorage.remove('userEmail');
+	            timeStorage.remove('userData');
+	            timeStorage.remove('displayPrivateChats');
+	            timeStorage.remove('listUsers');
+	            timeStorage.remove('chatWithUserData');
+	            timeStorage.remove('displayPublicChats');
+	            $state.go('login');
+        };
+    }
+})();
 (function() {
    'use strict';
    angular.module('chattapp')
@@ -18260,186 +18446,4 @@ angular.module('chattapp')
    function verificationFactory($resource, Configurations) {
        return $resource(Configurations.api_url+'/users/do_user_verification/:email/:code', {},{});
    };
-})();
-
-(function() {
-    'use strict';
-
-    angular.module('chattapp')
-        .controller('loginController', loginController);
-
-    function loginController($state, loginFactory, timeStorage, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService, $ionicLoading) {
-        console.log('login');
-        var self = this;
-        self.data = {
-            email: '',
-            password: ''
-        }
-        var deviceUUID = timeStorage.get('deviceUUID');
-        var devicePlatform = timeStorage.get('devicePlatform');
-        self.login = function() {
-            if (_.isEmpty(self.data.email) || _.isEmpty(self.data.password) || !self.data.email) {
-                tostService.notify('Please enter your correct email and password', 'top');
-            } else {
-                $ionicLoading.show();
-                var query = loginFactory.save({
-                    action_type: 'manual_login',
-                    social_id: '',
-                    platform: devicePlatform,
-                    token: $localStorage.gcmToken,
-                    action: 'login_register',
-                    device_id: deviceUUID,
-                    email: self.data.email,
-                    password: self.data.password,
-                    name: '',
-                    currentTimestamp: _.now(),
-                    profile_image:''
-                });
-                query.$promise.then(function(data) {
-                    $ionicLoading.hide();
-                    if (data.status == 3) {
-                        tostService.notify(data.message, 'top');
-                        timeStorage.set('userEmail', self.data.email, 1);
-                        $state.go('verification');
-                    } else if (data.status == 1) {
-                        tostService.notify('Welcome "'+data.data.name+'"', 'top');
-                        timeStorage.set('userEmail', self.data.email, 1);
-                        timeStorage.set('userData', data, 1);
-                        // lastUsesTimeService.updateTime();
-                        $state.go('app.chats');
-                    } else if(data.status == 0){
-                        tostService.notify(data.message, 'top');
-                    }
-                });
-            }
-        };
-
-        self.googleRegister = function() {
-            var promise = googleLogin.startLogin();
-            promise.then(function(googleData) {
-                $ionicLoading.show();
-                console.log(googleData);
-                timeStorage.set('userEmail', googleData.email, 1);
-                var query = loginFactory.save({
-                    action_type: 'google',
-                    social_id: googleData.google_id,
-                    platform: devicePlatform,
-                    token: $localStorage.gcmToken,
-                    action: 'login_register',
-                    device_id: deviceUUID,
-                    email: googleData.email,
-                    name: googleData.name,
-                    currentTimestamp: _.now(),
-                    password: '',
-                    profile_image:googleData.picture
-                });
-                query.$promise.then(function(data) {
-                    $ionicLoading.hide();
-                    console.log(data);
-                    tostService.notify('Welcome "'+data.data.name+'"', 'top');
-                    timeStorage.set('userEmail', googleData.email, 1);
-                    timeStorage.set('userData', data, 1);
-                    // lastUsesTimeService.updateTime();
-                    $state.go('app.chats');
-                });
-            }, function(data) {
-                console.log(data);
-            });
-        };
-        self.facebookRegister = function() {
-            facebookLogin.login().then(function(fbData) {
-                console.log(fbData);
-                if (fbData.id) {
-                    loginWithFBApi(fbData);
-                    $ionicLoading.show();
-                }
-                if (fbData == 'unknown') {
-                    facebookLogin.fbLoginSuccess().then(function(fbData1) {
-                        console.log(fbData1);
-                        loginWithFBApi(fbData1);
-                        $ionicLoading.show();
-                    }, function(data) {
-                        console.log(data);
-                    });
-                }
-            }, function(data) {
-                console.log(data);
-            });
-        };
-
-        function loginWithFBApi(fbData) {
-            timeStorage.set('userEmail', fbData.email, 1);
-            var query = loginFactory.save({
-                action_type: 'facebook',
-                social_id: fbData.id,
-                platform: devicePlatform,
-                token: $localStorage.gcmToken,
-                action: 'login_register',
-                device_id: deviceUUID,
-                email: fbData.email,
-                name: fbData.name,
-                currentTimestamp: _.now(),
-                password: '',
-                profile_image:'http://graph.facebook.com/' + fbData.id + '/picture?type=large'
-            });
-            query.$promise.then(function(data) {
-                $ionicLoading.hide();
-                console.log(data);
-                tostService.notify('Welcome "'+data.data.name+'"', 'top');
-                timeStorage.set('userEmail', fbData.email, 1);
-                timeStorage.set('userData', data, 1);
-                // lastUsesTimeService.updateTime();
-                $state.go('app.chats');
-            });
-        };
-        var count = 0;
-        $ionicPlatform.registerBackButtonAction(function() {
-            var view = $ionicHistory.currentView();
-            if (view.stateId == 'login' && count == 0) {
-                tostService.notify('Press Back Button Again To Exit The App!', 'center');
-                count++;
-                $timeout(function() {
-                    count = 0;
-                }, 3000);
-            } else if (view.stateId == 'login' && count == 1) {
-                navigator.app.exitApp();
-                count = 0;
-            } else {
-                $ionicHistory.goBack();
-                count = 0;
-            }
-        }, 100);
-
-    }
-})();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('loginFactory', loginFactory);
-
-   function loginFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/users/register_login/:action_type/:action/:social_id/:platform/:device_id/:token/:email/:password', {},{});
-   };
-})();
-
- (function() {
-    'use strict';
-
-    angular.module('chattapp')
-        .controller('settingController', settingController);
-
-    function settingController(socketService, timeStorage, $state) {
-            var self = this;
-            self.logout = function() {
-	            socketService.logout();
-	            timeStorage.remove('google_access_token');
-	            timeStorage.remove('userEmail');
-	            timeStorage.remove('userData');
-	            timeStorage.remove('displayPrivateChats');
-	            timeStorage.remove('listUsers');
-	            timeStorage.remove('chatWithUserData');
-	            timeStorage.remove('displayPublicChats');
-	            $state.go('login');
-        };
-    }
 })();
