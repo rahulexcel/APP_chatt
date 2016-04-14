@@ -85851,6 +85851,27 @@ a.dark {
 .navbar {
   margin-bottom: 0px;
 }
+
+span.satusedit.ion-android-create {
+  padding: 0 0 0 8px;
+}
+
+span.status_edit {
+  margin-left: 20px;
+  border-left: 1px solid;
+}
+
+.mypanel {
+  margin-bottom: 0px !important;
+}
+
+.myimage {
+  height: 280px;
+}
+
+.myprbt {
+  margin-right: 20px;
+}
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.

@@ -22,6 +22,7 @@
                      "timeStamp": response.data.message_time,
                      "message_type": response.data.message_type,
                  });
+                self.tempMessage = [];
                 $scope.$evalAsync();
                 $ionicScrollDelegate.scrollBottom(false);
             }
@@ -51,6 +52,31 @@
             self.displayChatMessages.push(response.data);
             $scope.$evalAsync();
          });
+         self.tempMessage =[];
+         var flag =0;
+         var increseTimeout=0;
+         var inputChangedPromise;
+         $scope.$on('room_user_typing_message', function (event, response) {
+            if($stateParams.roomId == response.data.room_id){
+                if(inputChangedPromise){
+                $timeout.cancel(inputChangedPromise);
+            }
+                if(flag == 0){
+                    self.tempMessage.unshift(response.data.name);
+                    flag = 1;
+                }
+                if(self.tempMessage[0] != response.data.name){
+                    self.tempMessage.unshift(response.data.name);
+                }
+                $timeout(function() {
+                    $ionicScrollDelegate.scrollBottom(false);
+                });
+                $scope.$evalAsync();
+                inputChangedPromise = $timeout(function(){
+                self.tempMessage = [];
+            },6000);
+            }
+         });
          $scope.$on('now_device_is_online', function (event, response) {
             socket.emit('APP_SOCKET_EMIT', 'room_open', { accessToken:  userData.data.access_token, room_id: $stateParams.roomId, currentTimestamp: _.now() });
             $timeout(function() {
@@ -59,7 +85,6 @@
          });
          sqliteService.getMessageDataFromDB($stateParams.roomId).then(function(response){
             self.displayChatMessages = response;
-           
             $ionicScrollDelegate.scrollBottom(false);
          });
          roomOpenApi();
