@@ -12,7 +12,6 @@
         self.name = chatWithUserData.name;
         self.image = chatWithUserData.pic;
         self.id = chatWithUserData.id;
-        console.log(typeof(chatWithUserData.lastSeen))
         if(!isNaN(chatWithUserData.lastSeen)){
             self.lastSeen = moment(parseInt(chatWithUserData.lastSeen)).format("hh:mm a");
         } else{

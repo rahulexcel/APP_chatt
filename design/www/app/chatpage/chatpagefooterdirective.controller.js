@@ -35,6 +35,7 @@
                     $ionicScrollDelegate.scrollBottom(false);
                     self.message = '';
                     $interval.cancel(interval);
+                    $timeout.cancel(inputChangedPromise);
                 })
                  $ionicScrollDelegate.scrollBottom(false);
             }
