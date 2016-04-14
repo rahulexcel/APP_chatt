@@ -1,4 +1,4 @@
- (function() {
+(function() {
      'use strict';
      angular.module('chattapp')
          .factory('socketService', socketService);
@@ -34,9 +34,6 @@
                     }
                     if(type == 'delete_public_room'){
                         $rootScope.$broadcast('deleted_public_room', { data: data.data });
-                    }
-                    if(type == 'room_user_typing'){
-                        $rootScope.$broadcast('room_user_typing_message', { data: data });
                     }
                 });
          socket.on('response_update_message_status', function(data) {
@@ -120,10 +117,6 @@
              service.logout = function() {
                 var userData = timeStorage.get('userData');
                 socket.emit('APP_SOCKET_EMIT', 'do_logout', { accessToken: userData.data.access_token, currentTimestamp: _.now() });
-             },
-             service.writingMessage = function(roomId) {
-                var userData = timeStorage.get('userData');
-                socket.emit('APP_SOCKET_EMIT', 'room_user_typing', { user_id: userData.data.user_id, name: userData.data.name, room_id: roomId});
              }
          return service;
      };
