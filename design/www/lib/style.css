@@ -516,8 +516,7 @@ span.name input{
     font-size: 12px;
 }
 #chats .item{
-    /*border-bottom:1px solid #ddd!important;*/
-    margin-top: 1px;
+    border-bottom:1px solid #ddd!important;
 }
 .popover{
     display: block;
@@ -605,6 +604,31 @@ a.active{
     font-size: 50px;
     color: #fff;
     margin-top: 60%!important;
+}
+.bubble-blue .lastSeen{
+    text-align: right!important;
+}
+.bubble-blue .message-user-name{
+    display: none!important;
+}
+.bubble-yellow .lastSeen{
+    text-align: left!important;
+}
+.bubble-yellow .message-timing{
+    font-size: 2px!important;
+    text-align: left!important;
+    font-style: italic!important;
+    padding-top: 2px;
+}
+.bubble-yellow .message-timing1{
+    display: none!important;
+}
+.bubble-blue .message-timing{
+    display: none!important;
+}
+.message-timing1{
+    font-size: 2px!important;
+    font-style: italic!important;
 }
 
 .platform-android .action-sheet .action-sheet-title,

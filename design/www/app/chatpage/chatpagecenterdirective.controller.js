@@ -7,6 +7,10 @@
      function chatPageCenterDirectiveController($scope, $state, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, sqliteService, chatpageService, timeZoneService) {
          var self = this;
          var chatWithUserData = timeStorage.get('chatWithUserData');
+         self.isPublicRoom = true;
+         if(chatWithUserData.id){
+            self.isPublicRoom = false;   
+         }
          var userData = timeStorage.get('userData');
          self.user_id = userData.data.user_id;
          self.user_name = userData.data.name;

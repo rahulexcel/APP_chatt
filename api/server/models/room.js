@@ -311,6 +311,18 @@ module.exports = function (Room) {
                                                 if( err ){
                                                     callback(null, 0, 'try again', {});
                                                 }else{
+                                                    //--START---update last_message_received_time for room-----
+                                                    Room.update({
+                                                        _id : new ObjectID( room_id )
+                                                    },{
+                                                        last_message_received_time: server_time
+                                                    },function (err, result22) {
+                                                        if (err) {
+                                                        } else {
+                                                        }
+                                                    });
+                                                    
+                                                    //--END-----update last_message_received_time for room-----
                                                     var data = {
                                                         msg_local_id : msg_local_id,
                                                         message_id : new_message.id,
@@ -398,6 +410,7 @@ module.exports = function (Room) {
                     
                     Room.find({
                         "where": wh,
+                        "order": 'last_message_received_time DESC',
                         "include": [{
                             relation: 'room_owner', 
                             scope: {
@@ -673,6 +686,7 @@ module.exports = function (Room) {
                     callback(null, 0, 'UnAuthorized', {});
                 }else{
                     var userId = accessToken.userId
+                    var org_user_id  = userId;
                     userId = new ObjectID( userId );
                     Room.find({
                         "where" : {
@@ -713,10 +727,25 @@ module.exports = function (Room) {
                                                 if (err) {
                                                     callback(null, 0, 'try again', {});
                                                 } else {
-                                                    var data = {
-                                                        room_id : room_id
-                                                    }
-                                                    callback(null, 1, 'Public room joined', data );
+                                                    User.FN_get_user_by_id( org_user_id, function( u_status, u_message, u_data ){
+                                                        if( u_status == 1 ){
+                                                            var join_user_info = {
+                                                                name : u_data.name,
+                                                                profile_image : u_data.profile_image,
+                                                                room_id : room_id,
+                                                            }
+                                                            var data = {
+                                                                room_id : room_id,
+                                                                join_user_info : join_user_info
+                                                            }
+                                                            callback(null, 1, 'Public room joined', data );
+                                                        }else{
+                                                            var data = {
+                                                                room_id : room_id,
+                                                            }
+                                                            callback(null, 0, 'error while getting user info', data );
+                                                        }
+                                                    })
                                                 }
                                             });
                                         }

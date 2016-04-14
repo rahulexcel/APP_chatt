@@ -61,13 +61,15 @@
                  });
                  return q.promise;
              },
-             service.joinPublicRoom = function(roomid) {
+             service.joinPublicRoom = function(roomId) {
                  var q = $q.defer();
                  var userData = timeStorage.get('userData');
                  var accessToken = userData.data.access_token;
-                 socket.emit('join_public_room', accessToken, roomid, _.now());
-                 socket.on('RESPONSE_join_public_room', function(data) {
-                     q.resolve(data);
+                 socket.emit('APP_SOCKET_EMIT', 'join_public_room', { accessToken:  accessToken, room_id: roomId, currentTimestamp: _.now()});
+                 socket.on('RESPONSE_APP_SOCKET_EMIT', function(type, data) {
+                    if(type == 'join_public_room'){
+                        q.resolve(data);
+                    }
                  });
                  return q.promise;
              },
