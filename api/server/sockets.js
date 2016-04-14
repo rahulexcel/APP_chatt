@@ -169,20 +169,6 @@ module.exports.listen = function(app){
             })
         });
         
-        //join public room 
-        socket.on('join_public_room', function( accessToken, room_id, currentTimestamp ){
-            FN_join_public_room( accessToken, room_id, currentTimestamp, function( response ){
-                if( response.status == 1 ){
-                    var d = {
-                        type : 'alert',
-                        data : response
-                    }
-                    socket.emit( 'RESPONSE_join_public_room', d );
-                    socket.to( room_id ).emit( 'response_room', d ); // this is not using yet
-                }
-            });
-        })
-        
         //sockets events ( trying to create generic )
         socket.on('APP_SOCKET_EMIT',function( type, info ){
             //whenever a room is open 'room_open' will be emit on mobile app.
@@ -241,6 +227,38 @@ module.exports.listen = function(app){
                             data : response.data.user_data
                         }
                         socket.emit( 'RESPONSE_APP_SOCKET_EMIT','sent_message_response', d2 );
+                    }
+                });
+            }
+            else if( type == 'join_public_room'){
+                var accessToken = info.accessToken;
+                var room_id = info.room_id;
+                var currentTimestamp = info.currentTimestamp;
+                console.log( 'SOCKET CALL :: join_public_room :: room_id '+ room_id );
+                FN_join_public_room( accessToken, room_id, currentTimestamp, function( response ){
+                    if( response.status == 1 ){
+                        var d = {
+                            type : 'alert',
+                            data : response
+                        }
+                        socket.emit( 'RESPONSE_APP_SOCKET_EMIT', 'join_public_room', d ); // to the admin who removed the message
+                        //----------------------------------------------------
+                        var join_user_info = response.data.join_user_info;
+                        var joins_user_info_name = join_user_info.name;
+                        var msg_local_id = '';
+                        var message_type = 'room_alert_message';
+                        var message = joins_user_info_name + ' joins the room';
+                        FN_room_message( msg_local_id, accessToken, room_id, message_type, message, currentTimestamp, function( response ){
+                            if( response.status == 1 ){
+                                console.log( message_type +' :: '+ message );
+                                // will be available on other users of room
+                                var d1 = {
+                                    type : 'alert',
+                                    data : response.data.broadcast_data
+                                }
+                                socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT', 'join_public_room', d1 );
+                            }
+                        });
                     }
                 });
             }
