@@ -28,9 +28,17 @@
                     timeStorage.set('gcmToken', data.registrationId)
                 });
                 push.on('notification', function(data) {
+                    console.log(data);
                     console.log('notification');
                     if (data.additionalData.foreground) {
                         console.log(data);
+                    } else {
+                        // data.message,
+                        //     data.title,
+                        //     data.count,
+                        //     data.sound,
+                        //     data.image,
+                        //     data.additionalData
                     }
                     if (data.additionalData.coldstart) {
                         flag = 1;
