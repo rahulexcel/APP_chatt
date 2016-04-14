@@ -20153,21 +20153,24 @@ angular.module('chattapp')
 })();
 /*! ngstorage 0.3.7 | Copyright (c) 2015 Gias Kay Lee | MIT License */!function(a,b){"use strict";"function"==typeof define&&define.amd?define(["angular"],b):"object"==typeof exports?module.exports=b(require("angular")):b(a.angular)}(this,function(a){"use strict";function b(b){return["$rootScope","$window","$log","$timeout",function(c,d,e,f){function g(a){var b;try{b=d[a]}catch(c){b=!1}if(b&&"localStorage"===a){var e="__"+Math.round(1e7*Math.random());try{localStorage.setItem(e,e),localStorage.removeItem(e)}catch(c){b=!1}}return b}var h,i,j=g(b)||(e.warn("This browser does not support Web Storage!"),{setItem:function(){},getItem:function(){}}),k={$default:function(b){for(var c in b)a.isDefined(k[c])||(k[c]=b[c]);return k},$reset:function(a){for(var b in k)"$"===b[0]||delete k[b]&&j.removeItem("ngStorage-"+b);return k.$default(a)}};try{j=d[b],j.length}catch(l){e.warn("This browser does not support Web Storage!"),j={}}for(var m,n=0,o=j.length;o>n;n++)(m=j.key(n))&&"ngStorage-"===m.slice(0,10)&&(k[m.slice(10)]=a.fromJson(j.getItem(m)));return h=a.copy(k),c.$watch(function(){var b;i||(i=f(function(){if(i=null,!a.equals(k,h)){b=a.copy(h),a.forEach(k,function(c,d){a.isDefined(c)&&"$"!==d[0]&&j.setItem("ngStorage-"+d,a.toJson(c)),delete b[d]});for(var c in b)j.removeItem("ngStorage-"+c);h=a.copy(k)}},100,!1))}),d.addEventListener&&d.addEventListener("storage",function(b){"ngStorage-"===b.key.slice(0,10)&&(b.newValue?k[b.key.slice(10)]=a.fromJson(b.newValue):delete k[b.key.slice(10)],h=a.copy(k),c.$apply())}),k}]}return a.module("ngStorage",[]).factory("$localStorage",b("localStorage")).factory("$sessionStorage",b("sessionStorage"))});
 
-(function () {
+(function() {
     'use strict';
     angular.module('chattapp')
             .factory('pushNotification', pushNotification);
-    function pushNotification($http, $q, $log,Configurations, timeStorage, $state, $localStorage) {
+    function pushNotification($http, $q, $log, Configurations, timeStorage, $state, $localStorage) {
         return {
-            push: function () {
+            push: function() {
                 console.log('push is calling');
                 var flag = 0;
-                    var push = PushNotification.init({
-                    "android": {
-                        "senderID": Configurations.senderID,
-                        "icon": Configurations.icon,
-                        "iconColor": "grey"
-                    },
+                var android = {
+                    "senderID": Configurations.senderID,
+                    "icon": Configurations.icon,
+                    "iconColor": "grey",
+                    "forceShow": "true"
+                }
+                console.log(android);
+                var push = PushNotification.init({
+                    "android": android,
                     "ios": {
                         "alert": "true",
                         "badge": "true",
@@ -20177,9 +20180,11 @@ angular.module('chattapp')
                 });
                 push.on('registration', function(data) {
                     console.log(data.registrationId);
-                    timeStorage.set('gcmToken',data.registrationId)
+                    timeStorage.set('gcmToken', data.registrationId)
                 });
                 push.on('notification', function(data) {
+                    console.log(data);
+                    console.log('notification');
                     if (data.additionalData.foreground) {
                         console.log(data);
                     } else {
@@ -20190,16 +20195,27 @@ angular.module('chattapp')
                         //     data.image,
                         //     data.additionalData
                     }
-                    if(data.additionalData.coldstart){
+                    if (data.additionalData.coldstart) {
                         flag = 1;
                         var chatWithUser = {
-                            name:data.title,
-                            pic:data.additionalData.icon,
+                            name: data.title,
+                            pic: data.additionalData.icon,
                         }
                         timeStorage.set('chatWithUserData', chatWithUser, 1);
-                        if(data.additionalData.room_id){
-                            $state.go('app.chatpage', {roomId:data.additionalData.room_id});                            
-                        } else{
+                        if (data.additionalData.room_id) {
+                            $state.go('app.chatpage', {roomId: data.additionalData.room_id});
+                        } else {
+                            $state.go('app.chats');
+                        }
+                    } else {
+                        var chatWithUser = {
+                            name: data.title,
+                            pic: data.additionalData.icon,
+                        }
+                        timeStorage.set('chatWithUserData', chatWithUser, 1);
+                        if (data.additionalData.room_id) {
+                            $state.go('app.chatpage', {roomId: data.additionalData.room_id});
+                        } else {
                             $state.go('app.chats');
                         }
                     }
@@ -20207,12 +20223,12 @@ angular.module('chattapp')
                 push.on('error', function(e) {
                     console.log(e.message);
                 });
-                if(flag == 0){
-                     if($localStorage.userData){
+                if (flag == 0) {
+                    if ($localStorage.userData) {
                         $state.go('app.chats');
-                        } else{
+                    } else {
                         $state.go('login');
-                     }
+                    }
                 }
             }
         };
@@ -20577,6 +20593,41 @@ angular.module('chattapp')
     'use strict';
 
     angular.module('chattapp')
+            .controller('menuController', menuController);
+
+    function menuController($scope, $ionicPopover, tostService, $localStorage, Onsuccess, $state, timeStorage, $rootScope) {
+        console.log('menuController');
+        var self = this;
+        self.chattab = true;
+        $ionicPopover.fromTemplateUrl('templates/popover.html', {
+            scope: $scope,
+        }).then(function(popover) {
+            self.popover = popover;
+        });
+        self.search = function(state) {
+            if (timeStorage.get('network')) {
+                window.plugins.toast.showShortTop('You need to online to access this');
+            }
+            else
+            {
+                $state.go(state);
+            }
+        };
+        Onsuccess.footerTab(function(a, b, c, d) {
+            self.chattab = a;
+            self.searchb = b;
+            self.setting = c;
+            self.group = d;
+        });
+//        self.footer = function(state) {
+//            
+//        }
+    }
+})();
+(function() {
+    'use strict';
+
+    angular.module('chattapp')
             .controller('contactsController', contactsController);
 
     function contactsController($scope, contactsFactory, $filter, contactsService, $ionicLoading, timeStorage, $localStorage, $state, socketService, $ionicModal, getUserProfileFactory) {
@@ -20899,63 +20950,6 @@ angular.module('chattapp')
 })();
 
 (function() {
-    'use strict';
-
-    angular.module('chattapp')
-            .controller('menuController', menuController);
-
-    function menuController($scope, $ionicPopover, tostService, $localStorage, Onsuccess, $state, timeStorage, $rootScope) {
-        console.log('menuController');
-        var self = this;
-        self.chattab = true;
-        $ionicPopover.fromTemplateUrl('templates/popover.html', {
-            scope: $scope,
-        }).then(function(popover) {
-            self.popover = popover;
-        });
-        self.search = function(state) {
-            if (timeStorage.get('network')) {
-                window.plugins.toast.showShortTop('You need to online to access this');
-            }
-            else
-            {
-                $state.go(state);
-            }
-        };
-        Onsuccess.footerTab(function(a, b, c, d) {
-            self.chattab = a;
-            self.searchb = b;
-            self.setting = c;
-            self.group = d;
-        });
-//        self.footer = function(state) {
-//            
-//        }
-    }
-})();
- (function() {
-     'use strict';
-
-     angular.module('chattapp')
-         .controller('profileController', profileController);
-
-     function profileController(cameraService) {
-         var self = this;
-         self.displayprofile = [{
-             "image": "https://s3.amazonaws.com/uifaces/faces/twitter/homka/128.jpg",
-             "status": "I am designing something.",
-             "userName": "David M."
-         }];
-         self.editProfilePic = function() {
-             cameraService.changePic().then(function(imageData) {
-                 self.displayprofile[0].image = "data:image/jpeg;base64," + imageData;
-             }, function(err) {
-                 console.log("Picture failure: " + err);
-             });
-         };
-     }
- })();
-(function() {
    'use strict';
    angular.module('chattapp')
        .factory('getPublicRoomsFactory', getPublicRoomsFactory);
@@ -21116,6 +21110,28 @@ angular.module('chattapp')
         }); 
     }
 })();
+ (function() {
+     'use strict';
+
+     angular.module('chattapp')
+         .controller('profileController', profileController);
+
+     function profileController(cameraService) {
+         var self = this;
+         self.displayprofile = [{
+             "image": "https://s3.amazonaws.com/uifaces/faces/twitter/homka/128.jpg",
+             "status": "I am designing something.",
+             "userName": "David M."
+         }];
+         self.editProfilePic = function() {
+             cameraService.changePic().then(function(imageData) {
+                 self.displayprofile[0].image = "data:image/jpeg;base64," + imageData;
+             }, function(err) {
+                 console.log("Picture failure: " + err);
+             });
+         };
+     }
+ })();
  (function() {
     'use strict';
 
