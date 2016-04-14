@@ -133,6 +133,16 @@ module.exports.listen = function(app){
             callback( response );
         })
     }
+    function FN_get_user_room_unread_messages( accessToken, room_id, currentTimestamp, callback ){
+        Room.get_user_room_unread_messages( accessToken, room_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            var response = {
+                'status' : res_status,
+                'message' : res_message,
+                'data' : res_data
+            };
+            callback( response );
+        })
+    }
     
     //------------------------------------
     //------------------------------------
@@ -442,6 +452,24 @@ module.exports.listen = function(app){
                         message_type : 'room_temporary_message'
                     }
                     socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT','room_user_typing', d1 );
+                }
+            }
+            else if( type == 'show_room_unread_notification' ){
+                var accessToken = info.accessToken;
+                var room_id = info.room_id;
+                var currentTimestamp = info.currentTimestamp;
+                if( accessToken != '' && room_id != '' ){
+                    console.log( 'SOCKET CALL :: show_room_unread_notification :: for room_id - ' + room_id );
+                    FN_get_user_room_unread_messages( accessToken, room_id,currentTimestamp, function( response ){
+                        if( response.status == 1 ){
+                            var d1 = {
+                                room_id : room_id,
+                                unread_messages : response.data.messages_count
+                            }
+                            console.log( 'SOCKET CALL :: show_room_unread_notification :: for room_id - ' + room_id +' unread messages ::  '+response.data.messages_count);
+                            socket.emit( 'RESPONSE_APP_SOCKET_EMIT','show_room_unread_notification', d1 );
+                        }
+                    });
                 }
             }
         });
