@@ -4,7 +4,7 @@
     angular.module('chattapp')
             .controller('profileController', profileController);
 
-    function profileController(cameraService, profileFactory,$timeout, $ionicModal, timeStorage, $scope, $filter, $ionicPopup) {
+    function profileController(cameraService, profileImageFactory, profileFactory, $timeout, $ionicModal, timeStorage, $scope, $filter, $ionicPopup) {
         var self = this;
 
         if (timeStorage.get('userData').data.access_token) {
@@ -43,10 +43,10 @@
                 console.log("Picture failure: " + err);
             });
         };
-        
+
         $scope.result = function(image) {
             $scope.myCroppedImage = image;
-            
+
         };
         $scope.status = function(status, demo) {
             $scope.data = {
@@ -69,7 +69,27 @@
                         text: '<b>Save</b>',
                         type: 'button-positive',
                         onTap: function(e) {
-                            myPopup.close();
+                            console.log(profileFactory);
+                            var query = profileFactory.status({
+                                accessToken: timeStorage.get('userData').data.access_token,
+                                status: $scope.data.text,
+                                currentTimestamp: Date.now()
+                            });
+                            query.$promise.then(function(data) {
+                                console.log(data);
+                                if (data.status == 1) {
+                                    self.displayprofile.profile_status = data.data.status;
+                                    myPopup.close();
+                                    console.log($scope.data.text);
+                                }
+                                else {
+                                    console.log('status not update');
+                                    myPopup.close();
+                                }
+
+                            });
+
+
                         }
                     }
                 ]
@@ -84,13 +104,39 @@
 //        $timeout(function(){
 //            $scope.modal.show();
 //        },500);
-        
-        $scope.imgChange=function(){
+        function fixBinary(bin) {
+            var length = bin.length;
+            var buf = new ArrayBuffer(length);
+            var arr = new Uint8Array(buf);
+            for (var i = 0; i < length; i++) {
+                arr[i] = bin.charCodeAt(i);
+            }
+            return buf;
+        }
+
+        $scope.imgChange = function() {
             $scope.modal.hide();
-            self.displayprofile.profile_image= $scope.myCroppedImage; 
+            var imageBase64 = $scope.myCroppedImage.replace(/^data:image\/(png|jpeg);base64,/, "");
+            var binary = fixBinary(atob(imageBase64));
+            var blob = new Blob([binary], {type: 'image/png', name: 'hello'});
+            blob.name = 'hello';
+            blob.$ngfName = 'hello';
+
+            console.log(blob);
+            var query = profileImageFactory.upload({
+                accessToken: timeStorage.get('userData').data.access_token,
+                file: blob,
+                currentTimestamp: Date.now(),
+                file_type: 'profile_image'
+            });
+            query.then(function(data) {
+                console.log(data);
+            });
+
+            self.displayprofile.profile_image = $scope.myCroppedImage;
             timeStorage.set('profile_pic', self.displayprofile.profile_image, 10000);
         };
-        $scope.imgCancel=function(){
+        $scope.imgCancel = function() {
             $scope.modal.hide();
         };
     }

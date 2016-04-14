@@ -690,6 +690,7 @@ a.active{
 }
 .button.button-clear.fontC{
     color:#fff !important;
+        width: 60%;
 }
 button.button.back-button.buttons.button-clear.header-item.mybt {
     margin-left: 5px;
@@ -704,6 +705,7 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
 .chatName{
     margin:-6px 0 0 0;
     font-weight:900;
+    text-align: left;
 }
 .headLast{
     margin: -14px 0 0 0;
@@ -714,7 +716,7 @@ span.satusedit.ion-android-create {
     padding: 0 0 0 8px;
 }
 span.status_edit {
-    margin-left: 20px;
+    margin-left: 8px;
     border-left: 1px solid;
 }
 input#statustxt {

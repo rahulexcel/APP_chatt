@@ -1,11 +1,11 @@
 /* Empty. Add your own CSS if you like */
 .error{
-	color: red;
+    color: red;
 }
 .submitted .ng-invalid{
-        border: 1px solid red;
-    }
-        .m-b {
+    border: 1px solid red;
+}
+.m-b {
     margin-bottom: 0px;
 }
 .md-form-group {
@@ -13,5 +13,9 @@
     padding: 18px 0 19px 0;
 }
 .navbar{
-  margin-bottom: 0px;
+    margin-bottom: 0px;
+}
+.mycam_icon{
+    font-size: 20px;
+    padding: 13px 0 0 8px;
 }

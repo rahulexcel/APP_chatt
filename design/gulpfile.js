@@ -21,6 +21,7 @@ var paths = {
         './bower_components/angular-messages/angular-messages.js',
         './bower_components/angular-resource/angular-resource.js',
         './bower_components/jquery/dist/jquery.js',
+        './bower_components/ng-file-upload/ng-file-upload-all.js',
         './bower_components/jstz/jstz.min.js',
         './bower_components/jstzdetect/jstz.js',
         './bower_components/jquery/dist/jquery.js',

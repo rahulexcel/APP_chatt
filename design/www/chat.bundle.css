@@ -85851,6 +85851,11 @@ a.dark {
 .navbar {
   margin-bottom: 0px;
 }
+
+.mycam_icon {
+  font-size: 20px;
+  padding: 13px 0 0 8px;
+}
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
@@ -97762,6 +97767,7 @@ a.active {
 
 .button.button-clear.fontC {
   color: #fff !important;
+  width: 60%;
 }
 
 button.button.back-button.buttons.button-clear.header-item.mybt {
@@ -97780,6 +97786,7 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
 .chatName {
   margin: -6px 0 0 0;
   font-weight: 900;
+  text-align: left;
 }
 
 .headLast {
@@ -97794,7 +97801,7 @@ span.satusedit.ion-android-create {
 }
 
 span.status_edit {
-  margin-left: 20px;
+  margin-left: 8px;
   border-left: 1px solid;
 }
 

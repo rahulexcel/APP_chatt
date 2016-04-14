@@ -8,9 +8,9 @@
                     <div class="r-t pos-rlt" md-ink-ripple style="background:url({{profile.displayprofile.profile_image}})  center; background-size:cover;background-repeat: no-repeat">
                         <div class="p-lg bg-white-overlay text-center r-t">
                             <a href class="w-xs inline myim" ng-if="profile.displayprofile.profile_image">
-                                <img id="profileImage" ng-src="{{profile.displayprofile.profile_image}}" class="img-circle profile-pic">
+                                <img id="profileImage" src="{{profile.displayprofile.profile_image}}" class="img-circle profile-pic">
                             </a>
-                            <div class="camerach" ng-click="profile.editProfilePic()">change image<span class="ion-ios-camera"></span></div>
+                            <div class="camerach" ng-click="profile.editProfilePic()">change image<span class="mycam_icon ion-ios-camera"></span></div>
                             <div class="m-b m-t-sm h2">
                                 <span class="">{{profile.displayprofile.name}}</span>
                             </div>
@@ -32,14 +32,14 @@
 
             </div>
             <div class="list">
-                <a class="item item-icon-right" >
+                <div class="item item-icon-right" >
                     <span>My Private Rooms</span><span class="pull-right">{{profile.displayprofile.user_private_rooms}}</span>
                     <!--<i class="icon ion-chevron-right"></i>-->
-                </a>
-                <a class="item item-icon-right">
+                </div>
+                <div class="item item-icon-right">
                     <span>My Public Rooms</span><span class="pull-right">{{profile.displayprofile.user_public_rooms}}</span>
                     <!--<i class="icon ion-chevron-right"></i>-->
-                </a>
+                </div>
             </div>
 
         </div>
