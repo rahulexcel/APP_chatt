@@ -6,14 +6,10 @@
                 <a class="item item-avatar hover" ng-click="chats.roomClick(chat)">
                     <img class="avatar" ng-src="{{chat.user_data.profile_image}}">
                     <i class="fa fa-circle user-status"></i>
-                    <h3>{{chat.user_data.name}}</h3>
+                    <h3>{{chat.user_data.name}} <span class="pull-right color-red" ng-if="chat.unreadMessage"><i class="ion-ios-star-outline"></i></span></h3>
                     <span class="time lastSeen">{{chat.user_data.last_seen}}</span>
-                    <p>{{chat.message}}</p>
                 </a>
             </div>
         </div>
     </ion-content>
-<!--    <ion-footer-bar class="bar-stable">
-      <chats-Footer></chats-Footer>
-    </ion-fotter-bar>-->
 </ion-view>

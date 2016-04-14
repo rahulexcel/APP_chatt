@@ -17223,14 +17223,17 @@ angular.module('chattapp')
     function chatsController($scope, chatsFactory, timeStorage, chatsService, $state, socketService) {
             var self = this;
             var userData = timeStorage.get('userData');
-            chatsService.listMyRooms().then(function(data){
-                self.displayChats = data;
-                $scope.$evalAsync();
-            });
-            self.displayChats = timeStorage.get('displayPrivateChats');
-            $scope.$on('updatedRoomData', function (event, response) {
-                self.displayChats = response.data;
-                $scope.$evalAsync();
+             chatsService.listMyRooms();
+             var displayChats = timeStorage.get('displayPrivateChats');
+             for(var i=0; i < displayChats.length; i++){
+                displayChats[i].unreadMessage = false;
+             }
+             self.displayChats = displayChats;
+             $scope.$on('got_room_unread_notification', function (event, response) {
+                chatsService.showUnreadIcon(response).then(function(data){
+                    self.displayChats = data;
+                    $scope.$evalAsync();
+                });
              });
              self.roomClick = function(roomData){
                 var clickRoomUserData = {
@@ -17264,11 +17267,10 @@ angular.module('chattapp')
    angular.module('chattapp')
            .factory('chatsService', chatsService);
 
-   function chatsService($q, timeStorage, chatsFactory, $rootScope, timeZoneService) {
+   function chatsService($q, timeStorage, chatsFactory, $rootScope, timeZoneService, socketService) {
               var service = {};
                service.privateRooms = function(roomData, callback) {
                    var returnData = [];
-                   
                    for (var i = 0; i < roomData.length; i++) {
                        var newRoomData = {};
                        var room_users = {};
@@ -17302,8 +17304,8 @@ angular.module('chattapp')
                        var NoRoomData = [];
                        if (data.data.rooms) {
                            service.privateRooms(data.data.rooms, function(res) {
+                               socketService.room_unread_notification(res);
                                timeStorage.set('displayPrivateChats', res, 1);
-                               $rootScope.$broadcast('updatedRoomData', {data: res});
                                q.resolve(res);
                            });
                        } else {
@@ -17312,6 +17314,18 @@ angular.module('chattapp')
                        }
                    });
                    return q.promise;
+               },
+               service.showUnreadIcon = function(roomUnreadData) {
+                var allChatData = timeStorage.get('displayPrivateChats');
+                var q = $q.defer();
+                  for(var i = 0; i < allChatData.length; i++){
+                    if(allChatData[i].room_id == roomUnreadData.data.room_id){
+                      allChatData[i].unreadMessage = true;
+                    }
+                  }
+                  timeStorage.set('displayPrivateChats', allChatData, 1);
+                  q.resolve(allChatData);
+                  return q.promise;
                }
        return service;
    }
@@ -18047,6 +18061,9 @@ angular.module('chattapp')
                     if(type == 'room_user_typing'){
                         $rootScope.$broadcast('room_user_typing_message', { data: data });
                     }
+                    if(type == 'show_room_unread_notification'){
+                        $rootScope.$broadcast('got_room_unread_notification', { data: data });
+                    }
                 });
          socket.on('response_update_message_status', function(data) {
                     var str = data.message_id;
@@ -18133,6 +18150,13 @@ angular.module('chattapp')
              service.writingMessage = function(roomId) {
                 var userData = timeStorage.get('userData');
                 socket.emit('APP_SOCKET_EMIT', 'room_user_typing', { user_id: userData.data.user_id, name: userData.data.name, room_id: roomId});
+             },
+             service.room_unread_notification = function(allRoomData) {
+                var userData = timeStorage.get('userData');
+                for(var i = 0; i < allRoomData.length; i++){
+                    socket.emit('APP_SOCKET_EMIT', 'show_room_unread_notification', { accessToken: userData.data.access_token, room_id: allRoomData[i].room_id, currentTimestamp: _.now()});
+                    socket.emit('APP_SOCKET_EMIT', 'room_open', { accessToken: userData.data.access_token, room_id: allRoomData[i].room_id, currentTimestamp: _.now() });
+                }
              }
          return service;
      };
@@ -18392,7 +18416,7 @@ angular.module('chattapp')
                 "name": name,
                 "id": id,
                 "pic": pic,
-                "lastSeen": lastSeen
+                "lastSeen": self.displayUserProfileLastSeenInTimeStamp
             }
             timeStorage.set('chatWithUserData', chatWithUser, 1);
             socketService.create_room(id).then(function(data) {
@@ -18420,19 +18444,19 @@ angular.module('chattapp')
                 self.spinnerIndex = -1;
                 self.displayUserProfileName = data.data.name;
                 self.displayUserProfileId = data.data.user_id;
+                self.displayUserProfileLastSeenInTimeStamp = data.data.last_seen;
                 if (data.data.profile_image) {
                     self.displayUserProfileImage = data.data.profile_image;
                 }
                 else {
                     self.displayUserProfileImage ="https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg";
                 }
-                self.date = $filter('date')(new Date(data.data.last_seen * 1000), "MMM d, y");
-                if ($filter('date')(new Date().toDateString(), "MMM d, y") == self.date) {
-                    self.displayUserProfileLastSeen = $filter('date')(new Date(data.data.last_seen * 1000), "hh:mm a");
-                } else {
-                    self.displayUserProfileLastSeen = $filter('date')(new Date(data.data.last_seen * 1000), "MMM d y hh:mm a");
+                var lastOnline = (_.now() - data.data.last_seen)/1000;
+                if(lastOnline > 86400){
+                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("MMMM Do YYYY, h:mm a");
+                } else{
+                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("h:mm a");
                 }
-//                    self.displayUserProfileLastSeen = data.data.last_seen;
                 self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
                 self.displayUserProfilePublicRooms = data.data.user_public_rooms;
                 self.displayUserProfileStatus = data.data.profile_status;

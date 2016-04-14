@@ -3,11 +3,10 @@
    angular.module('chattapp')
            .factory('chatsService', chatsService);
 
-   function chatsService($q, timeStorage, chatsFactory, $rootScope, timeZoneService) {
+   function chatsService($q, timeStorage, chatsFactory, $rootScope, timeZoneService, socketService) {
               var service = {};
                service.privateRooms = function(roomData, callback) {
                    var returnData = [];
-                   
                    for (var i = 0; i < roomData.length; i++) {
                        var newRoomData = {};
                        var room_users = {};
@@ -41,8 +40,8 @@
                        var NoRoomData = [];
                        if (data.data.rooms) {
                            service.privateRooms(data.data.rooms, function(res) {
+                               socketService.room_unread_notification(res);
                                timeStorage.set('displayPrivateChats', res, 1);
-                               $rootScope.$broadcast('updatedRoomData', {data: res});
                                q.resolve(res);
                            });
                        } else {
@@ -51,6 +50,18 @@
                        }
                    });
                    return q.promise;
+               },
+               service.showUnreadIcon = function(roomUnreadData) {
+                var allChatData = timeStorage.get('displayPrivateChats');
+                var q = $q.defer();
+                  for(var i = 0; i < allChatData.length; i++){
+                    if(allChatData[i].room_id == roomUnreadData.data.room_id){
+                      allChatData[i].unreadMessage = true;
+                    }
+                  }
+                  timeStorage.set('displayPrivateChats', allChatData, 1);
+                  q.resolve(allChatData);
+                  return q.promise;
                }
        return service;
    }
