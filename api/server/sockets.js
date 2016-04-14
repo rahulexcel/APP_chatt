@@ -237,6 +237,13 @@ module.exports.listen = function(app){
                             data : response.data.user_data
                         }
                         socket.emit( 'RESPONSE_APP_SOCKET_EMIT','sent_message_response', d2 );
+                        
+                        var d11 = {
+                            room_id : room_id,
+                            unread_messages : 1
+                        }
+                        socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT','show_room_unread_notification', d11 );
+                        
                     }
                 });
             }
