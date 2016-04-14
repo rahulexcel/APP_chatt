@@ -48,5 +48,9 @@
     "pushmessage": {
         "dataSource": "mongo_db_app_chatt",
         "public": true
+    },
+    "upload": {
+        "dataSource": "mongo_db_app_chatt",
+        "public": true
     }
 }

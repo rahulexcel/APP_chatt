@@ -770,5 +770,62 @@ module.exports = function (User) {
 
 
 
+//********************************* START logged in user can update his profile_image**********************************
+    User.update_profile_image = function ( accessToken, image_url, currentTimestamp, callback) {
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 0, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 0, 'UnAuthorized', {});
+                }else{
+                    var userId = accessToken.userId
+                    User.findById(userId, function (err, user) {
+                        if (err) {
+                            callback(null, 0, 'UnAuthorized', {});
+                        } else {
+                            if( user == null ){
+                                callback(null, 0, 'user not found', {});
+                            }else{
+                                user.updateAttribute('profile_image', image_url, function (err, user) {
+                                    if (err) {
+                                        callback(null, 0, 'Error', {});
+                                    } else {
+                                        d = {
+                                            profile_image : image_url
+                                        }
+                                        callback(null, 1, 'Profile image updated', d);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    };
+    User.remoteMethod(
+            'update_profile_image', {
+                description: 'logged in user can update his profile image',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'image_url', type: 'string'}, 
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/update_profile_image',
+                }
+            }
+    );
+//********************************* END logged in user can update his profile **********************************
+
+
+
+
 
 };
