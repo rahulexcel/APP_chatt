@@ -133,6 +133,16 @@ module.exports.listen = function(app){
             callback( response );
         })
     }
+    function FN_get_user_room_unread_messages( accessToken, room_id, currentTimestamp, callback ){
+        Room.get_user_room_unread_messages( accessToken, room_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            var response = {
+                'status' : res_status,
+                'message' : res_message,
+                'data' : res_data
+            };
+            callback( response );
+        })
+    }
     
     //------------------------------------
     //------------------------------------
@@ -168,20 +178,6 @@ module.exports.listen = function(app){
                 }
             })
         });
-        
-        //join public room 
-        socket.on('join_public_room', function( accessToken, room_id, currentTimestamp ){
-            FN_join_public_room( accessToken, room_id, currentTimestamp, function( response ){
-                if( response.status == 1 ){
-                    var d = {
-                        type : 'alert',
-                        data : response
-                    }
-                    socket.emit( 'RESPONSE_join_public_room', d );
-                    socket.to( room_id ).emit( 'response_room', d ); // this is not using yet
-                }
-            });
-        })
         
         //sockets events ( trying to create generic )
         socket.on('APP_SOCKET_EMIT',function( type, info ){
@@ -241,6 +237,45 @@ module.exports.listen = function(app){
                             data : response.data.user_data
                         }
                         socket.emit( 'RESPONSE_APP_SOCKET_EMIT','sent_message_response', d2 );
+                        
+                        var d11 = {
+                            room_id : room_id,
+                            unread_messages : 1
+                        }
+                        socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT','show_room_unread_notification', d11 );
+                        
+                    }
+                });
+            }
+            else if( type == 'join_public_room'){
+                var accessToken = info.accessToken;
+                var room_id = info.room_id;
+                var currentTimestamp = info.currentTimestamp;
+                console.log( 'SOCKET CALL :: join_public_room :: room_id '+ room_id );
+                FN_join_public_room( accessToken, room_id, currentTimestamp, function( response ){
+                    if( response.status == 1 ){
+                        var d = {
+                            type : 'alert',
+                            data : response
+                        }
+                        socket.emit( 'RESPONSE_APP_SOCKET_EMIT', 'join_public_room', d ); // to the admin who removed the message
+                        //----------------------------------------------------
+                        var join_user_info = response.data.join_user_info;
+                        var joins_user_info_name = join_user_info.name;
+                        var msg_local_id = '';
+                        var message_type = 'room_alert_message';
+                        var message = joins_user_info_name + ' joins the room';
+                        FN_room_message( msg_local_id, accessToken, room_id, message_type, message, currentTimestamp, function( response ){
+                            if( response.status == 1 ){
+                                console.log( message_type +' :: '+ message );
+                                // will be available on other users of room
+                                var d1 = {
+                                    type : 'alert',
+                                    data : response.data.broadcast_data
+                                }
+                                socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT', 'join_public_room', d1 );
+                            }
+                        });
                     }
                 });
             }
@@ -424,6 +459,24 @@ module.exports.listen = function(app){
                         message_type : 'room_temporary_message'
                     }
                     socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT','room_user_typing', d1 );
+                }
+            }
+            else if( type == 'show_room_unread_notification' ){
+                var accessToken = info.accessToken;
+                var room_id = info.room_id;
+                var currentTimestamp = info.currentTimestamp;
+                if( accessToken != '' && room_id != '' ){
+                    console.log( 'SOCKET CALL :: show_room_unread_notification :: for room_id - ' + room_id );
+                    FN_get_user_room_unread_messages( accessToken, room_id,currentTimestamp, function( response ){
+                        if( response.status == 1 ){
+                            var d1 = {
+                                room_id : room_id,
+                                unread_messages : response.data.messages_count
+                            }
+                            console.log( 'SOCKET CALL :: show_room_unread_notification :: for room_id - ' + room_id +' unread messages ::  '+response.data.messages_count);
+                            socket.emit( 'RESPONSE_APP_SOCKET_EMIT','show_room_unread_notification', d1 );
+                        }
+                    });
                 }
             }
         });
