@@ -4,12 +4,7 @@
             .factory('profileImageFactory', profileImageFactory);
 
     function profileImageFactory($resource, Configurations,Upload,$q) {
-//        return $resource(Configurations.api_url + '/uploads/upload', {
-//            
-//            
-//        }, {
 
-//        });
         var image = {};
         image.upload = function(data) {
             var def = $q.defer();

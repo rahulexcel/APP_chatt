@@ -1,11 +1,11 @@
 <ion-view view-title="PROFILE">
-    <ion-content id="profile" class="has-header has-footer">
+    <ion-content id="profile" class="has-header has-footer" ng-click="stopLoading()">
         <div style="width:100%;">
-
+            
             <div class="col-md-12 col-sm-12 col-xs-12 no-pad-left-right">
                 <div class="panel panel-card">
 
-                    <div class="r-t pos-rlt" md-ink-ripple style="background:url({{profile.displayprofile.profile_image}})  center; background-size:cover;background-repeat: no-repeat">
+                    <div class="r-t pos-rlt" md-ink-ripple style="background:url({{profile.displayprofile.profile_image}})  center; background-size:cover;background-repeat: no-repeat;color: #3F51B5">
                         <div class="p-lg bg-white-overlay text-center r-t">
                             <a href class="w-xs inline myim" ng-if="profile.displayprofile.profile_image">
                                 <img id="profileImage" src="{{profile.displayprofile.profile_image}}" class="img-circle profile-pic">
@@ -15,18 +15,18 @@
                                 <span class="">{{profile.displayprofile.name}}</span>
                             </div>
                             <!--<a class="btn btn-md btn-success m-b p-h no-border" ng-click="profile.editProfilePic()">Edit</a>-->
-                            <div class="m-b m-t-sm h4" ng-click="status(profile.displayprofile.profile_status,'Hey ! I am using ChatApp')">
+                            <div class="m-b m-t-sm h4" ng-click="profile.status(profile.displayprofile.profile_status, 'Hey ! I am using ChatApp')">
                                 <span class="" ng-if="profile.displayprofile.profile_status">{{profile.displayprofile.profile_status}}</span>
                                 <span class="" ng-if="!profile.displayprofile.profile_status">Hey ! I am using ChatApp</span>
                                 <span class="status_edit"><span class="satusedit ion-android-create"></span></span>
                             </div>
 
                         </div>
-<!--                        <div class="">
-                            <div class="m-b m-t-sm h5 pull-right">
-                                <span class="">last seen</span>:<span class="">{{profile.last_seen}}</span>
-                            </div>
-                        </div>-->
+                        <!--                        <div class="">
+                                                    <div class="m-b m-t-sm h5 pull-right">
+                                                        <span class="">last seen</span>:<span class="">{{profile.last_seen}}</span>
+                                                    </div>
+                                                </div>-->
                     </div>
                 </div>
 

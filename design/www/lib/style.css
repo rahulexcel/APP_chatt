@@ -536,7 +536,7 @@ span.name input{
     display: block!important;
 }
 .modal-backdrop{
-    background-color: #3F51B5;
+    background-color: transparent;
 }
 .search-box-open{
     width: 77%;
@@ -690,7 +690,7 @@ a.active{
 }
 .button.button-clear.fontC{
     color:#fff !important;
-        width: 60%;
+    width: 60%;
 }
 button.button.back-button.buttons.button-clear.header-item.mybt {
     margin-left: 5px;
@@ -726,8 +726,8 @@ input#statustxt {
 .cropArea {
     background: #E4E4E4;
     overflow: hidden;
-    width:400px;
-    height:300px;
+    width: 100%;
+    height:40%;
 }
 /*ion-modal-view.mymodal.modal.slide-in-up.ng-enter.active.ng-enter-active {
     background-color: transparent;
@@ -735,14 +735,20 @@ input#statustxt {
 .primage {
     width: 100%;
     text-align: center;
+    margin-top: 10px;
+    font-size: 20px;
 }
 .cancelbt {
     position: absolute;
     top: 10px;
     left: 15px;
 }
-.mybtim{
-    margin-top:10px;
+.mybtim {
+    /* margin-top: 10px; */
+    position: absolute;
+    width: 100%;
+    /* height: 20px; */
+    bottom: 0;
 }
 .camerach {
     text-align:center;
