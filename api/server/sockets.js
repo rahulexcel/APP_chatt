@@ -240,7 +240,8 @@ module.exports.listen = function(app){
                         
                         var d11 = {
                             room_id : room_id,
-                            unread_messages : 1
+                            unread_messages : 1,
+                            currentTimestamp : currentTimestamp
                         }
                         socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT','show_room_unread_notification', d11 );
                         
@@ -471,7 +472,8 @@ module.exports.listen = function(app){
                         if( response.status == 1 ){
                             var d1 = {
                                 room_id : room_id,
-                                unread_messages : response.data.messages_count
+                                unread_messages : response.data.messages_count,
+                                currentTimestamp : currentTimestamp
                             }
                             console.log( 'SOCKET CALL :: show_room_unread_notification :: for room_id - ' + room_id +' unread messages ::  '+response.data.messages_count);
                             socket.emit( 'RESPONSE_APP_SOCKET_EMIT','show_room_unread_notification', d1 );
