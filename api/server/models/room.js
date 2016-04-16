@@ -27,6 +27,26 @@ module.exports = function (Room) {
     //-------------------------------------------------------------
     
     //--start--ROOM GENERIC function------
+    Room.FN_add_friend = function( info, callback ){
+        var User = Room.app.models.User;
+        
+        var user_id = info.user_id;
+        var chat_with_user_id = info.chat_with;
+        
+        User.update({
+            id: new ObjectID( user_id )
+        }, {
+            '$addToSet': { 'friends': new ObjectID(chat_with_user_id) }
+        },{
+            allowExtendedOperators: true 
+        }, function (err, result) {
+            if (err) {
+                callback( false );
+            } else {
+                callback( true );
+            }
+        });
+    }
     Room.FN_add_socket_to_room_and_user = function( info, callback ){
         var User = Room.app.models.User;
         var accessToken = info.accessToken;
@@ -179,25 +199,47 @@ module.exports = function (Room) {
                                                 'room_id' : room_id,
                                                 'room_type' : room_type
                                             };
-                                            callback(null, 1, 'Private Chat Room Created', data);
-                                            //-start-send push message to use
-                                            User.FN_get_user_by_id( owner_user_id, function( u_status, u_message, u_data_owner ){
-                                                if( u_status == 1 ){
-                                                    User.FN_get_user_by_id( chat_with, function( u_status, u_message, u_data_chat_with ){
-                                                        if( u_status == 1 ){
-                                                            var TOKENS = [ u_data_chat_with.token ];
-                                                            var push_msg_info = {
-                                                                name : u_data_owner.name,
-                                                                profile_image : u_data_owner.profile_image,
-                                                                room_id : room_id,
-                                                            }
-                                                            Pushmessage.create_push_message( 'private_room_created', TOKENS , push_msg_info, function( ignore_param, p_status, p_message, p_data){
-                                                            })  
+                                            //--start---update friends to each user--
+                                            var info_friend_1 = {
+                                                user_id : owner_user_id,
+                                                chat_with : chat_with
+                                            };
+                                            Room.FN_add_friend( info_friend_1, function( ret1 ){
+                                                if( ret1 == false ){
+                                                    callback(null, 0, 'try again', {});
+                                                }else{
+                                                    var info_friend_2 = {
+                                                        user_id : chat_with,
+                                                        chat_with : owner_user_id
+                                                    };
+                                                    Room.FN_add_friend( info_friend_2, function( ret2 ){
+                                                        if( ret2 == false ){
+                                                            callback(null, 0, 'try again', {});
+                                                        }else{
+                                                            callback(null, 1, 'Private Chat Room Created', data);
+                                                            //-start-send push message to use
+                                                            User.FN_get_user_by_id( owner_user_id, function( u_status, u_message, u_data_owner ){
+                                                                if( u_status == 1 ){
+                                                                    User.FN_get_user_by_id( chat_with, function( u_status, u_message, u_data_chat_with ){
+                                                                        if( u_status == 1 ){
+                                                                            var TOKENS = [ u_data_chat_with.token ];
+                                                                            var push_msg_info = {
+                                                                                name : u_data_owner.name,
+                                                                                profile_image : u_data_owner.profile_image,
+                                                                                room_id : room_id,
+                                                                            }
+                                                                            Pushmessage.create_push_message( 'private_room_created', TOKENS , push_msg_info, function( ignore_param, p_status, p_message, p_data){
+                                                                            })  
+                                                                        }
+                                                                    })
+                                                                }
+                                                            })
+                                                            //-end-send push message to user
                                                         }
                                                     })
                                                 }
                                             })
-                                            //-end-send push message to user
+                                            //--end---update friends to each user--
                                         }
                                     });
                                 }

@@ -402,7 +402,8 @@ module.exports = function (User) {
                             } else {
                                 var where = {
                                     id: {neq: access_token_userid},
-                                    verification_status: 1*1
+                                    verification_status: 1*1,
+                                    friends : { 'nin' : [access_token_userid] },
                                 };
                                 User.find({
                                     where: where,
