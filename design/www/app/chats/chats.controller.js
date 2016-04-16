@@ -7,14 +7,18 @@
     function chatsController($scope, chatsFactory, timeStorage, chatsService, $state, socketService) {
             var self = this;
             var userData = timeStorage.get('userData');
-            chatsService.listMyRooms().then(function(data){
-                self.displayChats = data;
-                $scope.$evalAsync();
-            });
-            self.displayChats = timeStorage.get('displayPrivateChats');
-            $scope.$on('updatedRoomData', function (event, response) {
-                self.displayChats = response.data;
-                $scope.$evalAsync();
+             chatsService.listMyRooms();
+             var displayChats = timeStorage.get('displayPrivateChats');
+             for(var i=0; i < displayChats.length; i++){
+                displayChats[i].unreadMessage = 0;
+                displayChats[i].unreadMessageTimeStamp = 0;
+             }
+             self.displayChats = displayChats;
+             $scope.$on('got_room_unread_notification', function (event, response) {
+                chatsService.showUnreadIcon(response).then(function(data){
+                    self.displayChats = data;
+                    $scope.$evalAsync();
+                });
              });
              self.roomClick = function(roomData){
                 var clickRoomUserData = {
