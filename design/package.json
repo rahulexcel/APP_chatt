@@ -43,6 +43,14 @@
     {
       "locator": "https://github.com/katzer/cordova-plugin-local-notifications.git",
       "id": "cordova-plugin-facebook4"
+    },
+    "phonegap-plugin-push@1.3.0",
+    {
+      "variables": {
+        "SENDER_ID": "157127377708"
+      },
+      "locator": "phonegap-plugin-push",
+      "id": "phonegap-plugin-push"
     }
   ],
   "cordovaPlatforms": [

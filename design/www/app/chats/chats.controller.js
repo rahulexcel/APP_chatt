@@ -10,7 +10,8 @@
              chatsService.listMyRooms();
              var displayChats = timeStorage.get('displayPrivateChats');
              for(var i=0; i < displayChats.length; i++){
-                displayChats[i].unreadMessage = false;
+                displayChats[i].unreadMessage = 0;
+                displayChats[i].unreadMessageTimeStamp = 0;
              }
              self.displayChats = displayChats;
              $scope.$on('got_room_unread_notification', function (event, response) {
