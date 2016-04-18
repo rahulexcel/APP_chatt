@@ -491,10 +491,18 @@ module.exports = function (Room) {
                                             }
                                         }
                                     }else if( kr_room_type == 'public' ){
+                                        var kr_room_name = kr.room_name;
+                                        var kr_room_description = kr.room_description;
+                                        if( kr_room_name.length > 20 ){
+                                            kr_room_name = kr_room_name.slice(0,20) + '....';
+                                        }
+                                        if( kr_room_description.length > 20 ){
+                                            kr_room_description = kr_room_description.slice(0,20) + '....';
+                                        }
                                         show_details_for_list = {
                                             'icon' : kr.room_image,
-                                            'main_text' : kr.room_name,
-                                            'sub_text' : kr.room_description,
+                                            'main_text' : kr_room_name,
+                                            'sub_text' : kr_room_description,
                                         }
                                     }
                                     kr.show_details_for_list = show_details_for_list;
@@ -863,8 +871,31 @@ module.exports = function (Room) {
                                     callback(null, 0, 'try again', {});
                                 }else{
                                     if( result.length > 0 ){
+                                        var new_result = [];
+                                        for( var k in result ){
+                                            kr = result[k];
+                                            kr = kr.toJSON();
+                                            kr_room_type = kr.room_type;
+                                            if( kr_room_type == 'public' ){
+                                                var kr_room_name = kr.room_name;
+                                                var kr_room_description = kr.room_description;
+                                                if( kr_room_name.length > 20 ){
+                                                    kr_room_name = kr_room_name.slice(0,20) + '....';
+                                                }
+                                                if( kr_room_description.length > 20 ){
+                                                    kr_room_description = kr_room_description.slice(0,20) + '....';
+                                                }
+                                                show_details_for_list = {
+                                                    'icon' : kr.room_image,
+                                                    'main_text' : kr_room_name,
+                                                    'sub_text' : kr_room_description,
+                                                }
+                                                kr.show_details_for_list = show_details_for_list;
+                                                new_result.push( kr );
+                                            }
+                                        }
                                         var data = {
-                                            'rooms' : result
+                                            'rooms' : new_result
                                         };
                                         callback( null, 1, 'Rooms found', data );
                                     }else{
@@ -942,6 +973,23 @@ module.exports = function (Room) {
                                             is_room_owner = 1;
                                         }
                                         result.is_room_owner = is_room_owner;
+                                        
+                                        var kr_room_name = result.room_name;
+                                        var kr_room_description = result.room_description;
+                                        
+                                        var short_room_name = kr_room_name;
+                                        var short_room_description = kr_room_description;
+                                        
+                                        
+                                        if( typeof short_room_name != 'undefined' &&  short_room_name.length > 20 ){
+                                            short_room_name = short_room_name.slice(0,20) + '....';
+                                        }
+                                        if( typeof short_room_description != 'undefined' && short_room_description.length > 20 ){
+                                            short_room_description = short_room_description.slice(0,20) + '....';
+                                        }
+                                        result.short_room_name = short_room_name;
+                                        result.short_room_description = short_room_description;
+                                        
                                         var data = {
                                             'room' : result
                                         };

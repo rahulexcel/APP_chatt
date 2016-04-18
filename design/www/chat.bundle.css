@@ -85904,6 +85904,18 @@ span.status_edit {
 .myprbt {
   margin-right: 20px;
 }
+
+.modal-backdrop.active {
+  z-index: 9;
+}
+
+.marginTop {
+  margin-top: 10px;
+}
+
+.paddingBottom {
+  padding: 0 0 10px 0;
+}
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
@@ -97586,6 +97598,14 @@ span.name input {
 
 #chats .item {
   border-bottom: 1px solid #ddd!important;
+}
+
+#chats .user-container .item h3 {
+  white-space: normal;
+}
+
+#chats .user-container .item .time {
+  white-space: normal;
 }
 
 .popover {

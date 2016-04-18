@@ -9,13 +9,15 @@
                         if (currentUser) {
                             var accessToken = currentUser.data.access_token;
                             var configURL = config.url;
-                            if (configURL.substring(0, 38) == 'http://144.76.34.244:3033/api/uploads/') {
-
-                                config.url = config.url + '?file_type=profile_image&accessToken=' + accessToken + '&currentTimestamp=' + _.now() + '';
-                            }
-                            else
                             if (configURL.substring(0, 10) == 'http://144') {
                                 config.url = config.url + '?access_token=' + accessToken + '&currentTimestamp=' + _.now() + '';
+                                if (config.data.append_data)
+                                {
+                                    _.each(config.data.append_data, function(value, key)
+                                    {
+                                        config.url = config.url + '&' + key + '=' + value;
+                                    });
+                                }
                             }
                         }
                         if (config.method == 'POST') {

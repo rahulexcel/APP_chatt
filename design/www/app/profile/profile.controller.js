@@ -14,22 +14,18 @@
                 currentTimestamp: Date.now()
             });
             query.$promise.then(function(data) {
-                console.log(data);
                 self.displayprofile = data.data;
-
                 timeStorage.set('profile_data', self.displayprofile);
             });
         }
 
         self.editProfilePic = function() {
-            console.log('hello');
             $scope.myCroppedImage = '';
             cameraService.changePic().then(function(imageData) {
                 $scope.modal.show();
                 var img = "data:image/jpeg;base64," + imageData;
                 $scope.myimage = img;
             }, function(err) {
-                console.log("Picture failure: " + err);
                 window.plugins.toast.showShortTop('Unable to retrieve image');
             });
         };
@@ -59,18 +55,16 @@
                         text: '<b>Save</b>',
                         type: 'button-positive',
                         onTap: function(e) {
-                            console.log(profileFactory);
                             var query = profileFactory.status({
                                 accessToken: timeStorage.get('userData').data.access_token,
                                 status: self.data.text,
                                 currentTimestamp: Date.now()
                             });
                             query.$promise.then(function(data) {
-                                console.log(data);
                                 if (data.status == 1) {
                                     self.displayprofile.profile_status = data.data.status;
                                     myPopup.close();
-                                    
+
                                 }
                                 else {
                                     window.plugins.toast.showShortTop('status not update');
@@ -113,10 +107,10 @@
                 blob.$ngfName = 'png';
 
                 var query = profileImageFactory.upload({
-                    accessToken: timeStorage.get('userData').data.access_token,
                     file: blob,
                     currentTimestamp: Date.now(),
-                    file_type: 'profile_image'
+                    append_data: {file_type: 'profile_image', accessToken: timeStorage.get('userData').data.access_token}
+
                 });
                 query.then(function(data) {
 
