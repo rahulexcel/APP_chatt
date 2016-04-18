@@ -26,6 +26,7 @@ module.exports = function(File) {
     
     
     File.upload = function (ctx,options, callback ) {
+        
         var Room = File.app.models.Room;
         var User = File.app.models.User;
         if(!options) options = {};
@@ -70,13 +71,6 @@ module.exports = function(File) {
                             } else {
                                 if( file_type == 'profile_image' ){
                                     User.update_profile_image(accessToken, upload_file_url, currentTimestamp, function( ignore_param, status, message, data ){
-                                        console.log('-------profile image upload ------')
-                                        console.log( status );
-                                        console.log( message );
-                                        console.log( data  );
-                                        console.log('-------');
-                                        console.log(obj)
-                                        console.log('-------profile image upload ------')
                                         if( status == 1 ){
                                             console.log( 'success upload and updated' );
                                             callback( null, 1, 'success upload and updated', obj );
@@ -90,14 +84,8 @@ module.exports = function(File) {
                                     if( typeof ctx.req.query.room_id == 'undefined' || typeof ctx.req.query.room_id == ''){
                                         callback( null, 0, 'room_id is not mentioned in url', obj );
                                     }else{
+                                        room_id = ctx.req.query.room_id;
                                         Room.update_room_image(accessToken, room_id,upload_file_url, currentTimestamp, function( ignore_param, status, message, data ){
-                                            console.log('-------room image upload ------')
-                                            console.log( status );
-                                            console.log( message );
-                                            console.log( data  );
-                                            console.log('-------');
-                                            console.log(obj)
-                                            console.log('-------room image upload ------')
                                             if( status == 1 ){
                                                 console.log( 'success upload and updated' );
                                                 callback( null, 1, 'success upload and updated', obj );
