@@ -32,6 +32,7 @@
             query.$promise.then(function(data) {
                 self.openModelWithSpinner = false;
                 self.is_room_owner = data.data.room.is_room_owner;
+                self.infoNameShort = data.data.room.short_room_name;
                 self.infoName = data.data.room.room_name;
                 self.infoId = data.data.room.id;
                 if (data.data.room.room_image == '') {
