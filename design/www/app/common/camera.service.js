@@ -21,7 +21,7 @@
                              q.resolve(imageData);
                          }, function(err) {
                              q.reject(err);
-                         })
+                         });
                          return true;
                      }
                  });
@@ -43,7 +43,7 @@
                      q.reject(message);
                  }
                  return q.promise;
-             }
+             };
          return service;
      };
 

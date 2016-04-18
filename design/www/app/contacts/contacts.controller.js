@@ -21,7 +21,7 @@
                 "name": name,
                 "id": id,
                 "pic": pic,
-                "lastSeen": lastSeen
+                "lastSeen": self.displayUserProfileLastSeenInTimeStamp
             }
             timeStorage.set('chatWithUserData', chatWithUser, 1);
             socketService.create_room(id).then(function(data) {
@@ -49,19 +49,19 @@
                 self.spinnerIndex = -1;
                 self.displayUserProfileName = data.data.name;
                 self.displayUserProfileId = data.data.user_id;
+                self.displayUserProfileLastSeenInTimeStamp = data.data.last_seen;
                 if (data.data.profile_image) {
                     self.displayUserProfileImage = data.data.profile_image;
                 }
                 else {
                     self.displayUserProfileImage ="https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg";
                 }
-                self.date = $filter('date')(new Date(data.data.last_seen * 1000), "MMM d, y");
-                if ($filter('date')(new Date().toDateString(), "MMM d, y") == self.date) {
-                    self.displayUserProfileLastSeen = $filter('date')(new Date(data.data.last_seen * 1000), "hh:mm a");
-                } else {
-                    self.displayUserProfileLastSeen = $filter('date')(new Date(data.data.last_seen * 1000), "MMM d y hh:mm a");
+                var lastOnline = (_.now() - data.data.last_seen)/1000;
+                if(lastOnline > 86400){
+                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("MMMM Do YYYY, h:mm a");
+                } else{
+                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("h:mm a");
                 }
-//                    self.displayUserProfileLastSeen = data.data.last_seen;
                 self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
                 self.displayUserProfilePublicRooms = data.data.user_public_rooms;
                 self.displayUserProfileStatus = data.data.profile_status;

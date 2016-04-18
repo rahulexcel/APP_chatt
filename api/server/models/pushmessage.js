@@ -48,17 +48,33 @@ module.exports = function (Pushmessage) {
     //to get the final message ready for gcm
     Pushmessage.get_push_message_structure = function( type, info, callback ){
         if( type == 'room_message' ){
-            var message = new gcm.Message({
-                priority: 'high',
-                data: {
-                    room_id: info.room_id
-                },
-                notification: {
-                    title: info.message_owner_name,
-                    icon: info.message_profile_image,
-                    body: info.message_body
-                }
-            });
+            var message = new gcm.Message();
+//            message.addData('key1', 'msg1');
+//            message.addData('title', 'Test Push');
+//            message.addData('message', 'Push number 1');
+//            message.addData('info', 'super secret info');
+            
+            message.addData('priority', 'high');
+            message.addData('room_id', info.room_id );
+            message.addData('title', info.message_owner_name );
+            message.addData('icon', info.message_profile_image );
+            message.addData('body', info.message_body );
+            
+//            var message = new gcm.Message({
+//                //priority: 'high',
+//                data: {
+//                    priority: 'high',
+//                    room_id: info.room_id,
+//                    title: info.message_owner_name,
+//                    icon: info.message_profile_image,
+//                    body: info.message_body
+//                },
+////                notification: {
+////                    title: info.message_owner_name,
+////                    icon: info.message_profile_image,
+////                    body: info.message_body
+////                }
+//            });
             callback( message );            
         }
         else if( type == 'private_room_created'){

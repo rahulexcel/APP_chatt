@@ -27,6 +27,26 @@ module.exports = function (Room) {
     //-------------------------------------------------------------
     
     //--start--ROOM GENERIC function------
+    Room.FN_add_friend = function( info, callback ){
+        var User = Room.app.models.User;
+        
+        var user_id = info.user_id;
+        var chat_with_user_id = info.chat_with;
+        
+        User.update({
+            id: new ObjectID( user_id )
+        }, {
+            '$addToSet': { 'friends': new ObjectID(chat_with_user_id) }
+        },{
+            allowExtendedOperators: true 
+        }, function (err, result) {
+            if (err) {
+                callback( false );
+            } else {
+                callback( true );
+            }
+        });
+    }
     Room.FN_add_socket_to_room_and_user = function( info, callback ){
         var User = Room.app.models.User;
         var accessToken = info.accessToken;
@@ -179,25 +199,47 @@ module.exports = function (Room) {
                                                 'room_id' : room_id,
                                                 'room_type' : room_type
                                             };
-                                            callback(null, 1, 'Private Chat Room Created', data);
-                                            //-start-send push message to use
-                                            User.FN_get_user_by_id( owner_user_id, function( u_status, u_message, u_data_owner ){
-                                                if( u_status == 1 ){
-                                                    User.FN_get_user_by_id( chat_with, function( u_status, u_message, u_data_chat_with ){
-                                                        if( u_status == 1 ){
-                                                            var TOKENS = [ u_data_chat_with.token ];
-                                                            var push_msg_info = {
-                                                                name : u_data_owner.name,
-                                                                profile_image : u_data_owner.profile_image,
-                                                                room_id : room_id,
-                                                            }
-                                                            Pushmessage.create_push_message( 'private_room_created', TOKENS , push_msg_info, function( ignore_param, p_status, p_message, p_data){
-                                                            })  
+                                            //--start---update friends to each user--
+                                            var info_friend_1 = {
+                                                user_id : owner_user_id,
+                                                chat_with : chat_with
+                                            };
+                                            Room.FN_add_friend( info_friend_1, function( ret1 ){
+                                                if( ret1 == false ){
+                                                    callback(null, 0, 'try again', {});
+                                                }else{
+                                                    var info_friend_2 = {
+                                                        user_id : chat_with,
+                                                        chat_with : owner_user_id
+                                                    };
+                                                    Room.FN_add_friend( info_friend_2, function( ret2 ){
+                                                        if( ret2 == false ){
+                                                            callback(null, 0, 'try again', {});
+                                                        }else{
+                                                            callback(null, 1, 'Private Chat Room Created', data);
+                                                            //-start-send push message to use
+                                                            User.FN_get_user_by_id( owner_user_id, function( u_status, u_message, u_data_owner ){
+                                                                if( u_status == 1 ){
+                                                                    User.FN_get_user_by_id( chat_with, function( u_status, u_message, u_data_chat_with ){
+                                                                        if( u_status == 1 ){
+                                                                            var TOKENS = [ u_data_chat_with.token ];
+                                                                            var push_msg_info = {
+                                                                                name : u_data_owner.name,
+                                                                                profile_image : u_data_owner.profile_image,
+                                                                                room_id : room_id,
+                                                                            }
+                                                                            Pushmessage.create_push_message( 'private_room_created', TOKENS , push_msg_info, function( ignore_param, p_status, p_message, p_data){
+                                                                            })  
+                                                                        }
+                                                                    })
+                                                                }
+                                                            })
+                                                            //-end-send push message to user
                                                         }
                                                     })
                                                 }
                                             })
-                                            //-end-send push message to user
+                                            //--end---update friends to each user--
                                         }
                                     });
                                 }
@@ -1345,6 +1387,171 @@ module.exports = function (Room) {
             }
     );
     //********************************* END remove public member by admin **********************************
+    
+    //********************************* START get user room unread messages **********************************
+    
+    Room.get_user_room_unread_messages = function ( accessToken, room_id, currentTimestamp, callback) {
+        var User = Room.app.models.User;
+        var Message = Room.app.models.Message;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 0, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 0, 'UnAuthorized', {});
+                }else{
+                    var userId = accessToken.userId
+                    userId = new ObjectID( userId );
+                    Room.find({
+                        "where" : {
+                            room_users : {'in':[userId]},
+                            _id : new ObjectID( room_id )
+                        }
+                    }, function( err, result ){
+                        if( err ){
+                            callback(null, 0, 'try again', {});
+                        }else{
+                            if( result.length == 0 ){
+                                callback(null, 0, 'You are not a room user', {});
+                            }else{
+                                Message.find({
+                                    "where" : {
+                                        message_owner : { 'ne' : userId },
+                                        room_id : new ObjectID( room_id ),
+                                        message_status : 'sent'
+                                    }
+                                }, function( err, result ){
+                                    if( err ){
+                                        callback(null, 0, 'try again', {});
+                                    }else{
+                                        var data = {
+                                            'messages' : result,
+                                            'messages_count' : result.length
+                                        }
+                                        if( result.length == 0 ){
+                                            callback( null, 0, 'No more messages', data );
+                                        }else{
+                                            callback( null, 1, 'Messages found', data );
+                                        }
+                                    }
+                                })
+                            }
+                        }
+                    })
+                }
+            }
+        });
+    };
+    Room.remoteMethod(
+            'get_user_room_unread_messages', {
+                description: 'Get room messages',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'},
+                    {arg: 'room_id', type: 'string'},
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/get_user_room_unread_messages',
+                }
+            }
+    );
+    //********************************* END get user room unread messages **********************************
+    
+    
+    
+    //********************************* START logged in user can update his profile_image**********************************
+    Room.update_room_image = function ( accessToken, room_id, image_url, currentTimestamp, callback) {
+        var User = Room.app.models.User;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 401, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 401, 'UnAuthorized', {});
+                }else{
+                    var access_token_userid = accessToken.userId
+                    User.findById(access_token_userid, function (err, user) {
+                        if (err) {
+                            callback(null, 401, 'UnAuthorized', err);
+                        } else {
+                            userId = new ObjectID( access_token_userid );
+                            var wh = {
+                                id : new ObjectID( room_id )
+                            }
+                            Room.find({
+                                "where": wh,
+                                "include": [{
+                                    relation: 'room_owner', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen','sockets'],
+                                    }
+                                },{
+                                    relation: 'room_users', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen','sockets'],
+                                    }
+                                }]
+                            },function (err, result) {
+                                if( err ){
+                                    callback(null, 0, 'try again', {});
+                                }else{
+                                    if( result.length > 0 ){
+                                        result = result[0];
+                                        result = result.toJSON();
+                                        room_owner = result.room_owner;
+                                        room_users = result.room_users;
+                                        if( room_owner.id.toString() == access_token_userid.toString() ){
+                                            Room.update({
+                                                _id : new ObjectID( room_id )
+                                            },{
+                                                'room_image':  image_url
+                                            },function (err, result2) {
+                                                if (err) {
+                                                    callback(null, 0, 'try again', {});
+                                                } else {
+                                                    callback(null, 1, 'Room image updated', {});
+                                                }
+                                            });
+                                        }else{
+                                            callback( null, 0, 'You are not admin of this group', {} );
+                                        }
+                                    }else{
+                                        callback( null, 0, 'Room not found', {} );
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    };
+    Room.remoteMethod(
+            'update_room_image', {
+                description: 'admin can update room image',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'room_id', type: 'string'}, 
+                    {arg: 'image_url', type: 'string'},
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/update_room_image',
+                }
+            }
+    );
+//********************************* END logged in user can update his profile **********************************
+    
     
     
 };

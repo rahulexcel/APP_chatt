@@ -26,6 +26,7 @@ module.exports = function(File) {
     
     
     File.upload = function (ctx,options, callback ) {
+        var Room = File.app.models.Room;
         var User = File.app.models.User;
         if(!options) options = {};
         if( typeof ctx.req.query.file_type == 'undefined' || typeof ctx.req.query.file_type == '' || typeof ctx.req.query.accessToken == 'undefined' || typeof ctx.req.query.accessToken == '' ){
@@ -84,7 +85,30 @@ module.exports = function(File) {
                                             callback( null, 0, 'success upload and fail to update', obj );
                                         }
                                     })
-                                }else{
+                                }
+                                else if( file_type == 'room_image' ){
+                                    if( typeof ctx.req.query.room_id == 'undefined' || typeof ctx.req.query.room_id == ''){
+                                        callback( null, 0, 'room_id is not mentioned in url', obj );
+                                    }else{
+                                        Room.update_room_image(accessToken, room_id,upload_file_url, currentTimestamp, function( ignore_param, status, message, data ){
+                                            console.log('-------room image upload ------')
+                                            console.log( status );
+                                            console.log( message );
+                                            console.log( data  );
+                                            console.log('-------');
+                                            console.log(obj)
+                                            console.log('-------room image upload ------')
+                                            if( status == 1 ){
+                                                console.log( 'success upload and updated' );
+                                                callback( null, 1, 'success upload and updated', obj );
+                                            }else{
+                                                console.log( 'success upload and fail to update' );
+                                                callback( null, 0, 'success upload and fail to update', obj );
+                                            }
+                                        })
+                                    }
+                                }
+                                else{
                                     callback( null, 0, 'success upload but no use', {} );
                                 }
                             }
@@ -110,5 +134,5 @@ module.exports = function(File) {
             http: {verb: 'post'}
         }
     );
-
+    
 };

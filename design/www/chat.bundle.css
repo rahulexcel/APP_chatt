@@ -85852,6 +85852,38 @@ a.dark {
   margin-bottom: 0px;
 }
 
+.mycam_icon {
+  font-size: 20px;
+  padding: 13px 0 0 8px;
+}
+
+.prpicim {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+  margin-top: 10px;
+}
+
+#cropedim {
+  margin: 0 auto;
+  width: 200px;
+  height: 200px;
+}
+
+.loadingModal {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: black;
+  opacity: 0.7;
+}
+
+.icnModal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
 span.satusedit.ion-android-create {
   padding: 0 0 0 8px;
 }
@@ -96896,6 +96928,22 @@ button.close {
 .fa-percent:before {
   content: "\f295";
 }
+img-crop {
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: relative;
+  overflow: hidden;
+}
+
+img-crop canvas {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  outline: 0;
+  -webkit-tap-highlight-color: transparent;
+}
 #background {
   background-color: #3F51B5 !important;
 }
@@ -97518,8 +97566,8 @@ span.name input {
 }
 
 .profile-pic {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
 }
 
 .no-pad-left-right {
@@ -97566,7 +97614,7 @@ span.name input {
 }
 
 .modal-backdrop {
-  background-color: #3F51B5;
+  background-color: transparent;
 }
 
 .search-box-open {
@@ -97802,6 +97850,7 @@ a.active {
 
 .button.button-clear.fontC {
   color: #fff !important;
+  width: 60%;
 }
 
 button.button.back-button.buttons.button-clear.header-item.mybt {
@@ -97826,4 +97875,86 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
 .headLast {
   margin: -14px 0 0 0;
   text-align: left;
+}
+
+/*==============================*/
+
+span.satusedit.ion-android-create {
+  padding: 0 0 0 8px;
+}
+
+span.status_edit {
+  margin-left: 8px;
+  border-left: 1px solid;
+}
+
+input#statustxt {
+  border: 0;
+  border-bottom: 2px solid #3F51B5;
+}
+
+.cropArea {
+  background: #E4E4E4;
+  overflow: hidden;
+  width: 100%;
+  height: 40%;
+}
+
+/*ion-modal-view.mymodal.modal.slide-in-up.ng-enter.active.ng-enter-active {
+    background-color: transparent;
+}*/
+
+.primage {
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
+  font-size: 20px;
+}
+
+.cancelbt {
+  position: absolute;
+  top: 10px;
+  left: 15px;
+}
+
+.mybtim {
+  /* margin-top: 10px; */
+  position: absolute;
+  width: 100%;
+  /* height: 20px; */
+  bottom: 0;
+}
+
+.camerach {
+  text-align: center;
+}
+
+span.mysize {
+  font-size: 22px;
+}
+
+span.mysize1 {
+  font-size: 15px;
+  margin-left: 10px;
+}
+
+/*=========================*/
+
+.pad-5 {
+  padding: 5px;
+}
+
+.pad-top-5 {
+  padding-top: 5px;
+  padding-right: 5px;
+}
+
+.color-red {
+  color: red!important;
+}
+
+.footer-position {
+  position: absolute!important;
+  bottom: 0px!important;
+  border-radius: 0px!important;
 }
