@@ -5,8 +5,8 @@
     </button>
 
     <div class="userin">
-        <div class="button button-clear imgCircle" ng-click='chatPageHeader.goBack()'>
-            <img class='img-circle mycl' ng-src='{{chatPageHeader.image}}' ng-click='chatPageHeader.goBack()'>
+        <div class="button button-clear imgCircle" ng-click='chatPageHeader.openInfo()'>
+            <img class='img-circle mycl' ng-src='{{chatPageHeader.image}}'>
         </div>
         <div class='button button-clear fontC'  ng-click="chatPageHeader.openInfo()"> <div class="chatName">{{chatPageHeader.name}} </div><div class="lastSeen headLast">{{chatPageHeader.lastSeen}}</div></div>
         <!-- <button class='button button-clear pull-right' ng-click="chatPageHeader.popover.show($event)">
@@ -20,9 +20,9 @@
 <h1 class="text-center infoModel-spinner"><span class="fa fa-spin fa-spinner" ng-show="chatPageHeader.openModelWithSpinner"></span></h1>
 <div class="modal" ng-hide="chatPageHeader.openModelWithSpinner">
     <header class="bar bar-header bar-positive">
-        <h1 class="title">{{chatPageHeader.infoName}}</h1>
-        <div class="button btn-xs button-clear" ng-click="infoModel.hide()"><span class="icon ion-close"></span></div>
-    </header>
+    <h1 class="title">{{chatPageHeader.infoNameShort}}</h1>
+    <div class="button btn-xs button-clear" ng-click="infoModel.hide()"><span class="icon ion-close"></span></div>
+</header>
     <content has-header="true" padding="true">
         <div style="width:100%;" class="pad-top-40">
             <div class="col-md-12 col-sm-12 col-xs-12 no-pad-left-right">

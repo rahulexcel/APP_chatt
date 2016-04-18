@@ -60,13 +60,24 @@ module.exports = function (User) {
                                         if (err) {
                                             callback(null, 0, 'Invalid login', {});
                                         } else {
-                                            var data = {
-                                                user_id: accessToken.userId,
-                                                access_token: accessToken.id,
-                                                name : result.name,
-                                                profile_image : result.profile_image
-                                            };
-                                            callback(null, 1, 'Success login', data);
+                                            //--start-- update user device_id and token
+                                            User.update( {email: email_id}, {
+                                                device_id: device_id,
+                                                token: token,
+                                            }, function (err, result11) {
+                                                if (err) {
+                                                    callback(null, 0, err, {});
+                                                } else {
+                                                   var data = {
+                                                        user_id: accessToken.userId,
+                                                        access_token: accessToken.id,
+                                                        name : result.name,
+                                                        profile_image : result.profile_image
+                                                    };
+                                                    callback(null, 1, 'Success login', data);
+                                                }
+                                            });
+                                            //--end-- update user device_id and token
                                         }
                                     });
                                 } else {
@@ -82,13 +93,24 @@ module.exports = function (User) {
                                             if (err) {
                                                 callback(null, 0, 'Invalid login', {});
                                             } else {
-                                                var data = {
-                                                    user_id: result.id,
-                                                    access_token: accessToken.id,
-                                                    name : result.name,
-                                                    profile_image : result.profile_image
-                                                };
-                                                callback(null, 1, 'Success login', data);
+                                                //--start-- update user device_id and token
+                                                User.update( {email: email_id}, {
+                                                    device_id: device_id,
+                                                    token: token,
+                                                }, function (err, result11) {
+                                                    if (err) {
+                                                        callback(null, 0, err, {});
+                                                    } else {
+                                                        var data = {
+                                                            user_id: result.id,
+                                                            access_token: accessToken.id,
+                                                            name : result.name,
+                                                            profile_image : result.profile_image
+                                                        };
+                                                        callback(null, 1, 'Success login', data);
+                                                    }
+                                                });
+                                                //--end-- update user device_id and token
                                             }
                                         })
                                         //-END----get access token---------
@@ -734,7 +756,9 @@ module.exports = function (User) {
                             User.update({
                                 id: new ObjectID( userId )
                             }, {
-                                status : 'offline'
+                                status : 'offline',
+                                token : '',
+                                device_id : ''
                             }, function (err, result) {
                                 if (err) {
                                 } else {

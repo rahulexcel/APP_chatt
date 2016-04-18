@@ -4,8 +4,8 @@
             <div class="user-container" ng-click="publicChats.clickOnRoom(publicChat, $index)" ng-repeat="publicChat in publicChats.displayPublicChat">
                 <a class="item item-avatar hover">
                     <img class="avatar" ng-src="{{publicChat.room_image}}">
-                    <h3>{{publicChat.room_name}} <span class="fa fa-spin fa-spinner" ng-show="publicChats.clickRoomSpinner == $index"></span></h3>
-                    <p class="lastSeen">{{publicChat.room_description}}</p>
+                    <h3>{{publicChat.show_details_for_list.main_text}} <span class="fa fa-spin fa-spinner" ng-show="publicChats.clickRoomSpinner == $index"></span></h3>
+                    <p class="lastSeen">{{publicChat.show_details_for_list.sub_text}}</p>
                 </a>
             </div>
         </div>
@@ -60,7 +60,7 @@
 <script id="groupDetails.html" type="text/ng-template">
     <div class="modal">
     <header class="bar bar-header bar-positive">
-    <h1 class="title">{{publicChats.groupName}}</h1>
+    <h1 class="title">{{publicChats.groupNameShort}}</h1>
     <div class="button btn-xs button-clear" ng-click="groupModel.hide()"><span class="icon ion-close"></span></div>
     </header>
     <content has-header="true" padding="true">

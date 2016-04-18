@@ -97600,6 +97600,14 @@ span.name input {
   border-bottom: 1px solid #ddd!important;
 }
 
+#chats .user-container .item h3 {
+  white-space: normal;
+}
+
+#chats .user-container .item .time {
+  white-space: normal;
+}
+
 .popover {
   display: block;
 }
