@@ -8,22 +8,26 @@
                         var currentUser = $localStorage.userData;
                         if (currentUser) {
                             var accessToken = currentUser.data.access_token;
-                            var configURL = config.url; 
-                            console.log();
-                            if(configURL.substring(0, 10) == 'http://144'){
-                                config.url = config.url + '?access_token='+accessToken+'&currentTimestamp='+_.now()+'';
+                            var configURL = config.url;
+                            if (configURL.substring(0, 38) == 'http://144.76.34.244:3033/api/uploads/') {
+
+                                config.url = config.url + '?file_type=profile_image&accessToken=' + accessToken + '&currentTimestamp=' + _.now() + '';
+                            }
+                            else
+                            if (configURL.substring(0, 10) == 'http://144') {
+                                config.url = config.url + '?access_token=' + accessToken + '&currentTimestamp=' + _.now() + '';
                             }
                         }
-                        if(config.method == 'POST'){
+                        if (config.method == 'POST') {
                             $localStorage.lastTimeStampFireApi = _.now();
                         }
                         return config;
                     },
-                    response: function(response){
-                        if(response.data.status == 401 || response.data.message == 'UnAuthorized'){
+                    response: function(response) {
+                        if (response.data.status == 401 || response.data.message == 'UnAuthorized') {
                             var timeStorage = $injector.get('timeStorage');
                             $injector.get('socketService').logout();
-                            $injector.get('tostService').notify(response.data.message+ ' Please login again !', 'top');
+                            $injector.get('tostService').notify(response.data.message + ' Please login again !', 'top');
                             timeStorage.remove('google_access_token');
                             timeStorage.remove('userEmail');
                             timeStorage.remove('userData');
