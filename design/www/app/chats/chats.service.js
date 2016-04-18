@@ -3,24 +3,27 @@
    angular.module('chattapp')
            .factory('chatsService', chatsService);
 
-   function chatsService($q, timeStorage, chatsFactory, $rootScope, timeZoneService) {
+   function chatsService($q, timeStorage, chatsFactory, $rootScope, timeZoneService, socketService) {
               var service = {};
                service.privateRooms = function(roomData, callback) {
                    var returnData = [];
-                   
                    for (var i = 0; i < roomData.length; i++) {
                        var newRoomData = {};
                        var room_users = {};
                        if (roomData[i].room_type == "public") {
                            room_users.last_seen = roomData[i].show_details_for_list.sub_text;
+                           room_users.last_seenInTimestamp = roomData[i].show_details_for_list.sub_text;
                        } else {
                            room_users.last_seenInTimestamp = roomData[i].show_details_for_list.sub_text;
                            room_users.last_seen = moment(parseInt(roomData[i].show_details_for_list.sub_text)).format("Do MMMM hh:mm a");
                        }
                        room_users.profile_image = roomData[i].show_details_for_list.icon;
                        room_users.name = roomData[i].show_details_for_list.main_text;
+                       room_users.id = roomData[i].show_details_for_list.user_id;
                        newRoomData.user_data = room_users;
                        newRoomData.room_id = roomData[i].id;
+                       newRoomData.unreadMessage = 0;
+                       newRoomData.unreadMessageTimeStamp = 0;
                        returnData.push(newRoomData);
                    }
                    if (callback) {
@@ -39,8 +42,8 @@
                        var NoRoomData = [];
                        if (data.data.rooms) {
                            service.privateRooms(data.data.rooms, function(res) {
+                               socketService.room_unread_notification(res);
                                timeStorage.set('displayPrivateChats', res, 1);
-                               $rootScope.$broadcast('updatedRoomData', {data: res});
                                q.resolve(res);
                            });
                        } else {
@@ -49,6 +52,20 @@
                        }
                    });
                    return q.promise;
+               },
+               service.showUnreadIcon = function(roomUnreadData) {
+                console.log(roomUnreadData);
+                var allChatData = timeStorage.get('displayPrivateChats');
+                var q = $q.defer();
+                  for(var i = 0; i < allChatData.length; i++){
+                    if(allChatData[i].room_id == roomUnreadData.data.room_id){
+                      allChatData[i].unreadMessage = roomUnreadData.data.unread_messages;
+                      allChatData[i].unreadMessageTimeStamp = roomUnreadData.data.currentTimestamp;
+                    }
+                  }
+                  timeStorage.set('displayPrivateChats', allChatData, 1);
+                  q.resolve(allChatData);
+                  return q.promise;
                }
        return service;
    }

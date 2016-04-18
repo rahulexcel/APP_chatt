@@ -29,6 +29,18 @@
                             socket.emit('APP_SOCKET_EMIT', 'remove_socket_from_room', { user_id: data.user_id, room_id: data.room_id });
                         }
                     }
+                    if(type == 'get_user_profile_for_room'){
+                        $rootScope.$broadcast('got_user_profile_for_room', { data: data.data });
+                    }
+                    if(type == 'delete_public_room'){
+                        $rootScope.$broadcast('deleted_public_room', { data: data.data });
+                    }
+                    if(type == 'room_user_typing'){
+                        $rootScope.$broadcast('room_user_typing_message', { data: data });
+                    }
+                    if(type == 'show_room_unread_notification'){
+                        $rootScope.$broadcast('got_room_unread_notification', { data: data });
+                    }
                 });
          socket.on('response_update_message_status', function(data) {
                     var str = data.message_id;
@@ -55,13 +67,15 @@
                  });
                  return q.promise;
              },
-             service.joinPublicRoom = function(roomid) {
+             service.joinPublicRoom = function(roomId) {
                  var q = $q.defer();
                  var userData = timeStorage.get('userData');
                  var accessToken = userData.data.access_token;
-                 socket.emit('join_public_room', accessToken, roomid, _.now());
-                 socket.on('RESPONSE_join_public_room', function(data) {
-                     q.resolve(data);
+                 socket.emit('APP_SOCKET_EMIT', 'join_public_room', { accessToken:  accessToken, room_id: roomId, currentTimestamp: _.now()});
+                 socket.on('RESPONSE_APP_SOCKET_EMIT', function(type, data) {
+                    if(type == 'join_public_room'){
+                        q.resolve(data);
+                    }
                  });
                  return q.promise;
              },
@@ -97,6 +111,29 @@
              service.removeUserFromGroup = function(removingUserData, roomId) {
                 var userData = timeStorage.get('userData');
                 socket.emit('APP_SOCKET_EMIT', 'remove_public_room_member', {  accessToken : userData.data.access_token, room_id: roomId, user_id:removingUserData.id, currentTimestamp : _.now() });
+             },
+             service.getUserProfileForRoom = function(roomId, userId) {
+                var userData = timeStorage.get('userData');
+                socket.emit('APP_SOCKET_EMIT', 'get_user_profile_for_room', {  accessToken: userData.data.access_token, room_id: roomId, user_id:userId, currentTimestamp: _.now() });
+             },
+             service.deleteRoom = function(roomId) {
+                var userData = timeStorage.get('userData');
+                socket.emit('APP_SOCKET_EMIT', 'delete_public_room', { accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now() });
+             },
+             service.logout = function() {
+                var userData = timeStorage.get('userData');
+                socket.emit('APP_SOCKET_EMIT', 'do_logout', { accessToken: userData.data.access_token, currentTimestamp: _.now() });
+             },
+             service.writingMessage = function(roomId) {
+                var userData = timeStorage.get('userData');
+                socket.emit('APP_SOCKET_EMIT', 'room_user_typing', { user_id: userData.data.user_id, name: userData.data.name, room_id: roomId});
+             },
+             service.room_unread_notification = function(allRoomData) {
+                var userData = timeStorage.get('userData');
+                for(var i = 0; i < allRoomData.length; i++){
+                    socket.emit('APP_SOCKET_EMIT', 'show_room_unread_notification', { accessToken: userData.data.access_token, room_id: allRoomData[i].room_id, currentTimestamp: _.now()});
+                    socket.emit('APP_SOCKET_EMIT', 'room_open', { accessToken: userData.data.access_token, room_id: allRoomData[i].room_id, currentTimestamp: _.now() });
+                }
              }
          return service;
      };

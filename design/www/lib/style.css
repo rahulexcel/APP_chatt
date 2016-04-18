@@ -56,6 +56,9 @@
     position: static;
     max-width: 40px;
 }
+.userin div button.chatPageheader{
+    min-width: 35px;
+}
 .right-chat button.no-image{
     float: right;
     margin-left: 13px;
@@ -513,8 +516,7 @@ span.name input{
     font-size: 12px;
 }
 #chats .item{
-    /*border-bottom:1px solid #ddd!important;*/
-    margin-top: 1px;
+    border-bottom:1px solid #ddd!important;
 }
 .popover{
     display: block;
@@ -602,6 +604,31 @@ a.active{
     font-size: 50px;
     color: #fff;
     margin-top: 60%!important;
+}
+.bubble-blue .lastSeen{
+    text-align: right!important;
+}
+.bubble-blue .message-user-name{
+    display: none!important;
+}
+.bubble-yellow .lastSeen{
+    text-align: left!important;
+}
+.bubble-yellow .message-timing{
+    font-size: 2px!important;
+    text-align: left!important;
+    font-style: italic!important;
+    padding-top: 2px;
+}
+.bubble-yellow .message-timing1{
+    display: none!important;
+}
+.bubble-blue .message-timing{
+    display: none!important;
+}
+.message-timing1{
+    font-size: 2px!important;
+    font-style: italic!important;
 }
 
 .platform-android .action-sheet .action-sheet-title,
@@ -711,6 +738,7 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
     margin: -14px 0 0 0;
     text-align: left;
 }
+
 /*==============================*/
 span.satusedit.ion-android-create {
     padding: 0 0 0 8px;
@@ -761,3 +789,20 @@ span.mysize1{
     margin-left:10px;
 }
 /*=========================*/
+
+.pad-5{
+    padding: 5px;
+}
+.pad-top-5{
+    padding-top: 5px;
+    padding-right: 5px;
+}
+.color-red{
+    color: red!important;
+}
+.footer-position{
+    position: absolute!important;
+    bottom: 0px!important; 
+    border-radius: 0px!important;
+}
+

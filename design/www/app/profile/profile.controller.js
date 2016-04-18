@@ -17,16 +17,10 @@
                 console.log(data);
                 self.displayprofile = data.data;
 
-                if (!data.data.profile_image) {
-                    self.displayprofile.profile_image = "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg";
-                }
                 timeStorage.set('profile_data', self.displayprofile);
             });
         }
 
-//        $timeout(function() {
-//            $scope.modal.show();
-//        });
         self.editProfilePic = function() {
             console.log('hello');
             $scope.myCroppedImage = '';

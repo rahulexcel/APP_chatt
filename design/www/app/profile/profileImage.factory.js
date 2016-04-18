@@ -3,8 +3,7 @@
     angular.module('chattapp')
             .factory('profileImageFactory', profileImageFactory);
 
-    function profileImageFactory($resource, Configurations,Upload,$q) {
-
+    function profileImageFactory($resource, Configurations, Upload, $q) {
         var image = {};
         image.upload = function(data) {
             var def = $q.defer();
@@ -13,7 +12,6 @@
                 data: data
             }).then(function(resp) {
                 def.resolve(resp);
-
             }, function(resp) {
                 def.reject(resp);
             }, function(evt) {
@@ -21,7 +19,7 @@
                 console.log('progress: ' + progressPercentage + '% '); //progress of loading image
             });
             return def.promise;
-        }
+        };
         return image;
     }
     ;

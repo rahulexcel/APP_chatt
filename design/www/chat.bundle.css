@@ -85883,6 +85883,27 @@ a.dark {
   top: 50%;
   left: 50%;
 }
+
+span.satusedit.ion-android-create {
+  padding: 0 0 0 8px;
+}
+
+span.status_edit {
+  margin-left: 20px;
+  border-left: 1px solid;
+}
+
+.mypanel {
+  margin-bottom: 0px !important;
+}
+
+.myimage {
+  height: 280px;
+}
+
+.myprbt {
+  margin-right: 20px;
+}
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
@@ -96995,6 +97016,10 @@ img-crop canvas {
   max-width: 40px;
 }
 
+.userin div button.chatPageheader {
+  min-width: 35px;
+}
+
 .right-chat button.no-image {
   float: right;
   margin-left: 13px;
@@ -97560,8 +97585,7 @@ span.name input {
 }
 
 #chats .item {
-  /*border-bottom:1px solid #ddd!important;*/
-  margin-top: 1px;
+  border-bottom: 1px solid #ddd!important;
 }
 
 .popover {
@@ -97668,6 +97692,38 @@ a.active {
   font-size: 50px;
   color: #fff;
   margin-top: 60%!important;
+}
+
+.bubble-blue .lastSeen {
+  text-align: right!important;
+}
+
+.bubble-blue .message-user-name {
+  display: none!important;
+}
+
+.bubble-yellow .lastSeen {
+  text-align: left!important;
+}
+
+.bubble-yellow .message-timing {
+  font-size: 2px!important;
+  text-align: left!important;
+  font-style: italic!important;
+  padding-top: 2px;
+}
+
+.bubble-yellow .message-timing1 {
+  display: none!important;
+}
+
+.bubble-blue .message-timing {
+  display: none!important;
+}
+
+.message-timing1 {
+  font-size: 2px!important;
+  font-style: italic!important;
 }
 
 .platform-android .action-sheet .action-sheet-title,
@@ -97883,3 +97939,22 @@ span.mysize1 {
 }
 
 /*=========================*/
+
+.pad-5 {
+  padding: 5px;
+}
+
+.pad-top-5 {
+  padding-top: 5px;
+  padding-right: 5px;
+}
+
+.color-red {
+  color: red!important;
+}
+
+.footer-position {
+  position: absolute!important;
+  bottom: 0px!important;
+  border-radius: 0px!important;
+}
