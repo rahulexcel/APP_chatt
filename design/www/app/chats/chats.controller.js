@@ -7,7 +7,9 @@
     function chatsController($scope, chatsFactory, timeStorage, chatsService, $state, socketService) {
             var self = this;
             var userData = timeStorage.get('userData');
-             chatsService.listMyRooms();
+             chatsService.listMyRooms().then(function(data){
+                self.displayChats = data;
+             });
              var displayChats = timeStorage.get('displayPrivateChats');
              for(var i=0; i < displayChats.length; i++){
                 displayChats[i].unreadMessage = 0;

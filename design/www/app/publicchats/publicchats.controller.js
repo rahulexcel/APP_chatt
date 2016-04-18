@@ -50,6 +50,7 @@
                 });
             query.$promise.then(function(data) {
                 console.log(data);
+                self.groupNameShort = data.data.room.short_room_name;
                 self.groupName = data.data.room.room_name;
                 self.groupId = data.data.room.id;
                 if(data.data.room.room_image == ''){
