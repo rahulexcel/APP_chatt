@@ -1463,4 +1463,95 @@ module.exports = function (Room) {
     //********************************* END get user room unread messages **********************************
     
     
+    
+    //********************************* START logged in user can update his profile_image**********************************
+    Room.update_room_image = function ( accessToken, room_id, image_url, currentTimestamp, callback) {
+        var User = Room.app.models.User;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 401, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 401, 'UnAuthorized', {});
+                }else{
+                    var access_token_userid = accessToken.userId
+                    User.findById(access_token_userid, function (err, user) {
+                        if (err) {
+                            callback(null, 401, 'UnAuthorized', err);
+                        } else {
+                            userId = new ObjectID( access_token_userid );
+                            var wh = {
+                                id : new ObjectID( room_id )
+                            }
+                            Room.find({
+                                "where": wh,
+                                "include": [{
+                                    relation: 'room_owner', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen','sockets'],
+                                    }
+                                },{
+                                    relation: 'room_users', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen','sockets'],
+                                    }
+                                }]
+                            },function (err, result) {
+                                if( err ){
+                                    callback(null, 0, 'try again', {});
+                                }else{
+                                    if( result.length > 0 ){
+                                        result = result[0];
+                                        result = result.toJSON();
+                                        room_owner = result.room_owner;
+                                        room_users = result.room_users;
+                                        if( room_owner.id.toString() == access_token_userid.toString() ){
+                                            Room.update({
+                                                _id : new ObjectID( room_id )
+                                            },{
+                                                'room_image':  image_url
+                                            },function (err, result2) {
+                                                if (err) {
+                                                    callback(null, 0, 'try again', {});
+                                                } else {
+                                                    callback(null, 1, 'Room image updated', {});
+                                                }
+                                            });
+                                        }else{
+                                            callback( null, 0, 'You are not admin of this group', {} );
+                                        }
+                                    }else{
+                                        callback( null, 0, 'Room not found', {} );
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    };
+    Room.remoteMethod(
+            'update_room_image', {
+                description: 'admin can update room image',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'room_id', type: 'string'}, 
+                    {arg: 'image_url', type: 'string'},
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/update_room_image',
+                }
+            }
+    );
+//********************************* END logged in user can update his profile **********************************
+    
+    
+    
 };
