@@ -13,7 +13,7 @@
     padding: 18px 0 19px 0;
 }
 .navbar{
- margin-bottom: 0px;
+    margin-bottom: 0px;
 }
 .mycam_icon{
     font-size: 20px;
@@ -61,7 +61,7 @@ span.status_edit {
 }
 
 .modal-backdrop.active{
-z-index: 9;    
+    z-index: 9;    
 }
 .marginTop{
     margin-top:10px;
@@ -69,3 +69,13 @@ z-index: 9;
 .paddingBottom{
     padding: 0 0 10px 0;
 }
+img.img-circle.mycl {
+    width: 35px;
+    height: 35px;
+}
+@media not all, (-webkit-min-device-pixel-ratio: 1.5), not all, (min-resolution: 144dpi), (min-resolution: 1.5dppx){
+    .tabs {
+        background-image:none !important;   
+    }
+}
+

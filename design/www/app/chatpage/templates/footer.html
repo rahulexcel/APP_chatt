@@ -4,7 +4,7 @@
 			<img ng-src='{{chatPageFooter.image}}' class='w-full img-circle'>
 		</a>
 	</div> -->
-	<input type='text' id="chatinput" class='form-control text-box ' ng-model="chatPageFooter.message" on-return="chatPageFooter.sendMessage();" on-focus="chatPageFooter.inputUp()" on-blur="chatPageFooter.inputDown()" ng-change="chatPageFooter.writingMessage()" />
+	<input type='text' id="chatinput" class='form-control text-box' ng-model="chatPageFooter.message" on-return="chatPageFooter.sendMessage();" on-focus="chatPageFooter.inputUp()" on-blur="chatPageFooter.inputDown()" is-focused="{{chatPageFooter.isFocused}}" ng-change="chatPageFooter.writingMessage()" />
 	<button class='button button-positive send-msg' ng-click='chatPageFooter.sendMessage()'>
 		<i class='icon ion-paper-airplane'></i>
 	</button>
