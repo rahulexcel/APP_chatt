@@ -77,12 +77,11 @@
             self.joinRoomSpinner = true;
             socketService.joinPublicRoom(self.groupId).then(function(response) {
                 tostService.notify(response.data.message, 'top');
-
                 var clickRoomUserData = {
                     "name": self.groupName,
-                    "id": self.groupId,
+                    "id": '',
                     "pic": self.groupImage,
-                    "lastSeen": null
+                    "lastSeen": self.groupDescription
                 }
                 timeStorage.set('chatWithUserData', clickRoomUserData, 1);
                 socket.emit('APP_SOCKET_EMIT', 'room_open', {accessToken: userData.data.access_token, room_id: response.data.data.room_id, currentTimestamp: _.now()});

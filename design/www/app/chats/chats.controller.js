@@ -22,6 +22,9 @@
                     $scope.$evalAsync();
                 });
              });
+             $scope.$on('update_room_unread_notification', function (event, response) {
+             	socketService.update_room_unread_notification(response.data);
+             });
              self.roomClick = function(roomData){
                 var clickRoomUserData = {
                     "name":roomData.user_data.name,

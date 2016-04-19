@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.ionicframework.chatt521937" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Group Chatting App</name>
+<widget id="com.excellence.chatt" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Chatt App</name>
     <description>
-        An Ionic Framework and Cordova project.
+       Chatt App - Chat with your friends
     </description>
     <author email="manish@excellencetechnologies.in" href="http://excellencetechnologies.in">
-      Your Name Here
+      Excellence Technologies
     </author>
     <content src="index.html" />
     <access origin="*" />
