@@ -58,7 +58,9 @@ module.exports = function (Pushmessage) {
             message.addData('room_id', info.room_id );
             message.addData('title', info.message_owner_name );
             message.addData('icon', info.message_profile_image );
+            message.addData('image', info.message_profile_image );
             message.addData('body', info.message_body );
+            
             
 //            var message = new gcm.Message({
 //                //priority: 'high',

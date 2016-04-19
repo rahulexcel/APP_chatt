@@ -31,7 +31,13 @@
 
     },
     "validations": [],
-    "relations": {},
+    "relations": {
+        "friends": {
+            "type":"referencesMany",
+            "model":"user",
+            "foreignKey":"friends"
+        }
+    },
     "acls": [{
             "permission": "ALLOW",
             "principalType": "ROLE",
