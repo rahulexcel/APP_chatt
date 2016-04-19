@@ -54,7 +54,6 @@
                    return q.promise;
                },
                service.showUnreadIcon = function(roomUnreadData) {
-                console.log(roomUnreadData);
                 var allChatData = timeStorage.get('displayPrivateChats');
                 var q = $q.defer();
                   for(var i = 0; i < allChatData.length; i++){

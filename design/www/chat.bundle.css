@@ -97879,6 +97879,11 @@ a.active {
   color: #fff !important;
 }
 
+img.img-circle.mycl {
+  width: 35px;
+  height: 35px;
+}
+
 .button.button-clear.fontC {
   color: #fff !important;
   width: 60%;
@@ -97906,6 +97911,11 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
 .headLast {
   margin: -14px 0 0 0;
   text-align: left;
+}
+
+.blue-badge {
+  border-radius: 50%!important;
+  background-color: blue;
 }
 
 /*==============================*/
