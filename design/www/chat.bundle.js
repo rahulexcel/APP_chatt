@@ -19754,88 +19754,87 @@ angular.module('chattapp')
          return directive;
      });
  })();
- (function() {
-     'use strict';
+(function() {
+    'use strict';
 
-     angular.module('chattapp')
-         .controller('chatPageFooterDirectiveController', chatPageFooterDirectiveController);
+    angular.module('chattapp')
+            .controller('chatPageFooterDirectiveController', chatPageFooterDirectiveController);
 
-     function chatPageFooterDirectiveController($rootScope, $state, $timeout,$interval, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, sqliteService, chatpageService) { 
+    function chatPageFooterDirectiveController($rootScope, $state, $timeout, $interval, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, sqliteService, chatpageService) {
         var self = this;
         var userData = timeStorage.get('userData');
         self.image = userData.data.profile_image;
         self.name = userData.data.name;
         self.user_id = userData.data.user_id;
         self.sendMessage = function() {
-            if(self.message == ''){
+            if (self.message == '') {
                 console.log('empty');
-            } else{
+            } else {
                 var currentTimeStamp = _.now();
-                sqliteService.saveMessageInDb(self.message, 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId){
-                    if(timeStorage.get('network')){
+                sqliteService.saveMessageInDb(self.message, 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId) {
+                    if (timeStorage.get('network')) {
                         console.log('do not fire from here');
-                    } else{
+                    } else {
                         socketService.room_message(lastInsertId, $stateParams.roomId, self.message, currentTimeStamp);
                     }
                     var currentMessage = {
-                     "id": lastInsertId,
-                     "image": userData.data.profile_image,
-                     "message": self.message,
-                     "messageTime": moment(currentTimeStamp).format("hh:mm a"),
-                     "timeStamp": currentTimeStamp,
-                     "name": userData.data.name,
-                     "user_id":userData.data.user_id,
-                     "message_status":'post'
+                        "id": lastInsertId,
+                        "image": userData.data.profile_image,
+                        "message": self.message,
+                        "messageTime": moment(currentTimeStamp).format("hh:mm a"),
+                        "timeStamp": currentTimeStamp,
+                        "name": userData.data.name,
+                        "user_id": userData.data.user_id,
+                        "message_status": 'post'
                     }
-                    $rootScope.$broadcast('displayChatMessages', { data: currentMessage });
+                    $rootScope.$broadcast('displayChatMessages', {data: currentMessage});
                     $ionicScrollDelegate.scrollBottom(false);
                     self.message = '';
                     $interval.cancel(interval);
                     $timeout.cancel(inputChangedPromise);
                 })
-                 $ionicScrollDelegate.scrollBottom(false);
+                $ionicScrollDelegate.scrollBottom(false);
             }
-         }
-         self.inputUp = function() {
+        }
+        self.inputUp = function() {
             inputChanged = 0;
+            self.isFocused = true;
             i = 0;
-            console.log('inputUp');
-             $timeout(function() {
-                 $ionicScrollDelegate.scrollBottom(false);
-             }, 300);
-         };
-         self.inputDown = function() {
+            $timeout(function() {
+                $ionicScrollDelegate.scrollBottom(false);
+            }, 300);
+        };
+        self.inputDown = function() {
             $interval.cancel(interval);
-            console.log('inputDown');
-             $ionicScrollDelegate.resize();
-         };
-         var inputChanged = 0;
-         var i = 0;
-         var interval;
-         var inputChangedPromise;
-         self.writingMessage = function(){           
-            if(inputChanged == 0){
+            $ionicScrollDelegate.resize();
+        };
+        var inputChanged = 0;
+        var i = 0;
+        var interval;
+        var inputChangedPromise;
+        self.writingMessage = function() {
+            if (inputChanged == 0) {
                 socketService.writingMessage($stateParams.roomId);
-                inputChanged =1;
+                inputChanged = 1;
             }
-            if(inputChangedPromise){
+            if (inputChangedPromise) {
                 $timeout.cancel(inputChangedPromise);
             }
-            inputChangedPromise = $timeout(function(){
+            inputChangedPromise = $timeout(function() {
                 socketService.writingMessage($stateParams.roomId);
                 $interval.cancel(interval);
                 i = 0;
-                inputChanged =1;
-            },1000);
-            if(i == 0){
-               interval=$interval(function() {
+                inputChanged = 1;
+            }, 1000);
+            if (i == 0) {
+                interval = $interval(function() {
                     socketService.writingMessage($stateParams.roomId);
-                 }, 4000);
-                i=1;
+                }, 4000);
+                i = 1;
             }
-         };
-     }
- })();
+        };
+    }
+})();
  (function() {
      'use strict';
 
@@ -20125,6 +20124,30 @@ angular.module('chattapp')
 
     }
 })();
+(function() {
+    'use strict';
+    angular.module('chattapp').directive('isfocused', function($timeout) {
+      return {
+        scope: { trigger: '@isFocused' },
+        link: function(scope, element) {
+              console.log('hello thsisdasd asdasdasd asdasd');
+          scope.$watch('trigger', function(value) {
+            
+            if(value === "true") {
+              $timeout(function() {
+                element[0].focus();
+
+                element.on('blur', function() {
+                  element[0].focus();
+                });
+              });
+            }
+
+          });
+        }
+      };
+    });
+})();
  (function() {
     'use strict';
 
@@ -20409,6 +20432,778 @@ angular.module('chattapp')
        return $resource(Configurations.api_url+'/users/get_user_profile/:accessToken/:user_id/:currentTimestamp', {},{});
    };
 })();
+ (function() {
+     'use strict';
+
+     angular.module('chattapp')
+         .controller('forgotPasswordController', forgotPasswordController);
+
+     function forgotPasswordController($state, forgotPasswordFactory, tostService, $ionicLoading) {
+         console.log('forgotPasswordController');
+         var self = this;
+         self.data = {
+             email: ''
+         }
+         self.forgotPassword = function() {
+             if (_.isEmpty(self.data.email)) {
+                 tostService.notify('Email Address Required', 'top');
+             } else {
+                 $ionicLoading.show();
+                 var query = forgotPasswordFactory.save({
+                     email: self.data.email
+                 });
+                 query.$promise.then(function(data) {
+                     console.log(data);
+                     $ionicLoading.hide();
+                     tostService.notify(data.message, 'top');
+                     if (data.status == 1) {
+                         $state.go('login');
+                     }
+                 });
+             }
+         };
+     }
+ })();
+(function() {
+    'use strict';
+    angular.module('chattapp')
+        .factory('forgotPasswordFactory', forgotPasswordFactory);
+
+    function forgotPasswordFactory($resource, Configurations) {
+        return $resource(Configurations.api_url + '/users/forgot_password/:email', {}, {});
+    };
+})();
+(function() {
+    'use strict';
+
+    angular.module('chattapp')
+        .controller('loginController', loginController);
+
+    function loginController($state, loginFactory, timeStorage, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService, $ionicLoading) {
+        console.log('login');
+        var self = this;
+        self.data = {
+            email: '',
+            password: ''
+        }
+        var deviceUUID = timeStorage.get('deviceUUID');
+        var devicePlatform = timeStorage.get('devicePlatform');
+        self.login = function() {
+            if (_.isEmpty(self.data.email) || _.isEmpty(self.data.password) || !self.data.email) {
+                tostService.notify('Please enter your correct email and password', 'top');
+            } else {
+                $ionicLoading.show();
+                var query = loginFactory.save({
+                    action_type: 'manual_login',
+                    social_id: '',
+                    platform: devicePlatform,
+                    token: $localStorage.gcmToken,
+                    action: 'login_register',
+                    device_id: deviceUUID,
+                    email: self.data.email,
+                    password: self.data.password,
+                    name: '',
+                    currentTimestamp: _.now(),
+                    profile_image:''
+                });
+                query.$promise.then(function(data) {
+                    $ionicLoading.hide();
+                    if (data.status == 3) {
+                        tostService.notify(data.message, 'top');
+                        timeStorage.set('userEmail', self.data.email, 1);
+                        $state.go('verification');
+                    } else if (data.status == 1) {
+                        tostService.notify('Welcome "'+data.data.name+'"', 'top');
+                        timeStorage.set('userEmail', self.data.email, 1);
+                        timeStorage.set('userData', data, 1);
+                        // lastUsesTimeService.updateTime();
+                        $state.go('app.chats');
+                    } else if(data.status == 0){
+                        tostService.notify(data.message, 'top');
+                    }
+                });
+            }
+        };
+
+        self.googleRegister = function() {
+            var promise = googleLogin.startLogin();
+            promise.then(function(googleData) {
+                $ionicLoading.show();
+                console.log(googleData);
+                timeStorage.set('userEmail', googleData.email, 1);
+                var query = loginFactory.save({
+                    action_type: 'google',
+                    social_id: googleData.google_id,
+                    platform: devicePlatform,
+                    token: $localStorage.gcmToken,
+                    action: 'login_register',
+                    device_id: deviceUUID,
+                    email: googleData.email,
+                    name: googleData.name,
+                    currentTimestamp: _.now(),
+                    password: '',
+                    profile_image:googleData.picture
+                });
+                query.$promise.then(function(data) {
+                    $ionicLoading.hide();
+                    console.log(data);
+                    tostService.notify('Welcome "'+data.data.name+'"', 'top');
+                    timeStorage.set('userEmail', googleData.email, 1);
+                    timeStorage.set('userData', data, 1);
+                    // lastUsesTimeService.updateTime();
+                    $state.go('app.chats');
+                });
+            }, function(data) {
+                console.log(data);
+            });
+        };
+        self.facebookRegister = function() {
+            facebookLogin.login().then(function(fbData) {
+                console.log(fbData);
+                if (fbData.id) {
+                    loginWithFBApi(fbData);
+                    $ionicLoading.show();
+                }
+                if (fbData == 'unknown') {
+                    facebookLogin.fbLoginSuccess().then(function(fbData1) {
+                        console.log(fbData1);
+                        loginWithFBApi(fbData1);
+                        $ionicLoading.show();
+                    }, function(data) {
+                        console.log(data);
+                    });
+                }
+            }, function(data) {
+                console.log(data);
+            });
+        };
+
+        function loginWithFBApi(fbData) {
+            timeStorage.set('userEmail', fbData.email, 1);
+            var query = loginFactory.save({
+                action_type: 'facebook',
+                social_id: fbData.id,
+                platform: devicePlatform,
+                token: $localStorage.gcmToken,
+                action: 'login_register',
+                device_id: deviceUUID,
+                email: fbData.email,
+                name: fbData.name,
+                currentTimestamp: _.now(),
+                password: '',
+                profile_image:'http://graph.facebook.com/' + fbData.id + '/picture?type=large'
+            });
+            query.$promise.then(function(data) {
+                $ionicLoading.hide();
+                console.log(data);
+                tostService.notify('Welcome "'+data.data.name+'"', 'top');
+                timeStorage.set('userEmail', fbData.email, 1);
+                timeStorage.set('userData', data, 1);
+                // lastUsesTimeService.updateTime();
+                $state.go('app.chats');
+            });
+        };
+        var count = 0;
+        $ionicPlatform.registerBackButtonAction(function() {
+            var view = $ionicHistory.currentView();
+            if (view.stateId == 'login' && count == 0) {
+                tostService.notify('Press Back Button Again To Exit The App!', 'center');
+                count++;
+                $timeout(function() {
+                    count = 0;
+                }, 3000);
+            } else if (view.stateId == 'login' && count == 1) {
+                navigator.app.exitApp();
+                count = 0;
+            } else {
+                $ionicHistory.goBack();
+                count = 0;
+            }
+        }, 100);
+
+    }
+})();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('loginFactory', loginFactory);
+
+   function loginFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/users/register_login/:action_type/:action/:social_id/:platform/:device_id/:token/:email/:password', {},{});
+   };
+})();
+
+(function() {
+    'use strict';
+
+    angular.module('chattapp')
+            .controller('menuController', menuController);
+
+    function menuController($scope, $ionicPopover, tostService, $localStorage, Onsuccess, $state, timeStorage, $rootScope) {
+        console.log('menuController');
+        var self = this;
+        self.chattab = true;
+        $ionicPopover.fromTemplateUrl('templates/popover.html', {
+            scope: $scope,
+        }).then(function(popover) {
+            self.popover = popover;
+        });
+        self.search = function(state) {
+            if (timeStorage.get('network')) {
+                window.plugins.toast.showShortTop('You need to online to access this');
+            }
+            else
+            {
+                $state.go(state);
+            }
+        };
+        Onsuccess.footerTab(function(a, b, c, d) {
+            self.chattab = a;
+            self.searchb = b;
+            self.setting = c;
+            self.group = d;
+        });
+//        self.footer = function(state) {
+//            
+//        }
+    }
+})();
+(function() {
+    'use strict';
+
+    angular.module('chattapp')
+            .controller('profileController', profileController);
+
+    function profileController(cameraService, profileImageFactory, $ionicLoading, profileFactory, $timeout, $ionicModal, timeStorage, $scope, $filter, $ionicPopup) {
+        var self = this;
+        self.displayProfile = timeStorage.get('profile_data');
+        if (timeStorage.get('userData').data.access_token) {
+
+            var query = profileFactory.save({
+                accessToken: timeStorage.get('userData').data.access_token,
+                currentTimestamp: Date.now()
+            });
+            query.$promise.then(function(data) {
+                self.displayprofile = data.data;
+                timeStorage.set('profile_data', self.displayprofile);
+            });
+        }
+
+        self.editProfilePic = function() {
+            $scope.myCroppedImage = '';
+            cameraService.changePic().then(function(imageData) {
+                $scope.modal.show();
+                var img = "data:image/jpeg;base64," + imageData;
+                $scope.myimage = img;
+            }, function(err) {
+                window.plugins.toast.showShortTop('Unable to retrieve image');
+            });
+        };
+
+        $scope.result = function(image) {
+            $scope.myCroppedImage = image;
+
+        };
+        self.status = function(status, demo) {
+            self.data = {
+                text: ''
+            };
+            if (status) {
+                self.data.text = status;
+            }
+            else {
+                self.data.text = demo;
+            }
+            var myPopup = $ionicPopup.show({
+                template: '<input id="statustxt" type="text"  ng-model="profile.data.text">',
+                title: 'Update status',
+                subTitle: '',
+                scope: $scope,
+                buttons: [
+                    {text: 'Cancel'},
+                    {
+                        text: '<b>Save</b>',
+                        type: 'button-positive',
+                        onTap: function(e) {
+                            var query = profileFactory.status({
+                                accessToken: timeStorage.get('userData').data.access_token,
+                                status: self.data.text,
+                                currentTimestamp: Date.now()
+                            });
+                            query.$promise.then(function(data) {
+                                if (data.status == 1) {
+                                    self.displayprofile.profile_status = data.data.status;
+                                    myPopup.close();
+
+                                }
+                                else {
+                                    window.plugins.toast.showShortTop('status not update');
+                                    myPopup.close();
+                                }
+
+                            });
+
+
+                        }
+                    }
+                ]
+            });
+        };
+        $ionicModal.fromTemplateUrl('app/profile/template/imgCropModal.html', {
+            scope: $scope,
+            animation: 'slide-in-up'
+        }).then(function(modal) {
+            $scope.modal = modal;
+        });
+
+        function fixBinary(bin) {
+            var length = bin.length;
+            var buf = new ArrayBuffer(length);
+            var arr = new Uint8Array(buf);
+            for (var i = 0; i < length; i++) {
+                arr[i] = bin.charCodeAt(i);
+            }
+            return buf;
+        }
+
+        $scope.imgChange = function() {
+
+            if ($scope.myCroppedImage) {
+                $scope.startLoading = true;
+                var imageBase64 = $scope.myCroppedImage.replace(/^data:image\/(png|jpeg);base64,/, "");
+                var binary = fixBinary(atob(imageBase64));
+                var blob = new Blob([binary], {type: 'image/png', name: 'png'});
+                blob.name = 'png';
+                blob.$ngfName = 'png';
+
+                var query = profileImageFactory.upload({
+                    file: blob,
+                    currentTimestamp: Date.now(),
+                    append_data: {file_type: 'profile_image', accessToken: timeStorage.get('userData').data.access_token}
+
+                });
+                query.then(function(data) {
+
+                    if (data.data.status == 1) {
+                        self.displayprofile.profile_image = data.data.data.url;
+                        $scope.startLoading = false;
+                        $scope.modal.hide();
+                    } else {
+                        $scope.startLoading = false;
+                        window.plugins.toast.showShortTop('Image not upload');
+                    }
+                });
+
+            } else {
+                window.plugins.toast.showShortTop('Please set your pic');
+            }
+        };
+        $scope.imgCancel = function() {
+            $scope.modal.hide();
+        };
+        $scope.stopLoading = function() {
+            $scope.startLoading = false;
+            $scope.start = false;
+        };
+    }
+
+})();
+(function() {
+    'use strict';
+    angular.module('chattapp')
+            .factory('profileFactory', profileFactory);
+
+    function profileFactory($resource, Configurations) {
+        return $resource(Configurations.api_url + '/users/my_profile/:accessToken/:currentTimestamp/', {}, {
+            status: {
+                method: 'POST',
+                url: Configurations.api_url + '/users/update_profile_status/:accessToken/:status/:currentTimestamp'
+            }
+        });
+    }
+    ;
+})();
+
+(function() {
+    'use strict';
+    angular.module('chattapp')
+            .factory('profileImageFactory', profileImageFactory);
+
+    function profileImageFactory($resource, Configurations, Upload, $q) {
+        var image = {};
+        image.upload = function(data) {
+            var def = $q.defer();
+            Upload.upload({
+                url: Configurations.api_url + '/uploads/upload',
+                data: data
+            }).then(function(resp) {
+                def.resolve(resp);
+            }, function(resp) {
+                def.reject(resp);
+            }, function(evt) {
+                var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                console.log('progress: ' + progressPercentage + '% '); //progress of loading image
+            });
+            return def.promise;
+        };
+        return image;
+    }
+    ;
+})();
+
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('getPublicRoomsFactory', getPublicRoomsFactory);
+
+   function getPublicRoomsFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/rooms/get_public_rooms/:accessToken/:page/:limit/:currentTimestamp', {},{});
+   };
+})();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('getRoomInfoFactory', getRoomInfoFactory);
+
+   function getRoomInfoFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/rooms/get_room_info/:accessToken/:room_id/:currentTimestamp', {},{});
+   };
+})();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('publicChatFactory', publicChatFactory);
+
+   function publicChatFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/rooms/create_room/:accessToken/:room_type/:chat_with/:room_name/:room_description/:currentTimestamp', {},{});
+   };
+})();
+ (function() {
+     'use strict';
+     angular.module('chattapp')
+         .factory('publicChatService', publicChatService);
+
+     function publicChatService($q, timeStorage, $rootScope, getPublicRoomsFactory) {
+         var service = {};
+         var q = $q.defer();
+         service.listRooms = function() {
+             var userData = timeStorage.get('userData');
+             var query = getPublicRoomsFactory.save({
+                 accessToken: userData.data.access_token,
+                 page:0,
+                 limit:100,
+                 timestamp:_.now()
+             });
+             query.$promise.then(function(data) {
+                var newData = [];
+                if(data.data.rooms){
+                    timeStorage.set('displayPublicChats', data.data.rooms, 1);
+                    $rootScope.$broadcast('updatedDisplayPublicChats', { data: data.data.rooms });
+                } else{
+                    $rootScope.$broadcast('updatedDisplayPublicChats', { data: newData });
+                    timeStorage.set('displayPublicChats', newData, 1);
+                }
+             });
+         }
+         return service;
+     };
+
+ })();
+(function() {
+    'use strict';
+
+    angular.module('chattapp')
+            .controller('publicChatsController', publicChatsController);
+
+    function publicChatsController($ionicModal, $scope, socketService, tostService, publicChatService, timeStorage, $state, publicChatFactory, getRoomInfoFactory, timeZoneService) {
+        var self = this;
+        self.displayPublicChat = timeStorage.get('displayPublicChats');
+        publicChatService.listRooms();
+        self.createGroupOption = false;
+        self.createGroup = function() {
+            if (self.userGroupName && self.userGroupDescription) {
+                self.createGroupOption = true;
+                var userData = timeStorage.get('userData');
+                var query = publicChatFactory.save({
+                    accessToken: userData.data.access_token,
+                    room_type: 'public',
+                    chat_with: '',
+                    room_name: self.userGroupName,
+                    room_description: self.userGroupDescription,
+                    currentTimestamp: _.now()
+                });
+                query.$promise.then(function(data) {
+                    if (data.data.room_id) {
+                        self.createGroupOption = false;
+                        self.userGroupName = '';
+                        self.userGroupDescription = '';
+                        tostService.notify(data.message, 'top');
+                        publicChatService.listRooms();
+                        $scope.modal.hide();
+                        $state.go('app.chats');
+                    }
+                });
+            } else {
+                tostService.notify('Please fill details', 'top');
+            }
+        }
+        $scope.$on('updatedDisplayPublicChats', function(event, response) {
+            self.displayPublicChat = response.data;
+            $scope.$evalAsync();
+        });
+        self.clickOnRoom = function(roomData, index) {
+            self.clickRoomSpinner = index;
+            $scope.room_id = roomData.id;
+            var userData = timeStorage.get('userData');
+            var query = getRoomInfoFactory.save({
+                accessToken: userData.data.access_token,
+                room_id: roomData.id,
+                currentTimestamp: _.now()
+            });
+            query.$promise.then(function(data) {
+                self.groupName = data.data.room.room_name;
+                self.groupId = data.data.room.id;
+                if (data.data.room.room_image == '') {
+                    self.groupImage = 'lib/group.png';
+                } else {
+                    self.groupImage = data.data.room.room_image;
+                }
+                if (data.data.room.room_background == '') {
+                    self.groupBackground = 'lib/group.png';
+                } else {
+                    self.groupBackground = data.data.room.room_background;
+                }
+                self.groupCreatedOn = moment(parseInt(data.data.room.registration_time)).format("Do MMMM hh:mm a");
+                self.groupDescription = data.data.room.room_description;
+                for (var i = 0; i < data.data.room.room_users.length; i++) {
+                    data.data.room.room_users[i].last_seen = moment(parseInt(data.data.room.room_users[i].last_seen)).format("Do MMMM hh:mm a");
+                }
+                self.groupUserList = data.data.room.room_users;
+                $scope.groupModel.show();
+                self.clickRoomSpinner = -1;
+            });
+        };
+        self.joinRoom = function() {
+            var userData = timeStorage.get('userData');
+            self.joinRoomSpinner = true;
+            socketService.joinPublicRoom(self.groupId).then(function(response) {
+                tostService.notify(response.data.message, 'top');
+                var clickRoomUserData = {
+                    "name": self.groupName,
+                    "id": '',
+                    "pic": self.groupImage,
+                    "lastSeen": self.groupDescription
+                }
+                timeStorage.set('chatWithUserData', clickRoomUserData, 1);
+                socket.emit('APP_SOCKET_EMIT', 'room_open', {accessToken: userData.data.access_token, room_id: response.data.data.room_id, currentTimestamp: _.now()});
+                $scope.groupModel.hide();
+                $state.go('app.chatpage', {roomId: response.data.data.room_id});
+            });
+        }
+        $ionicModal.fromTemplateUrl('modal.html', function($ionicModal) {
+            $scope.modal = $ionicModal;
+        }, {
+            scope: $scope
+        });
+        $ionicModal.fromTemplateUrl('groupDetails.html', function($ionicModal) {
+            $scope.groupModel = $ionicModal;
+        }, {
+            scope: $scope
+        });
+    }
+})();
+ (function() {
+    'use strict';
+
+    angular.module('chattapp')
+        .controller('registerController', registerController);
+
+    function registerController($scope, $state, registerFactory,  $localStorage, tostService, deviceService, timeStorage, $ionicLoading) {
+            console.log('Register Controller');
+            var self = this;
+            this.user={
+                name:'',
+                email:'',
+                password:'',
+                };
+            var currentTimestamp = _.now();
+            var deviceUUID = deviceService.getuuid();
+            var devicePlatform = deviceService.platform();
+            this.register = function() {
+                if(_.isEmpty(this.user.name) || _.isEmpty(this.user.email) || _.isEmpty(this.user.password) ){
+                tostService.notify('Please fill all fields', 'top');
+            }else{
+                $ionicLoading.show();
+                timeStorage.set('userEmail',this.user.email,1);
+                var query = registerFactory.save({
+                    action_type:'manual_register',
+                    social_id:'',
+                    platform:devicePlatform,
+                    token:$localStorage.gcmToken,
+                    action:'login_register',
+                    device_id:deviceUUID,
+                    email: this.user.email,
+                    name: this.user.name,
+                    password: this.user.password,
+                    currentTimestamp:currentTimestamp
+                });
+                query.$promise.then(function(data) {
+                    $ionicLoading.hide();
+                    console.log(data);
+                    tostService.notify(data.message, 'top');
+                    if(data.data.show_verification == '1'){
+                        $state.go('verification');
+                    }
+                });
+            }
+        };
+    }
+})();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('registerFactory', registerFactory);
+
+   function registerFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/users/register_login/:action_type/:action/:social_id/:platform/:token/:email/:name/:password', {},{});
+   };
+})();
+ (function() {
+     'use strict';
+
+     angular.module('chattapp')
+         .controller('resetPasswordController', resetPasswordController);
+
+     function resetPasswordController($state, resetPasswordFactory, timeStorage, tostService, $ionicLoading, $localStorage) {
+         console.log('resetPasswordController');
+         var self = this;
+         self.email = timeStorage.get('userEmail');
+         self.resetPassword = function() {
+             if (self.password !== self.cpassword) {
+                 tostService.notify('Your Password and Confirm Password not Match', 'top');
+                 self.password = '';
+                 self.cpassword = '';
+             } else {
+                 $ionicLoading.show();
+                 var userData =  timeStorage.get('userData');
+                 var accessToken = userData.data.access_token;
+                 var query = resetPasswordFactory.save({
+                     password:self.password,
+                     access_token:accessToken
+                 });
+                 query.$promise.then(function(data) {
+                     $ionicLoading.hide();
+                     tostService.notify(data.message);
+                     if(data.status == 1){
+                        $localStorage.$reset();
+                        $state.go('login');
+                     }
+                 });
+             }
+         };
+     }
+ })();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('resetPasswordFactory', resetPasswordFactory);
+
+   function resetPasswordFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/users/reset_password?', {
+       	access_token:'@access_token'
+       },{});
+   };
+})();
+
+ (function() {
+    'use strict';
+
+    angular.module('chattapp')
+        .controller('settingController', settingController);
+
+    function settingController(socketService, timeStorage, $state) {
+            var self = this;
+            self.version=AppVersion.version;
+            self.logout = function() {
+	            socketService.logout();
+	            timeStorage.remove('google_access_token');
+	            timeStorage.remove('userEmail');
+	            timeStorage.remove('userData');
+	            timeStorage.remove('displayPrivateChats');
+	            timeStorage.remove('listUsers');
+	            timeStorage.remove('chatWithUserData');
+	            timeStorage.remove('displayPublicChats');
+                    timeStorage.remove('profile_data');
+	            $state.go('login');
+        };
+    }
+})();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('resendVerificationCodeFactory', resendVerificationCodeFactory);
+
+   function resendVerificationCodeFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/users/resend_verification_code/:email', {},{});
+   };
+})();
+
+ (function() {
+     'use strict';
+
+     angular.module('chattapp')
+         .controller('verificationController', verificationController);
+
+     function verificationController($state, verificationFactory, tostService, timeStorage,resendVerificationCodeFactory, $ionicLoading) {
+         var self = this;
+         self.data = {
+             verificationCode: '',
+             email: ''
+         }
+         if (timeStorage.get('userEmail')) {
+             self.data.email = timeStorage.get('userEmail');
+         }
+         self.verify = function() {
+             if (_.isEmpty(self.data.email) || _.isEmpty(self.data.verificationCode)) {
+                 tostService.notify('Please all fill the fields.', 'top');
+             } else {
+                 $ionicLoading.show();
+                 var query = verificationFactory.save({
+                     email: self.data.email,
+                     code: self.data.verificationCode
+                 });
+                 query.$promise.then(function(data) {
+                    $ionicLoading.hide();
+                     tostService.notify(data.message, 'top');
+                     if (data.status == 1) {
+                         $state.go('login');
+                     }
+                 });
+             }
+         };
+         self.resendVerification = function(){
+                $ionicLoading.show();
+                var query = resendVerificationCodeFactory.save({
+                    email: self.data.email
+                });
+                query.$promise.then(function(data) {
+                    $ionicLoading.hide();
+                    console.log(data);
+                    tostService.notify(data.message, 'top');
+                });
+            };
+     }
+ })();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('verificationFactory', verificationFactory);
+
+   function verificationFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/users/do_user_verification/:email/:code', {},{});
+   };
+})();
+
  (function() {
      'use strict';
      angular.module('chattapp')
@@ -20874,46 +21669,6 @@ googleLoginService.factory('googleLogin', [
                 }
             });
 })();
-angular.module('chattapp')
-    .directive('input', function($timeout) {
-        return {
-            restrict: 'E',
-            scope: {
-                'returnClose': '=',
-                'onReturn': '&',
-                'onFocus': '&',
-                'onClick': '&',
-                'onBlur': '&'
-            },
-            link: function(scope, element, attr) {
-                element.bind('focus', function(e) {
-                    if (scope.onFocus) {
-                        $timeout(function() {
-                            scope.onFocus();
-                        });
-                    }
-                });
-                element.bind('blur', function(e) {
-                    if (scope.onBlur) {
-                        $timeout(function() {
-                            scope.onBlur();
-                            // element[0].focus();
-                        });
-                    }
-                });
-                element.bind('keydown', function(e) {
-                    if (e.which == 13) {
-                        if (scope.returnClose) element[0].blur();
-                        if (scope.onReturn) {
-                            $timeout(function() {
-                                scope.onReturn();
-                            });
-                        }
-                    }
-                });
-            }
-        }
-    });
 (function() {
     'use strict';
     angular.module('chattapp')
@@ -21466,774 +22221,4 @@ angular.module('chattapp')
         }
     };
 
-})();
- (function() {
-     'use strict';
-
-     angular.module('chattapp')
-         .controller('forgotPasswordController', forgotPasswordController);
-
-     function forgotPasswordController($state, forgotPasswordFactory, tostService, $ionicLoading) {
-         console.log('forgotPasswordController');
-         var self = this;
-         self.data = {
-             email: ''
-         }
-         self.forgotPassword = function() {
-             if (_.isEmpty(self.data.email)) {
-                 tostService.notify('Email Address Required', 'top');
-             } else {
-                 $ionicLoading.show();
-                 var query = forgotPasswordFactory.save({
-                     email: self.data.email
-                 });
-                 query.$promise.then(function(data) {
-                     console.log(data);
-                     $ionicLoading.hide();
-                     tostService.notify(data.message, 'top');
-                     if (data.status == 1) {
-                         $state.go('login');
-                     }
-                 });
-             }
-         };
-     }
- })();
-(function() {
-    'use strict';
-    angular.module('chattapp')
-        .factory('forgotPasswordFactory', forgotPasswordFactory);
-
-    function forgotPasswordFactory($resource, Configurations) {
-        return $resource(Configurations.api_url + '/users/forgot_password/:email', {}, {});
-    };
-})();
-(function() {
-    'use strict';
-
-    angular.module('chattapp')
-        .controller('loginController', loginController);
-
-    function loginController($state, loginFactory, timeStorage, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService, $ionicLoading) {
-        console.log('login');
-        var self = this;
-        self.data = {
-            email: '',
-            password: ''
-        }
-        var deviceUUID = timeStorage.get('deviceUUID');
-        var devicePlatform = timeStorage.get('devicePlatform');
-        self.login = function() {
-            if (_.isEmpty(self.data.email) || _.isEmpty(self.data.password) || !self.data.email) {
-                tostService.notify('Please enter your correct email and password', 'top');
-            } else {
-                $ionicLoading.show();
-                var query = loginFactory.save({
-                    action_type: 'manual_login',
-                    social_id: '',
-                    platform: devicePlatform,
-                    token: $localStorage.gcmToken,
-                    action: 'login_register',
-                    device_id: deviceUUID,
-                    email: self.data.email,
-                    password: self.data.password,
-                    name: '',
-                    currentTimestamp: _.now(),
-                    profile_image:''
-                });
-                query.$promise.then(function(data) {
-                    $ionicLoading.hide();
-                    if (data.status == 3) {
-                        tostService.notify(data.message, 'top');
-                        timeStorage.set('userEmail', self.data.email, 1);
-                        $state.go('verification');
-                    } else if (data.status == 1) {
-                        tostService.notify('Welcome "'+data.data.name+'"', 'top');
-                        timeStorage.set('userEmail', self.data.email, 1);
-                        timeStorage.set('userData', data, 1);
-                        // lastUsesTimeService.updateTime();
-                        $state.go('app.chats');
-                    } else if(data.status == 0){
-                        tostService.notify(data.message, 'top');
-                    }
-                });
-            }
-        };
-
-        self.googleRegister = function() {
-            var promise = googleLogin.startLogin();
-            promise.then(function(googleData) {
-                $ionicLoading.show();
-                console.log(googleData);
-                timeStorage.set('userEmail', googleData.email, 1);
-                var query = loginFactory.save({
-                    action_type: 'google',
-                    social_id: googleData.google_id,
-                    platform: devicePlatform,
-                    token: $localStorage.gcmToken,
-                    action: 'login_register',
-                    device_id: deviceUUID,
-                    email: googleData.email,
-                    name: googleData.name,
-                    currentTimestamp: _.now(),
-                    password: '',
-                    profile_image:googleData.picture
-                });
-                query.$promise.then(function(data) {
-                    $ionicLoading.hide();
-                    console.log(data);
-                    tostService.notify('Welcome "'+data.data.name+'"', 'top');
-                    timeStorage.set('userEmail', googleData.email, 1);
-                    timeStorage.set('userData', data, 1);
-                    // lastUsesTimeService.updateTime();
-                    $state.go('app.chats');
-                });
-            }, function(data) {
-                console.log(data);
-            });
-        };
-        self.facebookRegister = function() {
-            facebookLogin.login().then(function(fbData) {
-                console.log(fbData);
-                if (fbData.id) {
-                    loginWithFBApi(fbData);
-                    $ionicLoading.show();
-                }
-                if (fbData == 'unknown') {
-                    facebookLogin.fbLoginSuccess().then(function(fbData1) {
-                        console.log(fbData1);
-                        loginWithFBApi(fbData1);
-                        $ionicLoading.show();
-                    }, function(data) {
-                        console.log(data);
-                    });
-                }
-            }, function(data) {
-                console.log(data);
-            });
-        };
-
-        function loginWithFBApi(fbData) {
-            timeStorage.set('userEmail', fbData.email, 1);
-            var query = loginFactory.save({
-                action_type: 'facebook',
-                social_id: fbData.id,
-                platform: devicePlatform,
-                token: $localStorage.gcmToken,
-                action: 'login_register',
-                device_id: deviceUUID,
-                email: fbData.email,
-                name: fbData.name,
-                currentTimestamp: _.now(),
-                password: '',
-                profile_image:'http://graph.facebook.com/' + fbData.id + '/picture?type=large'
-            });
-            query.$promise.then(function(data) {
-                $ionicLoading.hide();
-                console.log(data);
-                tostService.notify('Welcome "'+data.data.name+'"', 'top');
-                timeStorage.set('userEmail', fbData.email, 1);
-                timeStorage.set('userData', data, 1);
-                // lastUsesTimeService.updateTime();
-                $state.go('app.chats');
-            });
-        };
-        var count = 0;
-        $ionicPlatform.registerBackButtonAction(function() {
-            var view = $ionicHistory.currentView();
-            if (view.stateId == 'login' && count == 0) {
-                tostService.notify('Press Back Button Again To Exit The App!', 'center');
-                count++;
-                $timeout(function() {
-                    count = 0;
-                }, 3000);
-            } else if (view.stateId == 'login' && count == 1) {
-                navigator.app.exitApp();
-                count = 0;
-            } else {
-                $ionicHistory.goBack();
-                count = 0;
-            }
-        }, 100);
-
-    }
-})();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('loginFactory', loginFactory);
-
-   function loginFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/users/register_login/:action_type/:action/:social_id/:platform/:device_id/:token/:email/:password', {},{});
-   };
-})();
-
-(function() {
-    'use strict';
-
-    angular.module('chattapp')
-            .controller('menuController', menuController);
-
-    function menuController($scope, $ionicPopover, tostService, $localStorage, Onsuccess, $state, timeStorage, $rootScope) {
-        console.log('menuController');
-        var self = this;
-        self.chattab = true;
-        $ionicPopover.fromTemplateUrl('templates/popover.html', {
-            scope: $scope,
-        }).then(function(popover) {
-            self.popover = popover;
-        });
-        self.search = function(state) {
-            if (timeStorage.get('network')) {
-                window.plugins.toast.showShortTop('You need to online to access this');
-            }
-            else
-            {
-                $state.go(state);
-            }
-        };
-        Onsuccess.footerTab(function(a, b, c, d) {
-            self.chattab = a;
-            self.searchb = b;
-            self.setting = c;
-            self.group = d;
-        });
-//        self.footer = function(state) {
-//            
-//        }
-    }
-})();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('getPublicRoomsFactory', getPublicRoomsFactory);
-
-   function getPublicRoomsFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/rooms/get_public_rooms/:accessToken/:page/:limit/:currentTimestamp', {},{});
-   };
-})();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('getRoomInfoFactory', getRoomInfoFactory);
-
-   function getRoomInfoFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/rooms/get_room_info/:accessToken/:room_id/:currentTimestamp', {},{});
-   };
-})();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('publicChatFactory', publicChatFactory);
-
-   function publicChatFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/rooms/create_room/:accessToken/:room_type/:chat_with/:room_name/:room_description/:currentTimestamp', {},{});
-   };
-})();
- (function() {
-     'use strict';
-     angular.module('chattapp')
-         .factory('publicChatService', publicChatService);
-
-     function publicChatService($q, timeStorage, $rootScope, getPublicRoomsFactory) {
-         var service = {};
-         var q = $q.defer();
-         service.listRooms = function() {
-             var userData = timeStorage.get('userData');
-             var query = getPublicRoomsFactory.save({
-                 accessToken: userData.data.access_token,
-                 page:0,
-                 limit:100,
-                 timestamp:_.now()
-             });
-             query.$promise.then(function(data) {
-                var newData = [];
-                if(data.data.rooms){
-                    timeStorage.set('displayPublicChats', data.data.rooms, 1);
-                    $rootScope.$broadcast('updatedDisplayPublicChats', { data: data.data.rooms });
-                } else{
-                    $rootScope.$broadcast('updatedDisplayPublicChats', { data: newData });
-                    timeStorage.set('displayPublicChats', newData, 1);
-                }
-             });
-         }
-         return service;
-     };
-
- })();
-(function() {
-    'use strict';
-
-    angular.module('chattapp')
-            .controller('publicChatsController', publicChatsController);
-
-    function publicChatsController($ionicModal, $scope, socketService, tostService, publicChatService, timeStorage, $state, publicChatFactory, getRoomInfoFactory, timeZoneService) {
-        var self = this;
-        self.displayPublicChat = timeStorage.get('displayPublicChats');
-        publicChatService.listRooms();
-        self.createGroupOption = false;
-        self.createGroup = function() {
-            if (self.userGroupName && self.userGroupDescription) {
-                self.createGroupOption = true;
-                var userData = timeStorage.get('userData');
-                var query = publicChatFactory.save({
-                    accessToken: userData.data.access_token,
-                    room_type: 'public',
-                    chat_with: '',
-                    room_name: self.userGroupName,
-                    room_description: self.userGroupDescription,
-                    currentTimestamp: _.now()
-                });
-                query.$promise.then(function(data) {
-                    if (data.data.room_id) {
-                        self.createGroupOption = false;
-                        self.userGroupName = '';
-                        self.userGroupDescription = '';
-                        tostService.notify(data.message, 'top');
-                        publicChatService.listRooms();
-                        $scope.modal.hide();
-                        $state.go('app.chats');
-                    }
-                });
-            } else {
-                tostService.notify('Please fill details', 'top');
-            }
-        }
-        $scope.$on('updatedDisplayPublicChats', function(event, response) {
-            self.displayPublicChat = response.data;
-            $scope.$evalAsync();
-        });
-        self.clickOnRoom = function(roomData, index) {
-            self.clickRoomSpinner = index;
-            $scope.room_id = roomData.id;
-            var userData = timeStorage.get('userData');
-            var query = getRoomInfoFactory.save({
-                accessToken: userData.data.access_token,
-                room_id: roomData.id,
-                currentTimestamp: _.now()
-            });
-            query.$promise.then(function(data) {
-                self.groupName = data.data.room.room_name;
-                self.groupId = data.data.room.id;
-                if (data.data.room.room_image == '') {
-                    self.groupImage = 'lib/group.png';
-                } else {
-                    self.groupImage = data.data.room.room_image;
-                }
-                if (data.data.room.room_background == '') {
-                    self.groupBackground = 'lib/group.png';
-                } else {
-                    self.groupBackground = data.data.room.room_background;
-                }
-                self.groupCreatedOn = moment(parseInt(data.data.room.registration_time)).format("Do MMMM hh:mm a");
-                self.groupDescription = data.data.room.room_description;
-                for (var i = 0; i < data.data.room.room_users.length; i++) {
-                    data.data.room.room_users[i].last_seen = moment(parseInt(data.data.room.room_users[i].last_seen)).format("Do MMMM hh:mm a");
-                }
-                self.groupUserList = data.data.room.room_users;
-                $scope.groupModel.show();
-                self.clickRoomSpinner = -1;
-            });
-        };
-        self.joinRoom = function() {
-            var userData = timeStorage.get('userData');
-            self.joinRoomSpinner = true;
-            socketService.joinPublicRoom(self.groupId).then(function(response) {
-                tostService.notify(response.data.message, 'top');
-                var clickRoomUserData = {
-                    "name": self.groupName,
-                    "id": '',
-                    "pic": self.groupImage,
-                    "lastSeen": self.groupDescription
-                }
-                timeStorage.set('chatWithUserData', clickRoomUserData, 1);
-                socket.emit('APP_SOCKET_EMIT', 'room_open', {accessToken: userData.data.access_token, room_id: response.data.data.room_id, currentTimestamp: _.now()});
-                $scope.groupModel.hide();
-                $state.go('app.chatpage', {roomId: response.data.data.room_id});
-            });
-        }
-        $ionicModal.fromTemplateUrl('modal.html', function($ionicModal) {
-            $scope.modal = $ionicModal;
-        }, {
-            scope: $scope
-        });
-        $ionicModal.fromTemplateUrl('groupDetails.html', function($ionicModal) {
-            $scope.groupModel = $ionicModal;
-        }, {
-            scope: $scope
-        });
-    }
-})();
-(function() {
-    'use strict';
-
-    angular.module('chattapp')
-            .controller('profileController', profileController);
-
-    function profileController(cameraService, profileImageFactory, $ionicLoading, profileFactory, $timeout, $ionicModal, timeStorage, $scope, $filter, $ionicPopup) {
-        var self = this;
-        self.displayProfile = timeStorage.get('profile_data');
-        if (timeStorage.get('userData').data.access_token) {
-
-            var query = profileFactory.save({
-                accessToken: timeStorage.get('userData').data.access_token,
-                currentTimestamp: Date.now()
-            });
-            query.$promise.then(function(data) {
-                self.displayprofile = data.data;
-                timeStorage.set('profile_data', self.displayprofile);
-            });
-        }
-
-        self.editProfilePic = function() {
-            $scope.myCroppedImage = '';
-            cameraService.changePic().then(function(imageData) {
-                $scope.modal.show();
-                var img = "data:image/jpeg;base64," + imageData;
-                $scope.myimage = img;
-            }, function(err) {
-                window.plugins.toast.showShortTop('Unable to retrieve image');
-            });
-        };
-
-        $scope.result = function(image) {
-            $scope.myCroppedImage = image;
-
-        };
-        self.status = function(status, demo) {
-            self.data = {
-                text: ''
-            };
-            if (status) {
-                self.data.text = status;
-            }
-            else {
-                self.data.text = demo;
-            }
-            var myPopup = $ionicPopup.show({
-                template: '<input id="statustxt" type="text"  ng-model="profile.data.text">',
-                title: 'Update status',
-                subTitle: '',
-                scope: $scope,
-                buttons: [
-                    {text: 'Cancel'},
-                    {
-                        text: '<b>Save</b>',
-                        type: 'button-positive',
-                        onTap: function(e) {
-                            var query = profileFactory.status({
-                                accessToken: timeStorage.get('userData').data.access_token,
-                                status: self.data.text,
-                                currentTimestamp: Date.now()
-                            });
-                            query.$promise.then(function(data) {
-                                if (data.status == 1) {
-                                    self.displayprofile.profile_status = data.data.status;
-                                    myPopup.close();
-
-                                }
-                                else {
-                                    window.plugins.toast.showShortTop('status not update');
-                                    myPopup.close();
-                                }
-
-                            });
-
-
-                        }
-                    }
-                ]
-            });
-        };
-        $ionicModal.fromTemplateUrl('app/profile/template/imgCropModal.html', {
-            scope: $scope,
-            animation: 'slide-in-up'
-        }).then(function(modal) {
-            $scope.modal = modal;
-        });
-
-        function fixBinary(bin) {
-            var length = bin.length;
-            var buf = new ArrayBuffer(length);
-            var arr = new Uint8Array(buf);
-            for (var i = 0; i < length; i++) {
-                arr[i] = bin.charCodeAt(i);
-            }
-            return buf;
-        }
-
-        $scope.imgChange = function() {
-
-            if ($scope.myCroppedImage) {
-                $scope.startLoading = true;
-                var imageBase64 = $scope.myCroppedImage.replace(/^data:image\/(png|jpeg);base64,/, "");
-                var binary = fixBinary(atob(imageBase64));
-                var blob = new Blob([binary], {type: 'image/png', name: 'png'});
-                blob.name = 'png';
-                blob.$ngfName = 'png';
-
-                var query = profileImageFactory.upload({
-                    file: blob,
-                    currentTimestamp: Date.now(),
-                    append_data: {file_type: 'profile_image', accessToken: timeStorage.get('userData').data.access_token}
-
-                });
-                query.then(function(data) {
-
-                    if (data.data.status == 1) {
-                        self.displayprofile.profile_image = data.data.data.url;
-                        $scope.startLoading = false;
-                        $scope.modal.hide();
-                    } else {
-                        $scope.startLoading = false;
-                        window.plugins.toast.showShortTop('Image not upload');
-                    }
-                });
-
-            } else {
-                window.plugins.toast.showShortTop('Please set your pic');
-            }
-        };
-        $scope.imgCancel = function() {
-            $scope.modal.hide();
-        };
-        $scope.stopLoading = function() {
-            $scope.startLoading = false;
-            $scope.start = false;
-        };
-    }
-
-})();
-(function() {
-    'use strict';
-    angular.module('chattapp')
-            .factory('profileFactory', profileFactory);
-
-    function profileFactory($resource, Configurations) {
-        return $resource(Configurations.api_url + '/users/my_profile/:accessToken/:currentTimestamp/', {}, {
-            status: {
-                method: 'POST',
-                url: Configurations.api_url + '/users/update_profile_status/:accessToken/:status/:currentTimestamp'
-            }
-        });
-    }
-    ;
-})();
-
-(function() {
-    'use strict';
-    angular.module('chattapp')
-            .factory('profileImageFactory', profileImageFactory);
-
-    function profileImageFactory($resource, Configurations, Upload, $q) {
-        var image = {};
-        image.upload = function(data) {
-            var def = $q.defer();
-            Upload.upload({
-                url: Configurations.api_url + '/uploads/upload',
-                data: data
-            }).then(function(resp) {
-                def.resolve(resp);
-            }, function(resp) {
-                def.reject(resp);
-            }, function(evt) {
-                var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                console.log('progress: ' + progressPercentage + '% '); //progress of loading image
-            });
-            return def.promise;
-        };
-        return image;
-    }
-    ;
-})();
-
- (function() {
-    'use strict';
-
-    angular.module('chattapp')
-        .controller('registerController', registerController);
-
-    function registerController($scope, $state, registerFactory,  $localStorage, tostService, deviceService, timeStorage, $ionicLoading) {
-            console.log('Register Controller');
-            var self = this;
-            this.user={
-                name:'',
-                email:'',
-                password:'',
-                };
-            var currentTimestamp = _.now();
-            var deviceUUID = deviceService.getuuid();
-            var devicePlatform = deviceService.platform();
-            this.register = function() {
-                if(_.isEmpty(this.user.name) || _.isEmpty(this.user.email) || _.isEmpty(this.user.password) ){
-                tostService.notify('Please fill all fields', 'top');
-            }else{
-                $ionicLoading.show();
-                timeStorage.set('userEmail',this.user.email,1);
-                var query = registerFactory.save({
-                    action_type:'manual_register',
-                    social_id:'',
-                    platform:devicePlatform,
-                    token:$localStorage.gcmToken,
-                    action:'login_register',
-                    device_id:deviceUUID,
-                    email: this.user.email,
-                    name: this.user.name,
-                    password: this.user.password,
-                    currentTimestamp:currentTimestamp
-                });
-                query.$promise.then(function(data) {
-                    $ionicLoading.hide();
-                    console.log(data);
-                    tostService.notify(data.message, 'top');
-                    if(data.data.show_verification == '1'){
-                        $state.go('verification');
-                    }
-                });
-            }
-        };
-    }
-})();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('registerFactory', registerFactory);
-
-   function registerFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/users/register_login/:action_type/:action/:social_id/:platform/:token/:email/:name/:password', {},{});
-   };
-})();
- (function() {
-     'use strict';
-
-     angular.module('chattapp')
-         .controller('resetPasswordController', resetPasswordController);
-
-     function resetPasswordController($state, resetPasswordFactory, timeStorage, tostService, $ionicLoading, $localStorage) {
-         console.log('resetPasswordController');
-         var self = this;
-         self.email = timeStorage.get('userEmail');
-         self.resetPassword = function() {
-             if (self.password !== self.cpassword) {
-                 tostService.notify('Your Password and Confirm Password not Match', 'top');
-                 self.password = '';
-                 self.cpassword = '';
-             } else {
-                 $ionicLoading.show();
-                 var userData =  timeStorage.get('userData');
-                 var accessToken = userData.data.access_token;
-                 var query = resetPasswordFactory.save({
-                     password:self.password,
-                     access_token:accessToken
-                 });
-                 query.$promise.then(function(data) {
-                     $ionicLoading.hide();
-                     tostService.notify(data.message);
-                     if(data.status == 1){
-                        $localStorage.$reset();
-                        $state.go('login');
-                     }
-                 });
-             }
-         };
-     }
- })();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('resetPasswordFactory', resetPasswordFactory);
-
-   function resetPasswordFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/users/reset_password?', {
-       	access_token:'@access_token'
-       },{});
-   };
-})();
-
- (function() {
-    'use strict';
-
-    angular.module('chattapp')
-        .controller('settingController', settingController);
-
-    function settingController(socketService, timeStorage, $state) {
-            var self = this;
-            self.logout = function() {
-	            socketService.logout();
-	            timeStorage.remove('google_access_token');
-	            timeStorage.remove('userEmail');
-	            timeStorage.remove('userData');
-	            timeStorage.remove('displayPrivateChats');
-	            timeStorage.remove('listUsers');
-	            timeStorage.remove('chatWithUserData');
-	            timeStorage.remove('displayPublicChats');
-                    timeStorage.remove('profile_data');
-	            $state.go('login');
-        };
-    }
-})();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('resendVerificationCodeFactory', resendVerificationCodeFactory);
-
-   function resendVerificationCodeFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/users/resend_verification_code/:email', {},{});
-   };
-})();
-
- (function() {
-     'use strict';
-
-     angular.module('chattapp')
-         .controller('verificationController', verificationController);
-
-     function verificationController($state, verificationFactory, tostService, timeStorage,resendVerificationCodeFactory, $ionicLoading) {
-         var self = this;
-         self.data = {
-             verificationCode: '',
-             email: ''
-         }
-         if (timeStorage.get('userEmail')) {
-             self.data.email = timeStorage.get('userEmail');
-         }
-         self.verify = function() {
-             if (_.isEmpty(self.data.email) || _.isEmpty(self.data.verificationCode)) {
-                 tostService.notify('Please all fill the fields.', 'top');
-             } else {
-                 $ionicLoading.show();
-                 var query = verificationFactory.save({
-                     email: self.data.email,
-                     code: self.data.verificationCode
-                 });
-                 query.$promise.then(function(data) {
-                    $ionicLoading.hide();
-                     tostService.notify(data.message, 'top');
-                     if (data.status == 1) {
-                         $state.go('login');
-                     }
-                 });
-             }
-         };
-         self.resendVerification = function(){
-                $ionicLoading.show();
-                var query = resendVerificationCodeFactory.save({
-                    email: self.data.email
-                });
-                query.$promise.then(function(data) {
-                    $ionicLoading.hide();
-                    console.log(data);
-                    tostService.notify(data.message, 'top');
-                });
-            };
-     }
- })();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('verificationFactory', verificationFactory);
-
-   function verificationFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/users/do_user_verification/:email/:code', {},{});
-   };
 })();
