@@ -20235,7 +20235,6 @@ angular.module('chattapp')
                    return q.promise;
                },
                service.showUnreadIcon = function(roomUnreadData) {
-                console.log(roomUnreadData);
                 var allChatData = timeStorage.get('displayPrivateChats');
                 var q = $q.defer();
                   for(var i = 0; i < allChatData.length; i++){
@@ -21106,9 +21105,8 @@ angular.module('chattapp')
              },
              service.update_room_unread_notification = function(data) {
                 var userData = timeStorage.get('userData');
-                console.log(data);
-                    socket.emit('APP_SOCKET_EMIT', 'show_room_unread_notification', { accessToken: userData.data.access_token, room_id: data.room_id, currentTimestamp: _.now()});
-                    socket.emit('APP_SOCKET_EMIT', 'room_open', { accessToken: userData.data.access_token, room_id: data.room_id, currentTimestamp: _.now() });
+                socket.emit('APP_SOCKET_EMIT', 'show_room_unread_notification', { accessToken: userData.data.access_token, room_id: data.room_id, currentTimestamp: _.now()});
+                socket.emit('APP_SOCKET_EMIT', 'room_open', { accessToken: userData.data.access_token, room_id: data.room_id, currentTimestamp: _.now() });
              }
          return service;
      };
