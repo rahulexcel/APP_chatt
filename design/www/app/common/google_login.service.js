@@ -53,8 +53,8 @@ googleLoginService.factory('googleLogin', [
         var service = {};
         service.access_token = false;
         service.redirect_url = 'http://localhost';
-        service.client_id = '515946351830-qog4elguhcrvnrimotf3t30devu67l11.apps.googleusercontent.com';
-        service.secret = 'CqY1qvOOHAFcSuidWtUyZCQl';
+        service.client_id = '1009675706541-dmc2t32u755as3pms8f6llcrhed8lvt6.apps.googleusercontent.com';
+        service.secret = 'BQSLccofHJjg9t-_-w66Q_qc';
         service.scope = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/plus.me';
         service.gulp = function(url, name) {
             url = url.substring(url.indexOf('?') + 1, url.length);
