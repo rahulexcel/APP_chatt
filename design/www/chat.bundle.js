@@ -20285,6 +20285,130 @@ angular.module('chattapp')
                 return directive;
             });
 })();
+(function() {
+    'use strict';
+
+    angular.module('chattapp')
+            .controller('contactsController', contactsController);
+
+    function contactsController($scope, contactsFactory, $filter, contactsService, $ionicLoading, timeStorage, $localStorage, $state, socketService, $ionicModal, getUserProfileFactory) {
+        delete $localStorage.chatWithUserData;
+        var self = this;
+        var userData = timeStorage.get('userData');
+        var accessToken = userData.data.access_token;
+        self.displaycontacts = timeStorage.get('listUsers');
+        contactsService.listUsers();
+        $scope.$on('updatedlistUsers', function(event, response) {
+            self.displaycontacts = response.data;
+            $scope.$evalAsync();
+        });
+        self.chatWithUser = function(name, id, pic, lastSeen) {
+            self.startChatspinner = true;
+            var chatWithUser = {
+                "name": name,
+                "id": id,
+                "pic": pic,
+                "lastSeen": self.displayUserProfileLastSeenInTimeStamp
+            }
+            timeStorage.set('chatWithUserData', chatWithUser, 1);
+            socketService.create_room(id).then(function(data) {
+                $scope.modal.hide();
+                $state.go('app.chatpage', {roomId: data.data.room_id});
+            });
+        }
+        self.isSearchOpen = false;
+        self.searchOpen = function() {
+            if (self.isSearchOpen) {
+                self.isSearchOpen = false;
+            } else {
+                self.isSearchOpen = true;
+            }
+        }
+        self.openUserProfile = function(clickData, index) {
+            self.spinnerIndex = index;
+            var userData = timeStorage.get('userData');
+            var query = getUserProfileFactory.save({
+                accessToken: userData.data.access_token,
+                user_id: clickData.id,
+                currentTimestamp: _.now()
+            });
+            query.$promise.then(function(data) {
+                self.spinnerIndex = -1;
+                self.displayUserProfileName = data.data.name;
+                self.displayUserProfileId = data.data.user_id;
+                self.displayUserProfileLastSeenInTimeStamp = data.data.last_seen;
+                if (data.data.profile_image) {
+                    self.displayUserProfileImage = data.data.profile_image;
+                }
+                else {
+                    self.displayUserProfileImage ="https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg";
+                }
+                var lastOnline = (_.now() - data.data.last_seen)/1000;
+                if(lastOnline > 86400){
+                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("MMMM Do YYYY, h:mm a");
+                } else{
+                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("h:mm a");
+                }
+                self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
+                self.displayUserProfilePublicRooms = data.data.user_public_rooms;
+                self.displayUserProfileStatus = data.data.profile_status;
+                $scope.modal.show();
+            });
+        }
+        $ionicModal.fromTemplateUrl('contactUser.html', function($ionicModal) {
+            $scope.modal = $ionicModal;
+        }, {
+            scope: $scope,
+        });
+    }
+})();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('contactsFactory', contactsFactory);
+
+   function contactsFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/users/list_users', {},{});
+   };
+})();
+ (function() {
+     'use strict';
+     angular.module('chattapp')
+         .factory('contactsService', contactsService);
+
+     function contactsService(timeStorage, $rootScope, contactsFactory, timeZoneService) {
+         var service = {};
+         service.listUsers = function() {
+            var userData =  timeStorage.get('userData');
+            var query = contactsFactory.save({
+                 accessToken: userData.data.access_token,
+                 page: 0,
+                 limit:100,
+                 currentTimestamp: _.now()
+             });
+             query.$promise.then(function(data) {
+                 var newData = [];
+                 for(var i = 0; i < data.data.length; i++){
+                    data.data[i].lastSeen = moment(parseInt(data.data[i].lastSeen)).format("Do MMMM hh:mm a");
+                    newData.push(data.data[i]); 
+                 }
+                 timeStorage.set('listUsers', newData, 1);
+                 $rootScope.$broadcast('updatedlistUsers', { data: newData });
+             });
+         }
+         return service;
+     };
+
+ })();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('getUserProfileFactory', getUserProfileFactory);
+
+   function getUserProfileFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/users/get_user_profile/:accessToken/:user_id/:currentTimestamp', {},{});
+   };
+})();
  (function() {
      'use strict';
      angular.module('chattapp')
@@ -21343,130 +21467,6 @@ angular.module('chattapp')
     };
 
 })();
-(function() {
-    'use strict';
-
-    angular.module('chattapp')
-            .controller('contactsController', contactsController);
-
-    function contactsController($scope, contactsFactory, $filter, contactsService, $ionicLoading, timeStorage, $localStorage, $state, socketService, $ionicModal, getUserProfileFactory) {
-        delete $localStorage.chatWithUserData;
-        var self = this;
-        var userData = timeStorage.get('userData');
-        var accessToken = userData.data.access_token;
-        self.displaycontacts = timeStorage.get('listUsers');
-        contactsService.listUsers();
-        $scope.$on('updatedlistUsers', function(event, response) {
-            self.displaycontacts = response.data;
-            $scope.$evalAsync();
-        });
-        self.chatWithUser = function(name, id, pic, lastSeen) {
-            self.startChatspinner = true;
-            var chatWithUser = {
-                "name": name,
-                "id": id,
-                "pic": pic,
-                "lastSeen": self.displayUserProfileLastSeenInTimeStamp
-            }
-            timeStorage.set('chatWithUserData', chatWithUser, 1);
-            socketService.create_room(id).then(function(data) {
-                $scope.modal.hide();
-                $state.go('app.chatpage', {roomId: data.data.room_id});
-            });
-        }
-        self.isSearchOpen = false;
-        self.searchOpen = function() {
-            if (self.isSearchOpen) {
-                self.isSearchOpen = false;
-            } else {
-                self.isSearchOpen = true;
-            }
-        }
-        self.openUserProfile = function(clickData, index) {
-            self.spinnerIndex = index;
-            var userData = timeStorage.get('userData');
-            var query = getUserProfileFactory.save({
-                accessToken: userData.data.access_token,
-                user_id: clickData.id,
-                currentTimestamp: _.now()
-            });
-            query.$promise.then(function(data) {
-                self.spinnerIndex = -1;
-                self.displayUserProfileName = data.data.name;
-                self.displayUserProfileId = data.data.user_id;
-                self.displayUserProfileLastSeenInTimeStamp = data.data.last_seen;
-                if (data.data.profile_image) {
-                    self.displayUserProfileImage = data.data.profile_image;
-                }
-                else {
-                    self.displayUserProfileImage ="https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg";
-                }
-                var lastOnline = (_.now() - data.data.last_seen)/1000;
-                if(lastOnline > 86400){
-                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("MMMM Do YYYY, h:mm a");
-                } else{
-                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("h:mm a");
-                }
-                self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
-                self.displayUserProfilePublicRooms = data.data.user_public_rooms;
-                self.displayUserProfileStatus = data.data.profile_status;
-                $scope.modal.show();
-            });
-        }
-        $ionicModal.fromTemplateUrl('contactUser.html', function($ionicModal) {
-            $scope.modal = $ionicModal;
-        }, {
-            scope: $scope,
-        });
-    }
-})();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('contactsFactory', contactsFactory);
-
-   function contactsFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/users/list_users', {},{});
-   };
-})();
- (function() {
-     'use strict';
-     angular.module('chattapp')
-         .factory('contactsService', contactsService);
-
-     function contactsService(timeStorage, $rootScope, contactsFactory, timeZoneService) {
-         var service = {};
-         service.listUsers = function() {
-            var userData =  timeStorage.get('userData');
-            var query = contactsFactory.save({
-                 accessToken: userData.data.access_token,
-                 page: 0,
-                 limit:100,
-                 currentTimestamp: _.now()
-             });
-             query.$promise.then(function(data) {
-                 var newData = [];
-                 for(var i = 0; i < data.data.length; i++){
-                    data.data[i].lastSeen = moment(parseInt(data.data[i].lastSeen)).format("Do MMMM hh:mm a");
-                    newData.push(data.data[i]); 
-                 }
-                 timeStorage.set('listUsers', newData, 1);
-                 $rootScope.$broadcast('updatedlistUsers', { data: newData });
-             });
-         }
-         return service;
-     };
-
- })();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('getUserProfileFactory', getUserProfileFactory);
-
-   function getUserProfileFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/users/get_user_profile/:accessToken/:user_id/:currentTimestamp', {},{});
-   };
-})();
  (function() {
      'use strict';
 
@@ -21704,6 +21704,167 @@ angular.module('chattapp')
     }
 })();
 (function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('getPublicRoomsFactory', getPublicRoomsFactory);
+
+   function getPublicRoomsFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/rooms/get_public_rooms/:accessToken/:page/:limit/:currentTimestamp', {},{});
+   };
+})();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('getRoomInfoFactory', getRoomInfoFactory);
+
+   function getRoomInfoFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/rooms/get_room_info/:accessToken/:room_id/:currentTimestamp', {},{});
+   };
+})();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('publicChatFactory', publicChatFactory);
+
+   function publicChatFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/rooms/create_room/:accessToken/:room_type/:chat_with/:room_name/:room_description/:currentTimestamp', {},{});
+   };
+})();
+ (function() {
+     'use strict';
+     angular.module('chattapp')
+         .factory('publicChatService', publicChatService);
+
+     function publicChatService($q, timeStorage, $rootScope, getPublicRoomsFactory) {
+         var service = {};
+         var q = $q.defer();
+         service.listRooms = function() {
+             var userData = timeStorage.get('userData');
+             var query = getPublicRoomsFactory.save({
+                 accessToken: userData.data.access_token,
+                 page:0,
+                 limit:100,
+                 timestamp:_.now()
+             });
+             query.$promise.then(function(data) {
+                var newData = [];
+                if(data.data.rooms){
+                    timeStorage.set('displayPublicChats', data.data.rooms, 1);
+                    $rootScope.$broadcast('updatedDisplayPublicChats', { data: data.data.rooms });
+                } else{
+                    $rootScope.$broadcast('updatedDisplayPublicChats', { data: newData });
+                    timeStorage.set('displayPublicChats', newData, 1);
+                }
+             });
+         }
+         return service;
+     };
+
+ })();
+(function() {
+    'use strict';
+
+    angular.module('chattapp')
+            .controller('publicChatsController', publicChatsController);
+
+    function publicChatsController($ionicModal, $scope, socketService, tostService, publicChatService, timeStorage, $state, publicChatFactory, getRoomInfoFactory, timeZoneService) {
+        var self = this;
+        self.displayPublicChat = timeStorage.get('displayPublicChats');
+        publicChatService.listRooms();
+        self.createGroupOption = false;
+        self.createGroup = function() {
+            if (self.userGroupName && self.userGroupDescription) {
+                self.createGroupOption = true;
+                var userData = timeStorage.get('userData');
+                var query = publicChatFactory.save({
+                    accessToken: userData.data.access_token,
+                    room_type: 'public',
+                    chat_with: '',
+                    room_name: self.userGroupName,
+                    room_description: self.userGroupDescription,
+                    currentTimestamp: _.now()
+                });
+                query.$promise.then(function(data) {
+                    if (data.data.room_id) {
+                        self.createGroupOption = false;
+                        self.userGroupName = '';
+                        self.userGroupDescription = '';
+                        tostService.notify(data.message, 'top');
+                        publicChatService.listRooms();
+                        $scope.modal.hide();
+                        $state.go('app.chats');
+                    }
+                });
+            } else {
+                tostService.notify('Please fill details', 'top');
+            }
+        }
+        $scope.$on('updatedDisplayPublicChats', function(event, response) {
+            self.displayPublicChat = response.data;
+            $scope.$evalAsync();
+        });
+        self.clickOnRoom = function(roomData, index) {
+            self.clickRoomSpinner = index;
+            $scope.room_id = roomData.id;
+            var userData = timeStorage.get('userData');
+            var query = getRoomInfoFactory.save({
+                accessToken: userData.data.access_token,
+                room_id: roomData.id,
+                currentTimestamp: _.now()
+            });
+            query.$promise.then(function(data) {
+                self.groupName = data.data.room.room_name;
+                self.groupId = data.data.room.id;
+                if (data.data.room.room_image == '') {
+                    self.groupImage = 'lib/group.png';
+                } else {
+                    self.groupImage = data.data.room.room_image;
+                }
+                if (data.data.room.room_background == '') {
+                    self.groupBackground = 'lib/group.png';
+                } else {
+                    self.groupBackground = data.data.room.room_background;
+                }
+                self.groupCreatedOn = moment(parseInt(data.data.room.registration_time)).format("Do MMMM hh:mm a");
+                self.groupDescription = data.data.room.room_description;
+                for (var i = 0; i < data.data.room.room_users.length; i++) {
+                    data.data.room.room_users[i].last_seen = moment(parseInt(data.data.room.room_users[i].last_seen)).format("Do MMMM hh:mm a");
+                }
+                self.groupUserList = data.data.room.room_users;
+                $scope.groupModel.show();
+                self.clickRoomSpinner = -1;
+            });
+        };
+        self.joinRoom = function() {
+            var userData = timeStorage.get('userData');
+            self.joinRoomSpinner = true;
+            socketService.joinPublicRoom(self.groupId).then(function(response) {
+                tostService.notify(response.data.message, 'top');
+                var clickRoomUserData = {
+                    "name": self.groupName,
+                    "id": '',
+                    "pic": self.groupImage,
+                    "lastSeen": self.groupDescription
+                }
+                timeStorage.set('chatWithUserData', clickRoomUserData, 1);
+                socket.emit('APP_SOCKET_EMIT', 'room_open', {accessToken: userData.data.access_token, room_id: response.data.data.room_id, currentTimestamp: _.now()});
+                $scope.groupModel.hide();
+                $state.go('app.chatpage', {roomId: response.data.data.room_id});
+            });
+        }
+        $ionicModal.fromTemplateUrl('modal.html', function($ionicModal) {
+            $scope.modal = $ionicModal;
+        }, {
+            scope: $scope
+        });
+        $ionicModal.fromTemplateUrl('groupDetails.html', function($ionicModal) {
+            $scope.groupModel = $ionicModal;
+        }, {
+            scope: $scope
+        });
+    }
+})();
+(function() {
     'use strict';
 
     angular.module('chattapp')
@@ -21886,167 +22047,6 @@ angular.module('chattapp')
     ;
 })();
 
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('getPublicRoomsFactory', getPublicRoomsFactory);
-
-   function getPublicRoomsFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/rooms/get_public_rooms/:accessToken/:page/:limit/:currentTimestamp', {},{});
-   };
-})();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('getRoomInfoFactory', getRoomInfoFactory);
-
-   function getRoomInfoFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/rooms/get_room_info/:accessToken/:room_id/:currentTimestamp', {},{});
-   };
-})();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('publicChatFactory', publicChatFactory);
-
-   function publicChatFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/rooms/create_room/:accessToken/:room_type/:chat_with/:room_name/:room_description/:currentTimestamp', {},{});
-   };
-})();
- (function() {
-     'use strict';
-     angular.module('chattapp')
-         .factory('publicChatService', publicChatService);
-
-     function publicChatService($q, timeStorage, $rootScope, getPublicRoomsFactory) {
-         var service = {};
-         var q = $q.defer();
-         service.listRooms = function() {
-             var userData = timeStorage.get('userData');
-             var query = getPublicRoomsFactory.save({
-                 accessToken: userData.data.access_token,
-                 page:0,
-                 limit:100,
-                 timestamp:_.now()
-             });
-             query.$promise.then(function(data) {
-                var newData = [];
-                if(data.data.rooms){
-                    timeStorage.set('displayPublicChats', data.data.rooms, 1);
-                    $rootScope.$broadcast('updatedDisplayPublicChats', { data: data.data.rooms });
-                } else{
-                    $rootScope.$broadcast('updatedDisplayPublicChats', { data: newData });
-                    timeStorage.set('displayPublicChats', newData, 1);
-                }
-             });
-         }
-         return service;
-     };
-
- })();
-(function() {
-    'use strict';
-
-    angular.module('chattapp')
-            .controller('publicChatsController', publicChatsController);
-
-    function publicChatsController($ionicModal, $scope, socketService, tostService, publicChatService, timeStorage, $state, publicChatFactory, getRoomInfoFactory, timeZoneService) {
-        var self = this;
-        self.displayPublicChat = timeStorage.get('displayPublicChats');
-        publicChatService.listRooms();
-        self.createGroupOption = false;
-        self.createGroup = function() {
-            if (self.userGroupName && self.userGroupDescription) {
-                self.createGroupOption = true;
-                var userData = timeStorage.get('userData');
-                var query = publicChatFactory.save({
-                    accessToken: userData.data.access_token,
-                    room_type: 'public',
-                    chat_with: '',
-                    room_name: self.userGroupName,
-                    room_description: self.userGroupDescription,
-                    currentTimestamp: _.now()
-                });
-                query.$promise.then(function(data) {
-                    if (data.data.room_id) {
-                        self.createGroupOption = false;
-                        self.userGroupName = '';
-                        self.userGroupDescription = '';
-                        tostService.notify(data.message, 'top');
-                        publicChatService.listRooms();
-                        $scope.modal.hide();
-                        $state.go('app.chats');
-                    }
-                });
-            } else {
-                tostService.notify('Please fill details', 'top');
-            }
-        }
-        $scope.$on('updatedDisplayPublicChats', function(event, response) {
-            self.displayPublicChat = response.data;
-            $scope.$evalAsync();
-        });
-        self.clickOnRoom = function(roomData, index) {
-            self.clickRoomSpinner = index;
-            $scope.room_id = roomData.id;
-            var userData = timeStorage.get('userData');
-            var query = getRoomInfoFactory.save({
-                accessToken: userData.data.access_token,
-                room_id: roomData.id,
-                currentTimestamp: _.now()
-            });
-            query.$promise.then(function(data) {
-                self.groupName = data.data.room.room_name;
-                self.groupId = data.data.room.id;
-                if (data.data.room.room_image == '') {
-                    self.groupImage = 'lib/group.png';
-                } else {
-                    self.groupImage = data.data.room.room_image;
-                }
-                if (data.data.room.room_background == '') {
-                    self.groupBackground = 'lib/group.png';
-                } else {
-                    self.groupBackground = data.data.room.room_background;
-                }
-                self.groupCreatedOn = moment(parseInt(data.data.room.registration_time)).format("Do MMMM hh:mm a");
-                self.groupDescription = data.data.room.room_description;
-                for (var i = 0; i < data.data.room.room_users.length; i++) {
-                    data.data.room.room_users[i].last_seen = moment(parseInt(data.data.room.room_users[i].last_seen)).format("Do MMMM hh:mm a");
-                }
-                self.groupUserList = data.data.room.room_users;
-                $scope.groupModel.show();
-                self.clickRoomSpinner = -1;
-            });
-        };
-        self.joinRoom = function() {
-            var userData = timeStorage.get('userData');
-            self.joinRoomSpinner = true;
-            socketService.joinPublicRoom(self.groupId).then(function(response) {
-                tostService.notify(response.data.message, 'top');
-                var clickRoomUserData = {
-                    "name": self.groupName,
-                    "id": '',
-                    "pic": self.groupImage,
-                    "lastSeen": self.groupDescription
-                }
-                timeStorage.set('chatWithUserData', clickRoomUserData, 1);
-                socket.emit('APP_SOCKET_EMIT', 'room_open', {accessToken: userData.data.access_token, room_id: response.data.data.room_id, currentTimestamp: _.now()});
-                $scope.groupModel.hide();
-                $state.go('app.chatpage', {roomId: response.data.data.room_id});
-            });
-        }
-        $ionicModal.fromTemplateUrl('modal.html', function($ionicModal) {
-            $scope.modal = $ionicModal;
-        }, {
-            scope: $scope
-        });
-        $ionicModal.fromTemplateUrl('groupDetails.html', function($ionicModal) {
-            $scope.groupModel = $ionicModal;
-        }, {
-            scope: $scope
-        });
-    }
-})();
  (function() {
     'use strict';
 
