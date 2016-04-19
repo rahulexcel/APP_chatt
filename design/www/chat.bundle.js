@@ -18942,8 +18942,7 @@ angular.module('chattapp')
     angular.module('chattapp')
             .constant('Configurations', {
                 api_url: 'http://144.76.34.244:3033/api',
-              
-                senderID: '157127377708',
+                senderID: '1009675706541',
                 icon: 'chatt',
                 socketApi: 'http://144.76.34.244:3033',
                 color: {"a": "#FA8072 ", "b": "#00FFFF ", "c": "#7FFFD4 ", "d": "#000000 ", "e": "#0000FF ", "f": "#8A2BE2 ", "g": "#A52A2A ", "h": "#DEB887 ", "i": "#5F9EA0 ", "j": "#7FFF00 ", "k": "#D2691E ", "l": "#DC143C ", "m": "#00008B ", "n": "#008B8B ", "o": "#B8860B ", "p": "#006400 ", "q": "#8B008B ", "r": "#FF8C00 ", "s": "#8B0000 ", "t": "#8FBC8F ", "u": "#483D8B ", "v": "#2F4F4F ", "w": "#9400D3 ", "x": "#FF1493 ", "y": "#696969 ", "z": "#1E90FF ", "0": "#FF00FF ", "1": "#FFD700 ", "2": "#ADFF2F ", "3": "#FF69B4 ", "4": "#4B0082 ", "5": "#7CFC00 ", "6": "#800000 ", "7": "#800080 ", "8": "#FF6347 ", "9": "#6A5ACD "}
@@ -19973,8 +19972,8 @@ googleLoginService.factory('googleLogin', [
         var service = {};
         service.access_token = false;
         service.redirect_url = 'http://localhost';
-        service.client_id = '515946351830-qog4elguhcrvnrimotf3t30devu67l11.apps.googleusercontent.com';
-        service.secret = 'CqY1qvOOHAFcSuidWtUyZCQl';
+        service.client_id = '1009675706541-dmc2t32u755as3pms8f6llcrhed8lvt6.apps.googleusercontent.com';
+        service.secret = 'BQSLccofHJjg9t-_-w66Q_qc';
         service.scope = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/plus.me';
         service.gulp = function(url, name) {
             url = url.substring(url.indexOf('?') + 1, url.length);
@@ -21527,6 +21526,7 @@ angular.module('chattapp')
 	            timeStorage.remove('listUsers');
 	            timeStorage.remove('chatWithUserData');
 	            timeStorage.remove('displayPublicChats');
+                    timeStorage.remove('profile_data');
 	            $state.go('login');
         };
     }
