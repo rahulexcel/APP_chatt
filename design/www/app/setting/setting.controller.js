@@ -6,6 +6,7 @@
 
     function settingController(socketService, timeStorage, $state) {
             var self = this;
+            self.version=AppVersion.version;
             self.logout = function() {
 	            socketService.logout();
 	            timeStorage.remove('google_access_token');
