@@ -321,8 +321,19 @@ module.exports = function (Room) {
                                             //----start---for push notification info--------
                                             var TOKENS = [];
                                             var msg_by_name = msg_by_profile_image = '';
+                                            
+                                            var room_name = '';
+                                            var room_description = '';
+                                            var room_type = '';
+                                            var room_image = '';
                                             result.forEach(function(result) {
                                                 room_info = result.toJSON();
+                                                room_type = room_info.room_type;
+                                                if( room_type == 'public' ){
+                                                    room_name = room_info.room_name;
+                                                    room_description = room_info.room_description;
+                                                }
+                                                room_image = room_info.room_image;
                                                 room_users = room_info.room_users;
                                                 for( var k in room_users ){
                                                     var room_user_id = room_users[k].id;
@@ -379,6 +390,14 @@ module.exports = function (Room) {
                                                     }
                                                     //----start---for push notification message--------
                                                     if( TOKENS.length > 0 ){
+                                                        if( room_type == 'public' && room_name != '' ){
+                                                            if( message_type == 'room_alert_message' ){
+                                                            }else{
+                                                                message = 'Message from ' + msg_by_name;
+                                                            }
+                                                            msg_by_name = room_name;
+                                                            msg_by_profile_image = room_image;
+                                                        }
                                                         var push_msg_info = {
                                                             'message_id' : new_message.id.toString(),
                                                             'room_id' : room_id,
@@ -753,51 +772,70 @@ module.exports = function (Room) {
                                 Room.find({
                                     "where" : {
                                         room_type : 'public',
-                                        _id : new ObjectID( room_id ),
-                                        room_users : {'in':[userId]},
+                                        _id : new ObjectID( room_id )
                                     }
                                 }, function( err1, result1 ){
                                     if( err1 ){
                                         callback(null, 0, 'try again', {});
                                     }else{
-                                        if( result1.length > 0 ){
-                                            var data = {
-                                                room_id : room_id
-                                            }
-                                            callback(null, 2, 'Already room member', data );
+                                        if( result1.length == 0 ){
+                                            callback(null, 0, 'Room not exists', {} );
                                         }else{
-                                            Room.update({
-                                                room_type : 'public',
-                                                _id : new ObjectID( room_id )
-                                            },{
-                                                '$push': {'room_users': userId }
-                                            },{ 
-                                                allowExtendedOperators: true 
-                                            },function (err, result2) {
-                                                if (err) {
-                                                    callback(null, 0, 'try again', {});
-                                                } else {
-                                                    User.FN_get_user_by_id( org_user_id, function( u_status, u_message, u_data ){
-                                                        if( u_status == 1 ){
-                                                            var join_user_info = {
-                                                                name : u_data.name,
-                                                                profile_image : u_data.profile_image,
-                                                                room_id : room_id,
-                                                            }
-                                                            var data = {
-                                                                room_id : room_id,
-                                                                join_user_info : join_user_info
-                                                            }
-                                                            callback(null, 1, 'Public room joined', data );
-                                                        }else{
-                                                            var data = {
-                                                                room_id : room_id,
-                                                            }
-                                                            callback(null, 0, 'error while getting user info', data );
-                                                        }
-                                                    })
+                                            result1 = result1[0];
+                                            result1 = result1.toJSON();
+                                            var room_name = result1.room_name;
+                                            var room_room_description = result1.room_description;
+                                            var room_existing_users = result1.room_users;
+                                            var user_already_member = false;
+                                            
+                                            if( typeof room_existing_users != 'undefined' && room_existing_users.length > 0 ){
+                                                for( var k in room_existing_users ){
+                                                    if( k.toString() == userId.toString() ){
+                                                        user_already_member == true;
+                                                    }
                                                 }
-                                            });
+                                            }
+                                            if( user_already_member == true ){
+                                                var data = {
+                                                    room_id : room_id
+                                                }
+                                                callback(null, 2, 'Already room member', data );
+                                            }else{
+                                                Room.update({
+                                                    room_type : 'public',
+                                                    _id : new ObjectID( room_id )
+                                                },{
+                                                    '$push': {'room_users': userId }
+                                                },{ 
+                                                    allowExtendedOperators: true 
+                                                },function (err, result2) {
+                                                    if (err) {
+                                                        callback(null, 0, 'try again', {});
+                                                    } else {
+                                                        User.FN_get_user_by_id( org_user_id, function( u_status, u_message, u_data ){
+                                                            if( u_status == 1 ){
+                                                                var join_user_info = {
+                                                                    name : u_data.name,
+                                                                    profile_image : u_data.profile_image,
+                                                                    room_id : room_id,
+                                                                }
+                                                                var data = {
+                                                                    room_id : room_id,
+                                                                    room_name : room_name,
+                                                                    join_user_info : join_user_info
+                                                                }
+                                                                callback(null, 1, 'Public room joined', data );
+                                                            }else{
+                                                                var data = {
+                                                                    room_id : room_id,
+                                                                    room_name : room_name
+                                                                }
+                                                                callback(null, 0, 'error while getting user info', data );
+                                                            }
+                                                        })
+                                                    }
+                                                });
+                                            }
                                         }
                                     }
                                 })
@@ -941,64 +979,116 @@ module.exports = function (Room) {
                     callback(null, 401, 'UnAuthorized', {});
                 }else{
                     var access_token_userid = accessToken.userId
-                    User.findById(access_token_userid, function (err, user) {
+                    var where1 = {
+                        'id' : new ObjectID( access_token_userid )
+                    };
+                    User.find({
+                        "where": where1,
+                        "include": [{
+                            relation: 'friends', 
+                            scope: {
+                                fields: ['name','profile_image','last_seen'],
+                            }
+                        }]
+                    }, function (err, user) {
                         if (err) {
                             callback(null, 401, 'UnAuthorized', err);
                         } else {
-                            var where = {
-                                'id' : new ObjectID( room_id )
-                            };
-                            Room.find({
-                                "where": where,
-                                "include": [{
-                                    relation: 'room_owner', 
-                                    scope: {
-                                        fields: ['name','profile_image','last_seen'],
-                                    }
-                                },{
-                                    relation: 'room_users', 
-                                    scope: {
-                                        fields: ['name','profile_image','last_seen'],
-                                    }
-                                }]
-                            },function (err, result) {
-                                if( err ){
-                                    callback(null, 0, 'try again', {});
-                                }else{
-                                    if( result.length > 0 ){
-                                        result = result[0];
-                                        var is_room_owner = 0;
-                                        result = result.toJSON();
-                                        if( result['room_owner'].id.toString() == access_token_userid.toString() ){
-                                            is_room_owner = 1;
+                            if( user.length == 0 ){
+                                callback(null, 401, 'UnAuthorized', err);
+                            }else{
+                                var user = user[0];
+                                user = user.toJSON();
+                                var where = {
+                                    'id' : new ObjectID( room_id )
+                                };
+                                Room.find({
+                                    "where": where,
+                                    "include": [{
+                                        relation: 'room_owner', 
+                                        scope: {
+                                            fields: ['name','profile_image','last_seen'],
                                         }
-                                        result.is_room_owner = is_room_owner;
-                                        
-                                        var kr_room_name = result.room_name;
-                                        var kr_room_description = result.room_description;
-                                        
-                                        var short_room_name = kr_room_name;
-                                        var short_room_description = kr_room_description;
-                                        
-                                        
-                                        if( typeof short_room_name != 'undefined' &&  short_room_name.length > 20 ){
-                                            short_room_name = short_room_name.slice(0,20) + '....';
+                                    },{
+                                        relation: 'room_users', 
+                                        scope: {
+                                            fields: ['name','profile_image','last_seen'],
                                         }
-                                        if( typeof short_room_description != 'undefined' && short_room_description.length > 20 ){
-                                            short_room_description = short_room_description.slice(0,20) + '....';
-                                        }
-                                        result.short_room_name = short_room_name;
-                                        result.short_room_description = short_room_description;
-                                        
-                                        var data = {
-                                            'room' : result
-                                        };
-                                        callback( null, 1, 'Room found', data );
+                                    }]
+                                },function (err, result) {
+                                    if( err ){
+                                        callback(null, 0, 'try again', {});
                                     }else{
-                                        callback( null, 0, 'No room found', {} );
+                                        if( result.length > 0 ){
+                                            result = result[0];
+                                            var is_room_owner = 0;
+                                            result = result.toJSON();
+                                            if( result['room_owner'].id.toString() == access_token_userid.toString() ){
+                                                is_room_owner = 1;
+                                            }
+                                            result.is_room_owner = is_room_owner;
+
+                                            var kr_room_type = result.room_type;
+                                            var kr_room_name = result.room_name;
+                                            var kr_room_description = result.room_description;
+                                            var kr_room_users  = result.room_users;
+
+                                            var short_room_name = kr_room_name;
+                                            var short_room_description = kr_room_description;
+
+
+                                            if( typeof short_room_name != 'undefined' &&  short_room_name.length > 20 ){
+                                                short_room_name = short_room_name.slice(0,20) + '....';
+                                            }
+                                            if( typeof short_room_description != 'undefined' && short_room_description.length > 20 ){
+                                                short_room_description = short_room_description.slice(0,20) + '....';
+                                            }
+                                            result.short_room_name = short_room_name;
+                                            result.short_room_description = short_room_description;
+
+                                            var data = {
+                                                'room' : result
+                                            };
+
+                                            var admin_friends = [];
+                                            if( typeof user.friends != 'undefined' && user.friends.length > 0 ){
+                                                admin_friends = user.friends;
+                                            }
+                                            
+                                            if( kr_room_type == 'public' && is_room_owner == 1 &&  kr_room_users.length > 0 && admin_friends.length > 0 ){
+                                                // this is for so, that he can view his friends who are not a room user and he can add that member
+                                                var admin_friends_not_room_members = [];
+                                                for( var k in admin_friends ){
+                                                    var already_member = false;
+                                                    id_a_friend = admin_friends[k].id;
+                                                    for( var k1 in kr_room_users ){
+                                                        id_room_user = kr_room_users[k1].id;
+                                                        if( id_a_friend.toString() == id_room_user.toString() ){
+                                                            already_member = true;
+                                                        }
+                                                    }
+                                                    if( already_member == false ){
+                                                        admin_kr = admin_friends[k];
+                                                        show_details_for_list = {
+                                                            'icon' : admin_kr.profile_image,
+                                                            'main_text' : admin_kr.name,
+                                                            'sub_text' : admin_kr.last_seen,
+                                                        }
+                                                        admin_kr.show_details_for_list = show_details_for_list;
+                                                        admin_friends_not_room_members.push( admin_kr )
+                                                    }
+                                                }
+                                                data.admin_friends_not_room_members = admin_friends_not_room_members;
+                                                callback( null, 1, 'Room found', data );
+                                            }else{
+                                                callback( null, 1, 'Room found', data );
+                                            }
+                                        }else{
+                                            callback( null, 0, 'No room found', {} );
+                                        }
                                     }
-                                }
-                            });
+                                });
+                            }
                         }
                     });
                 }
