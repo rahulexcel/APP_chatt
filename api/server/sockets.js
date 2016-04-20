@@ -487,6 +487,24 @@ module.exports.listen = function(app){
                     });
                 }
             }
+            else if( type == 'get_user_profile' ){
+                var accessToken = info.accessToken;
+                var user_id = info.user_id;
+                var currentTimestamp = info.currentTimestamp;
+                
+                console.log( 'SOCKET CALL :: get_user_profile :: for user_id - '+ user_id );
+                
+                FN_get_user_profile( accessToken, user_id, currentTimestamp, function( response ){
+                    if( response.status == 1 ){
+                        var d = {
+                            type : 'info',
+                            user_id : response.data.user_id,
+                            data : response
+                        }
+                        socket.emit( 'RESPONSE_APP_SOCKET_EMIT','get_user_profile', d );
+                    }
+                });
+            }
         });
         
     });

@@ -475,12 +475,12 @@ module.exports = function (Room) {
                         "include": [{
                             relation: 'room_owner', 
                             scope: {
-                                fields: ['name','profile_image','last_seen'],
+                                fields: ['name','profile_image','last_seen','status'],
                             }
                         },{
                             relation: 'room_users', 
                             scope: {
-                                fields: ['name','profile_image','last_seen'],
+                                fields: ['name','profile_image','last_seen','status'],
                             }
                         }]
                     },function (err, result) {
@@ -501,11 +501,24 @@ module.exports = function (Room) {
                                             k1_user = kr_room_users[k1];
                                             k1_user_id = k1_user.id;
                                             if( logged_user_id.toString() != k1_user_id.toString() ){
+                                                
+                                                
+                                                var k1_user_status = k1_user.status;
+                                                var k1_user_last_seen = k1_user.last_seen;
+                                                var aa = {
+                                                    status : k1_user_status,
+                                                    last_seen : k1_user_last_seen
+                                                }
+                                                user_status = '';
+                                                User.FN_get_user_status( aa, function(s){
+                                                    user_status = s
+                                                });
                                                 show_details_for_list = {
                                                     'user_id' : k1_user.id,
                                                     'icon' : k1_user.profile_image,
                                                     'main_text' : k1_user.name,
-                                                    'sub_text' : k1_user.last_seen
+                                                    'sub_text' : k1_user.last_seen,
+                                                    'user_status' : user_status
                                                 }
                                             }
                                         }
@@ -987,7 +1000,7 @@ module.exports = function (Room) {
                         "include": [{
                             relation: 'friends', 
                             scope: {
-                                fields: ['name','profile_image','last_seen'],
+                                fields: ['name','profile_image','last_seen','status'],
                             }
                         }]
                     }, function (err, user) {
@@ -1007,12 +1020,12 @@ module.exports = function (Room) {
                                     "include": [{
                                         relation: 'room_owner', 
                                         scope: {
-                                            fields: ['name','profile_image','last_seen'],
+                                            fields: ['name','profile_image','last_seen','status'],
                                         }
                                     },{
                                         relation: 'room_users', 
                                         scope: {
-                                            fields: ['name','profile_image','last_seen'],
+                                            fields: ['name','profile_image','last_seen','status'],
                                         }
                                     }]
                                 },function (err, result) {
@@ -1032,6 +1045,21 @@ module.exports = function (Room) {
                                             var kr_room_name = result.room_name;
                                             var kr_room_description = result.room_description;
                                             var kr_room_users  = result.room_users;
+                                            
+                                            if( kr_room_users.length > 0 ){
+                                                for( var p in kr_room_users ){
+                                                    pr = kr_room_users[p];
+                                                    aa = {
+                                                        status : pr.status,
+                                                        last_seen : pr.last_seen
+                                                    }
+                                                    status = '';
+                                                    User.FN_get_user_status( aa, function(s){
+                                                        status = s;
+                                                    });
+                                                    kr_room_users[p].status = status;
+                                                }
+                                            }
 
                                             var short_room_name = kr_room_name;
                                             var short_room_description = kr_room_description;
@@ -1053,6 +1081,22 @@ module.exports = function (Room) {
                                             var admin_friends = [];
                                             if( typeof user.friends != 'undefined' && user.friends.length > 0 ){
                                                 admin_friends = user.friends;
+                                                if( admin_friends.length > 0 ){
+                                                    if( admin_friends.length > 0 ){
+                                                        for( var p in admin_friends ){
+                                                            pr = admin_friends[p];
+                                                            aa = {
+                                                                status : pr.status,
+                                                                last_seen : pr.last_seen
+                                                            }
+                                                            status = '';
+                                                            User.FN_get_user_status( aa, function(s){
+                                                                status = s;
+                                                            });
+                                                            admin_friends[p].status = status;
+                                                        }
+                                                    }
+                                                }
                                             }
                                             
                                             if( kr_room_type == 'public' && is_room_owner == 1 &&  kr_room_users.length > 0 && admin_friends.length > 0 ){
