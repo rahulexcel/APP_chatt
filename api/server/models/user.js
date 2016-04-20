@@ -24,6 +24,27 @@ module.exports = function (User) {
             }
         });
     };
+    User.FN_get_user_status = function( info, callback ){
+        var status = info.status;
+        var last_seen = info.last_seen;
+        
+        var ret_status = 'offline';
+        
+        var away_time = 60 * 3; // 3 minutes
+        
+        if( typeof status != 'undefined' && typeof last_seen != 'udefined'){
+            ret_status = status;
+            if( last_seen != '' ){
+                var server_time = UTIL.currentTimestamp();
+                var time_diff = server_time - last_seen;
+                if( time_diff > 0 && time_diff > away_time ){
+                    ret_status = 'away';
+                }
+            }
+        }
+        callback( ret_status );
+        
+    };
     //--end--USER GENERIC function------
     
     
@@ -64,6 +85,7 @@ module.exports = function (User) {
                                             User.update( {email: email_id}, {
                                                 device_id: device_id,
                                                 token: token,
+                                                status : 'online'
                                             }, function (err, result11) {
                                                 if (err) {
                                                     callback(null, 0, err, {});
@@ -97,6 +119,7 @@ module.exports = function (User) {
                                                 User.update( {email: email_id}, {
                                                     device_id: device_id,
                                                     token: token,
+                                                    status : 'online'
                                                 }, function (err, result11) {
                                                     if (err) {
                                                         callback(null, 0, err, {});
@@ -143,8 +166,8 @@ module.exports = function (User) {
                                     registration_type: action_type,
                                     social_id: social_id,
                                     platform: platform,
-                                    device_id: device_id,
-                                    token: token,
+                                    device_id: '',
+                                    token: '',
                                     email: email_id,
                                     name: name,
                                     password: password,
@@ -444,7 +467,16 @@ module.exports = function (User) {
                                                 var userId = value.id;
                                                 var pic = value.profile_image;
                                                 var lastSeen = value.last_seen;
-                                                userInfo.push({name: userName, id: userId, pic: pic, lastSeen: lastSeen});
+                                                
+                                                var aa = {
+                                                    status : value.status,
+                                                    last_seen : value.last_seen
+                                                }
+                                                status = '';
+                                                User.FN_get_user_status( aa, function(s){
+                                                    status = s;
+                                                });
+                                                userInfo.push({name: userName, id: userId, pic: pic, lastSeen: lastSeen, status : status });
                                             });
                                             callback(null, 1, 'Users List', userInfo);
                                         }
@@ -496,7 +528,11 @@ module.exports = function (User) {
                         if (err) {
                             callback(null, 0, 'UnAuthorized', {});
                         } else {
-                            user.updateAttribute('last_seen', currentTimestamp, function (err, user) {
+                            var server_time = UTIL.currentTimestamp();
+                            user.updateAttributes({
+                                'last_seen' : server_time,
+                                'status' : 'online'
+                            },function (err, user) {
                                 if (err) {
                                     callback(null, 0, 'Error', {});
                                 } else {
@@ -643,6 +679,14 @@ module.exports = function (User) {
                                                 }
                                             }
                                         }
+                                        var aa = {
+                                            status : user.status,
+                                            last_seen : user.last_seen
+                                        }
+                                        status = '';
+                                        User.FN_get_user_status( aa, function(s){
+                                            status = s;
+                                        });
                                         var USER_PROFILE = {
                                             'user_id' : user.id,
                                             'name' : user.name,
@@ -651,6 +695,7 @@ module.exports = function (User) {
                                             'last_seen' : user.last_seen,
                                             'user_private_rooms' : user_private_rooms,
                                             'user_public_rooms' : user_public_rooms,
+                                            'status' : status
                                         }
                                         callback(null, 1, 'User profile details', USER_PROFILE);
                                     }
