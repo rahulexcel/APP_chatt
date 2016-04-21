@@ -15,6 +15,7 @@
                 console.log('empty');
             } else {
                 var currentTimeStamp = _.now();
+                socketService.roomOpen($stateParams.roomId);
                 sqliteService.saveMessageInDb(self.message, 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId) {
                     if (timeStorage.get('network')) {
                         console.log('do not fire from here');

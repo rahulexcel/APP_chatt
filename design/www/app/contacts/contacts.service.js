@@ -16,7 +16,7 @@
              query.$promise.then(function(data) {
                  var newData = [];
                  for(var i = 0; i < data.data.length; i++){
-                    data.data[i].lastSeen = moment(parseInt(data.data[i].lastSeen)).format("Do MMMM hh:mm a");
+                    data.data[i].lastSeen = moment.unix(data.data[i].lastSeen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a"),
                     newData.push(data.data[i]); 
                  }
                  timeStorage.set('listUsers', newData, 1);
