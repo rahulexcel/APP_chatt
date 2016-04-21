@@ -14,7 +14,7 @@
                         callback(true, false, false, false);
                     }
                     
-                } else if (toState.name == 'app.setting') {
+                } else if (toState.name == 'app.profile') {
                     if (callback) {
                         callback(false, false, true, false);
                     }
