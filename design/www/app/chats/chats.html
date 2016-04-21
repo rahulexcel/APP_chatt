@@ -1,7 +1,13 @@
 <ion-view view-title="Chats" id="background" hide-back-button="true" >
     <ion-content class="has-footer">
+        <ion-list >
+            <ion-item ng-hide="chats.displayChats.length > 0" class="noItem" >
+                <div class="empty" >
+                    <div class='nothing'>'No Chats Yet!'</div>
+                </div>
+            </ion-item>
+        </ion-list>
         <div class="list" id="chats">
-            <h4 ng-hide="chats.displayChats.length > 0" class="text-center">'No Chats Yet!'</h4>
             <div class="user-container" ng-repeat="chat in chats.displayChats | orderBy: '-unreadMessageTimeStamp'">
                 <a class="item item-avatar hover" ng-click="chats.roomClick(chat)">
                     <img class="avatar" ng-src="{{chat.user_data.profile_image}}">

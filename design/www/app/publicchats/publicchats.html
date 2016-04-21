@@ -1,7 +1,17 @@
 <ion-view view-title="Rooms" id="background" hide-back-button="true">
     <ion-content class="has-footer">
+        <ion-list >
+            <ion-item ng-hide="publicChats.displayPublicChat.length > 0" class="noItem" >
+                <div class="empty" >
+                    <div class='nothing'>'No rooms found!'</div>
+                        <div ng-click="modal.show()" class='empty_div'>
+                            <button class="empty_btn button ion-plus" ></button>
+                        </div>
+                    <div class="now">Add a room</div>
+                </div>
+            </ion-item>
+        </ion-list>
         <div class="list" id="chats">
-            <h4 ng-hide="publicChats.displayPublicChat.length > 0" class="text-center">'No rooms found'</h4>
             <div class="user-container" ng-click="publicChats.clickOnRoom(publicChat, $index)" ng-repeat="publicChat in publicChats.displayPublicChat">
                 <a class="item item-avatar hover">
                     <img class="avatar" ng-src="{{publicChat.room_image}}">
