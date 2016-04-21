@@ -44,6 +44,9 @@
                     if(type == 'update_room_unread_notification'){
                         $rootScope.$broadcast('update_room_unread_notification', { data: data });
                     }
+                    if(type == 'get_user_profile'){
+                        $rootScope.$broadcast('got_user_updated_profile', { data: data });
+                    }
                 });
          socket.on('response_update_message_status', function(data) {
                     var str = data.message_id;
@@ -142,6 +145,18 @@
                 var userData = timeStorage.get('userData');
                 socket.emit('APP_SOCKET_EMIT', 'show_room_unread_notification', { accessToken: userData.data.access_token, room_id: data.room_id, currentTimestamp: _.now()});
                 socket.emit('APP_SOCKET_EMIT', 'room_open', { accessToken: userData.data.access_token, room_id: data.room_id, currentTimestamp: _.now() });
+             },
+             service.getUserProfile = function(chatData) {
+                var userData = timeStorage.get('userData');
+                for(var i = 0; i < chatData.length; i++){
+                    if(chatData[i].room_type == 'private'){
+                        socket.emit('APP_SOCKET_EMIT', 'get_user_profile', { accessToken: userData.data.access_token, user_id: chatData[i].user_data.id, currentTimestamp: _.now()});
+                    }    
+                }
+             },
+             service.roomOpen = function(roomId) {
+                var userData = timeStorage.get('userData');
+                socket.emit('APP_SOCKET_EMIT', 'room_open', { accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now() });
              }
          return service;
      };

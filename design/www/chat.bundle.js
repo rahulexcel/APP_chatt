@@ -19768,12 +19768,11 @@ angular.module('chattapp')
         self.user_id = userData.data.user_id;
         self.sendMessage = function() {
             if (self.message == '') {
-                console.log('empty');
             } else {
                 var currentTimeStamp = _.now();
+                socketService.roomOpen($stateParams.roomId);
                 sqliteService.saveMessageInDb(self.message, 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId) {
                     if (timeStorage.get('network')) {
-                        console.log('do not fire from here');
                     } else {
                         socketService.room_message(lastInsertId, $stateParams.roomId, self.message, currentTimeStamp);
                     }
@@ -19863,7 +19862,7 @@ angular.module('chattapp')
     angular.module('chattapp')
             .controller('chatPageHeaderDirectiveController', chatPageHeaderDirectiveController);
 
-    function chatPageHeaderDirectiveController($state, timeStorage, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory) {
+    function chatPageHeaderDirectiveController($state, timeStorage, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService) {
         var self = this;
         self.leaveGroupSpinner = false;
         self.deleteGroupSpinner = false;
@@ -19872,7 +19871,7 @@ angular.module('chattapp')
         self.image = chatWithUserData.pic;
         self.id = chatWithUserData.id;
         if (!isNaN(chatWithUserData.lastSeen)) {
-            self.lastSeen = moment(parseInt(chatWithUserData.lastSeen)).format("hh:mm a");
+            self.lastSeen = moment.unix(chatWithUserData.lastSeen).tz(timeZoneService.getTimeZone()).format("hh:mm a");
         } else {
             self.lastSeen = chatWithUserData.lastSeen;
         }
@@ -19883,7 +19882,7 @@ angular.module('chattapp')
         if (!chatWithUserData.id) {
             infoApi();
         } else{
-            infoApiUser();
+            infoApiUser(self.id);
         }
         function infoApi() {
             var userData = timeStorage.get('userData');
@@ -19893,6 +19892,12 @@ angular.module('chattapp')
                 currentTimestamp: _.now()
             });
             query.$promise.then(function(data) {
+                if(data.data.admin_friends_not_room_members){
+                    for(var i = 0; i < data.data.admin_friends_not_room_members.length; i++){
+                        data.data.admin_friends_not_room_members[i].last_seen = moment.unix(data.data.admin_friends_not_room_members[i].last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
+                    }
+                    self.admin_friends_not_room_members = data.data.admin_friends_not_room_members;
+                }
                 self.openModelWithSpinner = false;
                 self.is_room_owner = data.data.room.is_room_owner;
                 self.infoNameShort = data.data.room.short_room_name;
@@ -19915,16 +19920,16 @@ angular.module('chattapp')
                         data.data.room.room_users[i].name = data.data.room.room_users[i].name + ' (owner)';
                         data.data.room.room_users[i].owner = true;
                     }
-                    data.data.room.room_users[i].last_seen = moment(parseInt(data.data.room.room_users[i].last_seen)).format("Do MMMM hh:mm a");
+                    data.data.room.room_users[i].last_seen = moment.unix(data.data.room.room_users[i].last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
                 }
                 self.infoUserList = data.data.room.room_users;
             });
         }
-        function infoApiUser(){
+        function infoApiUser(userId){
             var userData = timeStorage.get('userData');
             var query = getUserProfileFactory.save({
                 accessToken: userData.data.access_token,
-                user_id: self.id,
+                user_id: userId,
                 currentTimestamp: _.now()
             });
             query.$promise.then(function(data) {
@@ -19954,7 +19959,7 @@ angular.module('chattapp')
                 infoApi();
                 $scope.infoModel.show();
             } else{
-                infoApiUser();
+                infoApiUser(self.id);
                 $scope.infoModelUser.show();
             }
         };
@@ -20007,7 +20012,7 @@ angular.module('chattapp')
             infoApi();
         });
         $scope.$on('got_user_profile_for_room', function(event, data) {
-            self.lastSeen = moment(parseInt(data.data.data.last_seen)).format("hh:mm a");
+            self.lastSeen = moment.unix(data.data.data.last_seen).tz(timeZoneService.getTimeZone()).format("hh:mm a");
         });
         $ionicModal.fromTemplateUrl('infoModel.html', function($ionicModal) {
             $scope.infoModel = $ionicModal;
@@ -20061,6 +20066,18 @@ angular.module('chattapp')
         }).then(function(modal) {
             $scope.imageModal = modal;
         });
+        self.infoUserClick = function(userData) {
+            self.displayUserProfileName = '';
+            self.displayUserProfileId = '';
+            self.displayUserProfileLastSeenInTimeStamp = '';
+            self.displayUserProfileImage = '';
+            self.displayUserProfileLastSeen = '';
+            self.displayUserProfilePrivateRooms = '';
+            self.displayUserProfilePublicRooms = '';
+            self.displayUserProfileStatus = '';
+            infoApiUser(userData.id);
+            $scope.infoModelUser.show();
+        };
         self.editProfilePic = function() {
             $scope.myCroppedImage = '';
             cameraService.changePic().then(function(imageData) {
@@ -20154,7 +20171,7 @@ angular.module('chattapp')
     angular.module('chattapp')
         .controller('chatsController', chatsController);
 
-    function chatsController($scope, chatsFactory, timeStorage, chatsService, $state, socketService) {
+    function chatsController($scope, chatsFactory, timeStorage, chatsService, $state, socketService, $interval, $ionicHistory, timeZoneService) {
             var self = this;
             var userData = timeStorage.get('userData');
              chatsService.listMyRooms().then(function(data){
@@ -20170,6 +20187,7 @@ angular.module('chattapp')
                 chatsService.showUnreadIcon(response).then(function(data){
                     self.displayChats = data;
                     $scope.$evalAsync();
+                    socketService.getUserProfile(self.displayChats);
                 });
              });
              $scope.$on('update_room_unread_notification', function (event, response) {
@@ -20191,6 +20209,25 @@ angular.module('chattapp')
                     $state.go('app.chatpage', {roomId:roomData.room_id});
                 }
              }
+             var getUserProfile = $interval(function() {
+                if ($ionicHistory.currentView().stateName != 'app.chats') {
+                    $interval.cancel(getUserProfile);
+                } else {
+                    socketService.getUserProfile(self.displayChats);
+                }
+             }, 60000);
+             $scope.$on('got_user_updated_profile', function (event, response) {
+                for(var i = 0; i < self.displayChats.length; i++){
+                    if(self.displayChats[i].room_type == 'private'){
+                        if(self.displayChats[i].user_data.id == response.data.user_id){
+                            self.displayChats[i].user_data.status = response.data.data.data.status;
+                            self.displayChats[i].user_data.last_seenInTimestamp = response.data.data.data.last_seen;
+                            self.displayChats[i].user_data.last_seen = moment.unix(response.data.data.data.last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
+                            $scope.$evalAsync();
+                        }
+                    }
+                }
+             });
     }
 })();
 (function() {
@@ -20219,13 +20256,15 @@ angular.module('chattapp')
                            room_users.last_seenInTimestamp = roomData[i].show_details_for_list.sub_text;
                        } else {
                            room_users.last_seenInTimestamp = roomData[i].show_details_for_list.sub_text;
-                           room_users.last_seen = moment(parseInt(roomData[i].show_details_for_list.sub_text)).format("Do MMMM hh:mm a");
+                           room_users.last_seen = moment.unix(roomData[i].show_details_for_list.sub_text).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
                        }
                        room_users.profile_image = roomData[i].show_details_for_list.icon;
                        room_users.name = roomData[i].show_details_for_list.main_text;
                        room_users.id = roomData[i].show_details_for_list.user_id;
+                       room_users.status = roomData[i].show_details_for_list.user_status;
                        newRoomData.user_data = room_users;
                        newRoomData.room_id = roomData[i].id;
+                       newRoomData.room_type = roomData[i].room_type;
                        newRoomData.unreadMessage = 0;
                        newRoomData.unreadMessageTimeStamp = 0;
                        returnData.push(newRoomData);
@@ -20307,6 +20346,1098 @@ angular.module('chattapp')
                 };
                 return directive;
             });
+})();
+ (function() {
+     'use strict';
+     angular.module('chattapp')
+         .factory('cameraService', cameraService);
+
+     function cameraService($q, $ionicActionSheet) {
+         var service = {};
+         service.changePic = function() {
+                 var q = $q.defer();
+                 var hideSheet = $ionicActionSheet.show({
+                     buttons: [{
+                         text: '<p class="text-center"><i class="ion-images"></i> Gallery</p>'
+                     }, {
+                         text: '<p class="text-center"><i class="ion-camera"></i> Camera</p>'
+                     }],
+                     titleText: 'Profile photo',
+                     cancelText: 'Cancel',
+                     cancel: function() {},
+                     buttonClicked: function(index) {
+                         service.getPicture(index).then(function(imageData) {
+                             q.resolve(imageData);
+                         }, function(err) {
+                             q.reject(err);
+                         });
+                         return true;
+                     }
+                 });
+                 return q.promise;
+             },
+             service.getPicture = function(index) {
+                 var q = $q.defer();
+                 navigator.camera.getPicture(onSuccess, onFail, {
+                     quality: 100,
+                     destinationType: Camera.DestinationType.DATA_URL,
+                     correctOrientation: true,
+                     // allowEdit: true,
+                     sourceType: index
+                 });
+                 function onSuccess(imageData) {
+                     q.resolve(imageData);
+                 }
+                 function onFail(message) {
+                     q.reject(message);
+                 }
+                 return q.promise;
+             };
+         return service;
+     };
+
+ })();
+ (function() {
+    'use strict';
+    angular.module('chattapp')
+            .factory('deviceService', deviceService);
+
+    function deviceService() {
+        return {
+            getuuid: function() {
+                if(window.plugins){
+                    return device.uuid;
+                } else{
+                    return -1;
+                }
+            },
+            platform: function() {
+                if(window.plugins){
+                    return device.platform;
+                } else{
+                    return 'desktop';
+                }
+            }
+        }
+    };
+
+})();
+var facebookLoginService = angular.module('facebookLoginService', []);
+
+facebookLoginService.factory('facebookLogin', facebookLogin);
+function facebookLogin($http, $q, $state) {
+var service = {};
+        service.fbLoginSuccess = function() {
+            var def = $q.defer();
+            facebookConnectPlugin.login(['email','user_friends', 'public_profile'], fbLoginSuccess, service.fbLoginError);
+            function fbLoginSuccess(response){
+            
+                if (!response.authResponse) {
+                    fbLoginError("Cannot find the authResponse");
+                    return;
+                }
+                var authResponse = response.authResponse;
+                service.getFacebookProfileInfo(authResponse)
+                    .then(function(profileInfo) {
+                        console.log(profileInfo);
+                        profileInfo.accessToken = authResponse.accessToken;
+                        def.resolve(profileInfo);
+                    }, function(fail) {
+                        console.log('profile info fail', fail);
+                        def.reject(fail);
+                    });
+                }
+                return def.promise;
+            };
+            service.fbLoginError = function(error) {
+                console.log('fbLoginError', error);
+            };
+            service.getFacebookProfileInfo = function(authResponse) {
+                var info = $q.defer();
+                facebookConnectPlugin.api('/me?fields=email,name&access_token=' + authResponse.accessToken, null,
+                    function(response) {
+                        console.log(response);
+                        response.accessToken = authResponse.accessToken;
+                        info.resolve(response);
+                    },
+                    function(response) {
+                        console.log(response);
+                        info.reject(response);
+                    }
+                );
+                return info.promise;
+            };
+             service.login = function() {
+                var def = $q.defer();
+            facebookConnectPlugin.getLoginStatus(function(success) {
+                if (success.status === 'connected') {
+                    console.log('getLoginStatus', success.status);
+                        service.getFacebookProfileInfo(success.authResponse)
+                            .then(function(profileInfo) {
+                                console.log(profileInfo);
+                                def.resolve(profileInfo);
+                            }, function(fail) {
+                                console.log('profile info fail', fail);
+                                def.reject(fail);
+                            });
+                } else {
+                    console.log('getLoginStatus', success.status);
+                    def.resolve(success.status);
+                }
+            });
+            return def.promise;
+        }
+        return service;
+    }
+var googleLoginService = angular.module('GoogleLoginService', ['ngStorage']);
+googleLoginService.factory('timeStorage', ['$localStorage', function($localStorage) {
+    var timeStorage = {};
+    timeStorage.cleanUp = function() {
+        var cur_time = new Date().getTime();
+        for (var i = 0; i < localStorage.length; i++) {
+            var key = localStorage.key(i);
+            if (key.indexOf('_expire') === -1) {
+                var new_key = key + "_expire";
+                var value = localStorage.getItem(new_key);
+                if (value && cur_time > value) {
+                    localStorage.removeItem(key);
+                    localStorage.removeItem(new_key);
+                }
+            }
+        }
+    };
+    timeStorage.remove = function(key) {
+        //this.cleanUp();
+        var time_key = key + '_expire';
+        $localStorage[key] = false;
+        $localStorage[time_key] = false;
+    };
+    timeStorage.set = function(key, data, hours) {
+        //this.cleanUp();
+        $localStorage[key] = data;
+        var time_key = key + '_expire';
+        var time = new Date().getTime();
+        time = time + (hours * 1 * 60 * 60 * 1000);
+        $localStorage[time_key] = time;
+    };
+    timeStorage.get = function(key) {
+        //this.cleanUp();
+        var time_key = key + "_expire";
+        if (!$localStorage[time_key]) {
+            return false;
+        }
+        var expire = $localStorage[time_key] * 1;
+        // if (new Date().getTime() > expire) {
+        //     $localStorage[key] = null;
+        //     $localStorage[time_key] = null;
+        //     return false;
+        // }
+        return $localStorage[key];
+    };
+    return timeStorage;
+}]);
+
+
+googleLoginService.factory('googleLogin', [
+    '$http', '$q', '$interval', '$log', 'timeStorage',
+    function($http, $q, $interval, $log, timeStorage) {
+        var service = {};
+        service.access_token = false;
+        service.redirect_url = 'http://localhost';
+        service.client_id = '1009675706541-dmc2t32u755as3pms8f6llcrhed8lvt6.apps.googleusercontent.com';
+        service.secret = 'BQSLccofHJjg9t-_-w66Q_qc';
+        service.scope = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/plus.me';
+        service.gulp = function(url, name) {
+            url = url.substring(url.indexOf('?') + 1, url.length);
+
+            return url.replace('code=', '');
+        };
+        service.authorize = function(options) {
+            var def = $q.defer();
+            var self = this;
+
+            var access_token = timeStorage.get('google_access_token');
+            if (access_token) {
+                $log.info('Direct Access Token :' + access_token);
+                service.getUserInfo(access_token, def);
+            } else {
+
+                var params = 'client_id=' + encodeURIComponent(options.client_id);
+                params += '&redirect_uri=' + encodeURIComponent(options.redirect_uri);
+                params += '&response_type=code';
+                params += '&scope=' + encodeURIComponent(options.scope);
+                var authUrl = 'https://accounts.google.com/o/oauth2/auth?' + params;
+
+                var win = window.open(authUrl, '_blank', 'location=no,toolbar=no,width=800, height=800');
+                var context = this;
+
+                if (ionic.Platform.isWebView()) {
+                    console.log('using in app browser');
+                    win.addEventListener('loadstart', function(data) {
+                        console.log('load start');
+                        if (data.url.indexOf(context.redirect_url) === 0) {
+                            console.log('redirect url found ' + context.redirect_url);
+                            console.log('window url found ' + data.url);
+                            win.close();
+                            var url = data.url;
+                            var access_code = context.gulp(url, 'code');
+                            if (access_code) {
+                                context.validateToken(access_code, def);
+                            } else {
+                                def.reject({
+                                    error: 'Access Code Not Found'
+                                });
+                            }
+                        }
+
+                    });
+                } else {
+                    console.log('InAppBrowser not found11');
+                    var pollTimer = $interval(function() {
+                        try {
+                            console.log("google window url " + win.document.URL);
+                            if (win.document.URL.indexOf(context.redirect_url) === 0) {
+                                console.log('redirect url found');
+                                win.close();
+                                $interval.cancel(pollTimer);
+                                pollTimer = false;
+                                var url = win.document.URL;
+                                $log.debug('Final URL ' + url);
+                                var access_code = context.gulp(url, 'code');
+                                if (access_code) {
+                                    $log.info('Access Code: ' + access_code);
+                                    context.validateToken(access_code, def);
+                                } else {
+                                    def.reject({
+                                        error: 'Access Code Not Found'
+                                    });
+                                }
+                            }
+                        } catch (e) {}
+                    }, 100);
+                }
+            }
+            return def.promise;
+        };
+        service.validateToken = function(token, def) {
+            $log.info('Code: ' + token);
+            var http = $http({
+                url: 'https://www.googleapis.com/oauth2/v3/token',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                params: {
+                    code: token,
+                    client_id: this.client_id,
+                    client_secret: this.secret,
+                    redirect_uri: this.redirect_url,
+                    grant_type: 'authorization_code',
+                    scope: ''
+                }
+            });
+            var context = this;
+            http.then(function(data) {
+                $log.debug(data);
+                var access_token = data.data.access_token;
+                var expires_in = data.data.expires_in;
+                expires_in = expires_in * 1 / (60 * 60);
+                timeStorage.set('google_access_token', access_token, expires_in);
+                if (access_token) {
+                    $log.info('Access Token :' + access_token);
+                    context.getUserInfo(access_token, def);
+                } else {
+                    def.reject({
+                        error: 'Access Token Not Found'
+                    });
+                }
+            });
+        };
+        service.getUserInfo = function(access_token, def) {
+            var http = $http({
+                url: 'https://www.googleapis.com/oauth2/v3/userinfo',
+                method: 'GET',
+                params: {
+                    access_token: access_token
+                }
+            });
+            http.then(function(data) {
+                $log.debug(data);
+                var user_data = data.data;
+                var user = {
+                    name: user_data.name,
+                    gender: user_data.gender,
+                    email: user_data.email,
+                    google_id: user_data.sub,
+                    picture: user_data.picture,
+                    profile: user_data.profile
+                };
+                def.resolve(user);
+            });
+        };
+        service.getUserFriends = function() {
+            var access_token = this.access_token;
+            var http = $http({
+                url: 'https://www.googleapis.com/plus/v1/people/me/people/visible',
+                method: 'GET',
+                params: {
+                    access_token: access_token
+                }
+            });
+            http.then(function(data) {
+                console.log(data);
+            });
+        };
+        service.startLogin = function() {
+            var def = $q.defer();
+            var promise = this.authorize({
+                client_id: this.client_id,
+                client_secret: this.secret,
+                redirect_uri: this.redirect_url,
+                scope: this.scope
+            });
+            promise.then(function(data) {
+                def.resolve(data);
+            }, function(data) {
+                $log.error(data);
+                def.reject(data.error);
+            });
+            return def.promise;
+        };
+        return service;
+    }
+]);
+(function() {
+    'use strict';
+    angular.module('chattapp')
+            .config(function($httpProvider) {
+                $httpProvider.interceptors.push('myInterceptor');
+            });
+})();
+(function() {
+    'use strict';
+    angular.module('chattapp')
+            .factory('myInterceptor', function($localStorage, $injector) {
+                var requestInterceptor = {
+                    data: null,
+                    request: function(config) {
+                        var currentUser = $localStorage.userData;
+                        if (currentUser) {
+                            var accessToken = currentUser.data.access_token;
+                            var configURL = config.url;
+                            if (configURL.substring(0, 10) == 'http://144') {
+                                config.url = config.url + '?access_token=' + accessToken + '&currentTimestamp=' + _.now() + '';
+                                if (config.data.append_data)
+                                {
+                                    _.each(config.data.append_data, function(value, key)
+                                    {
+                                        config.url = config.url + '&' + key + '=' + value;
+                                    });
+                                }
+                            }
+                        }
+                        if (config.method == 'POST') {
+                            $localStorage.lastTimeStampFireApi = _.now();
+                        }
+                        return config;
+                    },
+                    response: function(response) {
+                        if (response.data.status == 401 || response.data.message == 'UnAuthorized') {
+                            var timeStorage = $injector.get('timeStorage');
+                            $injector.get('socketService').logout();
+                            $injector.get('tostService').notify(response.data.message + ' Please login again !', 'top');
+                            timeStorage.remove('google_access_token');
+                            timeStorage.remove('userEmail');
+                            timeStorage.remove('userData');
+                            timeStorage.remove('displayPrivateChats');
+                            timeStorage.remove('listUsers');
+                            timeStorage.remove('chatWithUserData');
+                            timeStorage.remove('displayPublicChats');
+                            $injector.get('$state').go('login');
+                        }
+                        return response;
+                    }
+                };
+                return requestInterceptor;
+            });
+})();
+(function() {
+    'use strict';
+
+    angular.module('chattapp')
+            .directive('img', function($timeout,Configurations) {
+                return {
+                    restrict: 'E',
+                    link: function(scope, element, attr) {
+                        if (attr.ngSrc == '') {
+                            var chatPageClass = '';
+                            if (scope.contact) {
+                                var name = scope.contact.name;
+                                var firstLetter = name.charAt(0).toUpperCase();
+                            }
+                            if (scope.chatPageHeader) {
+                                chatPageClass = 'chatPageheader';
+                                var name = scope.chatPageHeader.name;
+                                var firstLetter = name.charAt(0).toUpperCase();
+                            }
+                            if (scope.chatPageFooter) {
+                                chatPageClass = 'chatPageheader';
+                                var name = scope.chatPageFooter.name;
+                                var firstLetter = name.charAt(0).toUpperCase();
+                            }
+                            if (scope.chat) {
+                                var name = scope.chat.user_data.name;
+                                var firstLetter = name.charAt(0).toUpperCase();
+                            }
+                            if (scope.publicChat) {
+                                var name = scope.publicChat.room_name;
+                                var firstLetter = name.charAt(0).toUpperCase();
+                            }
+                            if (scope.groupUser) {
+                                var name = scope.groupUser.name;
+                                var firstLetter = name.charAt(0).toUpperCase();
+                            }
+                            if (scope.msg) {
+                                var name = scope.msg.name;
+                                var firstLetter = name.charAt(0).toUpperCase();
+                            }
+                            if(scope.infoUser){
+                                var name = scope.infoUser.name;
+                                var firstLetter = name.charAt(0).toUpperCase();
+                            }
+                            if(scope.infoUser1){
+                                var name = scope.infoUser1.name;
+                                var firstLetter = name.charAt(0).toUpperCase();
+                            }
+                            var color = Configurations.color;
+                            element.replaceWith("<button style='background:" + color[firstLetter.toLowerCase()] + "' class='no-image " + chatPageClass + "'><i class='i-24 white'>" + firstLetter + "</i><div class='md-ripple-container'></div></button>");
+                        }
+                    }
+                }
+            });
+})();
+angular.module('chattapp')
+        .directive('input', function($timeout) {
+            return {
+                restrict: 'E',
+                scope: {
+                    'returnClose': '=',
+                    'onReturn': '&',
+                    'onFocus': '&',
+                    'onClick': '&',
+                    'onBlur': '&',
+                    'trigger': '@isFocused'
+                },
+                link: function(scope, element, attr) {
+                    element.bind('focus', function(e) {
+                        if (scope.onFocus) {
+                            $timeout(function() {
+                                scope.onFocus();
+                            });
+                        }
+                    });
+                    element.bind('blur', function(e) {
+                        if (scope.onBlur) {
+                            $timeout(function() {
+                                scope.onBlur();
+                                // element[0].focus();
+                            });
+                        }
+                    });
+                    element.bind('keydown', function(e) {
+                        if (e.which == 13) {
+                            if (scope.returnClose)
+                                element[0].blur();
+                            if (scope.onReturn) {
+                                $timeout(function() {
+                                    scope.onReturn();
+                                });
+                            }
+                        }
+                    });
+
+                    scope.$watch('trigger', function(value) {
+                        if (value === "true") {
+                            $timeout(function() {
+                                element[0].focus();
+
+                                element.on('blur', function() {
+                                    element[0].focus();
+                                });
+                            });
+                        }
+
+                    });
+                }
+            };
+        });
+(function() {
+    'use strict';
+    angular.module('chattapp')
+        .factory('lastUsesTimeFactory', lastUsesTimeFactory);
+
+    function lastUsesTimeFactory($resource, Configurations) {
+        // return $resource(Configurations.api_url+'/users/contacts', {},{});
+        return $resource('app/mock/contacts.json', {}, {});
+    };
+})();
+ (function() {
+     'use strict';
+     angular.module('chattapp')
+         .factory('lastUsesTimeService', lastUsesTimeService);
+
+     function lastUsesTimeService(lastUsesTimeFactory, timeStorage, $interval, $localStorage) {
+         var service = {};
+         service.updateTimeWithHttp = function() {
+                 $interval(function() {
+                     var LastTimeFireApi = $localStorage.lastTimeStampFireApi;
+                     if (LastTimeFireApi) {
+                         var currentTimestamp = _.now();
+                         var diffrence = currentTimestamp - LastTimeFireApi;
+                         if (diffrence > 300000) {
+                             service.updateTime();
+                         }
+                     }
+                 }, 60000);
+             },
+             service.updateTime = function() {
+                     var userData = timeStorage.get('userData');
+                     if (userData) {
+                         if (!_.isEmpty(userData.data.access_token)) {
+                             service.fireApi(userData.data.access_token);
+                         }
+                     }
+             },
+             service.fireApi = function(access_token) {
+                 var currentTimestamp = _.now();
+                 var query = lastUsesTimeFactory.query({
+                     currentTimestamp: currentTimestamp,
+                     access_token: access_token
+                 });
+                 query.$promise.then(function(data) {
+                     console.log(data);
+                 });
+             }
+         return service;
+     };
+ })();
+(function() {
+    'use strict';
+
+    angular.module('chattapp')
+            .service('Onsuccess', stateChange);
+
+    function stateChange($rootScope, timeStorage) {
+        this.footerTab = function(callback) {
+       
+            $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
+             console.log(toState.name);
+                if (toState.name == 'app.chats') {
+                    if (callback) {
+                        callback(true, false, false, false);
+                    }
+                    
+                } else if (toState.name == 'app.setting') {
+                    if (callback) {
+                        callback(false, false, true, false);
+                    }
+                  
+                }
+                else if (toState.name == "app.contacts") {
+                    if (callback) {
+                        callback(false, true, false, false);
+                    }
+
+                }
+                else if (toState.name == "app.publicChats") {
+                    if (callback) {
+                        callback(false, false, false, true);
+                    }
+                   
+                }
+
+            });
+        }
+    }
+
+})();
+/*! ngstorage 0.3.7 | Copyright (c) 2015 Gias Kay Lee | MIT License */!function(a,b){"use strict";"function"==typeof define&&define.amd?define(["angular"],b):"object"==typeof exports?module.exports=b(require("angular")):b(a.angular)}(this,function(a){"use strict";function b(b){return["$rootScope","$window","$log","$timeout",function(c,d,e,f){function g(a){var b;try{b=d[a]}catch(c){b=!1}if(b&&"localStorage"===a){var e="__"+Math.round(1e7*Math.random());try{localStorage.setItem(e,e),localStorage.removeItem(e)}catch(c){b=!1}}return b}var h,i,j=g(b)||(e.warn("This browser does not support Web Storage!"),{setItem:function(){},getItem:function(){}}),k={$default:function(b){for(var c in b)a.isDefined(k[c])||(k[c]=b[c]);return k},$reset:function(a){for(var b in k)"$"===b[0]||delete k[b]&&j.removeItem("ngStorage-"+b);return k.$default(a)}};try{j=d[b],j.length}catch(l){e.warn("This browser does not support Web Storage!"),j={}}for(var m,n=0,o=j.length;o>n;n++)(m=j.key(n))&&"ngStorage-"===m.slice(0,10)&&(k[m.slice(10)]=a.fromJson(j.getItem(m)));return h=a.copy(k),c.$watch(function(){var b;i||(i=f(function(){if(i=null,!a.equals(k,h)){b=a.copy(h),a.forEach(k,function(c,d){a.isDefined(c)&&"$"!==d[0]&&j.setItem("ngStorage-"+d,a.toJson(c)),delete b[d]});for(var c in b)j.removeItem("ngStorage-"+c);h=a.copy(k)}},100,!1))}),d.addEventListener&&d.addEventListener("storage",function(b){"ngStorage-"===b.key.slice(0,10)&&(b.newValue?k[b.key.slice(10)]=a.fromJson(b.newValue):delete k[b.key.slice(10)],h=a.copy(k),c.$apply())}),k}]}return a.module("ngStorage",[]).factory("$localStorage",b("localStorage")).factory("$sessionStorage",b("sessionStorage"))});
+
+(function() {
+    'use strict';
+    angular.module('chattapp')
+            .factory('pushNotification', pushNotification);
+    function pushNotification($http, $q, $log, Configurations, timeStorage, $state, $localStorage) {
+        return {
+            push: function() {
+                console.log('push is calling');
+                var flag = 0;
+                var android = {
+                    "senderID": Configurations.senderID,
+                    "icon": Configurations.icon,
+                    "iconColor": "grey",
+                    "forceShow": "true"
+                }
+                console.log(android);
+                var push = PushNotification.init({
+                    "android": android,
+                    "ios": {
+                        "alert": "true",
+                        "badge": "true",
+                        "sound": "true"
+                    },
+                    "windows": {}
+                });
+                push.on('registration', function(data) {
+                    console.log(data.registrationId);
+                    timeStorage.set('gcmToken', data.registrationId)
+                });
+                push.on('notification', function(data) {
+                    console.log(data);
+                    console.log('notification');
+                    if (data.additionalData.foreground) {
+                        console.log(data);
+                    } else {
+                        // data.message,
+                        //     data.title,
+                        //     data.count,
+                        //     data.sound,
+                        //     data.image,
+                        //     data.additionalData
+                    }
+                    if (data.additionalData.coldstart) {
+                        flag = 1;
+                        var chatWithUser = {
+                            name: data.title,
+                            pic: data.additionalData.icon,
+                        }
+                        timeStorage.set('chatWithUserData', chatWithUser, 1);
+                        if (data.additionalData.room_id) {
+                            $state.go('app.chatpage', {roomId: data.additionalData.room_id});
+                        } else {
+                            $state.go('app.chats');
+                        }
+                    } else {
+                        var chatWithUser = {
+                            name: data.title,
+                            pic: data.additionalData.icon,
+                        }
+                        timeStorage.set('chatWithUserData', chatWithUser, 1);
+                        if (data.additionalData.room_id) {
+                            $state.go('app.chatpage', {roomId: data.additionalData.room_id});
+                        } else {
+                            $state.go('app.chats');
+                        }
+                    }
+                });
+                push.on('error', function(e) {
+                    console.log(e.message);
+                });
+                if (flag == 0) {
+                    if ($localStorage.userData) {
+                        $state.go('app.chats');
+                    } else {
+                        $state.go('login');
+                    }
+                }
+            }
+        };
+    }
+})();
+ (function() {
+     'use strict';
+     angular.module('chattapp')
+         .factory('socketService', socketService);
+
+     function socketService($rootScope, $q, timeStorage, sqliteService) {
+         var service = {};
+         var userData = timeStorage.get('userData');
+         var accessToken = userData.data.access_token;
+         socket.on('RESPONSE_APP_SOCKET_EMIT', function(type, data) {
+                    if(type == 'leave_public_group'){
+                        $rootScope.$broadcast('leaved_public_group', { data: data });
+                    }
+                    console.log(type);
+                    console.log(data);
+                    if(type == 'sent_message_response'){
+                        $rootScope.$broadcast('sentMessagesIds', { data: data.data });
+                        sqliteService.updateMessageStatusToSent(data.data.msg_local_id, data.data.message_id, data.data.message_time);
+                    }
+                    if(type == 'new_room_message'){
+                        sqliteService.gotNewRoomMessage(data.data.message_body, data.data.message_id, data.data.message_status, data.data.message_time, data.data.name, data.data.profile_image, data.data.room_id, data.data.message_type);
+                        $rootScope.$broadcast('newRoomMessage', { data: data.data });
+                    }
+                    if(type == 'remove_public_room_member'){
+                        $rootScope.$broadcast('removed_public_room_member', { data: data.data });
+                    }
+                    if(type == 'remove_socket_from_room'){
+                        if(userData.data.user_id == data.user_id){
+                            socket.emit('APP_SOCKET_EMIT', 'remove_socket_from_room', { user_id: data.user_id, room_id: data.room_id });
+                        }
+                    }
+                    if(type == 'get_user_profile_for_room'){
+                        $rootScope.$broadcast('got_user_profile_for_room', { data: data.data });
+                    }
+                    if(type == 'delete_public_room'){
+                        $rootScope.$broadcast('deleted_public_room', { data: data.data });
+                    }
+                    if(type == 'room_user_typing'){
+                        $rootScope.$broadcast('room_user_typing_message', { data: data });
+                    }
+                    if(type == 'show_room_unread_notification'){
+                        $rootScope.$broadcast('got_room_unread_notification', { data: data });
+                    }
+                    if(type == 'update_room_unread_notification'){
+                        $rootScope.$broadcast('update_room_unread_notification', { data: data });
+                    }
+                    if(type == 'get_user_profile'){
+                        $rootScope.$broadcast('got_user_updated_profile', { data: data });
+                    }
+                });
+         socket.on('response_update_message_status', function(data) {
+                    var str = data.message_id;
+                    var res = str.split(",");
+                    sqliteService.updateMessageStatusToSeen(data.message_id);
+                    $rootScope.$broadcast('response_update_message_status_response', { data: res });
+                });
+         service.new_private_room = function() {
+                 var q = $q.defer();
+                 socket.on('new_private_room', function(data) {
+                     socket.removeListener('new_private_room');
+                     q.resolve(data);
+                 });
+                 return q.promise;
+             },
+             service.create_room = function(chatWithUserId) {
+                 var q = $q.defer();
+                 var userData = timeStorage.get('userData');
+                 var accessToken = userData.data.access_token;
+                 socket.emit('create_room', accessToken, 'private', chatWithUserId, '', '', _.now());
+                 service.new_private_room().then(function(data) {
+                     socket.emit('APP_SOCKET_EMIT', 'room_open', { accessToken: accessToken, room_id: data.data.room_id, currentTimestamp: _.now() });
+                     q.resolve(data);
+                 });
+                 return q.promise;
+             },
+             service.joinPublicRoom = function(roomId) {
+                 var q = $q.defer();
+                 var userData = timeStorage.get('userData');
+                 var accessToken = userData.data.access_token;
+                 socket.emit('APP_SOCKET_EMIT', 'join_public_room', { accessToken:  accessToken, room_id: roomId, currentTimestamp: _.now()});
+                 socket.on('RESPONSE_APP_SOCKET_EMIT', function(type, data) {
+                    if(type == 'join_public_room'){
+                        q.resolve(data);
+                    }
+                 });
+                 return q.promise;
+             },
+             service.room_message = function(msg_local_id, roomId, message, currentTimestamp) {
+                socket.emit('APP_SOCKET_EMIT', 'room_message', { msg_local_id: msg_local_id, accessToken:  accessToken, room_id: roomId, message_type:'text', message:message, currentTimestamp: currentTimestamp});
+             },
+             service.update_message_status = function(messages, roomId) {
+                var array = [];
+                if(messages){
+                    for(var i =0; i < messages.length; i++){
+                    if(messages[i].message_status == 'sent' && messages[i].message_owner.id != userData.data.user_id){
+                        array.push(messages[i].id);
+                        }
+                    }
+                }
+                if(array.toString() == ''){
+                    console.log('empty');
+                } else{
+                    socket.emit('update_message_status', accessToken, roomId, array.toString(), 'seen', _.now());
+                    for(var i = 0; i < array.length; i++){
+                        sqliteService.updateMessageStatusToSeen(array[i]);        
+                    }
+                }
+             },
+             service.update_message_status_room_open = function(message_id, roomId) {
+                socket.emit('update_message_status', accessToken, roomId, message_id, 'seen', _.now());
+                sqliteService.updateMessageStatusToSeen(message_id);
+             },
+             service.leaveGroup = function(roomId) {
+                var userData = timeStorage.get('userData');
+                socket.emit('APP_SOCKET_EMIT', 'leave_public_group', {  accessToken : userData.data.access_token, room_id: roomId, currentTimestamp : _.now() });
+             },
+             service.removeUserFromGroup = function(removingUserData, roomId) {
+                var userData = timeStorage.get('userData');
+                socket.emit('APP_SOCKET_EMIT', 'remove_public_room_member', {  accessToken : userData.data.access_token, room_id: roomId, user_id:removingUserData.id, currentTimestamp : _.now() });
+             },
+             service.getUserProfileForRoom = function(roomId, userId) {
+                var userData = timeStorage.get('userData');
+                socket.emit('APP_SOCKET_EMIT', 'get_user_profile_for_room', {  accessToken: userData.data.access_token, room_id: roomId, user_id:userId, currentTimestamp: _.now() });
+             },
+             service.deleteRoom = function(roomId) {
+                var userData = timeStorage.get('userData');
+                socket.emit('APP_SOCKET_EMIT', 'delete_public_room', { accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now() });
+             },
+             service.logout = function() {
+                var userData = timeStorage.get('userData');
+                socket.emit('APP_SOCKET_EMIT', 'do_logout', { accessToken: userData.data.access_token, currentTimestamp: _.now() });
+             },
+             service.writingMessage = function(roomId) {
+                var userData = timeStorage.get('userData');
+                socket.emit('APP_SOCKET_EMIT', 'room_user_typing', { user_id: userData.data.user_id, name: userData.data.name, room_id: roomId});
+             },
+             service.room_unread_notification = function(allRoomData) {
+                var userData = timeStorage.get('userData');
+                for(var i = 0; i < allRoomData.length; i++){
+                    socket.emit('APP_SOCKET_EMIT', 'show_room_unread_notification', { accessToken: userData.data.access_token, room_id: allRoomData[i].room_id, currentTimestamp: _.now()});
+                    socket.emit('APP_SOCKET_EMIT', 'room_open', { accessToken: userData.data.access_token, room_id: allRoomData[i].room_id, currentTimestamp: _.now() });
+                }
+             },
+             service.update_room_unread_notification = function(data) {
+                var userData = timeStorage.get('userData');
+                socket.emit('APP_SOCKET_EMIT', 'show_room_unread_notification', { accessToken: userData.data.access_token, room_id: data.room_id, currentTimestamp: _.now()});
+                socket.emit('APP_SOCKET_EMIT', 'room_open', { accessToken: userData.data.access_token, room_id: data.room_id, currentTimestamp: _.now() });
+             },
+             service.getUserProfile = function(chatData) {
+                var userData = timeStorage.get('userData');
+                for(var i = 0; i < chatData.length; i++){
+                    if(chatData[i].room_type == 'private'){
+                        socket.emit('APP_SOCKET_EMIT', 'get_user_profile', { accessToken: userData.data.access_token, user_id: chatData[i].user_data.id, currentTimestamp: _.now()});
+                    }    
+                }
+             },
+             service.roomOpen = function(roomId) {
+                var userData = timeStorage.get('userData');
+                socket.emit('APP_SOCKET_EMIT', 'room_open', { accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now() });
+             }
+         return service;
+     };
+ })();
+ (function() {
+     'use strict';
+     angular.module('chattapp')
+         .factory('sqliteService', sqliteService);
+
+     function sqliteService($ionicPlatform, $q, timeStorage, timeZoneService) {
+         var service = {};
+         service.createTable = function() {
+                var dbobj = window.sqlitePlugin.openDatabase({
+                     name: "chattappDB"
+                 });
+                 dbobj.transaction(createSchema, errorInSchema, successInSchema);
+                 function createSchema(tx) {
+                     tx.executeSql('CREATE TABLE IF NOT EXISTS messages(id INTEGER PRIMARY KEY AUTOINCREMENT, message_id TEXT, message TEXT, message_status TEXT, user_id TEXT, user_name TEXT, user_profile_image TEXT, roomId TEXT, message_type TEXT,  messageTime INTEGER)');
+                 }
+                 function errorInSchema() {
+                     console.log("Error to create schema");
+                 }
+                 function successInSchema() {
+                     console.log("Schema creation successful");
+                 }
+             },
+             service.saveMessageInDb = function(message, message_status, user_id, user_name, user_profile_image, roomId, messageTime) {
+                var q = $q.defer();
+                var dbobj = window.sqlitePlugin.openDatabase({
+                     name: "chattappDB"
+                 });
+                 dbobj.transaction(populateDB, error, success);
+                 function populateDB(tx) {
+                     tx.executeSql('INSERT INTO messages(message, message_status, user_id, user_name,user_profile_image, roomId, messageTime, message_type) VALUES ("' + message + '","' + message_status + '","' + user_id + '","' + user_name + '", "' + user_profile_image + '", "' + roomId + '", "'+ messageTime +'", "text")',[],function(tx, results){
+                        q.resolve(results.insertId);
+                     });
+                 }
+                 function error(err) {
+                     console.log("Error processing SQL: " + err.code);
+                     q.reject(err);
+                 }
+                 function success(results) {
+                     console.log("New Data Inserted!");
+                 }
+                 return q.promise;
+             },
+             service.updateMessageStatusToSent = function(localMessageId, messageId, messageTime) {
+                var dbobj = window.sqlitePlugin.openDatabase({
+                     name: "chattappDB"
+                 });
+                 dbobj.transaction(populateDB, error, success);
+                 function populateDB(tx) {
+                     tx.executeSql("UPDATE messages SET message_id='"+messageId+"', messageTime='"+messageTime+"', message_status='sent' WHERE id="+localMessageId);
+                 }
+                 function error(err) {
+                     console.log("Error processing SQL: " + err.code);
+                 }
+                 function success() {
+                     console.log("successfully updated to sent!");
+                 }
+             },
+             service.updateMessageStatusToSeen = function(messageId) {
+                var dbobj = window.sqlitePlugin.openDatabase({
+                     name: "chattappDB"
+                 });
+                 dbobj.transaction(populateDB, error, success);
+                 function populateDB(tx) {
+                     tx.executeSql("UPDATE messages SET message_status= 'seen' WHERE message_id= '"+messageId+"'");
+                 }
+                 function error(err) {
+                     console.log("Error processing SQL: " + err.code);
+                 }
+                 function success() {
+                     console.log("successfully updated to SEEN!");
+                 }
+             },
+             service.gotNewRoomMessage = function(message, message_id, message_status, message_time, user_name, user_profile_image, room_id, message_type) {
+                var dbobj = window.sqlitePlugin.openDatabase({
+                     name: "chattappDB"
+                 });
+                 dbobj.transaction(populateDB, error, success);
+                 function populateDB(tx) {
+                     tx.executeSql('INSERT INTO messages(message, message_status, message_id, user_name,user_profile_image, roomId, messageTime, message_type) VALUES ("' + message + '","' + message_status + '","' + message_id + '","' + user_name + '", "' + user_profile_image + '", "' + room_id + '", "' + message_time + '", "' + message_type +'")',[],function(tx, results){
+                        // console.log(results.insertId);
+                     });
+                 }
+                 function error(err) {
+                     console.log("Error processing SQL: " + err.code);
+                 }
+                 function success(results) {
+                     console.log("New Data Inserted On New Room Messages!");
+                 }
+             },
+             service.updateDbOnRoomOpen = function(messages, roomId) {
+                var q = $q.defer();
+                var userData = timeStorage.get('userData');
+                var newmes=[];
+                angular.copy(messages,newmes);
+                service.getMessageDataFromDB(roomId).then(function(response){
+                    var k=0;
+                    for(var i = 0; i < messages.length; i++){
+                        for(var j = 0; j < response.length; j++){
+                            if(messages[i].id == response[j].id){
+                                newmes.splice(i-k,1);
+                               k=k+1;
+                            }
+                        }
+                    }
+                    for(var k = 0; k < newmes.length; k++){
+                        service.gotNewRoomMessage(newmes[k].message.body, newmes[k].id, newmes[k].message_status, newmes[k].message_time, newmes[k].message_owner.name, newmes[k].message_owner.profile_image, newmes[k].room_id, newmes[k].message.type);
+                    }
+                    for(var x = 0; x < messages.length; x++){
+                        if(messages[x].message_status == 'seen'){
+                            service.updateMessageStatusToSeen(messages[x].id);
+                        }
+                    }
+                    q.resolve('resole');
+                });
+                return q.promise;
+             },
+             service.getMessageDataFromDB = function(roomId) {
+                
+                var q = $q.defer();
+                var dbobj = window.sqlitePlugin.openDatabase({
+                     name: "chattappDB"
+                 });
+                 dbobj.transaction(populateDB, error, success);
+                 function populateDB(tx) {
+                     tx.executeSql("select * from messages WHERE roomId= '"+roomId+"' order by id DESC;",[],function(tx,results){
+                        var roomMessages = [];
+                        for (var i = 0; i < results.rows.length; i++) {
+                                 var newData = {};
+                                 newData.id = results.rows.item(i).message_id;
+                                 newData.message = results.rows.item(i).message;
+                                 newData.messageTime = moment.unix(results.rows.item(i).messageTime).tz(timeZoneService.getTimeZone()).format("hh:mm a");
+                                 newData.timeStamp = results.rows.item(i).messageTime;
+                                 newData.name = results.rows.item(i).user_name;
+                                 newData.user_id = results.rows.item(i).user_id;
+                                 newData.image = results.rows.item(i).user_profile_image;
+                                 newData.message_status = results.rows.item(i).message_status;
+                                 newData.message_type = results.rows.item(i).message_type;
+                                 roomMessages.push(newData);
+                            }
+                        q.resolve(roomMessages);
+                     });
+                 }
+                 function error(err) {
+                     console.log("Error processing SQL: " + err.code);
+                     q.reject(err);
+                 }
+                 function success(results) {
+                     console.log("Data is fetched from db");
+                 }
+                 return q.promise;
+             },
+             service.deviceIsNowOnline = function() {
+                var dbobj = window.sqlitePlugin.openDatabase({
+                     name: "chattappDB"
+                 });
+                 dbobj.transaction(populateDB, error, success);
+                 function populateDB(tx) {
+                     tx.executeSql("select * from messages WHERE message_status='post'",[],function(tx, results){
+                        var userData = timeStorage.get('userData');
+                        var accessToken = userData.data.access_token;
+                        for (var i = 0; i < results.rows.length; i++) {
+                            socket.emit('APP_SOCKET_EMIT', 'room_message', { msg_local_id: results.rows.item(i).id, accessToken:  accessToken, room_id: results.rows.item(i).roomId, message_type:'text', message:results.rows.item(i).message, currentTimestamp: results.rows.item(i).messageTime});
+                            service.updateMessageStatusToSentWhenAppComesOnline(results.rows.item(i).id);
+                            }
+                     });
+                 }
+                 function error(err) {
+                     console.log("Error processing SQL: " + err.code);
+                 }
+                 function success(results) {
+                     console.log("Data is fetched from db");
+                 }
+             },
+             service.updateMessageStatusToSentWhenAppComesOnline = function(localMessageId) {
+                var dbobj = window.sqlitePlugin.openDatabase({
+                     name: "chattappDB"
+                 });
+                 dbobj.transaction(populateDB, error, success);
+                 function populateDB(tx) {
+                     tx.executeSql("UPDATE messages SET message_status='sent' WHERE id="+localMessageId);
+                 }
+                 function error(err) {
+                     console.log("Error processing SQL: " + err.code);
+                 }
+                 function success() {
+                     console.log("successfully updated to sent!");
+                 }
+             }
+         return service;
+     };
+
+ })();
+ (function() {
+     'use strict';
+     angular.module('chattapp')
+         .factory('timeZoneService', timeZoneService);
+
+     function timeZoneService() {
+         var service = {};
+         service.getTimeZone = function() {
+                 return jstz.determine().name();
+             }
+         return service;
+     };
+
+ })();
+ (function() {
+    'use strict';
+    angular.module('chattapp')
+            .factory('tostService', tostService);
+
+    function tostService() {
+        return {
+            notify: function(message, position) {
+              if(window.plugins && window.plugins.toast){
+                ///then execute ur code
+                window.plugins.toast.showWithOptions(
+                    {
+                      message: message,
+                      duration: "short",
+                      position: position
+                    }
+                  );
+                }else{
+                // this means on browser simply alert the message
+                alert(message);
+                }
+            }
+        }
+    };
+
 })();
 (function() {
     'use strict';
@@ -20412,7 +21543,7 @@ angular.module('chattapp')
              query.$promise.then(function(data) {
                  var newData = [];
                  for(var i = 0; i < data.data.length; i++){
-                    data.data[i].lastSeen = moment(parseInt(data.data[i].lastSeen)).format("Do MMMM hh:mm a");
+                    data.data[i].lastSeen = moment.unix(data.data[i].lastSeen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a"),
                     newData.push(data.data[i]); 
                  }
                  timeStorage.set('listUsers', newData, 1);
@@ -20976,7 +22107,10 @@ angular.module('chattapp')
                 self.groupCreatedOn = moment(parseInt(data.data.room.registration_time)).format("Do MMMM hh:mm a");
                 self.groupDescription = data.data.room.room_description;
                 for (var i = 0; i < data.data.room.room_users.length; i++) {
-                    data.data.room.room_users[i].last_seen = moment(parseInt(data.data.room.room_users[i].last_seen)).format("Do MMMM hh:mm a");
+                    data.data.room.room_users[i].last_seen = moment.unix(data.data.room.room_users[i].last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
+                    if (data.data.room.room_users[i].id == data.data.room.room_owner.id) {
+                        data.data.room.room_users[i].name = data.data.room.room_users[i].name + ' (owner)';
+                    }
                 }
                 self.groupUserList = data.data.room.room_users;
                 $scope.groupModel.show();
@@ -21202,1023 +22336,4 @@ angular.module('chattapp')
    function verificationFactory($resource, Configurations) {
        return $resource(Configurations.api_url+'/users/do_user_verification/:email/:code', {},{});
    };
-})();
-
- (function() {
-     'use strict';
-     angular.module('chattapp')
-         .factory('cameraService', cameraService);
-
-     function cameraService($q, $ionicActionSheet) {
-         var service = {};
-         service.changePic = function() {
-                 var q = $q.defer();
-                 var hideSheet = $ionicActionSheet.show({
-                     buttons: [{
-                         text: '<p class="text-center"><i class="ion-images"></i> Gallery</p>'
-                     }, {
-                         text: '<p class="text-center"><i class="ion-camera"></i> Camera</p>'
-                     }],
-                     titleText: 'Profile photo',
-                     cancelText: 'Cancel',
-                     cancel: function() {},
-                     buttonClicked: function(index) {
-                         service.getPicture(index).then(function(imageData) {
-                             q.resolve(imageData);
-                         }, function(err) {
-                             q.reject(err);
-                         });
-                         return true;
-                     }
-                 });
-                 return q.promise;
-             },
-             service.getPicture = function(index) {
-                 var q = $q.defer();
-                 navigator.camera.getPicture(onSuccess, onFail, {
-                     quality: 100,
-                     destinationType: Camera.DestinationType.DATA_URL,
-                     correctOrientation: true,
-                     // allowEdit: true,
-                     sourceType: index
-                 });
-                 function onSuccess(imageData) {
-                     q.resolve(imageData);
-                 }
-                 function onFail(message) {
-                     q.reject(message);
-                 }
-                 return q.promise;
-             };
-         return service;
-     };
-
- })();
- (function() {
-    'use strict';
-    angular.module('chattapp')
-            .factory('deviceService', deviceService);
-
-    function deviceService() {
-        return {
-            getuuid: function() {
-                if(window.plugins){
-                    return device.uuid;
-                } else{
-                    return -1;
-                }
-            },
-            platform: function() {
-                if(window.plugins){
-                    return device.platform;
-                } else{
-                    return 'desktop';
-                }
-            }
-        }
-    };
-
-})();
-var facebookLoginService = angular.module('facebookLoginService', []);
-
-facebookLoginService.factory('facebookLogin', facebookLogin);
-function facebookLogin($http, $q, $state) {
-var service = {};
-        service.fbLoginSuccess = function() {
-            var def = $q.defer();
-            facebookConnectPlugin.login(['email','user_friends', 'public_profile'], fbLoginSuccess, service.fbLoginError);
-            function fbLoginSuccess(response){
-            
-                if (!response.authResponse) {
-                    fbLoginError("Cannot find the authResponse");
-                    return;
-                }
-                var authResponse = response.authResponse;
-                service.getFacebookProfileInfo(authResponse)
-                    .then(function(profileInfo) {
-                        console.log(profileInfo);
-                        profileInfo.accessToken = authResponse.accessToken;
-                        def.resolve(profileInfo);
-                    }, function(fail) {
-                        console.log('profile info fail', fail);
-                        def.reject(fail);
-                    });
-                }
-                return def.promise;
-            };
-            service.fbLoginError = function(error) {
-                console.log('fbLoginError', error);
-            };
-            service.getFacebookProfileInfo = function(authResponse) {
-                var info = $q.defer();
-                facebookConnectPlugin.api('/me?fields=email,name&access_token=' + authResponse.accessToken, null,
-                    function(response) {
-                        console.log(response);
-                        response.accessToken = authResponse.accessToken;
-                        info.resolve(response);
-                    },
-                    function(response) {
-                        console.log(response);
-                        info.reject(response);
-                    }
-                );
-                return info.promise;
-            };
-             service.login = function() {
-                var def = $q.defer();
-            facebookConnectPlugin.getLoginStatus(function(success) {
-                if (success.status === 'connected') {
-                    console.log('getLoginStatus', success.status);
-                        service.getFacebookProfileInfo(success.authResponse)
-                            .then(function(profileInfo) {
-                                console.log(profileInfo);
-                                def.resolve(profileInfo);
-                            }, function(fail) {
-                                console.log('profile info fail', fail);
-                                def.reject(fail);
-                            });
-                } else {
-                    console.log('getLoginStatus', success.status);
-                    def.resolve(success.status);
-                }
-            });
-            return def.promise;
-        }
-        return service;
-    }
-var googleLoginService = angular.module('GoogleLoginService', ['ngStorage']);
-googleLoginService.factory('timeStorage', ['$localStorage', function($localStorage) {
-    var timeStorage = {};
-    timeStorage.cleanUp = function() {
-        var cur_time = new Date().getTime();
-        for (var i = 0; i < localStorage.length; i++) {
-            var key = localStorage.key(i);
-            if (key.indexOf('_expire') === -1) {
-                var new_key = key + "_expire";
-                var value = localStorage.getItem(new_key);
-                if (value && cur_time > value) {
-                    localStorage.removeItem(key);
-                    localStorage.removeItem(new_key);
-                }
-            }
-        }
-    };
-    timeStorage.remove = function(key) {
-        //this.cleanUp();
-        var time_key = key + '_expire';
-        $localStorage[key] = false;
-        $localStorage[time_key] = false;
-    };
-    timeStorage.set = function(key, data, hours) {
-        //this.cleanUp();
-        $localStorage[key] = data;
-        var time_key = key + '_expire';
-        var time = new Date().getTime();
-        time = time + (hours * 1 * 60 * 60 * 1000);
-        $localStorage[time_key] = time;
-    };
-    timeStorage.get = function(key) {
-        //this.cleanUp();
-        var time_key = key + "_expire";
-        if (!$localStorage[time_key]) {
-            return false;
-        }
-        var expire = $localStorage[time_key] * 1;
-        // if (new Date().getTime() > expire) {
-        //     $localStorage[key] = null;
-        //     $localStorage[time_key] = null;
-        //     return false;
-        // }
-        return $localStorage[key];
-    };
-    return timeStorage;
-}]);
-
-
-googleLoginService.factory('googleLogin', [
-    '$http', '$q', '$interval', '$log', 'timeStorage',
-    function($http, $q, $interval, $log, timeStorage) {
-        var service = {};
-        service.access_token = false;
-        service.redirect_url = 'http://localhost';
-        service.client_id = '1009675706541-dmc2t32u755as3pms8f6llcrhed8lvt6.apps.googleusercontent.com';
-        service.secret = 'BQSLccofHJjg9t-_-w66Q_qc';
-        service.scope = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/plus.me';
-        service.gulp = function(url, name) {
-            url = url.substring(url.indexOf('?') + 1, url.length);
-
-            return url.replace('code=', '');
-        };
-        service.authorize = function(options) {
-            var def = $q.defer();
-            var self = this;
-
-            var access_token = timeStorage.get('google_access_token');
-            if (access_token) {
-                $log.info('Direct Access Token :' + access_token);
-                service.getUserInfo(access_token, def);
-            } else {
-
-                var params = 'client_id=' + encodeURIComponent(options.client_id);
-                params += '&redirect_uri=' + encodeURIComponent(options.redirect_uri);
-                params += '&response_type=code';
-                params += '&scope=' + encodeURIComponent(options.scope);
-                var authUrl = 'https://accounts.google.com/o/oauth2/auth?' + params;
-
-                var win = window.open(authUrl, '_blank', 'location=no,toolbar=no,width=800, height=800');
-                var context = this;
-
-                if (ionic.Platform.isWebView()) {
-                    console.log('using in app browser');
-                    win.addEventListener('loadstart', function(data) {
-                        console.log('load start');
-                        if (data.url.indexOf(context.redirect_url) === 0) {
-                            console.log('redirect url found ' + context.redirect_url);
-                            console.log('window url found ' + data.url);
-                            win.close();
-                            var url = data.url;
-                            var access_code = context.gulp(url, 'code');
-                            if (access_code) {
-                                context.validateToken(access_code, def);
-                            } else {
-                                def.reject({
-                                    error: 'Access Code Not Found'
-                                });
-                            }
-                        }
-
-                    });
-                } else {
-                    console.log('InAppBrowser not found11');
-                    var pollTimer = $interval(function() {
-                        try {
-                            console.log("google window url " + win.document.URL);
-                            if (win.document.URL.indexOf(context.redirect_url) === 0) {
-                                console.log('redirect url found');
-                                win.close();
-                                $interval.cancel(pollTimer);
-                                pollTimer = false;
-                                var url = win.document.URL;
-                                $log.debug('Final URL ' + url);
-                                var access_code = context.gulp(url, 'code');
-                                if (access_code) {
-                                    $log.info('Access Code: ' + access_code);
-                                    context.validateToken(access_code, def);
-                                } else {
-                                    def.reject({
-                                        error: 'Access Code Not Found'
-                                    });
-                                }
-                            }
-                        } catch (e) {}
-                    }, 100);
-                }
-            }
-            return def.promise;
-        };
-        service.validateToken = function(token, def) {
-            $log.info('Code: ' + token);
-            var http = $http({
-                url: 'https://www.googleapis.com/oauth2/v3/token',
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                params: {
-                    code: token,
-                    client_id: this.client_id,
-                    client_secret: this.secret,
-                    redirect_uri: this.redirect_url,
-                    grant_type: 'authorization_code',
-                    scope: ''
-                }
-            });
-            var context = this;
-            http.then(function(data) {
-                $log.debug(data);
-                var access_token = data.data.access_token;
-                var expires_in = data.data.expires_in;
-                expires_in = expires_in * 1 / (60 * 60);
-                timeStorage.set('google_access_token', access_token, expires_in);
-                if (access_token) {
-                    $log.info('Access Token :' + access_token);
-                    context.getUserInfo(access_token, def);
-                } else {
-                    def.reject({
-                        error: 'Access Token Not Found'
-                    });
-                }
-            });
-        };
-        service.getUserInfo = function(access_token, def) {
-            var http = $http({
-                url: 'https://www.googleapis.com/oauth2/v3/userinfo',
-                method: 'GET',
-                params: {
-                    access_token: access_token
-                }
-            });
-            http.then(function(data) {
-                $log.debug(data);
-                var user_data = data.data;
-                var user = {
-                    name: user_data.name,
-                    gender: user_data.gender,
-                    email: user_data.email,
-                    google_id: user_data.sub,
-                    picture: user_data.picture,
-                    profile: user_data.profile
-                };
-                def.resolve(user);
-            });
-        };
-        service.getUserFriends = function() {
-            var access_token = this.access_token;
-            var http = $http({
-                url: 'https://www.googleapis.com/plus/v1/people/me/people/visible',
-                method: 'GET',
-                params: {
-                    access_token: access_token
-                }
-            });
-            http.then(function(data) {
-                console.log(data);
-            });
-        };
-        service.startLogin = function() {
-            var def = $q.defer();
-            var promise = this.authorize({
-                client_id: this.client_id,
-                client_secret: this.secret,
-                redirect_uri: this.redirect_url,
-                scope: this.scope
-            });
-            promise.then(function(data) {
-                def.resolve(data);
-            }, function(data) {
-                $log.error(data);
-                def.reject(data.error);
-            });
-            return def.promise;
-        };
-        return service;
-    }
-]);
-(function() {
-    'use strict';
-    angular.module('chattapp')
-            .config(function($httpProvider) {
-                $httpProvider.interceptors.push('myInterceptor');
-            });
-})();
-(function() {
-    'use strict';
-    angular.module('chattapp')
-            .factory('myInterceptor', function($localStorage, $injector) {
-                var requestInterceptor = {
-                    data: null,
-                    request: function(config) {
-                        var currentUser = $localStorage.userData;
-                        if (currentUser) {
-                            var accessToken = currentUser.data.access_token;
-                            var configURL = config.url;
-                            if (configURL.substring(0, 10) == 'http://144') {
-                                config.url = config.url + '?access_token=' + accessToken + '&currentTimestamp=' + _.now() + '';
-                                if (config.data.append_data)
-                                {
-                                    _.each(config.data.append_data, function(value, key)
-                                    {
-                                        config.url = config.url + '&' + key + '=' + value;
-                                    });
-                                }
-                            }
-                        }
-                        if (config.method == 'POST') {
-                            $localStorage.lastTimeStampFireApi = _.now();
-                        }
-                        return config;
-                    },
-                    response: function(response) {
-                        if (response.data.status == 401 || response.data.message == 'UnAuthorized') {
-                            var timeStorage = $injector.get('timeStorage');
-                            $injector.get('socketService').logout();
-                            $injector.get('tostService').notify(response.data.message + ' Please login again !', 'top');
-                            timeStorage.remove('google_access_token');
-                            timeStorage.remove('userEmail');
-                            timeStorage.remove('userData');
-                            timeStorage.remove('displayPrivateChats');
-                            timeStorage.remove('listUsers');
-                            timeStorage.remove('chatWithUserData');
-                            timeStorage.remove('displayPublicChats');
-                            $injector.get('$state').go('login');
-                        }
-                        return response;
-                    }
-                };
-                return requestInterceptor;
-            });
-})();
-(function() {
-    'use strict';
-
-    angular.module('chattapp')
-            .directive('img', function($timeout,Configurations) {
-                return {
-                    restrict: 'E',
-                    link: function(scope, element, attr) {
-                        if (attr.ngSrc == '') {
-                            var chatPageClass = '';
-                            if (scope.contact) {
-                                var name = scope.contact.name;
-                                var firstLetter = name.charAt(0).toUpperCase();
-                            }
-                            if (scope.chatPageHeader) {
-                                chatPageClass = 'chatPageheader';
-                                var name = scope.chatPageHeader.name;
-                                var firstLetter = name.charAt(0).toUpperCase();
-                            }
-                            if (scope.chatPageFooter) {
-                                chatPageClass = 'chatPageheader';
-                                var name = scope.chatPageFooter.name;
-                                var firstLetter = name.charAt(0).toUpperCase();
-                            }
-                            if (scope.chat) {
-                                var name = scope.chat.user_data.name;
-                                var firstLetter = name.charAt(0).toUpperCase();
-                            }
-                            if (scope.publicChat) {
-                                var name = scope.publicChat.room_name;
-                                var firstLetter = name.charAt(0).toUpperCase();
-                            }
-                            if (scope.groupUser) {
-                                var name = scope.groupUser.name;
-                                var firstLetter = name.charAt(0).toUpperCase();
-                            }
-                            if (scope.msg) {
-                                var name = scope.msg.name;
-                                var firstLetter = name.charAt(0).toUpperCase();
-                            }
-                            if(scope.infoUser){
-                                var name = scope.infoUser.name;
-                                var firstLetter = name.charAt(0).toUpperCase();
-                            }
-                            var color = Configurations.color;
-                            element.replaceWith("<button style='background:" + color[firstLetter.toLowerCase()] + "' class='no-image " + chatPageClass + "'><i class='i-24 white'>" + firstLetter + "</i><div class='md-ripple-container'></div></button>");
-                        }
-                    }
-                }
-            });
-})();
-(function() {
-    'use strict';
-    angular.module('chattapp')
-        .factory('lastUsesTimeFactory', lastUsesTimeFactory);
-
-    function lastUsesTimeFactory($resource, Configurations) {
-        // return $resource(Configurations.api_url+'/users/contacts', {},{});
-        return $resource('app/mock/contacts.json', {}, {});
-    };
-})();
- (function() {
-     'use strict';
-     angular.module('chattapp')
-         .factory('lastUsesTimeService', lastUsesTimeService);
-
-     function lastUsesTimeService(lastUsesTimeFactory, timeStorage, $interval, $localStorage) {
-         var service = {};
-         service.updateTimeWithHttp = function() {
-                 $interval(function() {
-                     var LastTimeFireApi = $localStorage.lastTimeStampFireApi;
-                     if (LastTimeFireApi) {
-                         var currentTimestamp = _.now();
-                         var diffrence = currentTimestamp - LastTimeFireApi;
-                         if (diffrence > 300000) {
-                             service.updateTime();
-                         }
-                     }
-                 }, 60000);
-             },
-             service.updateTime = function() {
-                     var userData = timeStorage.get('userData');
-                     if (userData) {
-                         if (!_.isEmpty(userData.data.access_token)) {
-                             service.fireApi(userData.data.access_token);
-                         }
-                     }
-             },
-             service.fireApi = function(access_token) {
-                 var currentTimestamp = _.now();
-                 var query = lastUsesTimeFactory.query({
-                     currentTimestamp: currentTimestamp,
-                     access_token: access_token
-                 });
-                 query.$promise.then(function(data) {
-                     console.log(data);
-                 });
-             }
-         return service;
-     };
- })();
-(function() {
-    'use strict';
-
-    angular.module('chattapp')
-            .service('Onsuccess', stateChange);
-
-    function stateChange($rootScope, timeStorage) {
-        this.footerTab = function(callback) {
-       
-            $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
-             console.log(toState.name);
-                if (toState.name == 'app.chats') {
-                    if (callback) {
-                        callback(true, false, false, false);
-                    }
-                    
-                } else if (toState.name == 'app.setting') {
-                    if (callback) {
-                        callback(false, false, true, false);
-                    }
-                  
-                }
-                else if (toState.name == "app.contacts") {
-                    if (callback) {
-                        callback(false, true, false, false);
-                    }
-
-                }
-                else if (toState.name == "app.publicChats") {
-                    if (callback) {
-                        callback(false, false, false, true);
-                    }
-                   
-                }
-
-            });
-        }
-    }
-
-})();
-/*! ngstorage 0.3.7 | Copyright (c) 2015 Gias Kay Lee | MIT License */!function(a,b){"use strict";"function"==typeof define&&define.amd?define(["angular"],b):"object"==typeof exports?module.exports=b(require("angular")):b(a.angular)}(this,function(a){"use strict";function b(b){return["$rootScope","$window","$log","$timeout",function(c,d,e,f){function g(a){var b;try{b=d[a]}catch(c){b=!1}if(b&&"localStorage"===a){var e="__"+Math.round(1e7*Math.random());try{localStorage.setItem(e,e),localStorage.removeItem(e)}catch(c){b=!1}}return b}var h,i,j=g(b)||(e.warn("This browser does not support Web Storage!"),{setItem:function(){},getItem:function(){}}),k={$default:function(b){for(var c in b)a.isDefined(k[c])||(k[c]=b[c]);return k},$reset:function(a){for(var b in k)"$"===b[0]||delete k[b]&&j.removeItem("ngStorage-"+b);return k.$default(a)}};try{j=d[b],j.length}catch(l){e.warn("This browser does not support Web Storage!"),j={}}for(var m,n=0,o=j.length;o>n;n++)(m=j.key(n))&&"ngStorage-"===m.slice(0,10)&&(k[m.slice(10)]=a.fromJson(j.getItem(m)));return h=a.copy(k),c.$watch(function(){var b;i||(i=f(function(){if(i=null,!a.equals(k,h)){b=a.copy(h),a.forEach(k,function(c,d){a.isDefined(c)&&"$"!==d[0]&&j.setItem("ngStorage-"+d,a.toJson(c)),delete b[d]});for(var c in b)j.removeItem("ngStorage-"+c);h=a.copy(k)}},100,!1))}),d.addEventListener&&d.addEventListener("storage",function(b){"ngStorage-"===b.key.slice(0,10)&&(b.newValue?k[b.key.slice(10)]=a.fromJson(b.newValue):delete k[b.key.slice(10)],h=a.copy(k),c.$apply())}),k}]}return a.module("ngStorage",[]).factory("$localStorage",b("localStorage")).factory("$sessionStorage",b("sessionStorage"))});
-
-(function() {
-    'use strict';
-    angular.module('chattapp')
-            .factory('pushNotification', pushNotification);
-    function pushNotification($http, $q, $log, Configurations, timeStorage, $state, $localStorage) {
-        return {
-            push: function() {
-                console.log('push is calling');
-                var flag = 0;
-                var android = {
-                    "senderID": Configurations.senderID,
-                    "icon": Configurations.icon,
-                    "iconColor": "grey",
-                    "forceShow": "true"
-                }
-                console.log(android);
-                var push = PushNotification.init({
-                    "android": android,
-                    "ios": {
-                        "alert": "true",
-                        "badge": "true",
-                        "sound": "true"
-                    },
-                    "windows": {}
-                });
-                push.on('registration', function(data) {
-                    console.log(data.registrationId);
-                    timeStorage.set('gcmToken', data.registrationId)
-                });
-                push.on('notification', function(data) {
-                    console.log(data);
-                    console.log('notification');
-                    if (data.additionalData.foreground) {
-                        console.log(data);
-                    } else {
-                        // data.message,
-                        //     data.title,
-                        //     data.count,
-                        //     data.sound,
-                        //     data.image,
-                        //     data.additionalData
-                    }
-                    if (data.additionalData.coldstart) {
-                        flag = 1;
-                        var chatWithUser = {
-                            name: data.title,
-                            pic: data.additionalData.icon,
-                        }
-                        timeStorage.set('chatWithUserData', chatWithUser, 1);
-                        if (data.additionalData.room_id) {
-                            $state.go('app.chatpage', {roomId: data.additionalData.room_id});
-                        } else {
-                            $state.go('app.chats');
-                        }
-                    } else {
-                        var chatWithUser = {
-                            name: data.title,
-                            pic: data.additionalData.icon,
-                        }
-                        timeStorage.set('chatWithUserData', chatWithUser, 1);
-                        if (data.additionalData.room_id) {
-                            $state.go('app.chatpage', {roomId: data.additionalData.room_id});
-                        } else {
-                            $state.go('app.chats');
-                        }
-                    }
-                });
-                push.on('error', function(e) {
-                    console.log(e.message);
-                });
-                if (flag == 0) {
-                    if ($localStorage.userData) {
-                        $state.go('app.chats');
-                    } else {
-                        $state.go('login');
-                    }
-                }
-            }
-        };
-    }
-})();
- (function() {
-     'use strict';
-     angular.module('chattapp')
-         .factory('socketService', socketService);
-
-     function socketService($rootScope, $q, timeStorage, sqliteService) {
-         var service = {};
-         var userData = timeStorage.get('userData');
-         var accessToken = userData.data.access_token;
-         socket.on('RESPONSE_APP_SOCKET_EMIT', function(type, data) {
-                    if(type == 'leave_public_group'){
-                        $rootScope.$broadcast('leaved_public_group', { data: data });
-                    }
-                    console.log(type);
-                    console.log(data);
-                    if(type == 'sent_message_response'){
-                        $rootScope.$broadcast('sentMessagesIds', { data: data.data });
-                        sqliteService.updateMessageStatusToSent(data.data.msg_local_id, data.data.message_id, data.data.message_time);
-                    }
-                    if(type == 'new_room_message'){
-                        sqliteService.gotNewRoomMessage(data.data.message_body, data.data.message_id, data.data.message_status, data.data.message_time, data.data.name, data.data.profile_image, data.data.room_id, data.data.message_type);
-                        $rootScope.$broadcast('newRoomMessage', { data: data.data });
-                    }
-                    if(type == 'remove_public_room_member'){
-                        $rootScope.$broadcast('removed_public_room_member', { data: data.data });
-                    }
-                    if(type == 'remove_socket_from_room'){
-                        if(userData.data.user_id == data.user_id){
-                            socket.emit('APP_SOCKET_EMIT', 'remove_socket_from_room', { user_id: data.user_id, room_id: data.room_id });
-                        }
-                    }
-                    if(type == 'get_user_profile_for_room'){
-                        $rootScope.$broadcast('got_user_profile_for_room', { data: data.data });
-                    }
-                    if(type == 'delete_public_room'){
-                        $rootScope.$broadcast('deleted_public_room', { data: data.data });
-                    }
-                    if(type == 'room_user_typing'){
-                        $rootScope.$broadcast('room_user_typing_message', { data: data });
-                    }
-                    if(type == 'show_room_unread_notification'){
-                        $rootScope.$broadcast('got_room_unread_notification', { data: data });
-                    }
-                    if(type == 'update_room_unread_notification'){
-                        $rootScope.$broadcast('update_room_unread_notification', { data: data });
-                    }
-                });
-         socket.on('response_update_message_status', function(data) {
-                    var str = data.message_id;
-                    var res = str.split(",");
-                    sqliteService.updateMessageStatusToSeen(data.message_id);
-                    $rootScope.$broadcast('response_update_message_status_response', { data: res });
-                });
-         service.new_private_room = function() {
-                 var q = $q.defer();
-                 socket.on('new_private_room', function(data) {
-                     socket.removeListener('new_private_room');
-                     q.resolve(data);
-                 });
-                 return q.promise;
-             },
-             service.create_room = function(chatWithUserId) {
-                 var q = $q.defer();
-                 var userData = timeStorage.get('userData');
-                 var accessToken = userData.data.access_token;
-                 socket.emit('create_room', accessToken, 'private', chatWithUserId, '', '', _.now());
-                 service.new_private_room().then(function(data) {
-                     socket.emit('APP_SOCKET_EMIT', 'room_open', { accessToken: accessToken, room_id: data.data.room_id, currentTimestamp: _.now() });
-                     q.resolve(data);
-                 });
-                 return q.promise;
-             },
-             service.joinPublicRoom = function(roomId) {
-                 var q = $q.defer();
-                 var userData = timeStorage.get('userData');
-                 var accessToken = userData.data.access_token;
-                 socket.emit('APP_SOCKET_EMIT', 'join_public_room', { accessToken:  accessToken, room_id: roomId, currentTimestamp: _.now()});
-                 socket.on('RESPONSE_APP_SOCKET_EMIT', function(type, data) {
-                    if(type == 'join_public_room'){
-                        q.resolve(data);
-                    }
-                 });
-                 return q.promise;
-             },
-             service.room_message = function(msg_local_id, roomId, message, currentTimestamp) {
-                socket.emit('APP_SOCKET_EMIT', 'room_message', { msg_local_id: msg_local_id, accessToken:  accessToken, room_id: roomId, message_type:'text', message:message, currentTimestamp: currentTimestamp});
-             },
-             service.update_message_status = function(messages, roomId) {
-                var array = [];
-                if(messages){
-                    for(var i =0; i < messages.length; i++){
-                    if(messages[i].message_status == 'sent' && messages[i].message_owner.id != userData.data.user_id){
-                        array.push(messages[i].id);
-                        }
-                    }
-                }
-                if(array.toString() == ''){
-                    console.log('empty');
-                } else{
-                    socket.emit('update_message_status', accessToken, roomId, array.toString(), 'seen', _.now());
-                    for(var i = 0; i < array.length; i++){
-                        sqliteService.updateMessageStatusToSeen(array[i]);        
-                    }
-                }
-             },
-             service.update_message_status_room_open = function(message_id, roomId) {
-                socket.emit('update_message_status', accessToken, roomId, message_id, 'seen', _.now());
-                sqliteService.updateMessageStatusToSeen(message_id);
-             },
-             service.leaveGroup = function(roomId) {
-                var userData = timeStorage.get('userData');
-                socket.emit('APP_SOCKET_EMIT', 'leave_public_group', {  accessToken : userData.data.access_token, room_id: roomId, currentTimestamp : _.now() });
-             },
-             service.removeUserFromGroup = function(removingUserData, roomId) {
-                var userData = timeStorage.get('userData');
-                socket.emit('APP_SOCKET_EMIT', 'remove_public_room_member', {  accessToken : userData.data.access_token, room_id: roomId, user_id:removingUserData.id, currentTimestamp : _.now() });
-             },
-             service.getUserProfileForRoom = function(roomId, userId) {
-                var userData = timeStorage.get('userData');
-                socket.emit('APP_SOCKET_EMIT', 'get_user_profile_for_room', {  accessToken: userData.data.access_token, room_id: roomId, user_id:userId, currentTimestamp: _.now() });
-             },
-             service.deleteRoom = function(roomId) {
-                var userData = timeStorage.get('userData');
-                socket.emit('APP_SOCKET_EMIT', 'delete_public_room', { accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now() });
-             },
-             service.logout = function() {
-                var userData = timeStorage.get('userData');
-                socket.emit('APP_SOCKET_EMIT', 'do_logout', { accessToken: userData.data.access_token, currentTimestamp: _.now() });
-             },
-             service.writingMessage = function(roomId) {
-                var userData = timeStorage.get('userData');
-                socket.emit('APP_SOCKET_EMIT', 'room_user_typing', { user_id: userData.data.user_id, name: userData.data.name, room_id: roomId});
-             },
-             service.room_unread_notification = function(allRoomData) {
-                var userData = timeStorage.get('userData');
-                for(var i = 0; i < allRoomData.length; i++){
-                    socket.emit('APP_SOCKET_EMIT', 'show_room_unread_notification', { accessToken: userData.data.access_token, room_id: allRoomData[i].room_id, currentTimestamp: _.now()});
-                    socket.emit('APP_SOCKET_EMIT', 'room_open', { accessToken: userData.data.access_token, room_id: allRoomData[i].room_id, currentTimestamp: _.now() });
-                }
-             },
-             service.update_room_unread_notification = function(data) {
-                var userData = timeStorage.get('userData');
-                socket.emit('APP_SOCKET_EMIT', 'show_room_unread_notification', { accessToken: userData.data.access_token, room_id: data.room_id, currentTimestamp: _.now()});
-                socket.emit('APP_SOCKET_EMIT', 'room_open', { accessToken: userData.data.access_token, room_id: data.room_id, currentTimestamp: _.now() });
-             }
-         return service;
-     };
- })();
- (function() {
-     'use strict';
-     angular.module('chattapp')
-         .factory('sqliteService', sqliteService);
-
-     function sqliteService($ionicPlatform, $q, timeStorage, timeZoneService) {
-         var service = {};
-         service.createTable = function() {
-                var dbobj = window.sqlitePlugin.openDatabase({
-                     name: "chattappDB"
-                 });
-                 dbobj.transaction(createSchema, errorInSchema, successInSchema);
-                 function createSchema(tx) {
-                     tx.executeSql('CREATE TABLE IF NOT EXISTS messages(id INTEGER PRIMARY KEY AUTOINCREMENT, message_id TEXT, message TEXT, message_status TEXT, user_id TEXT, user_name TEXT, user_profile_image TEXT, roomId TEXT, message_type TEXT,  messageTime INTEGER)');
-                 }
-                 function errorInSchema() {
-                     console.log("Error to create schema");
-                 }
-                 function successInSchema() {
-                     console.log("Schema creation successful");
-                 }
-             },
-             service.saveMessageInDb = function(message, message_status, user_id, user_name, user_profile_image, roomId, messageTime) {
-                var q = $q.defer();
-                var dbobj = window.sqlitePlugin.openDatabase({
-                     name: "chattappDB"
-                 });
-                 dbobj.transaction(populateDB, error, success);
-                 function populateDB(tx) {
-                     tx.executeSql('INSERT INTO messages(message, message_status, user_id, user_name,user_profile_image, roomId, messageTime, message_type) VALUES ("' + message + '","' + message_status + '","' + user_id + '","' + user_name + '", "' + user_profile_image + '", "' + roomId + '", "'+ messageTime +'", "text")',[],function(tx, results){
-                        q.resolve(results.insertId);
-                     });
-                 }
-                 function error(err) {
-                     console.log("Error processing SQL: " + err.code);
-                     q.reject(err);
-                 }
-                 function success(results) {
-                     console.log("New Data Inserted!");
-                 }
-                 return q.promise;
-             },
-             service.updateMessageStatusToSent = function(localMessageId, messageId, messageTime) {
-                var dbobj = window.sqlitePlugin.openDatabase({
-                     name: "chattappDB"
-                 });
-                 dbobj.transaction(populateDB, error, success);
-                 function populateDB(tx) {
-                     tx.executeSql("UPDATE messages SET message_id='"+messageId+"', messageTime='"+messageTime+"', message_status='sent' WHERE id="+localMessageId);
-                 }
-                 function error(err) {
-                     console.log("Error processing SQL: " + err.code);
-                 }
-                 function success() {
-                     console.log("successfully updated to sent!");
-                 }
-             },
-             service.updateMessageStatusToSeen = function(messageId) {
-                var dbobj = window.sqlitePlugin.openDatabase({
-                     name: "chattappDB"
-                 });
-                 dbobj.transaction(populateDB, error, success);
-                 function populateDB(tx) {
-                     tx.executeSql("UPDATE messages SET message_status= 'seen' WHERE message_id= '"+messageId+"'");
-                 }
-                 function error(err) {
-                     console.log("Error processing SQL: " + err.code);
-                 }
-                 function success() {
-                     console.log("successfully updated to SEEN!");
-                 }
-             },
-             service.gotNewRoomMessage = function(message, message_id, message_status, message_time, user_name, user_profile_image, room_id, message_type) {
-                var dbobj = window.sqlitePlugin.openDatabase({
-                     name: "chattappDB"
-                 });
-                 dbobj.transaction(populateDB, error, success);
-                 function populateDB(tx) {
-                     tx.executeSql('INSERT INTO messages(message, message_status, message_id, user_name,user_profile_image, roomId, messageTime, message_type) VALUES ("' + message + '","' + message_status + '","' + message_id + '","' + user_name + '", "' + user_profile_image + '", "' + room_id + '", "' + message_time + '", "' + message_type +'")',[],function(tx, results){
-                        // console.log(results.insertId);
-                     });
-                 }
-                 function error(err) {
-                     console.log("Error processing SQL: " + err.code);
-                 }
-                 function success(results) {
-                     console.log("New Data Inserted On New Room Messages!");
-                 }
-             },
-             service.updateDbOnRoomOpen = function(messages, roomId) {
-                var q = $q.defer();
-                var userData = timeStorage.get('userData');
-                var newmes=[];
-                angular.copy(messages,newmes);
-                service.getMessageDataFromDB(roomId).then(function(response){
-                    var k=0;
-                    for(var i = 0; i < messages.length; i++){
-                        for(var j = 0; j < response.length; j++){
-                            if(messages[i].id == response[j].id){
-                                newmes.splice(i-k,1);
-                               k=k+1;
-                            }
-                        }
-                    }
-                    for(var k = 0; k < newmes.length; k++){
-                        service.gotNewRoomMessage(newmes[k].message.body, newmes[k].id, newmes[k].message_status, newmes[k].message_time, newmes[k].message_owner.name, newmes[k].message_owner.profile_image, newmes[k].room_id, newmes[k].message.type);
-                    }
-                    for(var x = 0; x < messages.length; x++){
-                        if(messages[x].message_status == 'seen'){
-                            service.updateMessageStatusToSeen(messages[x].id);
-                        }
-                    }
-                    q.resolve('resole');
-                });
-                return q.promise;
-             },
-             service.getMessageDataFromDB = function(roomId) {
-                
-                var q = $q.defer();
-                var dbobj = window.sqlitePlugin.openDatabase({
-                     name: "chattappDB"
-                 });
-                 dbobj.transaction(populateDB, error, success);
-                 function populateDB(tx) {
-                     tx.executeSql("select * from messages WHERE roomId= '"+roomId+"' order by id DESC;",[],function(tx,results){
-                        var roomMessages = [];
-                        for (var i = 0; i < results.rows.length; i++) {
-                                 var newData = {};
-                                 newData.id = results.rows.item(i).message_id;
-                                 newData.message = results.rows.item(i).message;
-                                 newData.messageTime = moment.unix(results.rows.item(i).messageTime).tz(timeZoneService.getTimeZone()).format("hh:mm a");
-                                 newData.timeStamp = results.rows.item(i).messageTime;
-                                 newData.name = results.rows.item(i).user_name;
-                                 newData.user_id = results.rows.item(i).user_id;
-                                 newData.image = results.rows.item(i).user_profile_image;
-                                 newData.message_status = results.rows.item(i).message_status;
-                                 newData.message_type = results.rows.item(i).message_type;
-                                 roomMessages.push(newData);
-                            }
-                        q.resolve(roomMessages);
-                     });
-                 }
-                 function error(err) {
-                     console.log("Error processing SQL: " + err.code);
-                     q.reject(err);
-                 }
-                 function success(results) {
-                     console.log("Data is fetched from db");
-                 }
-                 return q.promise;
-             },
-             service.deviceIsNowOnline = function() {
-                var dbobj = window.sqlitePlugin.openDatabase({
-                     name: "chattappDB"
-                 });
-                 dbobj.transaction(populateDB, error, success);
-                 function populateDB(tx) {
-                     tx.executeSql("select * from messages WHERE message_status='post'",[],function(tx, results){
-                        var userData = timeStorage.get('userData');
-                        var accessToken = userData.data.access_token;
-                        for (var i = 0; i < results.rows.length; i++) {
-                            socket.emit('APP_SOCKET_EMIT', 'room_message', { msg_local_id: results.rows.item(i).id, accessToken:  accessToken, room_id: results.rows.item(i).roomId, message_type:'text', message:results.rows.item(i).message, currentTimestamp: results.rows.item(i).messageTime});
-                            service.updateMessageStatusToSentWhenAppComesOnline(results.rows.item(i).id);
-                            }
-                     });
-                 }
-                 function error(err) {
-                     console.log("Error processing SQL: " + err.code);
-                 }
-                 function success(results) {
-                     console.log("Data is fetched from db");
-                 }
-             },
-             service.updateMessageStatusToSentWhenAppComesOnline = function(localMessageId) {
-                var dbobj = window.sqlitePlugin.openDatabase({
-                     name: "chattappDB"
-                 });
-                 dbobj.transaction(populateDB, error, success);
-                 function populateDB(tx) {
-                     tx.executeSql("UPDATE messages SET message_status='sent' WHERE id="+localMessageId);
-                 }
-                 function error(err) {
-                     console.log("Error processing SQL: " + err.code);
-                 }
-                 function success() {
-                     console.log("successfully updated to sent!");
-                 }
-             }
-         return service;
-     };
-
- })();
- (function() {
-     'use strict';
-     angular.module('chattapp')
-         .factory('timeZoneService', timeZoneService);
-
-     function timeZoneService() {
-         var service = {};
-         service.getTimeZone = function() {
-                 return jstz.determine().name();
-             }
-         return service;
-     };
-
- })();
- (function() {
-    'use strict';
-    angular.module('chattapp')
-            .factory('tostService', tostService);
-
-    function tostService() {
-        return {
-            notify: function(message, position) {
-              if(window.plugins && window.plugins.toast){
-                ///then execute ur code
-                window.plugins.toast.showWithOptions(
-                    {
-                      message: message,
-                      duration: "short",
-                      position: position
-                    }
-                  );
-                }else{
-                // this means on browser simply alert the message
-                alert(message);
-                }
-            }
-        }
-    };
-
 })();
