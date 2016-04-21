@@ -19768,13 +19768,11 @@ angular.module('chattapp')
         self.user_id = userData.data.user_id;
         self.sendMessage = function() {
             if (self.message == '') {
-                console.log('empty');
             } else {
                 var currentTimeStamp = _.now();
                 socketService.roomOpen($stateParams.roomId);
                 sqliteService.saveMessageInDb(self.message, 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId) {
                     if (timeStorage.get('network')) {
-                        console.log('do not fire from here');
                     } else {
                         socketService.room_message(lastInsertId, $stateParams.roomId, self.message, currentTimeStamp);
                     }
