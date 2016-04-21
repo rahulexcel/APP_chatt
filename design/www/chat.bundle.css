@@ -85927,6 +85927,11 @@ img.img-circle.mycl {
     background-image: none !important;
   }
 }
+
+.version.ng-binding {
+  text-align: center;
+  font-size: 17px;
+}
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
@@ -97919,6 +97924,9 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
   background-color: blue;
 }
 
+<<<<<<< HEAD
+
+=======
 .update-pic-btn {
   border-radius: 0px!important;
 }
@@ -97935,7 +97943,7 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
   color: gray!important;
 }
 
-/*==============================*/
+>>>>>>> 798875f42eac7fe82ed8e4df42e3b7d521be2b46
 
 span.satusedit.ion-android-create {
   padding: 0 0 0 8px;

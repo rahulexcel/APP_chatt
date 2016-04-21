@@ -4,7 +4,7 @@
     angular.module('chattapp')
             .controller('chatPageFooterDirectiveController', chatPageFooterDirectiveController);
 
-    function chatPageFooterDirectiveController($rootScope, $state, $timeout, $interval, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, sqliteService, chatpageService) {
+    function chatPageFooterDirectiveController($rootScope, $scope, $ionicPlatform, $state, $timeout, $interval, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, sqliteService, chatpageService) {
         var self = this;
         var userData = timeStorage.get('userData');
         self.image = userData.data.profile_image;
@@ -20,6 +20,7 @@
                     } else {
                         socketService.room_message(lastInsertId, $stateParams.roomId, self.message, currentTimeStamp);
                     }
+
                     var currentMessage = {
                         "id": lastInsertId,
                         "image": userData.data.profile_image,
@@ -29,19 +30,30 @@
                         "name": userData.data.name,
                         "user_id": userData.data.user_id,
                         "message_status": 'post'
-                    }
+                    };
                     $rootScope.$broadcast('displayChatMessages', {data: currentMessage});
                     $ionicScrollDelegate.scrollBottom(false);
                     self.message = '';
                     $interval.cancel(interval);
                     $timeout.cancel(inputChangedPromise);
-                })
+                }, 100);
                 $ionicScrollDelegate.scrollBottom(false);
             }
-        }
+        };
+
+        var focus = 0;
         self.inputUp = function() {
             inputChanged = 0;
-            self.isFocused = true;
+            if ($scope.isFocused == 'focusOut' && focus == 0) {
+                focus++;
+                console.log('sdfsdfsdfsdfsd');
+                $scope.isFocused = false;
+
+            } else {
+                $scope.isFocused = 'foc';
+                focus--;
+            }
+
             i = 0;
             $timeout(function() {
                 $ionicScrollDelegate.scrollBottom(false);

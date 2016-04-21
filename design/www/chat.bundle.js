@@ -4236,603 +4236,11 @@ c){g.push("<a ");h.isDefined(b)&&g.push('target="',b,'" ');g.push('href="',a.rep
 		momentProperties._z = null;
 	}
 
-	loadData({
-		"version": "2016c",
-		"zones": [
-			"Africa/Abidjan|GMT|0|0||48e5",
-			"Africa/Khartoum|EAT|-30|0||51e5",
-			"Africa/Algiers|CET|-10|0||26e5",
-			"Africa/Lagos|WAT|-10|0||17e6",
-			"Africa/Maputo|CAT|-20|0||26e5",
-			"Africa/Cairo|EET EEST|-20 -30|010101010|1Cby0 Fb0 c10 8n0 8Nd0 gL0 e10 mn0|15e6",
-			"Africa/Casablanca|WET WEST|0 -10|01010101010101010101010101010101010101010|1Cco0 Db0 1zd0 Lz0 1Nf0 wM0 co0 go0 1o00 s00 dA0 vc0 11A0 A00 e00 y00 11A0 uM0 e00 Dc0 11A0 s00 e00 IM0 WM0 mo0 gM0 LA0 WM0 jA0 e00 Rc0 11A0 e00 e00 U00 11A0 8o0 e00 11A0|32e5",
-			"Europe/Paris|CET CEST|-10 -20|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|11e6",
-			"Africa/Johannesburg|SAST|-20|0||84e5",
-			"Africa/Tripoli|EET CET CEST|-20 -10 -20|0120|1IlA0 TA0 1o00|11e5",
-			"Africa/Windhoek|WAST WAT|-20 -10|01010101010101010101010|1C1c0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 11B0|32e4",
-			"America/Adak|HST HDT|a0 90|01010101010101010101010|1BR00 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|326",
-			"America/Anchorage|AKST AKDT|90 80|01010101010101010101010|1BQX0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|30e4",
-			"America/Santo_Domingo|AST|40|0||29e5",
-			"America/Araguaina|BRT BRST|30 20|010|1IdD0 Lz0|14e4",
-			"America/Argentina/Buenos_Aires|ART|30|0|",
-			"America/Asuncion|PYST PYT|30 40|01010101010101010101010|1C430 1a10 1fz0 1a10 1fz0 1cN0 17b0 1ip0 17b0 1ip0 17b0 1ip0 19X0 1fB0 19X0 1fB0 19X0 1ip0 17b0 1ip0 17b0 1ip0|28e5",
-			"America/Panama|EST|50|0||15e5",
-			"America/Bahia|BRT BRST|30 20|010|1FJf0 Rb0|27e5",
-			"America/Bahia_Banderas|MST CDT CST|70 50 60|01212121212121212121212|1C1l0 1nW0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0|84e3",
-			"America/Fortaleza|BRT|30|0||34e5",
-			"America/Managua|CST|60|0||22e5",
-			"America/Manaus|AMT|40|0||19e5",
-			"America/Bogota|COT|50|0||90e5",
-			"America/Denver|MST MDT|70 60|01010101010101010101010|1BQV0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|26e5",
-			"America/Campo_Grande|AMST AMT|30 40|01010101010101010101010|1BIr0 1zd0 On0 1zd0 Rb0 1zd0 Lz0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 On0 1zd0 On0 1C10 Lz0 1C10 Lz0 1C10|77e4",
-			"America/Cancun|CST CDT EST|60 50 50|010101010102|1C1k0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 Dd0|63e4",
-			"America/Caracas|VET|4u|0||29e5",
-			"America/Cayenne|GFT|30|0||58e3",
-			"America/Chicago|CST CDT|60 50|01010101010101010101010|1BQU0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|92e5",
-			"America/Chihuahua|MST MDT|70 60|01010101010101010101010|1C1l0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0|81e4",
-			"America/Phoenix|MST|70|0||42e5",
-			"America/Los_Angeles|PST PDT|80 70|01010101010101010101010|1BQW0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|15e6",
-			"America/New_York|EST EDT|50 40|01010101010101010101010|1BQT0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|21e6",
-			"America/Rio_Branco|AMT ACT|40 50|01|1KLE0|31e4",
-			"America/Fort_Nelson|PST PDT MST|80 70 70|010101010102|1BQW0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0|39e2",
-			"America/Halifax|AST ADT|40 30|01010101010101010101010|1BQS0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|39e4",
-			"America/Godthab|WGT WGST|30 20|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|17e3",
-			"America/Goose_Bay|AST ADT|40 30|01010101010101010101010|1BQQ1 1zb0 Op0 1zcX Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|76e2",
-			"America/Grand_Turk|EST EDT AST|50 40 40|0101010101012|1BQT0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|37e2",
-			"America/Guayaquil|ECT|50|0||27e5",
-			"America/Guyana|GYT|40|0||80e4",
-			"America/Havana|CST CDT|50 40|01010101010101010101010|1BQR0 1wo0 U00 1zc0 U00 1qM0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0|21e5",
-			"America/La_Paz|BOT|40|0||19e5",
-			"America/Lima|PET|50|0||11e6",
-			"America/Mexico_City|CST CDT|60 50|01010101010101010101010|1C1k0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0|20e6",
-			"America/Metlakatla|PST AKST AKDT|80 90 80|012121212121|1PAa0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|14e2",
-			"America/Miquelon|PMST PMDT|30 20|01010101010101010101010|1BQR0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|61e2",
-			"America/Montevideo|UYST UYT|20 30|010101010101|1BQQ0 1ld0 14n0 1ld0 14n0 1o10 11z0 1o10 11z0 1o10 11z0|17e5",
-			"America/Noronha|FNT|20|0||30e2",
-			"America/North_Dakota/Beulah|MST MDT CST CDT|70 60 60 50|01232323232323232323232|1BQV0 1zb0 Oo0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0",
-			"America/Paramaribo|SRT|30|0||24e4",
-			"America/Port-au-Prince|EST EDT|50 40|010101010|1GI70 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|23e5",
-			"America/Santiago|CLST CLT|30 40|010101010101010101010|1C1f0 1fB0 1nX0 G10 1EL0 Op0 1zb0 Rd0 1wn0 Rd0 46n0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0|62e5",
-			"America/Sao_Paulo|BRST BRT|20 30|01010101010101010101010|1BIq0 1zd0 On0 1zd0 Rb0 1zd0 Lz0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 On0 1zd0 On0 1C10 Lz0 1C10 Lz0 1C10|20e6",
-			"America/Scoresbysund|EGT EGST|10 0|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|452",
-			"America/St_Johns|NST NDT|3u 2u|01010101010101010101010|1BQPv 1zb0 Op0 1zcX Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|11e4",
-			"Antarctica/Casey|CAST AWST|-b0 -80|0101|1BN30 40P0 KL0|10",
-			"Antarctica/Davis|DAVT DAVT|-50 -70|0101|1BPw0 3Wn0 KN0|70",
-			"Antarctica/DumontDUrville|DDUT|-a0|0||80",
-			"Antarctica/Macquarie|AEDT MIST|-b0 -b0|01|1C140|1",
-			"Antarctica/Mawson|MAWT|-50|0||60",
-			"Pacific/Auckland|NZDT NZST|-d0 -c0|01010101010101010101010|1C120 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00|14e5",
-			"Antarctica/Rothera|ROTT|30|0||130",
-			"Antarctica/Syowa|SYOT|-30|0||20",
-			"Antarctica/Troll|UTC CEST|0 -20|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|40",
-			"Antarctica/Vostok|VOST|-60|0||25",
-			"Asia/Baghdad|AST|-30|0||66e5",
-			"Asia/Almaty|ALMT|-60|0||15e5",
-			"Asia/Amman|EET EEST|-20 -30|010101010101010101010|1BVy0 1qM0 11A0 1o00 11A0 4bX0 Dd0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0|25e5",
-			"Asia/Anadyr|ANAT ANAST ANAT|-c0 -c0 -b0|0120|1BWe0 1qN0 WM0|13e3",
-			"Asia/Aqtobe|AQTT|-50|0||27e4",
-			"Asia/Ashgabat|TMT|-50|0||41e4",
-			"Asia/Baku|AZT AZST|-40 -50|0101010101010|1BWo0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00|27e5",
-			"Asia/Bangkok|ICT|-70|0||15e6",
-			"Asia/Barnaul|+06 +07|-60 -70|010101|1BWk0 1qM0 WM0 8Hz0 3rd0",
-			"Asia/Beirut|EET EEST|-20 -30|01010101010101010101010|1BWm0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0|22e5",
-			"Asia/Bishkek|KGT|-60|0||87e4",
-			"Asia/Brunei|BNT|-80|0||42e4",
-			"Asia/Kolkata|IST|-5u|0||15e6",
-			"Asia/Chita|YAKT YAKST YAKT IRKT|-90 -a0 -a0 -80|010230|1BWh0 1qM0 WM0 8Hz0 3re0|33e4",
-			"Asia/Choibalsan|CHOT CHOST|-80 -90|0101010101010|1O8G0 1cJ0 1cP0 1cJ0 1cP0 1fx0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0|38e3",
-			"Asia/Shanghai|CST|-80|0||23e6",
-			"Asia/Dhaka|BDT|-60|0||16e6",
-			"Asia/Damascus|EET EEST|-20 -30|01010101010101010101010|1C0m0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0|26e5",
-			"Asia/Dili|TLT|-90|0||19e4",
-			"Asia/Dubai|GST|-40|0||39e5",
-			"Asia/Dushanbe|TJT|-50|0||76e4",
-			"Asia/Gaza|EET EEST|-20 -30|01010101010101010101010|1BVW1 SKX 1xd1 MKX 1AN0 1a00 1fA0 1cL0 1cN0 1nX0 1210 1nz0 1220 1ny0 1220 1qm0 1220 1ny0 1220 1ny0 1220 1ny0|18e5",
-			"Asia/Hebron|EET EEST|-20 -30|0101010101010101010101010|1BVy0 Tb0 1xd1 MKX bB0 cn0 1cN0 1a00 1fA0 1cL0 1cN0 1nX0 1210 1nz0 1220 1ny0 1220 1qm0 1220 1ny0 1220 1ny0 1220 1ny0|25e4",
-			"Asia/Hong_Kong|HKT|-80|0||73e5",
-			"Asia/Hovd|HOVT HOVST|-70 -80|0101010101010|1O8H0 1cJ0 1cP0 1cJ0 1cP0 1fx0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0|81e3",
-			"Asia/Irkutsk|IRKT IRKST IRKT|-80 -90 -90|01020|1BWi0 1qM0 WM0 8Hz0|60e4",
-			"Europe/Istanbul|EET EEST|-20 -30|01010101010101010101010|1BWp0 1qM0 Xc0 1qo0 WM0 1qM0 11A0 1o00 1200 1nA0 11A0 1tA0 U00 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|13e6",
-			"Asia/Jakarta|WIB|-70|0||31e6",
-			"Asia/Jayapura|WIT|-90|0||26e4",
-			"Asia/Jerusalem|IST IDT|-20 -30|01010101010101010101010|1BVA0 17X0 1kp0 1dz0 1c10 1aL0 1eN0 1oL0 10N0 1oL0 10N0 1oL0 10N0 1rz0 W10 1rz0 W10 1rz0 10N0 1oL0 10N0 1oL0|81e4",
-			"Asia/Kabul|AFT|-4u|0||46e5",
-			"Asia/Kamchatka|PETT PETST PETT|-c0 -c0 -b0|0120|1BWe0 1qN0 WM0|18e4",
-			"Asia/Karachi|PKT|-50|0||24e6",
-			"Asia/Urumqi|XJT|-60|0||32e5",
-			"Asia/Kathmandu|NPT|-5J|0||12e5",
-			"Asia/Khandyga|VLAT VLAST VLAT YAKT YAKT|-a0 -b0 -b0 -a0 -90|010234|1BWg0 1qM0 WM0 17V0 7zD0|66e2",
-			"Asia/Krasnoyarsk|KRAT KRAST KRAT|-70 -80 -80|01020|1BWj0 1qM0 WM0 8Hz0|10e5",
-			"Asia/Kuala_Lumpur|MYT|-80|0||71e5",
-			"Asia/Magadan|MAGT MAGST MAGT MAGT|-b0 -c0 -c0 -a0|01023|1BWf0 1qM0 WM0 8Hz0|95e3",
-			"Asia/Makassar|WITA|-80|0||15e5",
-			"Asia/Manila|PHT|-80|0||24e6",
-			"Europe/Athens|EET EEST|-20 -30|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|35e5",
-			"Asia/Novokuznetsk|KRAT NOVST NOVT NOVT|-70 -70 -60 -70|01230|1BWj0 1qN0 WM0 8Hz0|55e4",
-			"Asia/Novosibirsk|NOVT NOVST NOVT|-60 -70 -70|01020|1BWk0 1qM0 WM0 8Hz0|15e5",
-			"Asia/Omsk|OMST OMSST OMST|-60 -70 -70|01020|1BWk0 1qM0 WM0 8Hz0|12e5",
-			"Asia/Oral|ORAT|-50|0||27e4",
-			"Asia/Pyongyang|KST KST|-90 -8u|01|1P4D0|29e5",
-			"Asia/Qyzylorda|QYZT|-60|0||73e4",
-			"Asia/Rangoon|MMT|-6u|0||48e5",
-			"Asia/Sakhalin|SAKT SAKST SAKT|-a0 -b0 -b0|010202|1BWg0 1qM0 WM0 8Hz0 3rd0|58e4",
-			"Asia/Tashkent|UZT|-50|0||23e5",
-			"Asia/Seoul|KST|-90|0||23e6",
-			"Asia/Singapore|SGT|-80|0||56e5",
-			"Asia/Srednekolymsk|MAGT MAGST MAGT SRET|-b0 -c0 -c0 -b0|01023|1BWf0 1qM0 WM0 8Hz0|35e2",
-			"Asia/Tbilisi|GET|-40|0||11e5",
-			"Asia/Tehran|IRST IRDT|-3u -4u|01010101010101010101010|1BTUu 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0|14e6",
-			"Asia/Thimphu|BTT|-60|0||79e3",
-			"Asia/Tokyo|JST|-90|0||38e6",
-			"Asia/Ulaanbaatar|ULAT ULAST|-80 -90|0101010101010|1O8G0 1cJ0 1cP0 1cJ0 1cP0 1fx0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0|12e5",
-			"Asia/Ust-Nera|MAGT MAGST MAGT VLAT VLAT|-b0 -c0 -c0 -b0 -a0|010234|1BWf0 1qM0 WM0 17V0 7zD0|65e2",
-			"Asia/Vladivostok|VLAT VLAST VLAT|-a0 -b0 -b0|01020|1BWg0 1qM0 WM0 8Hz0|60e4",
-			"Asia/Yakutsk|YAKT YAKST YAKT|-90 -a0 -a0|01020|1BWh0 1qM0 WM0 8Hz0|28e4",
-			"Asia/Yekaterinburg|YEKT YEKST YEKT|-50 -60 -60|01020|1BWl0 1qM0 WM0 8Hz0|14e5",
-			"Asia/Yerevan|AMT AMST|-40 -50|01010|1BWm0 1qM0 WM0 1qM0|13e5",
-			"Atlantic/Azores|AZOT AZOST|10 0|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|25e4",
-			"Europe/Lisbon|WET WEST|0 -10|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|27e5",
-			"Atlantic/Cape_Verde|CVT|10|0||50e4",
-			"Atlantic/South_Georgia|GST|20|0||30",
-			"Atlantic/Stanley|FKST FKT|30 40|010|1C6R0 U10|21e2",
-			"Australia/Sydney|AEDT AEST|-b0 -a0|01010101010101010101010|1C140 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0|40e5",
-			"Australia/Adelaide|ACDT ACST|-au -9u|01010101010101010101010|1C14u 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0|11e5",
-			"Australia/Brisbane|AEST|-a0|0||20e5",
-			"Australia/Darwin|ACST|-9u|0||12e4",
-			"Australia/Eucla|ACWST|-8J|0||368",
-			"Australia/Lord_Howe|LHDT LHST|-b0 -au|01010101010101010101010|1C130 1cMu 1cLu 1cMu 1cLu 1fAu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1fAu 1cLu 1cMu 1cLu 1cMu|347",
-			"Australia/Perth|AWST|-80|0||18e5",
-			"Pacific/Easter|EASST EAST|50 60|010101010101010101010|1C1f0 1fB0 1nX0 G10 1EL0 Op0 1zb0 Rd0 1wn0 Rd0 46n0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0|30e2",
-			"Europe/Dublin|GMT IST|0 -10|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|12e5",
-			"Etc/GMT+1|GMT+1|10|0|",
-			"Etc/GMT+10|GMT+10|a0|0|",
-			"Etc/GMT+11|GMT+11|b0|0|",
-			"Etc/GMT+12|GMT+12|c0|0|",
-			"Etc/GMT+2|GMT+2|20|0|",
-			"Etc/GMT+3|GMT+3|30|0|",
-			"Etc/GMT+4|GMT+4|40|0|",
-			"Etc/GMT+5|GMT+5|50|0|",
-			"Etc/GMT+6|GMT+6|60|0|",
-			"Etc/GMT+7|GMT+7|70|0|",
-			"Etc/GMT+8|GMT+8|80|0|",
-			"Etc/GMT+9|GMT+9|90|0|",
-			"Etc/GMT-1|GMT-1|-10|0|",
-			"Etc/GMT-10|GMT-10|-a0|0|",
-			"Etc/GMT-11|GMT-11|-b0|0|",
-			"Etc/GMT-12|GMT-12|-c0|0|",
-			"Etc/GMT-13|GMT-13|-d0|0|",
-			"Etc/GMT-14|GMT-14|-e0|0|",
-			"Etc/GMT-2|GMT-2|-20|0|",
-			"Etc/GMT-3|GMT-3|-30|0|",
-			"Etc/GMT-4|GMT-4|-40|0|",
-			"Etc/GMT-5|GMT-5|-50|0|",
-			"Etc/GMT-6|GMT-6|-60|0|",
-			"Etc/GMT-7|GMT-7|-70|0|",
-			"Etc/GMT-8|GMT-8|-80|0|",
-			"Etc/GMT-9|GMT-9|-90|0|",
-			"Etc/UCT|UCT|0|0|",
-			"Etc/UTC|UTC|0|0|",
-			"Europe/Astrakhan|+03 +04|-30 -40|010101|1BWn0 1qM0 WM0 8Hz0 3rd0",
-			"Europe/London|GMT BST|0 -10|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|10e6",
-			"Europe/Chisinau|EET EEST|-20 -30|01010101010101010101010|1BWo0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|67e4",
-			"Europe/Kaliningrad|EET EEST FET|-20 -30 -30|01020|1BWo0 1qM0 WM0 8Hz0|44e4",
-			"Europe/Minsk|EET EEST FET MSK|-20 -30 -30 -30|01023|1BWo0 1qM0 WM0 8Hy0|19e5",
-			"Europe/Moscow|MSK MSD MSK|-30 -40 -40|01020|1BWn0 1qM0 WM0 8Hz0|16e6",
-			"Europe/Samara|SAMT SAMST SAMT|-40 -40 -30|0120|1BWm0 1qN0 WM0|12e5",
-			"Europe/Simferopol|EET EEST MSK MSK|-20 -30 -40 -30|01010101023|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11z0 1nW0|33e4",
-			"Pacific/Honolulu|HST|a0|0||37e4",
-			"Indian/Chagos|IOT|-60|0||30e2",
-			"Indian/Christmas|CXT|-70|0||21e2",
-			"Indian/Cocos|CCT|-6u|0||596",
-			"Indian/Kerguelen|TFT|-50|0||130",
-			"Indian/Mahe|SCT|-40|0||79e3",
-			"Indian/Maldives|MVT|-50|0||35e4",
-			"Indian/Mauritius|MUT|-40|0||15e4",
-			"Indian/Reunion|RET|-40|0||84e4",
-			"Pacific/Majuro|MHT|-c0|0||28e3",
-			"MET|MET MEST|-10 -20|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00",
-			"Pacific/Chatham|CHADT CHAST|-dJ -cJ|01010101010101010101010|1C120 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00|600",
-			"Pacific/Apia|SST SDT WSDT WSST|b0 a0 -e0 -d0|01012323232323232323232|1Dbn0 1ff0 1a00 CI0 AQ0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00|37e3",
-			"Pacific/Bougainville|PGT BST|-a0 -b0|01|1NwE0|18e4",
-			"Pacific/Chuuk|CHUT|-a0|0||49e3",
-			"Pacific/Efate|VUT|-b0|0||66e3",
-			"Pacific/Enderbury|PHOT|-d0|0||1",
-			"Pacific/Fakaofo|TKT TKT|b0 -d0|01|1Gfn0|483",
-			"Pacific/Fiji|FJST FJT|-d0 -c0|01010101010101010101010|1BWe0 1o00 Rc0 1wo0 Ao0 1Nc0 Ao0 1Q00 xz0 1SN0 uM0 1SM0 uM0 1VA0 s00 1VA0 uM0 1SM0 uM0 1SM0 uM0 1SM0|88e4",
-			"Pacific/Funafuti|TVT|-c0|0||45e2",
-			"Pacific/Galapagos|GALT|60|0||25e3",
-			"Pacific/Gambier|GAMT|90|0||125",
-			"Pacific/Guadalcanal|SBT|-b0|0||11e4",
-			"Pacific/Guam|ChST|-a0|0||17e4",
-			"Pacific/Kiritimati|LINT|-e0|0||51e2",
-			"Pacific/Kosrae|KOST|-b0|0||66e2",
-			"Pacific/Marquesas|MART|9u|0||86e2",
-			"Pacific/Pago_Pago|SST|b0|0||37e2",
-			"Pacific/Nauru|NRT|-c0|0||10e3",
-			"Pacific/Niue|NUT|b0|0||12e2",
-			"Pacific/Norfolk|NFT NFT|-bu -b0|01|1PoCu|25e4",
-			"Pacific/Noumea|NCT|-b0|0||98e3",
-			"Pacific/Palau|PWT|-90|0||21e3",
-			"Pacific/Pitcairn|PST|80|0||56",
-			"Pacific/Pohnpei|PONT|-b0|0||34e3",
-			"Pacific/Port_Moresby|PGT|-a0|0||25e4",
-			"Pacific/Rarotonga|CKT|a0|0||13e3",
-			"Pacific/Tahiti|TAHT|a0|0||18e4",
-			"Pacific/Tarawa|GILT|-c0|0||29e3",
-			"Pacific/Tongatapu|TOT|-d0|0||75e3",
-			"Pacific/Wake|WAKT|-c0|0||16e3",
-			"Pacific/Wallis|WFT|-c0|0||94"
-		],
-		"links": [
-			"Africa/Abidjan|Africa/Accra",
-			"Africa/Abidjan|Africa/Bamako",
-			"Africa/Abidjan|Africa/Banjul",
-			"Africa/Abidjan|Africa/Bissau",
-			"Africa/Abidjan|Africa/Conakry",
-			"Africa/Abidjan|Africa/Dakar",
-			"Africa/Abidjan|Africa/Freetown",
-			"Africa/Abidjan|Africa/Lome",
-			"Africa/Abidjan|Africa/Monrovia",
-			"Africa/Abidjan|Africa/Nouakchott",
-			"Africa/Abidjan|Africa/Ouagadougou",
-			"Africa/Abidjan|Africa/Sao_Tome",
-			"Africa/Abidjan|Africa/Timbuktu",
-			"Africa/Abidjan|America/Danmarkshavn",
-			"Africa/Abidjan|Atlantic/Reykjavik",
-			"Africa/Abidjan|Atlantic/St_Helena",
-			"Africa/Abidjan|Etc/GMT",
-			"Africa/Abidjan|Etc/GMT+0",
-			"Africa/Abidjan|Etc/GMT-0",
-			"Africa/Abidjan|Etc/GMT0",
-			"Africa/Abidjan|Etc/Greenwich",
-			"Africa/Abidjan|GMT",
-			"Africa/Abidjan|GMT+0",
-			"Africa/Abidjan|GMT-0",
-			"Africa/Abidjan|GMT0",
-			"Africa/Abidjan|Greenwich",
-			"Africa/Abidjan|Iceland",
-			"Africa/Algiers|Africa/Tunis",
-			"Africa/Cairo|Egypt",
-			"Africa/Casablanca|Africa/El_Aaiun",
-			"Africa/Johannesburg|Africa/Maseru",
-			"Africa/Johannesburg|Africa/Mbabane",
-			"Africa/Khartoum|Africa/Addis_Ababa",
-			"Africa/Khartoum|Africa/Asmara",
-			"Africa/Khartoum|Africa/Asmera",
-			"Africa/Khartoum|Africa/Dar_es_Salaam",
-			"Africa/Khartoum|Africa/Djibouti",
-			"Africa/Khartoum|Africa/Juba",
-			"Africa/Khartoum|Africa/Kampala",
-			"Africa/Khartoum|Africa/Mogadishu",
-			"Africa/Khartoum|Africa/Nairobi",
-			"Africa/Khartoum|Indian/Antananarivo",
-			"Africa/Khartoum|Indian/Comoro",
-			"Africa/Khartoum|Indian/Mayotte",
-			"Africa/Lagos|Africa/Bangui",
-			"Africa/Lagos|Africa/Brazzaville",
-			"Africa/Lagos|Africa/Douala",
-			"Africa/Lagos|Africa/Kinshasa",
-			"Africa/Lagos|Africa/Libreville",
-			"Africa/Lagos|Africa/Luanda",
-			"Africa/Lagos|Africa/Malabo",
-			"Africa/Lagos|Africa/Ndjamena",
-			"Africa/Lagos|Africa/Niamey",
-			"Africa/Lagos|Africa/Porto-Novo",
-			"Africa/Maputo|Africa/Blantyre",
-			"Africa/Maputo|Africa/Bujumbura",
-			"Africa/Maputo|Africa/Gaborone",
-			"Africa/Maputo|Africa/Harare",
-			"Africa/Maputo|Africa/Kigali",
-			"Africa/Maputo|Africa/Lubumbashi",
-			"Africa/Maputo|Africa/Lusaka",
-			"Africa/Tripoli|Libya",
-			"America/Adak|America/Atka",
-			"America/Adak|US/Aleutian",
-			"America/Anchorage|America/Juneau",
-			"America/Anchorage|America/Nome",
-			"America/Anchorage|America/Sitka",
-			"America/Anchorage|America/Yakutat",
-			"America/Anchorage|US/Alaska",
-			"America/Argentina/Buenos_Aires|America/Argentina/Catamarca",
-			"America/Argentina/Buenos_Aires|America/Argentina/ComodRivadavia",
-			"America/Argentina/Buenos_Aires|America/Argentina/Cordoba",
-			"America/Argentina/Buenos_Aires|America/Argentina/Jujuy",
-			"America/Argentina/Buenos_Aires|America/Argentina/La_Rioja",
-			"America/Argentina/Buenos_Aires|America/Argentina/Mendoza",
-			"America/Argentina/Buenos_Aires|America/Argentina/Rio_Gallegos",
-			"America/Argentina/Buenos_Aires|America/Argentina/Salta",
-			"America/Argentina/Buenos_Aires|America/Argentina/San_Juan",
-			"America/Argentina/Buenos_Aires|America/Argentina/San_Luis",
-			"America/Argentina/Buenos_Aires|America/Argentina/Tucuman",
-			"America/Argentina/Buenos_Aires|America/Argentina/Ushuaia",
-			"America/Argentina/Buenos_Aires|America/Buenos_Aires",
-			"America/Argentina/Buenos_Aires|America/Catamarca",
-			"America/Argentina/Buenos_Aires|America/Cordoba",
-			"America/Argentina/Buenos_Aires|America/Jujuy",
-			"America/Argentina/Buenos_Aires|America/Mendoza",
-			"America/Argentina/Buenos_Aires|America/Rosario",
-			"America/Campo_Grande|America/Cuiaba",
-			"America/Chicago|America/Indiana/Knox",
-			"America/Chicago|America/Indiana/Tell_City",
-			"America/Chicago|America/Knox_IN",
-			"America/Chicago|America/Matamoros",
-			"America/Chicago|America/Menominee",
-			"America/Chicago|America/North_Dakota/Center",
-			"America/Chicago|America/North_Dakota/New_Salem",
-			"America/Chicago|America/Rainy_River",
-			"America/Chicago|America/Rankin_Inlet",
-			"America/Chicago|America/Resolute",
-			"America/Chicago|America/Winnipeg",
-			"America/Chicago|CST6CDT",
-			"America/Chicago|Canada/Central",
-			"America/Chicago|US/Central",
-			"America/Chicago|US/Indiana-Starke",
-			"America/Chihuahua|America/Mazatlan",
-			"America/Chihuahua|Mexico/BajaSur",
-			"America/Denver|America/Boise",
-			"America/Denver|America/Cambridge_Bay",
-			"America/Denver|America/Edmonton",
-			"America/Denver|America/Inuvik",
-			"America/Denver|America/Ojinaga",
-			"America/Denver|America/Shiprock",
-			"America/Denver|America/Yellowknife",
-			"America/Denver|Canada/Mountain",
-			"America/Denver|MST7MDT",
-			"America/Denver|Navajo",
-			"America/Denver|US/Mountain",
-			"America/Fortaleza|America/Belem",
-			"America/Fortaleza|America/Maceio",
-			"America/Fortaleza|America/Recife",
-			"America/Fortaleza|America/Santarem",
-			"America/Halifax|America/Glace_Bay",
-			"America/Halifax|America/Moncton",
-			"America/Halifax|America/Thule",
-			"America/Halifax|Atlantic/Bermuda",
-			"America/Halifax|Canada/Atlantic",
-			"America/Havana|Cuba",
-			"America/Los_Angeles|America/Dawson",
-			"America/Los_Angeles|America/Ensenada",
-			"America/Los_Angeles|America/Santa_Isabel",
-			"America/Los_Angeles|America/Tijuana",
-			"America/Los_Angeles|America/Vancouver",
-			"America/Los_Angeles|America/Whitehorse",
-			"America/Los_Angeles|Canada/Pacific",
-			"America/Los_Angeles|Canada/Yukon",
-			"America/Los_Angeles|Mexico/BajaNorte",
-			"America/Los_Angeles|PST8PDT",
-			"America/Los_Angeles|US/Pacific",
-			"America/Los_Angeles|US/Pacific-New",
-			"America/Managua|America/Belize",
-			"America/Managua|America/Costa_Rica",
-			"America/Managua|America/El_Salvador",
-			"America/Managua|America/Guatemala",
-			"America/Managua|America/Regina",
-			"America/Managua|America/Swift_Current",
-			"America/Managua|America/Tegucigalpa",
-			"America/Managua|Canada/East-Saskatchewan",
-			"America/Managua|Canada/Saskatchewan",
-			"America/Manaus|America/Boa_Vista",
-			"America/Manaus|America/Porto_Velho",
-			"America/Manaus|Brazil/West",
-			"America/Mexico_City|America/Merida",
-			"America/Mexico_City|America/Monterrey",
-			"America/Mexico_City|Mexico/General",
-			"America/New_York|America/Detroit",
-			"America/New_York|America/Fort_Wayne",
-			"America/New_York|America/Indiana/Indianapolis",
-			"America/New_York|America/Indiana/Marengo",
-			"America/New_York|America/Indiana/Petersburg",
-			"America/New_York|America/Indiana/Vevay",
-			"America/New_York|America/Indiana/Vincennes",
-			"America/New_York|America/Indiana/Winamac",
-			"America/New_York|America/Indianapolis",
-			"America/New_York|America/Iqaluit",
-			"America/New_York|America/Kentucky/Louisville",
-			"America/New_York|America/Kentucky/Monticello",
-			"America/New_York|America/Louisville",
-			"America/New_York|America/Montreal",
-			"America/New_York|America/Nassau",
-			"America/New_York|America/Nipigon",
-			"America/New_York|America/Pangnirtung",
-			"America/New_York|America/Thunder_Bay",
-			"America/New_York|America/Toronto",
-			"America/New_York|Canada/Eastern",
-			"America/New_York|EST5EDT",
-			"America/New_York|US/East-Indiana",
-			"America/New_York|US/Eastern",
-			"America/New_York|US/Michigan",
-			"America/Noronha|Brazil/DeNoronha",
-			"America/Panama|America/Atikokan",
-			"America/Panama|America/Cayman",
-			"America/Panama|America/Coral_Harbour",
-			"America/Panama|America/Jamaica",
-			"America/Panama|EST",
-			"America/Panama|Jamaica",
-			"America/Phoenix|America/Creston",
-			"America/Phoenix|America/Dawson_Creek",
-			"America/Phoenix|America/Hermosillo",
-			"America/Phoenix|MST",
-			"America/Phoenix|US/Arizona",
-			"America/Rio_Branco|America/Eirunepe",
-			"America/Rio_Branco|America/Porto_Acre",
-			"America/Rio_Branco|Brazil/Acre",
-			"America/Santiago|Antarctica/Palmer",
-			"America/Santiago|Chile/Continental",
-			"America/Santo_Domingo|America/Anguilla",
-			"America/Santo_Domingo|America/Antigua",
-			"America/Santo_Domingo|America/Aruba",
-			"America/Santo_Domingo|America/Barbados",
-			"America/Santo_Domingo|America/Blanc-Sablon",
-			"America/Santo_Domingo|America/Curacao",
-			"America/Santo_Domingo|America/Dominica",
-			"America/Santo_Domingo|America/Grenada",
-			"America/Santo_Domingo|America/Guadeloupe",
-			"America/Santo_Domingo|America/Kralendijk",
-			"America/Santo_Domingo|America/Lower_Princes",
-			"America/Santo_Domingo|America/Marigot",
-			"America/Santo_Domingo|America/Martinique",
-			"America/Santo_Domingo|America/Montserrat",
-			"America/Santo_Domingo|America/Port_of_Spain",
-			"America/Santo_Domingo|America/Puerto_Rico",
-			"America/Santo_Domingo|America/St_Barthelemy",
-			"America/Santo_Domingo|America/St_Kitts",
-			"America/Santo_Domingo|America/St_Lucia",
-			"America/Santo_Domingo|America/St_Thomas",
-			"America/Santo_Domingo|America/St_Vincent",
-			"America/Santo_Domingo|America/Tortola",
-			"America/Santo_Domingo|America/Virgin",
-			"America/Sao_Paulo|Brazil/East",
-			"America/St_Johns|Canada/Newfoundland",
-			"Asia/Aqtobe|Asia/Aqtau",
-			"Asia/Ashgabat|Asia/Ashkhabad",
-			"Asia/Baghdad|Asia/Aden",
-			"Asia/Baghdad|Asia/Bahrain",
-			"Asia/Baghdad|Asia/Kuwait",
-			"Asia/Baghdad|Asia/Qatar",
-			"Asia/Baghdad|Asia/Riyadh",
-			"Asia/Bangkok|Asia/Ho_Chi_Minh",
-			"Asia/Bangkok|Asia/Phnom_Penh",
-			"Asia/Bangkok|Asia/Saigon",
-			"Asia/Bangkok|Asia/Vientiane",
-			"Asia/Dhaka|Asia/Dacca",
-			"Asia/Dubai|Asia/Muscat",
-			"Asia/Hong_Kong|Hongkong",
-			"Asia/Jakarta|Asia/Pontianak",
-			"Asia/Jerusalem|Asia/Tel_Aviv",
-			"Asia/Jerusalem|Israel",
-			"Asia/Kathmandu|Asia/Katmandu",
-			"Asia/Kolkata|Asia/Calcutta",
-			"Asia/Kolkata|Asia/Colombo",
-			"Asia/Kuala_Lumpur|Asia/Kuching",
-			"Asia/Makassar|Asia/Ujung_Pandang",
-			"Asia/Seoul|ROK",
-			"Asia/Shanghai|Asia/Chongqing",
-			"Asia/Shanghai|Asia/Chungking",
-			"Asia/Shanghai|Asia/Harbin",
-			"Asia/Shanghai|Asia/Macao",
-			"Asia/Shanghai|Asia/Macau",
-			"Asia/Shanghai|Asia/Taipei",
-			"Asia/Shanghai|PRC",
-			"Asia/Shanghai|ROC",
-			"Asia/Singapore|Singapore",
-			"Asia/Tashkent|Asia/Samarkand",
-			"Asia/Tehran|Iran",
-			"Asia/Thimphu|Asia/Thimbu",
-			"Asia/Tokyo|Japan",
-			"Asia/Ulaanbaatar|Asia/Ulan_Bator",
-			"Asia/Urumqi|Asia/Kashgar",
-			"Australia/Adelaide|Australia/Broken_Hill",
-			"Australia/Adelaide|Australia/South",
-			"Australia/Adelaide|Australia/Yancowinna",
-			"Australia/Brisbane|Australia/Lindeman",
-			"Australia/Brisbane|Australia/Queensland",
-			"Australia/Darwin|Australia/North",
-			"Australia/Lord_Howe|Australia/LHI",
-			"Australia/Perth|Australia/West",
-			"Australia/Sydney|Australia/ACT",
-			"Australia/Sydney|Australia/Canberra",
-			"Australia/Sydney|Australia/Currie",
-			"Australia/Sydney|Australia/Hobart",
-			"Australia/Sydney|Australia/Melbourne",
-			"Australia/Sydney|Australia/NSW",
-			"Australia/Sydney|Australia/Tasmania",
-			"Australia/Sydney|Australia/Victoria",
-			"Etc/UCT|UCT",
-			"Etc/UTC|Etc/Universal",
-			"Etc/UTC|Etc/Zulu",
-			"Etc/UTC|UTC",
-			"Etc/UTC|Universal",
-			"Etc/UTC|Zulu",
-			"Europe/Astrakhan|Europe/Ulyanovsk",
-			"Europe/Athens|Asia/Nicosia",
-			"Europe/Athens|EET",
-			"Europe/Athens|Europe/Bucharest",
-			"Europe/Athens|Europe/Helsinki",
-			"Europe/Athens|Europe/Kiev",
-			"Europe/Athens|Europe/Mariehamn",
-			"Europe/Athens|Europe/Nicosia",
-			"Europe/Athens|Europe/Riga",
-			"Europe/Athens|Europe/Sofia",
-			"Europe/Athens|Europe/Tallinn",
-			"Europe/Athens|Europe/Uzhgorod",
-			"Europe/Athens|Europe/Vilnius",
-			"Europe/Athens|Europe/Zaporozhye",
-			"Europe/Chisinau|Europe/Tiraspol",
-			"Europe/Dublin|Eire",
-			"Europe/Istanbul|Asia/Istanbul",
-			"Europe/Istanbul|Turkey",
-			"Europe/Lisbon|Atlantic/Canary",
-			"Europe/Lisbon|Atlantic/Faeroe",
-			"Europe/Lisbon|Atlantic/Faroe",
-			"Europe/Lisbon|Atlantic/Madeira",
-			"Europe/Lisbon|Portugal",
-			"Europe/Lisbon|WET",
-			"Europe/London|Europe/Belfast",
-			"Europe/London|Europe/Guernsey",
-			"Europe/London|Europe/Isle_of_Man",
-			"Europe/London|Europe/Jersey",
-			"Europe/London|GB",
-			"Europe/London|GB-Eire",
-			"Europe/Moscow|Europe/Volgograd",
-			"Europe/Moscow|W-SU",
-			"Europe/Paris|Africa/Ceuta",
-			"Europe/Paris|Arctic/Longyearbyen",
-			"Europe/Paris|Atlantic/Jan_Mayen",
-			"Europe/Paris|CET",
-			"Europe/Paris|Europe/Amsterdam",
-			"Europe/Paris|Europe/Andorra",
-			"Europe/Paris|Europe/Belgrade",
-			"Europe/Paris|Europe/Berlin",
-			"Europe/Paris|Europe/Bratislava",
-			"Europe/Paris|Europe/Brussels",
-			"Europe/Paris|Europe/Budapest",
-			"Europe/Paris|Europe/Busingen",
-			"Europe/Paris|Europe/Copenhagen",
-			"Europe/Paris|Europe/Gibraltar",
-			"Europe/Paris|Europe/Ljubljana",
-			"Europe/Paris|Europe/Luxembourg",
-			"Europe/Paris|Europe/Madrid",
-			"Europe/Paris|Europe/Malta",
-			"Europe/Paris|Europe/Monaco",
-			"Europe/Paris|Europe/Oslo",
-			"Europe/Paris|Europe/Podgorica",
-			"Europe/Paris|Europe/Prague",
-			"Europe/Paris|Europe/Rome",
-			"Europe/Paris|Europe/San_Marino",
-			"Europe/Paris|Europe/Sarajevo",
-			"Europe/Paris|Europe/Skopje",
-			"Europe/Paris|Europe/Stockholm",
-			"Europe/Paris|Europe/Tirane",
-			"Europe/Paris|Europe/Vaduz",
-			"Europe/Paris|Europe/Vatican",
-			"Europe/Paris|Europe/Vienna",
-			"Europe/Paris|Europe/Warsaw",
-			"Europe/Paris|Europe/Zagreb",
-			"Europe/Paris|Europe/Zurich",
-			"Europe/Paris|Poland",
-			"Pacific/Auckland|Antarctica/McMurdo",
-			"Pacific/Auckland|Antarctica/South_Pole",
-			"Pacific/Auckland|NZ",
-			"Pacific/Chatham|NZ-CHAT",
-			"Pacific/Chuuk|Pacific/Truk",
-			"Pacific/Chuuk|Pacific/Yap",
-			"Pacific/Easter|Chile/EasterIsland",
-			"Pacific/Guam|Pacific/Saipan",
-			"Pacific/Honolulu|HST",
-			"Pacific/Honolulu|Pacific/Johnston",
-			"Pacific/Honolulu|US/Hawaii",
-			"Pacific/Majuro|Kwajalein",
-			"Pacific/Majuro|Pacific/Kwajalein",
-			"Pacific/Pago_Pago|Pacific/Midway",
-			"Pacific/Pago_Pago|Pacific/Samoa",
-			"Pacific/Pago_Pago|US/Samoa",
-			"Pacific/Pohnpei|Pacific/Ponape"
-		]
-	});
-
+	// INJECT DATA
 
 	return moment;
 }));
+
 /**
  * @license AngularJS v1.4.8
  * (c) 2010-2015 Google, Inc. http://angularjs.org
@@ -19546,8 +18954,10 @@ angular.module('chattapp')
      angular.module('chattapp')
          .controller('chatPageController', chatPageController);
 
-     function chatPageController($ionicHistory) {
-         
+     function chatPageController($ionicHistory,$scope) {
+      $scope.focusOut=function(){
+          $scope.isFocused='focusOut'
+      };
      }
  })();
 (function() {
@@ -19707,6 +19117,7 @@ angular.module('chattapp')
             currentTimestamp: _.now()
             });
             query.$promise.then(function(data) {
+                console.log(data);
                 socketService.update_message_status(data.data.messages, $stateParams.roomId);
                 sqliteService.updateDbOnRoomOpen(data.data.messages, $stateParams.roomId).then(function(){
                     sqliteService.getMessageDataFromDB($stateParams.roomId).then(function(response){
@@ -19760,7 +19171,7 @@ angular.module('chattapp')
     angular.module('chattapp')
             .controller('chatPageFooterDirectiveController', chatPageFooterDirectiveController);
 
-    function chatPageFooterDirectiveController($rootScope, $state, $timeout, $interval, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, sqliteService, chatpageService) {
+    function chatPageFooterDirectiveController($rootScope, $scope, $ionicPlatform, $state, $timeout, $interval, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, sqliteService, chatpageService) {
         var self = this;
         var userData = timeStorage.get('userData');
         self.image = userData.data.profile_image;
@@ -19776,6 +19187,7 @@ angular.module('chattapp')
                     } else {
                         socketService.room_message(lastInsertId, $stateParams.roomId, self.message, currentTimeStamp);
                     }
+
                     var currentMessage = {
                         "id": lastInsertId,
                         "image": userData.data.profile_image,
@@ -19785,19 +19197,30 @@ angular.module('chattapp')
                         "name": userData.data.name,
                         "user_id": userData.data.user_id,
                         "message_status": 'post'
-                    }
+                    };
                     $rootScope.$broadcast('displayChatMessages', {data: currentMessage});
                     $ionicScrollDelegate.scrollBottom(false);
                     self.message = '';
                     $interval.cancel(interval);
                     $timeout.cancel(inputChangedPromise);
-                })
+                }, 100);
                 $ionicScrollDelegate.scrollBottom(false);
             }
-        }
+        };
+
+        var focus = 0;
         self.inputUp = function() {
             inputChanged = 0;
-            self.isFocused = true;
+            if ($scope.isFocused == 'focusOut' && focus == 0) {
+                focus++;
+                console.log('sdfsdfsdfsdfsd');
+                $scope.isFocused = false;
+
+            } else {
+                $scope.isFocused = 'foc';
+                focus--;
+            }
+
             i = 0;
             $timeout(function() {
                 $ionicScrollDelegate.scrollBottom(false);
@@ -19863,6 +19286,7 @@ angular.module('chattapp')
             .controller('chatPageHeaderDirectiveController', chatPageHeaderDirectiveController);
 
     function chatPageHeaderDirectiveController($state, timeStorage, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService) {
+
         var self = this;
         self.leaveGroupSpinner = false;
         self.deleteGroupSpinner = false;
@@ -19881,8 +19305,10 @@ angular.module('chattapp')
         self.openModelWithSpinner = true;
         if (!chatWithUserData.id) {
             infoApi();
-        } else{
+        } else {
+
             infoApiUser(self.id);
+
         }
         function infoApi() {
             var userData = timeStorage.get('userData');
@@ -19892,8 +19318,8 @@ angular.module('chattapp')
                 currentTimestamp: _.now()
             });
             query.$promise.then(function(data) {
-                if(data.data.admin_friends_not_room_members){
-                    for(var i = 0; i < data.data.admin_friends_not_room_members.length; i++){
+                if (data.data.admin_friends_not_room_members) {
+                    for (var i = 0; i < data.data.admin_friends_not_room_members.length; i++) {
                         data.data.admin_friends_not_room_members[i].last_seen = moment.unix(data.data.admin_friends_not_room_members[i].last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
                     }
                     self.admin_friends_not_room_members = data.data.admin_friends_not_room_members;
@@ -19925,7 +19351,8 @@ angular.module('chattapp')
                 self.infoUserList = data.data.room.room_users;
             });
         }
-        function infoApiUser(userId){
+
+        function infoApiUser(userId) {
             var userData = timeStorage.get('userData');
             var query = getUserProfileFactory.save({
                 accessToken: userData.data.access_token,
@@ -19940,12 +19367,12 @@ angular.module('chattapp')
                     self.displayUserProfileImage = data.data.profile_image;
                 }
                 else {
-                    self.displayUserProfileImage ="https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg";
+                    self.displayUserProfileImage = "img/user.png";
                 }
-                var lastOnline = (_.now() - data.data.last_seen)/1000;
-                if(lastOnline > 86400){
+                var lastOnline = (_.now() - data.data.last_seen) / 1000;
+                if (lastOnline > 86400) {
                     self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("MMMM Do YYYY, h:mm a");
-                } else{
+                } else {
                     self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("h:mm a");
                 }
                 self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
@@ -19958,7 +19385,7 @@ angular.module('chattapp')
             if (!chatWithUserData.id) {
                 infoApi();
                 $scope.infoModel.show();
-            } else{
+            } else {
                 infoApiUser(self.id);
                 $scope.infoModelUser.show();
             }
@@ -20171,8 +19598,11 @@ angular.module('chattapp')
     angular.module('chattapp')
         .controller('chatsController', chatsController);
 
+
     function chatsController($scope, chatsFactory, timeStorage, chatsService, $state, socketService, $interval, $ionicHistory, timeZoneService) {
+
             var self = this;
+           
             var userData = timeStorage.get('userData');
              chatsService.listMyRooms().then(function(data){
                 self.displayChats = data;
@@ -20346,6 +19776,130 @@ angular.module('chattapp')
                 };
                 return directive;
             });
+})();
+(function() {
+    'use strict';
+
+    angular.module('chattapp')
+            .controller('contactsController', contactsController);
+
+    function contactsController($scope, contactsFactory, $filter, contactsService, $ionicLoading, timeStorage, $localStorage, $state, socketService, $ionicModal, getUserProfileFactory) {
+        delete $localStorage.chatWithUserData;
+        var self = this;
+        var userData = timeStorage.get('userData');
+        var accessToken = userData.data.access_token;
+        self.displaycontacts = timeStorage.get('listUsers');
+        contactsService.listUsers();
+        $scope.$on('updatedlistUsers', function(event, response) {
+            self.displaycontacts = response.data;
+            $scope.$evalAsync();
+        });
+        self.chatWithUser = function(name, id, pic, lastSeen) {
+            self.startChatspinner = true;
+            var chatWithUser = {
+                "name": name,
+                "id": id,
+                "pic": pic,
+                "lastSeen": self.displayUserProfileLastSeenInTimeStamp
+            }
+            timeStorage.set('chatWithUserData', chatWithUser, 1);
+            socketService.create_room(id).then(function(data) {
+                $scope.modal.hide();
+                $state.go('app.chatpage', {roomId: data.data.room_id});
+            });
+        }
+        self.isSearchOpen = false;
+        self.searchOpen = function() {
+            if (self.isSearchOpen) {
+                self.isSearchOpen = false;
+            } else {
+                self.isSearchOpen = true;
+            }
+        }
+        self.openUserProfile = function(clickData, index) {
+            self.spinnerIndex = index;
+            var userData = timeStorage.get('userData');
+            var query = getUserProfileFactory.save({
+                accessToken: userData.data.access_token,
+                user_id: clickData.id,
+                currentTimestamp: _.now()
+            });
+            query.$promise.then(function(data) {
+                self.spinnerIndex = -1;
+                self.displayUserProfileName = data.data.name;
+                self.displayUserProfileId = data.data.user_id;
+                self.displayUserProfileLastSeenInTimeStamp = data.data.last_seen;
+                if (data.data.profile_image) {
+                    self.displayUserProfileImage = data.data.profile_image;
+                }
+                else {
+                    self.displayUserProfileImage ="https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg";
+                }
+                var lastOnline = (_.now() - data.data.last_seen)/1000;
+                if(lastOnline > 86400){
+                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("MMMM Do YYYY, h:mm a");
+                } else{
+                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("h:mm a");
+                }
+                self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
+                self.displayUserProfilePublicRooms = data.data.user_public_rooms;
+                self.displayUserProfileStatus = data.data.profile_status;
+                $scope.modal.show();
+            });
+        }
+        $ionicModal.fromTemplateUrl('contactUser.html', function($ionicModal) {
+            $scope.modal = $ionicModal;
+        }, {
+            scope: $scope,
+        });
+    }
+})();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('contactsFactory', contactsFactory);
+
+   function contactsFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/users/list_users', {},{});
+   };
+})();
+ (function() {
+     'use strict';
+     angular.module('chattapp')
+         .factory('contactsService', contactsService);
+
+     function contactsService(timeStorage, $rootScope, contactsFactory, timeZoneService) {
+         var service = {};
+         service.listUsers = function() {
+            var userData =  timeStorage.get('userData');
+            var query = contactsFactory.save({
+                 accessToken: userData.data.access_token,
+                 page: 0,
+                 limit:100,
+                 currentTimestamp: _.now()
+             });
+             query.$promise.then(function(data) {
+                 var newData = [];
+                 for(var i = 0; i < data.data.length; i++){
+                    data.data[i].lastSeen = moment.unix(data.data[i].lastSeen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a"),
+                    newData.push(data.data[i]); 
+                 }
+                 timeStorage.set('listUsers', newData, 1);
+                 $rootScope.$broadcast('updatedlistUsers', { data: newData });
+             });
+         }
+         return service;
+     };
+
+ })();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('getUserProfileFactory', getUserProfileFactory);
+
+   function getUserProfileFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/users/get_user_profile/:accessToken/:user_id/:currentTimestamp', {},{});
+   };
 })();
  (function() {
      'use strict';
@@ -20826,7 +20380,7 @@ angular.module('chattapp')
                     'onFocus': '&',
                     'onClick': '&',
                     'onBlur': '&',
-                    'trigger': '@isFocused'
+                    'trigger': '@isFocused',
                 },
                 link: function(scope, element, attr) {
                     element.bind('focus', function(e) {
@@ -20855,14 +20409,27 @@ angular.module('chattapp')
                             }
                         }
                     });
-
+                    
+                    var newVal;
                     scope.$watch('trigger', function(value) {
-                        if (value === "true") {
+                        if (value === "focusOut" || value === false) {
+                            newVal = '';
+                        }
+                        else if (value === "foc") {
+                            newVal = "focus";
                             $timeout(function() {
                                 element[0].focus();
-
                                 element.on('blur', function() {
-                                    element[0].focus();
+                                    if (!newVal) {
+                                       
+                                        element[0].blur();
+                                        newVal = '';
+                                    }
+                                    else {
+                                        
+                                        element[0].focus();
+
+                                    }
                                 });
                             });
                         }
@@ -21044,169 +20611,173 @@ angular.module('chattapp')
         };
     }
 })();
- (function() {
-     'use strict';
-     angular.module('chattapp')
-         .factory('socketService', socketService);
+(function() {
+    'use strict';
+    angular.module('chattapp')
+            .factory('socketService', socketService);
 
-     function socketService($rootScope, $q, timeStorage, sqliteService) {
-         var service = {};
-         var userData = timeStorage.get('userData');
-         var accessToken = userData.data.access_token;
-         socket.on('RESPONSE_APP_SOCKET_EMIT', function(type, data) {
-                    if(type == 'leave_public_group'){
-                        $rootScope.$broadcast('leaved_public_group', { data: data });
-                    }
-                    console.log(type);
-                    console.log(data);
-                    if(type == 'sent_message_response'){
-                        $rootScope.$broadcast('sentMessagesIds', { data: data.data });
-                        sqliteService.updateMessageStatusToSent(data.data.msg_local_id, data.data.message_id, data.data.message_time);
-                    }
-                    if(type == 'new_room_message'){
-                        sqliteService.gotNewRoomMessage(data.data.message_body, data.data.message_id, data.data.message_status, data.data.message_time, data.data.name, data.data.profile_image, data.data.room_id, data.data.message_type);
-                        $rootScope.$broadcast('newRoomMessage', { data: data.data });
-                    }
-                    if(type == 'remove_public_room_member'){
-                        $rootScope.$broadcast('removed_public_room_member', { data: data.data });
-                    }
-                    if(type == 'remove_socket_from_room'){
-                        if(userData.data.user_id == data.user_id){
-                            socket.emit('APP_SOCKET_EMIT', 'remove_socket_from_room', { user_id: data.user_id, room_id: data.room_id });
-                        }
-                    }
-                    if(type == 'get_user_profile_for_room'){
-                        $rootScope.$broadcast('got_user_profile_for_room', { data: data.data });
-                    }
-                    if(type == 'delete_public_room'){
-                        $rootScope.$broadcast('deleted_public_room', { data: data.data });
-                    }
-                    if(type == 'room_user_typing'){
-                        $rootScope.$broadcast('room_user_typing_message', { data: data });
-                    }
-                    if(type == 'show_room_unread_notification'){
-                        $rootScope.$broadcast('got_room_unread_notification', { data: data });
-                    }
-                    if(type == 'update_room_unread_notification'){
-                        $rootScope.$broadcast('update_room_unread_notification', { data: data });
-                    }
-                    if(type == 'get_user_profile'){
-                        $rootScope.$broadcast('got_user_updated_profile', { data: data });
-                    }
-                });
-         socket.on('response_update_message_status', function(data) {
-                    var str = data.message_id;
-                    var res = str.split(",");
-                    sqliteService.updateMessageStatusToSeen(data.message_id);
-                    $rootScope.$broadcast('response_update_message_status_response', { data: res });
-                });
-         service.new_private_room = function() {
-                 var q = $q.defer();
-                 socket.on('new_private_room', function(data) {
-                     socket.removeListener('new_private_room');
-                     q.resolve(data);
-                 });
-                 return q.promise;
-             },
-             service.create_room = function(chatWithUserId) {
-                 var q = $q.defer();
-                 var userData = timeStorage.get('userData');
-                 var accessToken = userData.data.access_token;
-                 socket.emit('create_room', accessToken, 'private', chatWithUserId, '', '', _.now());
-                 service.new_private_room().then(function(data) {
-                     socket.emit('APP_SOCKET_EMIT', 'room_open', { accessToken: accessToken, room_id: data.data.room_id, currentTimestamp: _.now() });
-                     q.resolve(data);
-                 });
-                 return q.promise;
-             },
-             service.joinPublicRoom = function(roomId) {
-                 var q = $q.defer();
-                 var userData = timeStorage.get('userData');
-                 var accessToken = userData.data.access_token;
-                 socket.emit('APP_SOCKET_EMIT', 'join_public_room', { accessToken:  accessToken, room_id: roomId, currentTimestamp: _.now()});
-                 socket.on('RESPONSE_APP_SOCKET_EMIT', function(type, data) {
-                    if(type == 'join_public_room'){
+    function socketService($rootScope, $q, timeStorage, sqliteService) {
+        var service = {};
+        var userData = timeStorage.get('userData');
+        var accessToken = userData.data.access_token;
+        socket.on('RESPONSE_APP_SOCKET_EMIT', function(type, data) {
+            if (type == 'leave_public_group') {
+                $rootScope.$broadcast('leaved_public_group', {data: data});
+            }
+            console.log(type);
+            console.log(data);
+            if (type == 'sent_message_response') {
+                $rootScope.$broadcast('sentMessagesIds', {data: data.data});
+                sqliteService.updateMessageStatusToSent(data.data.msg_local_id, data.data.message_id, data.data.message_time);
+            }
+            if (type == 'new_room_message') {
+                sqliteService.gotNewRoomMessage(data.data.message_body, data.data.message_id, data.data.message_status, data.data.message_time, data.data.name, data.data.profile_image, data.data.room_id, data.data.message_type);
+                $rootScope.$broadcast('newRoomMessage', {data: data.data});
+            }
+            if (type == 'remove_public_room_member') {
+                $rootScope.$broadcast('removed_public_room_member', {data: data.data});
+            }
+            if (type == 'remove_socket_from_room') {
+                if (userData.data.user_id == data.user_id) {
+                    socket.emit('APP_SOCKET_EMIT', 'remove_socket_from_room', {user_id: data.user_id, room_id: data.room_id});
+                }
+            }
+            if (type == 'get_user_profile_for_room') {
+                $rootScope.$broadcast('got_user_profile_for_room', {data: data.data});
+            }
+            if (type == 'delete_public_room') {
+                $rootScope.$broadcast('deleted_public_room', {data: data.data});
+            }
+            if (type == 'room_user_typing') {
+                $rootScope.$broadcast('room_user_typing_message', {data: data});
+            }
+            if (type == 'show_room_unread_notification') {
+                $rootScope.$broadcast('got_room_unread_notification', {data: data});
+            }
+            if (type == 'update_room_unread_notification') {
+                $rootScope.$broadcast('update_room_unread_notification', {data: data});
+            }
+
+            if (type == 'get_user_profile') {
+                $rootScope.$broadcast('got_user_updated_profile', {data: data});
+            }
+
+        });
+        socket.on('response_update_message_status', function(data) {
+            var str = data.message_id;
+            var res = str.split(",");
+            sqliteService.updateMessageStatusToSeen(data.message_id);
+            $rootScope.$broadcast('response_update_message_status_response', {data: res});
+        });
+        service.new_private_room = function() {
+            var q = $q.defer();
+            socket.on('new_private_room', function(data) {
+                socket.removeListener('new_private_room');
+                q.resolve(data);
+            });
+            return q.promise;
+        },
+                service.create_room = function(chatWithUserId) {
+                    var q = $q.defer();
+                    var userData = timeStorage.get('userData');
+                    var accessToken = userData.data.access_token;
+                    socket.emit('create_room', accessToken, 'private', chatWithUserId, '', '', _.now());
+                    service.new_private_room().then(function(data) {
+                        socket.emit('APP_SOCKET_EMIT', 'room_open', {accessToken: accessToken, room_id: data.data.room_id, currentTimestamp: _.now()});
                         q.resolve(data);
-                    }
-                 });
-                 return q.promise;
-             },
-             service.room_message = function(msg_local_id, roomId, message, currentTimestamp) {
-                socket.emit('APP_SOCKET_EMIT', 'room_message', { msg_local_id: msg_local_id, accessToken:  accessToken, room_id: roomId, message_type:'text', message:message, currentTimestamp: currentTimestamp});
-             },
-             service.update_message_status = function(messages, roomId) {
-                var array = [];
-                if(messages){
-                    for(var i =0; i < messages.length; i++){
-                    if(messages[i].message_status == 'sent' && messages[i].message_owner.id != userData.data.user_id){
-                        array.push(messages[i].id);
+                    });
+                    return q.promise;
+                },
+                service.joinPublicRoom = function(roomId) {
+                    var q = $q.defer();
+                    var userData = timeStorage.get('userData');
+                    var accessToken = userData.data.access_token;
+                    socket.emit('APP_SOCKET_EMIT', 'join_public_room', {accessToken: accessToken, room_id: roomId, currentTimestamp: _.now()});
+                    socket.on('RESPONSE_APP_SOCKET_EMIT', function(type, data) {
+                        if (type == 'join_public_room') {
+                            q.resolve(data);
+                        }
+                    });
+                    return q.promise;
+                },
+                service.room_message = function(msg_local_id, roomId, message, currentTimestamp) {
+                    socket.emit('APP_SOCKET_EMIT', 'room_message', {msg_local_id: msg_local_id, accessToken: accessToken, room_id: roomId, message_type: 'text', message: message, currentTimestamp: currentTimestamp});
+                },
+                service.update_message_status = function(messages, roomId) {
+                    var array = [];
+                    if (messages) {
+                        for (var i = 0; i < messages.length; i++) {
+                            if (messages[i].message_status == 'sent' && messages[i].message_owner.id != userData.data.user_id) {
+                                array.push(messages[i].id);
+                            }
                         }
                     }
-                }
-                if(array.toString() == ''){
-                    console.log('empty');
-                } else{
-                    socket.emit('update_message_status', accessToken, roomId, array.toString(), 'seen', _.now());
-                    for(var i = 0; i < array.length; i++){
-                        sqliteService.updateMessageStatusToSeen(array[i]);        
+                    if (array.toString() == '') {
+                        console.log('empty');
+                    } else {
+                        socket.emit('update_message_status', accessToken, roomId, array.toString(), 'seen', _.now());
+                        for (var i = 0; i < array.length; i++) {
+                            sqliteService.updateMessageStatusToSeen(array[i]);
+                        }
                     }
-                }
-             },
-             service.update_message_status_room_open = function(message_id, roomId) {
-                socket.emit('update_message_status', accessToken, roomId, message_id, 'seen', _.now());
-                sqliteService.updateMessageStatusToSeen(message_id);
-             },
-             service.leaveGroup = function(roomId) {
-                var userData = timeStorage.get('userData');
-                socket.emit('APP_SOCKET_EMIT', 'leave_public_group', {  accessToken : userData.data.access_token, room_id: roomId, currentTimestamp : _.now() });
-             },
-             service.removeUserFromGroup = function(removingUserData, roomId) {
-                var userData = timeStorage.get('userData');
-                socket.emit('APP_SOCKET_EMIT', 'remove_public_room_member', {  accessToken : userData.data.access_token, room_id: roomId, user_id:removingUserData.id, currentTimestamp : _.now() });
-             },
-             service.getUserProfileForRoom = function(roomId, userId) {
-                var userData = timeStorage.get('userData');
-                socket.emit('APP_SOCKET_EMIT', 'get_user_profile_for_room', {  accessToken: userData.data.access_token, room_id: roomId, user_id:userId, currentTimestamp: _.now() });
-             },
-             service.deleteRoom = function(roomId) {
-                var userData = timeStorage.get('userData');
-                socket.emit('APP_SOCKET_EMIT', 'delete_public_room', { accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now() });
-             },
-             service.logout = function() {
-                var userData = timeStorage.get('userData');
-                socket.emit('APP_SOCKET_EMIT', 'do_logout', { accessToken: userData.data.access_token, currentTimestamp: _.now() });
-             },
-             service.writingMessage = function(roomId) {
-                var userData = timeStorage.get('userData');
-                socket.emit('APP_SOCKET_EMIT', 'room_user_typing', { user_id: userData.data.user_id, name: userData.data.name, room_id: roomId});
-             },
-             service.room_unread_notification = function(allRoomData) {
-                var userData = timeStorage.get('userData');
-                for(var i = 0; i < allRoomData.length; i++){
-                    socket.emit('APP_SOCKET_EMIT', 'show_room_unread_notification', { accessToken: userData.data.access_token, room_id: allRoomData[i].room_id, currentTimestamp: _.now()});
-                    socket.emit('APP_SOCKET_EMIT', 'room_open', { accessToken: userData.data.access_token, room_id: allRoomData[i].room_id, currentTimestamp: _.now() });
-                }
-             },
-             service.update_room_unread_notification = function(data) {
-                var userData = timeStorage.get('userData');
-                socket.emit('APP_SOCKET_EMIT', 'show_room_unread_notification', { accessToken: userData.data.access_token, room_id: data.room_id, currentTimestamp: _.now()});
-                socket.emit('APP_SOCKET_EMIT', 'room_open', { accessToken: userData.data.access_token, room_id: data.room_id, currentTimestamp: _.now() });
-             },
-             service.getUserProfile = function(chatData) {
-                var userData = timeStorage.get('userData');
-                for(var i = 0; i < chatData.length; i++){
-                    if(chatData[i].room_type == 'private'){
-                        socket.emit('APP_SOCKET_EMIT', 'get_user_profile', { accessToken: userData.data.access_token, user_id: chatData[i].user_data.id, currentTimestamp: _.now()});
-                    }    
-                }
-             },
-             service.roomOpen = function(roomId) {
-                var userData = timeStorage.get('userData');
-                socket.emit('APP_SOCKET_EMIT', 'room_open', { accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now() });
-             }
-         return service;
-     };
- })();
+                },
+                service.update_message_status_room_open = function(message_id, roomId) {
+                    socket.emit('update_message_status', accessToken, roomId, message_id, 'seen', _.now());
+                    sqliteService.updateMessageStatusToSeen(message_id);
+                },
+                service.leaveGroup = function(roomId) {
+                    var userData = timeStorage.get('userData');
+                    socket.emit('APP_SOCKET_EMIT', 'leave_public_group', {accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now()});
+                },
+                service.removeUserFromGroup = function(removingUserData, roomId) {
+                    var userData = timeStorage.get('userData');
+                    socket.emit('APP_SOCKET_EMIT', 'remove_public_room_member', {accessToken: userData.data.access_token, room_id: roomId, user_id: removingUserData.id, currentTimestamp: _.now()});
+                },
+                service.getUserProfileForRoom = function(roomId, userId) {
+                    var userData = timeStorage.get('userData');
+                    socket.emit('APP_SOCKET_EMIT', 'get_user_profile_for_room', {accessToken: userData.data.access_token, room_id: roomId, user_id: userId, currentTimestamp: _.now()});
+                },
+                service.deleteRoom = function(roomId) {
+                    var userData = timeStorage.get('userData');
+                    socket.emit('APP_SOCKET_EMIT', 'delete_public_room', {accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now()});
+                },
+                service.logout = function() {
+                    var userData = timeStorage.get('userData');
+                    socket.emit('APP_SOCKET_EMIT', 'do_logout', {accessToken: userData.data.access_token, currentTimestamp: _.now()});
+                },
+                service.writingMessage = function(roomId) {
+                    var userData = timeStorage.get('userData');
+                    socket.emit('APP_SOCKET_EMIT', 'room_user_typing', {user_id: userData.data.user_id, name: userData.data.name, room_id: roomId});
+                },
+                service.room_unread_notification = function(allRoomData) {
+                    var userData = timeStorage.get('userData');
+                    for (var i = 0; i < allRoomData.length; i++) {
+                        socket.emit('APP_SOCKET_EMIT', 'show_room_unread_notification', {accessToken: userData.data.access_token, room_id: allRoomData[i].room_id, currentTimestamp: _.now()});
+                        socket.emit('APP_SOCKET_EMIT', 'room_open', {accessToken: userData.data.access_token, room_id: allRoomData[i].room_id, currentTimestamp: _.now()});
+                    }
+                },
+                service.update_room_unread_notification = function(data) {
+                    var userData = timeStorage.get('userData');
+                    socket.emit('APP_SOCKET_EMIT', 'show_room_unread_notification', {accessToken: userData.data.access_token, room_id: data.room_id, currentTimestamp: _.now()});
+                    socket.emit('APP_SOCKET_EMIT', 'room_open', {accessToken: userData.data.access_token, room_id: data.room_id, currentTimestamp: _.now()});
+                },
+                service.getUserProfile = function(chatData) {
+                    var userData = timeStorage.get('userData');
+                    for (var i = 0; i < chatData.length; i++) {
+                        if (chatData[i].room_type == 'private') {
+                            socket.emit('APP_SOCKET_EMIT', 'get_user_profile', {accessToken: userData.data.access_token, user_id: chatData[i].user_data.id, currentTimestamp: _.now()});
+                        }
+                    }
+                },
+                service.roomOpen = function(roomId) {
+                    var userData = timeStorage.get('userData');
+                    socket.emit('APP_SOCKET_EMIT', 'room_open', {accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now()});
+
+                };
+        return service;
+    }
+    ;
+})();
  (function() {
      'use strict';
      angular.module('chattapp')
@@ -21223,10 +20794,10 @@ angular.module('chattapp')
                      tx.executeSql('CREATE TABLE IF NOT EXISTS messages(id INTEGER PRIMARY KEY AUTOINCREMENT, message_id TEXT, message TEXT, message_status TEXT, user_id TEXT, user_name TEXT, user_profile_image TEXT, roomId TEXT, message_type TEXT,  messageTime INTEGER)');
                  }
                  function errorInSchema() {
-                     console.log("Error to create schema");
+                     
                  }
                  function successInSchema() {
-                     console.log("Schema creation successful");
+                    
                  }
              },
              service.saveMessageInDb = function(message, message_status, user_id, user_name, user_profile_image, roomId, messageTime) {
@@ -21241,11 +20812,11 @@ angular.module('chattapp')
                      });
                  }
                  function error(err) {
-                     console.log("Error processing SQL: " + err.code);
+                    
                      q.reject(err);
                  }
                  function success(results) {
-                     console.log("New Data Inserted!");
+                     
                  }
                  return q.promise;
              },
@@ -21258,10 +20829,10 @@ angular.module('chattapp')
                      tx.executeSql("UPDATE messages SET message_id='"+messageId+"', messageTime='"+messageTime+"', message_status='sent' WHERE id="+localMessageId);
                  }
                  function error(err) {
-                     console.log("Error processing SQL: " + err.code);
+                     
                  }
                  function success() {
-                     console.log("successfully updated to sent!");
+                     
                  }
              },
              service.updateMessageStatusToSeen = function(messageId) {
@@ -21273,27 +20844,44 @@ angular.module('chattapp')
                      tx.executeSql("UPDATE messages SET message_status= 'seen' WHERE message_id= '"+messageId+"'");
                  }
                  function error(err) {
+                    
+                 }
+                 function success() {
+                     
+                 }
+             },
+                service.updateUserProfie = function(prifilePic) {
+                 var userData = timeStorage.get('userData');
+                     
+                var dbobj = window.sqlitePlugin.openDatabase({
+                     name: "chattappDB"
+                 });
+                 dbobj.transaction(populateDB, error, success);
+                 function populateDB(tx) {
+                     tx.executeSql("UPDATE messages SET user_profile_image= '"+prifilePic+"' WHERE user_id= '"+userData.data.user_id+"'");
+                 }
+                 function error(err) {
                      console.log("Error processing SQL: " + err.code);
                  }
                  function success() {
                      console.log("successfully updated to SEEN!");
                  }
              },
-             service.gotNewRoomMessage = function(message, message_id, message_status, message_time, user_name, user_profile_image, room_id, message_type) {
+             service.gotNewRoomMessage = function(message, message_id, message_status, message_time, user_name, user_profile_image, room_id, message_type,user_id) {
                 var dbobj = window.sqlitePlugin.openDatabase({
                      name: "chattappDB"
                  });
                  dbobj.transaction(populateDB, error, success);
                  function populateDB(tx) {
-                     tx.executeSql('INSERT INTO messages(message, message_status, message_id, user_name,user_profile_image, roomId, messageTime, message_type) VALUES ("' + message + '","' + message_status + '","' + message_id + '","' + user_name + '", "' + user_profile_image + '", "' + room_id + '", "' + message_time + '", "' + message_type +'")',[],function(tx, results){
-                        // console.log(results.insertId);
+                     tx.executeSql('INSERT INTO messages(message, message_status, message_id, user_name,user_profile_image, roomId, messageTime, message_type,user_id) VALUES ("' + message + '","' + message_status + '","' + message_id + '","' + user_name + '", "' + user_profile_image + '", "' + room_id + '", "' + message_time + '", "' + message_type +'","' + user_id +'")',[],function(tx, results){
+                       
                      });
                  }
                  function error(err) {
-                     console.log("Error processing SQL: " + err.code);
+                     
                  }
                  function success(results) {
-                     console.log("New Data Inserted On New Room Messages!");
+                     
                  }
              },
              service.updateDbOnRoomOpen = function(messages, roomId) {
@@ -21312,7 +20900,7 @@ angular.module('chattapp')
                         }
                     }
                     for(var k = 0; k < newmes.length; k++){
-                        service.gotNewRoomMessage(newmes[k].message.body, newmes[k].id, newmes[k].message_status, newmes[k].message_time, newmes[k].message_owner.name, newmes[k].message_owner.profile_image, newmes[k].room_id, newmes[k].message.type);
+                        service.gotNewRoomMessage(newmes[k].message.body, newmes[k].id, newmes[k].message_status, newmes[k].message_time, newmes[k].message_owner.name, newmes[k].message_owner.profile_image, newmes[k].room_id, newmes[k].message.type,newmes[k].message_owner.id);
                     }
                     for(var x = 0; x < messages.length; x++){
                         if(messages[x].message_status == 'seen'){
@@ -21350,11 +20938,11 @@ angular.module('chattapp')
                      });
                  }
                  function error(err) {
-                     console.log("Error processing SQL: " + err.code);
+                    
                      q.reject(err);
                  }
                  function success(results) {
-                     console.log("Data is fetched from db");
+                    
                  }
                  return q.promise;
              },
@@ -21374,10 +20962,10 @@ angular.module('chattapp')
                      });
                  }
                  function error(err) {
-                     console.log("Error processing SQL: " + err.code);
+                     
                  }
                  function success(results) {
-                     console.log("Data is fetched from db");
+                     
                  }
              },
              service.updateMessageStatusToSentWhenAppComesOnline = function(localMessageId) {
@@ -21389,10 +20977,10 @@ angular.module('chattapp')
                      tx.executeSql("UPDATE messages SET message_status='sent' WHERE id="+localMessageId);
                  }
                  function error(err) {
-                     console.log("Error processing SQL: " + err.code);
+                    
                  }
                  function success() {
-                     console.log("successfully updated to sent!");
+                    
                  }
              }
          return service;
@@ -21439,130 +21027,6 @@ angular.module('chattapp')
     };
 
 })();
-(function() {
-    'use strict';
-
-    angular.module('chattapp')
-            .controller('contactsController', contactsController);
-
-    function contactsController($scope, contactsFactory, $filter, contactsService, $ionicLoading, timeStorage, $localStorage, $state, socketService, $ionicModal, getUserProfileFactory) {
-        delete $localStorage.chatWithUserData;
-        var self = this;
-        var userData = timeStorage.get('userData');
-        var accessToken = userData.data.access_token;
-        self.displaycontacts = timeStorage.get('listUsers');
-        contactsService.listUsers();
-        $scope.$on('updatedlistUsers', function(event, response) {
-            self.displaycontacts = response.data;
-            $scope.$evalAsync();
-        });
-        self.chatWithUser = function(name, id, pic, lastSeen) {
-            self.startChatspinner = true;
-            var chatWithUser = {
-                "name": name,
-                "id": id,
-                "pic": pic,
-                "lastSeen": self.displayUserProfileLastSeenInTimeStamp
-            }
-            timeStorage.set('chatWithUserData', chatWithUser, 1);
-            socketService.create_room(id).then(function(data) {
-                $scope.modal.hide();
-                $state.go('app.chatpage', {roomId: data.data.room_id});
-            });
-        }
-        self.isSearchOpen = false;
-        self.searchOpen = function() {
-            if (self.isSearchOpen) {
-                self.isSearchOpen = false;
-            } else {
-                self.isSearchOpen = true;
-            }
-        }
-        self.openUserProfile = function(clickData, index) {
-            self.spinnerIndex = index;
-            var userData = timeStorage.get('userData');
-            var query = getUserProfileFactory.save({
-                accessToken: userData.data.access_token,
-                user_id: clickData.id,
-                currentTimestamp: _.now()
-            });
-            query.$promise.then(function(data) {
-                self.spinnerIndex = -1;
-                self.displayUserProfileName = data.data.name;
-                self.displayUserProfileId = data.data.user_id;
-                self.displayUserProfileLastSeenInTimeStamp = data.data.last_seen;
-                if (data.data.profile_image) {
-                    self.displayUserProfileImage = data.data.profile_image;
-                }
-                else {
-                    self.displayUserProfileImage ="https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg";
-                }
-                var lastOnline = (_.now() - data.data.last_seen)/1000;
-                if(lastOnline > 86400){
-                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("MMMM Do YYYY, h:mm a");
-                } else{
-                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("h:mm a");
-                }
-                self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
-                self.displayUserProfilePublicRooms = data.data.user_public_rooms;
-                self.displayUserProfileStatus = data.data.profile_status;
-                $scope.modal.show();
-            });
-        }
-        $ionicModal.fromTemplateUrl('contactUser.html', function($ionicModal) {
-            $scope.modal = $ionicModal;
-        }, {
-            scope: $scope,
-        });
-    }
-})();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('contactsFactory', contactsFactory);
-
-   function contactsFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/users/list_users', {},{});
-   };
-})();
- (function() {
-     'use strict';
-     angular.module('chattapp')
-         .factory('contactsService', contactsService);
-
-     function contactsService(timeStorage, $rootScope, contactsFactory, timeZoneService) {
-         var service = {};
-         service.listUsers = function() {
-            var userData =  timeStorage.get('userData');
-            var query = contactsFactory.save({
-                 accessToken: userData.data.access_token,
-                 page: 0,
-                 limit:100,
-                 currentTimestamp: _.now()
-             });
-             query.$promise.then(function(data) {
-                 var newData = [];
-                 for(var i = 0; i < data.data.length; i++){
-                    data.data[i].lastSeen = moment.unix(data.data[i].lastSeen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a"),
-                    newData.push(data.data[i]); 
-                 }
-                 timeStorage.set('listUsers', newData, 1);
-                 $rootScope.$broadcast('updatedlistUsers', { data: newData });
-             });
-         }
-         return service;
-     };
-
- })();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('getUserProfileFactory', getUserProfileFactory);
-
-   function getUserProfileFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/users/get_user_profile/:accessToken/:user_id/:currentTimestamp', {},{});
-   };
-})();
  (function() {
      'use strict';
 
@@ -21608,7 +21072,56 @@ angular.module('chattapp')
     'use strict';
 
     angular.module('chattapp')
-        .controller('loginController', loginController);
+            .controller('menuController', menuController);
+
+    function menuController($scope, $ionicPopover,$ionicPlatform,$ionicHistory, tostService, $localStorage, Onsuccess, $state, timeStorage, $rootScope) {
+      
+        var self = this;
+        self.chattab = true;
+        $ionicPopover.fromTemplateUrl('templates/popover.html', {
+            scope: $scope,
+        }).then(function(popover) {
+            self.popover = popover;
+        });
+        self.search = function(state) {
+            if (timeStorage.get('network')) {
+                window.plugins.toast.showShortTop('You need to online to access this');
+            }
+            else
+            {
+                $state.go(state);
+            }
+        };
+        Onsuccess.footerTab(function(a, b, c, d) {
+            self.chattab = a;
+            self.searchb = b;
+            self.setting = c;
+            self.group = d;
+        });
+        var count = 0;
+        $ionicPlatform.registerBackButtonAction(function() {
+            var view = $ionicHistory.currentView();
+            if (view.stateId == 'login' && count == 0 || view.stateId == 'app.chats' && count == 0) {
+                tostService.notify('Press Back Button Again To Exit The App!', 'Bottom');
+                count++;
+                $timeout(function() {
+                    count = 0;
+                }, 3000);
+            } else if (view.stateId == 'login' && count == 1 || view.stateId == 'app.chats' && count == 1) {
+                navigator.app.exitApp();
+                count = 0;
+            } else {
+                $ionicHistory.goBack();
+                count = 0;
+            }
+        }, 100);
+    }
+})();
+(function() {
+    'use strict';
+
+    angular.module('chattapp')
+            .controller('loginController', loginController);
 
     function loginController($state, loginFactory, timeStorage, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService, $ionicLoading) {
         console.log('login');
@@ -21635,7 +21148,7 @@ angular.module('chattapp')
                     password: self.data.password,
                     name: '',
                     currentTimestamp: _.now(),
-                    profile_image:''
+                    profile_image: ''
                 });
                 query.$promise.then(function(data) {
                     $ionicLoading.hide();
@@ -21644,12 +21157,16 @@ angular.module('chattapp')
                         timeStorage.set('userEmail', self.data.email, 1);
                         $state.go('verification');
                     } else if (data.status == 1) {
-                        tostService.notify('Welcome "'+data.data.name+'"', 'top');
+                        tostService.notify('Welcome "' + data.data.name + '"', 'top');
                         timeStorage.set('userEmail', self.data.email, 1);
                         timeStorage.set('userData', data, 1);
                         // lastUsesTimeService.updateTime();
                         $state.go('app.chats');
-                    } else if(data.status == 0){
+                        $ionicHistory.nextViewOptions({
+                            historyRoot: true,
+                            disableBack: true
+                        });
+                    } else if (data.status == 0) {
                         tostService.notify(data.message, 'top');
                     }
                 });
@@ -21673,16 +21190,20 @@ angular.module('chattapp')
                     name: googleData.name,
                     currentTimestamp: _.now(),
                     password: '',
-                    profile_image:googleData.picture
+                    profile_image: googleData.picture
                 });
                 query.$promise.then(function(data) {
                     $ionicLoading.hide();
                     console.log(data);
-                    tostService.notify('Welcome "'+data.data.name+'"', 'top');
+                    tostService.notify('Welcome "' + data.data.name + '"', 'top');
                     timeStorage.set('userEmail', googleData.email, 1);
                     timeStorage.set('userData', data, 1);
                     // lastUsesTimeService.updateTime();
                     $state.go('app.chats');
+                    $ionicHistory.nextViewOptions({
+                        historyRoot: true,
+                        disableBack: true
+                    });
                 });
             }, function(data) {
                 console.log(data);
@@ -21722,35 +21243,24 @@ angular.module('chattapp')
                 name: fbData.name,
                 currentTimestamp: _.now(),
                 password: '',
-                profile_image:'http://graph.facebook.com/' + fbData.id + '/picture?type=large'
+                profile_image: 'http://graph.facebook.com/' + fbData.id + '/picture?type=large'
             });
             query.$promise.then(function(data) {
                 $ionicLoading.hide();
                 console.log(data);
-                tostService.notify('Welcome "'+data.data.name+'"', 'top');
+                tostService.notify('Welcome "' + data.data.name + '"', 'top');
                 timeStorage.set('userEmail', fbData.email, 1);
                 timeStorage.set('userData', data, 1);
                 // lastUsesTimeService.updateTime();
                 $state.go('app.chats');
+                $ionicHistory.nextViewOptions({
+                    historyRoot: true,
+                    disableBack: true
+                });
             });
-        };
-        var count = 0;
-        $ionicPlatform.registerBackButtonAction(function() {
-            var view = $ionicHistory.currentView();
-            if (view.stateId == 'login' && count == 0) {
-                tostService.notify('Press Back Button Again To Exit The App!', 'center');
-                count++;
-                $timeout(function() {
-                    count = 0;
-                }, 3000);
-            } else if (view.stateId == 'login' && count == 1) {
-                navigator.app.exitApp();
-                count = 0;
-            } else {
-                $ionicHistory.goBack();
-                count = 0;
-            }
-        }, 100);
+        }
+        ;
+        
 
     }
 })();
@@ -21768,44 +21278,9 @@ angular.module('chattapp')
     'use strict';
 
     angular.module('chattapp')
-            .controller('menuController', menuController);
-
-    function menuController($scope, $ionicPopover, tostService, $localStorage, Onsuccess, $state, timeStorage, $rootScope) {
-        console.log('menuController');
-        var self = this;
-        self.chattab = true;
-        $ionicPopover.fromTemplateUrl('templates/popover.html', {
-            scope: $scope,
-        }).then(function(popover) {
-            self.popover = popover;
-        });
-        self.search = function(state) {
-            if (timeStorage.get('network')) {
-                window.plugins.toast.showShortTop('You need to online to access this');
-            }
-            else
-            {
-                $state.go(state);
-            }
-        };
-        Onsuccess.footerTab(function(a, b, c, d) {
-            self.chattab = a;
-            self.searchb = b;
-            self.setting = c;
-            self.group = d;
-        });
-//        self.footer = function(state) {
-//            
-//        }
-    }
-})();
-(function() {
-    'use strict';
-
-    angular.module('chattapp')
             .controller('profileController', profileController);
 
-    function profileController(cameraService, profileImageFactory, $ionicLoading, profileFactory, $timeout, $ionicModal, timeStorage, $scope, $filter, $ionicPopup) {
+    function profileController(cameraService, profileImageFactory,sqliteService, $ionicLoading, profileFactory, $timeout, $ionicModal, timeStorage, $scope, $filter, $ionicPopup) {
         var self = this;
         self.displayProfile = timeStorage.get('profile_data');
         if (timeStorage.get('userData').data.access_token) {
@@ -21816,7 +21291,11 @@ angular.module('chattapp')
             });
             query.$promise.then(function(data) {
                 self.displayprofile = data.data;
+                if(!data.data.profile_image){
+                    self.displayprofile.profile_image="img/user.png";
+                }
                 timeStorage.set('profile_data', self.displayprofile);
+
             });
         }
 
@@ -21918,6 +21397,10 @@ angular.module('chattapp')
                     if (data.data.status == 1) {
                         self.displayprofile.profile_image = data.data.data.url;
                         $scope.startLoading = false;
+                        var pr_image = timeStorage.get('userData');
+                        pr_image.data.profile_image = self.displayprofile.profile_image;
+                        console.log(pr_image);
+                        sqliteService.updateUserProfie(self.displayprofile.profile_image);
                         $scope.modal.hide();
                     } else {
                         $scope.startLoading = false;
@@ -22249,26 +21732,29 @@ angular.module('chattapp')
    };
 })();
 
- (function() {
+(function() {
     'use strict';
 
     angular.module('chattapp')
-        .controller('settingController', settingController);
+            .controller('settingController', settingController);
 
     function settingController(socketService, timeStorage, $state) {
-            var self = this;
-            self.version=AppVersion.version;
-            self.logout = function() {
-	            socketService.logout();
-	            timeStorage.remove('google_access_token');
-	            timeStorage.remove('userEmail');
-	            timeStorage.remove('userData');
-	            timeStorage.remove('displayPrivateChats');
-	            timeStorage.remove('listUsers');
-	            timeStorage.remove('chatWithUserData');
-	            timeStorage.remove('displayPublicChats');
-                    timeStorage.remove('profile_data');
-	            $state.go('login');
+        var self = this;
+//        self.version='';
+        document.addEventListener("deviceready", function() {
+            self.version = AppVersion.version;
+        });
+        self.logout = function() {
+            socketService.logout();
+            timeStorage.remove('google_access_token');
+            timeStorage.remove('userEmail');
+            timeStorage.remove('userData');
+            timeStorage.remove('displayPrivateChats');
+            timeStorage.remove('listUsers');
+            timeStorage.remove('chatWithUserData');
+            timeStorage.remove('displayPublicChats');
+            timeStorage.remove('profile_data');
+            $state.go('login');
         };
     }
 })();
