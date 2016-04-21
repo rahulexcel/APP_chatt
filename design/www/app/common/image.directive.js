@@ -42,6 +42,10 @@
                                 var name = scope.infoUser.name;
                                 var firstLetter = name.charAt(0).toUpperCase();
                             }
+                            if(scope.infoUser1){
+                                var name = scope.infoUser1.name;
+                                var firstLetter = name.charAt(0).toUpperCase();
+                            }
                             var color = Configurations.color;
                             element.replaceWith("<button style='background:" + color[firstLetter.toLowerCase()] + "' class='no-image " + chatPageClass + "'><i class='i-24 white'>" + firstLetter + "</i><div class='md-ripple-container'></div></button>");
                         }

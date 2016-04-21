@@ -9,10 +9,6 @@
             <img class='img-circle mycl' ng-src='{{chatPageHeader.image}}'>
         </div>
         <div class='button button-clear fontC'  ng-click="chatPageHeader.openInfo()"> <div class="chatName">{{chatPageHeader.name}} </div><div class="lastSeen headLast">{{chatPageHeader.lastSeen}}</div></div>
-        <!-- <button class='button button-clear pull-right' ng-click="chatPageHeader.popover.show($event)">
-                <i class='icon ion-android-more-vertical'></i>
-        </button> -->
-
     </div>
 </div> 
 
@@ -23,7 +19,7 @@
     <h1 class="title">{{chatPageHeader.infoNameShort}}</h1>
     <div class="button btn-xs button-clear" ng-click="infoModel.hide()"><span class="icon ion-close"></span></div>
 </header>
-    <content has-header="true" padding="true">
+    <ion-content has-header="true" padding="true">
         <div style="width:100%;" class="pad-top-40">
             <div class="col-md-12 col-sm-12 col-xs-12 no-pad-left-right">
                 <div class="panel panel-card">
@@ -54,17 +50,62 @@
                     <div class="list" id="chats">
                         <div class="user-container" ng-repeat="infoUser in chatPageHeader.infoUserList| orderBy:'-last_seen'">
                             <a class="item item-avatar hover infoModel-button">
-                                <img class="avatar" ng-src="{{infoUser.profile_image}}">
-                                <h3>{{infoUser.name}}</h3>
-                                <h3 class="lastSeen">{{infoUser.last_seen}}</h3>
+                                <img class="avatar" ng-src="{{infoUser.profile_image}}" ng-click="chatPageHeader.infoUserClick(infoUser)">
+                                <i class="fa fa-circle user-status {{infoUser.status == 'online' && 'online' || '' }}{{infoUser.status == 'away' && 'away' || '' }}{{infoUser.status == 'offline' && 'offline' || '' }}"></i>
+                                <h3 ng-click="chatPageHeader.infoUserClick(infoUser)">{{infoUser.name}}</h3>
+                                <h3 class="lastSeen" ng-click="chatPageHeader.infoUserClick(infoUser)">{{infoUser.last_seen}}</h3>
                                 <p class="pull-right trash-icon" ng-if="chatPageHeader.is_room_owner == 1" ng-hide="infoUser.owner" ng-click="chatPageHeader.deleteUserFromGroup(infoUser, $index)" ng-class="{'delete-icon-rotate': $index == chatPageHeader.deleteIconRotate}"><i class="fa fa-trash"></i></p>
+                            </a>
+                        </div>
+                    </div>
+                    <h5 class="pad-left-5" ng-if="chatPageHeader.admin_friends_not_room_members.length > 0">Add People</h5>
+                    <div class="list" id="chats" ng-if="chatPageHeader.is_room_owner == 1">
+                        <div class="user-container" ng-repeat="infoUser1 in chatPageHeader.admin_friends_not_room_members | orderBy:'-last_seen'">
+                            <a class="item item-avatar hover infoModel-button">
+                                <img class="avatar" ng-src="{{infoUser1.profile_image}}" ng-click="chatPageHeader.infoUserClick(infoUser1)">
+                                <i class="fa fa-circle user-status {{infoUser1.status == 'online' && 'online' || '' }}{{infoUser1.status == 'away' && 'away' || '' }}{{infoUser1.status == 'offline' && 'offline' || '' }}"></i>
+                                <h3 ng-click="chatPageHeader.infoUserClick(infoUser1)">{{infoUser1.name}}</h3>
+                                <h3 class="lastSeen" ng-click="chatPageHeader.infoUserClick(infoUser1)">{{infoUser1.last_seen}}</h3>
                             </a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </content>
+    </ion-content>
 </div>
 </script>
+<script id="infoModelUser.html" type="text/ng-template">
+   <div class="modal">
+        <header class="bar bar-header bar-positive">
+          <h1 class="title">{{chatPageHeader.displayUserProfileName}}</h1>
+          <div class="button btn-xs button-clear" ng-click="infoModelUser.hide()"><span class="icon ion-close"></span></div>
+        </header>
+        <ion-content class="has-header has-footer">
 
+    <div style="width:100%;">
+            <div class="col-md-12 col-sm-12 col-xs-12 no-pad-left-right">
+                <div class="panel panel-card mypanel">
+                    <div class="r-t pos-rlt" md-ink-ripple style="background:url({{chatPageHeader.displayUserProfileImage}})  center; background-size:cover;background-repeat: no-repeat;height:250px;">
+                        <div class="bg-white-overlay text-center r-t" style="padding-top: 10px;height: 250px">
+                            <a href class="w-xs inline myim" >
+                                <img id="profileImage" ng-src="{{chatPageHeader.displayUserProfileImage}}" class="img-circle profile-pic">
+                            </a>
+                            <div class="m-b m-t-sm h2">
+                                <span class="">{{chatPageHeader.displayUserProfileName}}</span>
+                            </div>
+                          <div class="m-b m-t-sm h4" >
+                                <span class="">{{chatPageHeader.displayUserProfileStatus}}</span>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="pad-top-5 pull-right">last seen: {{chatPageHeader.displayUserProfileLastSeen}}</p>
+            <div class="clearfix"></div>
+            <p class="pad-5"><span>Private Rooms</span><span class="pull-right">{{chatPageHeader.displayUserProfilePrivateRooms}}</span></p>
+            <p class="pad-5"><span>Public Rooms</span><span class="pull-right">{{chatPageHeader.displayUserProfilePublicRooms}}</span></p>
+        </div>
+        </ion-content>
+    </div>                
+</script>

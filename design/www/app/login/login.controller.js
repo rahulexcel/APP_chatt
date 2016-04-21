@@ -2,7 +2,7 @@
     'use strict';
 
     angular.module('chattapp')
-        .controller('loginController', loginController);
+            .controller('loginController', loginController);
 
     function loginController($state, loginFactory, timeStorage, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService, $ionicLoading) {
         console.log('login');
@@ -29,7 +29,7 @@
                     password: self.data.password,
                     name: '',
                     currentTimestamp: _.now(),
-                    profile_image:''
+                    profile_image: ''
                 });
                 query.$promise.then(function(data) {
                     $ionicLoading.hide();
@@ -38,12 +38,16 @@
                         timeStorage.set('userEmail', self.data.email, 1);
                         $state.go('verification');
                     } else if (data.status == 1) {
-                        tostService.notify('Welcome "'+data.data.name+'"', 'top');
+                        tostService.notify('Welcome "' + data.data.name + '"', 'top');
                         timeStorage.set('userEmail', self.data.email, 1);
                         timeStorage.set('userData', data, 1);
                         // lastUsesTimeService.updateTime();
                         $state.go('app.chats');
-                    } else if(data.status == 0){
+                        $ionicHistory.nextViewOptions({
+                            historyRoot: true,
+                            disableBack: true
+                        });
+                    } else if (data.status == 0) {
                         tostService.notify(data.message, 'top');
                     }
                 });
@@ -67,16 +71,20 @@
                     name: googleData.name,
                     currentTimestamp: _.now(),
                     password: '',
-                    profile_image:googleData.picture
+                    profile_image: googleData.picture
                 });
                 query.$promise.then(function(data) {
                     $ionicLoading.hide();
                     console.log(data);
-                    tostService.notify('Welcome "'+data.data.name+'"', 'top');
+                    tostService.notify('Welcome "' + data.data.name + '"', 'top');
                     timeStorage.set('userEmail', googleData.email, 1);
                     timeStorage.set('userData', data, 1);
                     // lastUsesTimeService.updateTime();
                     $state.go('app.chats');
+                    $ionicHistory.nextViewOptions({
+                        historyRoot: true,
+                        disableBack: true
+                    });
                 });
             }, function(data) {
                 console.log(data);
@@ -116,35 +124,24 @@
                 name: fbData.name,
                 currentTimestamp: _.now(),
                 password: '',
-                profile_image:'http://graph.facebook.com/' + fbData.id + '/picture?type=large'
+                profile_image: 'http://graph.facebook.com/' + fbData.id + '/picture?type=large'
             });
             query.$promise.then(function(data) {
                 $ionicLoading.hide();
                 console.log(data);
-                tostService.notify('Welcome "'+data.data.name+'"', 'top');
+                tostService.notify('Welcome "' + data.data.name + '"', 'top');
                 timeStorage.set('userEmail', fbData.email, 1);
                 timeStorage.set('userData', data, 1);
                 // lastUsesTimeService.updateTime();
                 $state.go('app.chats');
+                $ionicHistory.nextViewOptions({
+                    historyRoot: true,
+                    disableBack: true
+                });
             });
-        };
-        var count = 0;
-        $ionicPlatform.registerBackButtonAction(function() {
-            var view = $ionicHistory.currentView();
-            if (view.stateId == 'login' && count == 0) {
-                tostService.notify('Press Back Button Again To Exit The App!', 'center');
-                count++;
-                $timeout(function() {
-                    count = 0;
-                }, 3000);
-            } else if (view.stateId == 'login' && count == 1) {
-                navigator.app.exitApp();
-                count = 0;
-            } else {
-                $ionicHistory.goBack();
-                count = 0;
-            }
-        }, 100);
+        }
+        ;
+        
 
     }
 })();

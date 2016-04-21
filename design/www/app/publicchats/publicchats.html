@@ -1,6 +1,7 @@
 <ion-view view-title="Rooms" id="background" hide-back-button="true">
     <ion-content class="has-footer">
         <div class="list" id="chats">
+            <h4 ng-hide="publicChats.displayPublicChat.length > 0" class="text-center">'No rooms found'</h4>
             <div class="user-container" ng-click="publicChats.clickOnRoom(publicChat, $index)" ng-repeat="publicChat in publicChats.displayPublicChat">
                 <a class="item item-avatar hover">
                     <img class="avatar" ng-src="{{publicChat.room_image}}">
@@ -13,30 +14,11 @@
     <div class="md-list-item-left circle green add-public-chat" ng-click="modal.show()">
         <i class="ion-plus-round i-24"></i>
     </div>
-    <!--    <ion-footer-bar class="bar-stable">
-            <div class="md-list-item-left circle green add-public-chat" ng-click="modal.show()">
-                <i class="ion-plus-round i-24"></i>
-            </div>
-            <div class="tabs tabs-icon-top" id="background">
-                <a class="tab-item" nav-direction="swap" href="#/app/chats">
-                    <i class="icon ion-chatbubble tabs-icon-color"></i> Chats
-                </a>
-                <a class="tab-item active" nav-direction="swap" ng-click="search('app.publicChats')">
-                    <i class="icon ion-person-stalker tabs-icon-color"></i> Groups
-                </a>
-                <a class="tab-item" nav-direction="swap" ng-click="search('app.contacts')">
-                    <i class="icon ion-person tabs-icon-color"></i> Search
-                </a>
-                <a class="tab-item" nav-direction="swap" href="#/app/setting">
-                    <i class="icon ion-android-settings tabs-icon-color"></i> Settings
-                </a>
-            </div>
-        </ion-fotter-bar>-->
 </ion-view>
 <script id="modal.html" type="text/ng-template">
     <div class="modal">
     <header class="bar bar-header bar-positive">
-    <h1 class="title">Create A Room</h1>
+    <h1 class="title">Create a room</h1>
     <div class="button btn-xs button-clear" ng-click="modal.hide()"><span class="icon ion-close"></span></div>
     </header>
     <content has-header="true" padding="true">
@@ -88,6 +70,7 @@
     <div class="user-container" ng-repeat="groupUser in publicChats.groupUserList | orderBy:'-last_seen'">
     <a class="item item-avatar hover">
     <img class="avatar" ng-src="{{groupUser.profile_image}}">
+    <i class="fa fa-circle user-status {{groupUser.status == 'online' && 'online' || '' }}{{groupUser.status == 'away' && 'away' || '' }}{{groupUser.status == 'offline' && 'offline' || '' }}"></i>
     <h3>{{groupUser.name}}</h3>
     <h3 class="lastSeen">{{groupUser.last_seen}}</h3>
     </a>

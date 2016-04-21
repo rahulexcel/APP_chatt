@@ -15,13 +15,15 @@
                            room_users.last_seenInTimestamp = roomData[i].show_details_for_list.sub_text;
                        } else {
                            room_users.last_seenInTimestamp = roomData[i].show_details_for_list.sub_text;
-                           room_users.last_seen = moment(parseInt(roomData[i].show_details_for_list.sub_text)).format("Do MMMM hh:mm a");
+                           room_users.last_seen = moment.unix(roomData[i].show_details_for_list.sub_text).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
                        }
                        room_users.profile_image = roomData[i].show_details_for_list.icon;
                        room_users.name = roomData[i].show_details_for_list.main_text;
                        room_users.id = roomData[i].show_details_for_list.user_id;
+                       room_users.status = roomData[i].show_details_for_list.user_status;
                        newRoomData.user_data = room_users;
                        newRoomData.room_id = roomData[i].id;
+                       newRoomData.room_type = roomData[i].room_type;
                        newRoomData.unreadMessage = 0;
                        newRoomData.unreadMessageTimeStamp = 0;
                        returnData.push(newRoomData);
@@ -54,7 +56,6 @@
                    return q.promise;
                },
                service.showUnreadIcon = function(roomUnreadData) {
-                console.log(roomUnreadData);
                 var allChatData = timeStorage.get('displayPrivateChats');
                 var q = $q.defer();
                   for(var i = 0; i < allChatData.length; i++){

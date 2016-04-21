@@ -8,7 +8,7 @@ angular.module('chattapp')
                     'onFocus': '&',
                     'onClick': '&',
                     'onBlur': '&',
-                    'trigger': '@isFocused'
+                    'trigger': '@isFocused',
                 },
                 link: function(scope, element, attr) {
                     element.bind('focus', function(e) {
@@ -37,14 +37,27 @@ angular.module('chattapp')
                             }
                         }
                     });
-
+                    
+                    var newVal;
                     scope.$watch('trigger', function(value) {
-                        if (value === "true") {
+                        if (value === "focusOut" || value === false) {
+                            newVal = '';
+                        }
+                        else if (value === "foc") {
+                            newVal = "focus";
                             $timeout(function() {
                                 element[0].focus();
-
                                 element.on('blur', function() {
-                                    element[0].focus();
+                                    if (!newVal) {
+                                       
+                                        element[0].blur();
+                                        newVal = '';
+                                    }
+                                    else {
+                                        
+                                        element[0].focus();
+
+                                    }
                                 });
                             });
                         }
