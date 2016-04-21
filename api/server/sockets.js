@@ -243,7 +243,8 @@ module.exports.listen = function(app){
                             unread_messages : 1,
                             currentTimestamp : currentTimestamp
                         }
-                        socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT','show_room_unread_notification', d11 );
+                        //update_room_unread_notification -- this will have a room_id, with that room_id show_room_unread_notification will be call
+                        socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT','update_room_unread_notification', d11 );
                         
                     }
                 });
@@ -255,6 +256,7 @@ module.exports.listen = function(app){
                 console.log( 'SOCKET CALL :: join_public_room :: room_id '+ room_id );
                 FN_join_public_room( accessToken, room_id, currentTimestamp, function( response ){
                     if( response.status == 1 ){
+                        console.log( response );
                         var d = {
                             type : 'alert',
                             data : response
@@ -263,6 +265,10 @@ module.exports.listen = function(app){
                         //----------------------------------------------------
                         var join_user_info = response.data.join_user_info;
                         var joins_user_info_name = join_user_info.name;
+                        var room_name = '';
+                        if( typeof response.data.room_name != 'undefined' &&  response.data.room_name != '' ){
+                            room_name = response.data.room_name;
+                        }
                         var msg_local_id = '';
                         var message_type = 'room_alert_message';
                         var message = joins_user_info_name + ' joins the room';
@@ -480,6 +486,24 @@ module.exports.listen = function(app){
                         }
                     });
                 }
+            }
+            else if( type == 'get_user_profile' ){
+                var accessToken = info.accessToken;
+                var user_id = info.user_id;
+                var currentTimestamp = info.currentTimestamp;
+                
+                console.log( 'SOCKET CALL :: get_user_profile :: for user_id - '+ user_id );
+                
+                FN_get_user_profile( accessToken, user_id, currentTimestamp, function( response ){
+                    if( response.status == 1 ){
+                        var d = {
+                            type : 'info',
+                            user_id : response.data.user_id,
+                            data : response
+                        }
+                        socket.emit( 'RESPONSE_APP_SOCKET_EMIT','get_user_profile', d );
+                    }
+                });
             }
         });
         
