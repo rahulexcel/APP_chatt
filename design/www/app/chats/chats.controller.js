@@ -4,7 +4,9 @@
     angular.module('chattapp')
         .controller('chatsController', chatsController);
 
-    function chatsController($scope, chatsFactory,$ionicHistory, timeStorage, chatsService, $state, socketService) {
+
+    function chatsController($scope, chatsFactory, timeStorage, chatsService, $state, socketService, $interval, $ionicHistory, timeZoneService) {
+
             var self = this;
            
             var userData = timeStorage.get('userData');
@@ -21,6 +23,7 @@
                 chatsService.showUnreadIcon(response).then(function(data){
                     self.displayChats = data;
                     $scope.$evalAsync();
+                    socketService.getUserProfile(self.displayChats);
                 });
              });
              $scope.$on('update_room_unread_notification', function (event, response) {
@@ -42,5 +45,24 @@
                     $state.go('app.chatpage', {roomId:roomData.room_id});
                 }
              }
+             var getUserProfile = $interval(function() {
+                if ($ionicHistory.currentView().stateName != 'app.chats') {
+                    $interval.cancel(getUserProfile);
+                } else {
+                    socketService.getUserProfile(self.displayChats);
+                }
+             }, 60000);
+             $scope.$on('got_user_updated_profile', function (event, response) {
+                for(var i = 0; i < self.displayChats.length; i++){
+                    if(self.displayChats[i].room_type == 'private'){
+                        if(self.displayChats[i].user_data.id == response.data.user_id){
+                            self.displayChats[i].user_data.status = response.data.data.data.status;
+                            self.displayChats[i].user_data.last_seenInTimestamp = response.data.data.data.last_seen;
+                            self.displayChats[i].user_data.last_seen = moment.unix(response.data.data.data.last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
+                            $scope.$evalAsync();
+                        }
+                    }
+                }
+             });
     }
 })();

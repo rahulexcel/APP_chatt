@@ -5,7 +5,7 @@
             <div class="user-container" ng-repeat="chat in chats.displayChats | orderBy: '-unreadMessageTimeStamp'">
                 <a class="item item-avatar hover" ng-click="chats.roomClick(chat)">
                     <img class="avatar" ng-src="{{chat.user_data.profile_image}}">
-                    <i class="fa fa-circle user-status"></i>
+                    <i class="fa fa-circle user-status {{chat.user_data.status == 'online' && 'online' || '' }}{{chat.user_data.status == 'away' && 'away' || '' }}{{chat.user_data.status == 'offline' && 'offline' || '' }}" ng-if="chat.room_type != 'public'"></i>
                     <h3>{{chat.user_data.name}}</h3>
                     <span class="badge blue-badge" ng-if="chat.unreadMessage > 0">{{chat.unreadMessage}}</span>
                     <span class="time lastSeen">{{chat.user_data.last_seen}}</span>

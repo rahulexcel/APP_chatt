@@ -29,6 +29,9 @@
 .p-lg{
     padding: 18px;
 }
+.pad-left-5{
+    padding-left: 1.3em;
+}
 .no-image{
     position: absolute; 
     vertical-align: middle; 
@@ -353,13 +356,11 @@ a.tab-item:hover{
     padding: 4px 8px;
     vertical-align: top;
 }
-.bubble-yellow::before {
+/*.bubble-yellow::before {
     background-color: #A29E39 ;
-    /*box-shadow: -2px 2px 2px 0 rgba(178, 178, 178, 0.4);*/
     content: " ";
     display: block;
     height: 10px;
-    /*right: 246px;*/
     left: 60px;
     position: absolute;
     top: 0px;
@@ -369,7 +370,7 @@ a.tab-item:hover{
     -moz-transform: rotate(29deg) skew(-35deg);
     -webkit-transform: rotate(29deg) skew(-35deg);
     width: 12px;
-}
+}*/
 .bubble-blue {
     background-color: #78C9A7;
     border-color: #78C9A7;
@@ -379,9 +380,8 @@ a.tab-item:hover{
     padding: 4px 8px;
     vertical-align: top;
 }
-.bubble-blue::before {
+/*.bubble-blue::before {
     background-color: #78C9A7 ;
-    /*box-shadow: -2px 2px 2px 0 rgba(178, 178, 178, 0.4);*/
     content: " ";
     display: block;
     height: 10px;
@@ -394,7 +394,7 @@ a.tab-item:hover{
     -moz-transform: rotate(29deg) skew(-35deg);
     -webkit-transform: rotate(29deg) skew(-35deg);
     width: 12px;
-}
+}*/
 .left-chat p{
     white-space:pre-line;
     max-width: 15em;
@@ -752,7 +752,22 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
     border-radius: 50%!important;
     background-color: blue;
 }
+<<<<<<< HEAD
 
+=======
+.update-pic-btn{
+    border-radius: 0px!important;
+}
+.online{
+    color: green!important;
+}
+.away{
+    color: orange!important;
+}
+.offline{
+    color: gray!important;
+}
+>>>>>>> 798875f42eac7fe82ed8e4df42e3b7d521be2b46
 /*==============================*/
 span.satusedit.ion-android-create {
     padding: 0 0 0 8px;

@@ -4,7 +4,8 @@
     angular.module('chattapp')
             .controller('chatPageHeaderDirectiveController', chatPageHeaderDirectiveController);
 
-    function chatPageHeaderDirectiveController($state, timeStorage, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory) {
+    function chatPageHeaderDirectiveController($state, timeStorage, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService) {
+
         var self = this;
         self.leaveGroupSpinner = false;
         self.deleteGroupSpinner = false;
@@ -13,7 +14,7 @@
         self.image = chatWithUserData.pic;
         self.id = chatWithUserData.id;
         if (!isNaN(chatWithUserData.lastSeen)) {
-            self.lastSeen = moment(parseInt(chatWithUserData.lastSeen)).format("hh:mm a");
+            self.lastSeen = moment.unix(chatWithUserData.lastSeen).tz(timeZoneService.getTimeZone()).format("hh:mm a");
         } else {
             self.lastSeen = chatWithUserData.lastSeen;
         }
@@ -23,8 +24,10 @@
         self.openModelWithSpinner = true;
         if (!chatWithUserData.id) {
             infoApi();
-        } else{
-            infoApiUser();
+        } else {
+
+            infoApiUser(self.id);
+
         }
         function infoApi() {
             var userData = timeStorage.get('userData');
@@ -34,6 +37,12 @@
                 currentTimestamp: _.now()
             });
             query.$promise.then(function(data) {
+                if (data.data.admin_friends_not_room_members) {
+                    for (var i = 0; i < data.data.admin_friends_not_room_members.length; i++) {
+                        data.data.admin_friends_not_room_members[i].last_seen = moment.unix(data.data.admin_friends_not_room_members[i].last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
+                    }
+                    self.admin_friends_not_room_members = data.data.admin_friends_not_room_members;
+                }
                 self.openModelWithSpinner = false;
                 self.is_room_owner = data.data.room.is_room_owner;
                 self.infoNameShort = data.data.room.short_room_name;
@@ -56,16 +65,17 @@
                         data.data.room.room_users[i].name = data.data.room.room_users[i].name + ' (owner)';
                         data.data.room.room_users[i].owner = true;
                     }
-                    data.data.room.room_users[i].last_seen = moment(parseInt(data.data.room.room_users[i].last_seen)).format("Do MMMM hh:mm a");
+                    data.data.room.room_users[i].last_seen = moment.unix(data.data.room.room_users[i].last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
                 }
                 self.infoUserList = data.data.room.room_users;
             });
         }
-        function infoApiUser(){
+
+        function infoApiUser(userId) {
             var userData = timeStorage.get('userData');
             var query = getUserProfileFactory.save({
                 accessToken: userData.data.access_token,
-                user_id: self.id,
+                user_id: userId,
                 currentTimestamp: _.now()
             });
             query.$promise.then(function(data) {
@@ -76,12 +86,12 @@
                     self.displayUserProfileImage = data.data.profile_image;
                 }
                 else {
-                        self.displayUserProfileImage ="img/user.png";
+                    self.displayUserProfileImage = "img/user.png";
                 }
-                var lastOnline = (_.now() - data.data.last_seen)/1000;
-                if(lastOnline > 86400){
+                var lastOnline = (_.now() - data.data.last_seen) / 1000;
+                if (lastOnline > 86400) {
                     self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("MMMM Do YYYY, h:mm a");
-                } else{
+                } else {
                     self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("h:mm a");
                 }
                 self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
@@ -94,8 +104,8 @@
             if (!chatWithUserData.id) {
                 infoApi();
                 $scope.infoModel.show();
-            } else{
-                infoApiUser();
+            } else {
+                infoApiUser(self.id);
                 $scope.infoModelUser.show();
             }
         };
@@ -148,7 +158,7 @@
             infoApi();
         });
         $scope.$on('got_user_profile_for_room', function(event, data) {
-            self.lastSeen = moment(parseInt(data.data.data.last_seen)).format("hh:mm a");
+            self.lastSeen = moment.unix(data.data.data.last_seen).tz(timeZoneService.getTimeZone()).format("hh:mm a");
         });
         $ionicModal.fromTemplateUrl('infoModel.html', function($ionicModal) {
             $scope.infoModel = $ionicModal;
@@ -202,6 +212,18 @@
         }).then(function(modal) {
             $scope.imageModal = modal;
         });
+        self.infoUserClick = function(userData) {
+            self.displayUserProfileName = '';
+            self.displayUserProfileId = '';
+            self.displayUserProfileLastSeenInTimeStamp = '';
+            self.displayUserProfileImage = '';
+            self.displayUserProfileLastSeen = '';
+            self.displayUserProfilePrivateRooms = '';
+            self.displayUserProfilePublicRooms = '';
+            self.displayUserProfileStatus = '';
+            infoApiUser(userData.id);
+            $scope.infoModelUser.show();
+        };
         self.editProfilePic = function() {
             $scope.myCroppedImage = '';
             cameraService.changePic().then(function(imageData) {

@@ -65,7 +65,10 @@
                 self.groupCreatedOn = moment(parseInt(data.data.room.registration_time)).format("Do MMMM hh:mm a");
                 self.groupDescription = data.data.room.room_description;
                 for (var i = 0; i < data.data.room.room_users.length; i++) {
-                    data.data.room.room_users[i].last_seen = moment(parseInt(data.data.room.room_users[i].last_seen)).format("Do MMMM hh:mm a");
+                    data.data.room.room_users[i].last_seen = moment.unix(data.data.room.room_users[i].last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
+                    if (data.data.room.room_users[i].id == data.data.room.room_owner.id) {
+                        data.data.room.room_users[i].name = data.data.room.room_users[i].name + ' (owner)';
+                    }
                 }
                 self.groupUserList = data.data.room.room_users;
                 $scope.groupModel.show();
