@@ -202,6 +202,20 @@
                  function success() {
                     
                  }
+             },
+             service.leaveChat = function(roomId) {
+                console.log("DELETE from messages WHERE roomid="+roomId)
+                var dbobj = window.sqlitePlugin.openDatabase({
+                     name: "chattappDB"
+                 });
+                 dbobj.transaction(populateDB, error, success);
+                 function populateDB(tx) {
+                     tx.executeSql("DELETE from messages WHERE roomid='"+roomId+"'");
+                 }
+                 function error(err) {
+                 }
+                 function success() {
+                 }
              }
          return service;
      };
