@@ -85932,6 +85932,18 @@ img.img-circle.mycl {
   text-align: center;
   font-size: 17px;
 }
+
+.popover {
+  border: none !important;
+  border-radius: 0px !important;
+}
+
+ion-popover-view.profile_popover.popover.none.ng-enter.active.ng-enter-active {
+  margin-left: 0px;
+  opacity: 1;
+  height: auto !important;
+  width: auto !important;
+}
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
