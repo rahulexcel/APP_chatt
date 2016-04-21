@@ -4,8 +4,8 @@
     angular.module('chattapp')
             .controller('menuController', menuController);
 
-    function menuController($scope, $ionicPopover,$ionicPlatform,$ionicHistory, tostService, $localStorage, Onsuccess, $state, timeStorage, $rootScope) {
-      
+    function menuController($scope, $ionicPopover, socketService, $ionicPlatform, $ionicHistory, tostService, $localStorage, Onsuccess, $state, timeStorage, $rootScope) {
+
         var self = this;
         self.chattab = true;
         $ionicPopover.fromTemplateUrl('templates/popover.html', {
@@ -28,6 +28,24 @@
             self.setting = c;
             self.group = d;
         });
+        $scope.logout = function() {
+            window.sqlitePlugin.deleteDatabase({name: "chattappDB", location: 1});
+            
+            socketService.logout();
+            timeStorage.remove('google_access_token');
+            timeStorage.remove('userEmail');
+            timeStorage.remove('userData');
+            timeStorage.remove('displayPrivateChats');
+            timeStorage.remove('listUsers');
+            timeStorage.remove('chatWithUserData');
+            timeStorage.remove('displayPublicChats');
+            timeStorage.remove('profile_data');
+            if (ionic.Platform.isAndroid()) {
+                facebookConnectPlugin.logout();
+            }
+            ;
+            $state.go('login');
+        };
         var count = 0;
         $ionicPlatform.registerBackButtonAction(function() {
             var view = $ionicHistory.currentView();

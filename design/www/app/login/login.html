@@ -1,37 +1,20 @@
 <ion-view view-title="Login">
-  <ion-content scroll="false" id="background" class="login">
-     <div class="center-block w-xxl w-auto-xs p-v-md">
-    <div class="app-name">
-      <div class="text-center">
-        <span class="inline white">CHAT</span>
-      </div>
-    </div>
+    <ion-content scroll="false" id="background" class="login">
+        <div class="center-block w-xxl w-auto-xs p-v-md">
+            <div class="app-name">
+                <div class="text-center">
+                    <span class="inline white">CHAT APP</span>
+                </div>
+            </div>
 
-    <div class="p-lg panel md-whiteframe-z1 text-color m">
-      <div class="m-b text-sm">
-        Sign in with your CHAT Account
-      </div>
-      <form name="loginForm">
-        <div class="md-form-group float-label">
-          <input type="text" class="md-input" ng-model="login.data.email" ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/" required autocomplete="off" require>
-          <label>Email</label>
+            <div class="p-lg panel md-whiteframe-z1 text-color m">
+                <div class="m-b text-sm">
+                </div>
+                <button type="button" class="md-btn md-raised btn-block p-h-md google-btn" ng-click="login.googleRegister()"><span ng-show="login.googleSpinner"><i class="fa fa-spin fa-spinner"></i></span> <span>CONNECT WITH</span> <i class="fa fa-google"></i></button>
+                <button type="button" class="md-btn md-raised btn-block p-h-md facebook-btn" ng-click="login.facebookRegister()"><span ng-show="login.facebookSpinner"><i class="fa fa-spin fa-spinner"></i></span> <span>CONNECT WITH</span> <i class="fa fa-facebook"></i></button>
+                
+            </div>
         </div>
-        <div class="md-form-group float-label">
-          <input type="password" class="md-input" ng-model="login.data.password" required>
-          <label>Password</label>
         </div>
-        <button md-ink-ripple type="submit" class="md-btn md-raised pink btn-block p-h-md" ng-click="login.login()"> <span ng-show="login.loginSpinner"><i class="fa fa-spin fa-spinner"></i></span>SIGN IN</button>
-        <button type="button" class="md-btn md-raised btn-block p-h-md google-btn" ng-click="login.googleRegister()"><span ng-show="login.googleSpinner"><i class="fa fa-spin fa-spinner"></i></span> <span>CONNECT WITH</span> <i class="fa fa-google"></i></button>
-        <button type="button" class="md-btn md-raised btn-block p-h-md facebook-btn" ng-click="login.facebookRegister()"><span ng-show="login.facebookSpinner"><i class="fa fa-spin fa-spinner"></i></span> <span>CONNECT WITH</span> <i class="fa fa-facebook"></i></button>
-        <h5 class="text-center">OR</h5>
-        <button md-ink-ripple type="submit" class="md-btn md-raised blue btn-block p-h-md" ui-sref="register">SIGN UP</button>
-      </form>
-    </div>
-
-    <div class="text-center">
-      <button class="md-btn white" ui-sref="forgotPassword">FORGOT PASSWORD</button>
-    </div>
-    </div>
-  </div>
-  </ion-content>
+    </ion-content>
 </ion-view>
