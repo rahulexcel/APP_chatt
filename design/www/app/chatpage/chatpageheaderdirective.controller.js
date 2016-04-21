@@ -5,6 +5,7 @@
             .controller('chatPageHeaderDirectiveController', chatPageHeaderDirectiveController);
 
     function chatPageHeaderDirectiveController($state, timeStorage, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService) {
+
         var self = this;
         self.leaveGroupSpinner = false;
         self.deleteGroupSpinner = false;
@@ -23,8 +24,10 @@
         self.openModelWithSpinner = true;
         if (!chatWithUserData.id) {
             infoApi();
-        } else{
+        } else {
+
             infoApiUser(self.id);
+
         }
         function infoApi() {
             var userData = timeStorage.get('userData');
@@ -34,8 +37,8 @@
                 currentTimestamp: _.now()
             });
             query.$promise.then(function(data) {
-                if(data.data.admin_friends_not_room_members){
-                    for(var i = 0; i < data.data.admin_friends_not_room_members.length; i++){
+                if (data.data.admin_friends_not_room_members) {
+                    for (var i = 0; i < data.data.admin_friends_not_room_members.length; i++) {
                         data.data.admin_friends_not_room_members[i].last_seen = moment.unix(data.data.admin_friends_not_room_members[i].last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
                     }
                     self.admin_friends_not_room_members = data.data.admin_friends_not_room_members;
@@ -67,7 +70,8 @@
                 self.infoUserList = data.data.room.room_users;
             });
         }
-        function infoApiUser(userId){
+
+        function infoApiUser(userId) {
             var userData = timeStorage.get('userData');
             var query = getUserProfileFactory.save({
                 accessToken: userData.data.access_token,
@@ -82,12 +86,12 @@
                     self.displayUserProfileImage = data.data.profile_image;
                 }
                 else {
-                    self.displayUserProfileImage ="https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg";
+                    self.displayUserProfileImage = "img/user.png";
                 }
-                var lastOnline = (_.now() - data.data.last_seen)/1000;
-                if(lastOnline > 86400){
+                var lastOnline = (_.now() - data.data.last_seen) / 1000;
+                if (lastOnline > 86400) {
                     self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("MMMM Do YYYY, h:mm a");
-                } else{
+                } else {
                     self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("h:mm a");
                 }
                 self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
@@ -100,7 +104,7 @@
             if (!chatWithUserData.id) {
                 infoApi();
                 $scope.infoModel.show();
-            } else{
+            } else {
                 infoApiUser(self.id);
                 $scope.infoModelUser.show();
             }

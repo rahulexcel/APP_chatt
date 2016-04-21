@@ -4,8 +4,11 @@
     angular.module('chattapp')
         .controller('chatsController', chatsController);
 
+
     function chatsController($scope, chatsFactory, timeStorage, chatsService, $state, socketService, $interval, $ionicHistory, timeZoneService) {
+
             var self = this;
+           
             var userData = timeStorage.get('userData');
              chatsService.listMyRooms().then(function(data){
                 self.displayChats = data;

@@ -4,8 +4,8 @@
     angular.module('chattapp')
             .controller('menuController', menuController);
 
-    function menuController($scope, $ionicPopover, tostService, $localStorage, Onsuccess, $state, timeStorage, $rootScope) {
-        console.log('menuController');
+    function menuController($scope, $ionicPopover,$ionicPlatform,$ionicHistory, tostService, $localStorage, Onsuccess, $state, timeStorage, $rootScope) {
+      
         var self = this;
         self.chattab = true;
         $ionicPopover.fromTemplateUrl('templates/popover.html', {
@@ -28,8 +28,22 @@
             self.setting = c;
             self.group = d;
         });
-//        self.footer = function(state) {
-//            
-//        }
+        var count = 0;
+        $ionicPlatform.registerBackButtonAction(function() {
+            var view = $ionicHistory.currentView();
+            if (view.stateId == 'login' && count == 0 || view.stateId == 'app.chats' && count == 0) {
+                tostService.notify('Press Back Button Again To Exit The App!', 'Bottom');
+                count++;
+                $timeout(function() {
+                    count = 0;
+                }, 3000);
+            } else if (view.stateId == 'login' && count == 1 || view.stateId == 'app.chats' && count == 1) {
+                navigator.app.exitApp();
+                count = 0;
+            } else {
+                $ionicHistory.goBack();
+                count = 0;
+            }
+        }, 100);
     }
 })();
