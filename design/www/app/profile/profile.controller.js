@@ -4,7 +4,7 @@
     angular.module('chattapp')
             .controller('profileController', profileController);
 
-    function profileController(cameraService, profileImageFactory,sqliteService, $ionicLoading, profileFactory, $timeout, $ionicModal, timeStorage, $scope, $filter, $ionicPopup) {
+    function profileController(cameraService, profileImageFactory, $state, $ionicPopover, sqliteService, $ionicLoading, profileFactory, $timeout, $ionicModal, timeStorage, $scope, $filter, $ionicPopup) {
         var self = this;
         self.displayProfile = timeStorage.get('profile_data');
         if (timeStorage.get('userData').data.access_token) {
@@ -15,14 +15,24 @@
             });
             query.$promise.then(function(data) {
                 self.displayprofile = data.data;
-                if(!data.data.profile_image){
-                    self.displayprofile.profile_image="img/user.png";
+                if (!data.data.profile_image) {
+                    self.displayprofile.profile_image = "img/user.png";
                 }
                 timeStorage.set('profile_data', self.displayprofile);
 
             });
         }
-
+        $ionicPopover.fromTemplateUrl('app/profile/template/popover.html', {
+            scope: $scope
+        }).then(function(popover) {
+            self.popover = popover;
+        });
+        self.openPopover = function($event) {
+            self.popover.show($event);
+        };
+        self.closePopover = function() {
+            self.popover.hide();
+        };
         self.editProfilePic = function() {
             $scope.myCroppedImage = '';
             cameraService.changePic().then(function(imageData) {
@@ -33,7 +43,9 @@
                 window.plugins.toast.showShortTop('Unable to retrieve image');
             });
         };
-
+        self.hidepop = function() {
+            self.popover.hide();
+        };
         $scope.result = function(image) {
             $scope.myCroppedImage = image;
 
@@ -143,6 +155,7 @@
             $scope.startLoading = false;
             $scope.start = false;
         };
+
     }
 
 })();
