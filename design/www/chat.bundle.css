@@ -97935,6 +97935,45 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
   color: gray!important;
 }
 
+.noItem {
+  border-bottom: none!important;
+}
+
+.empty {
+  text-align: center;
+  padding: 40% 0px 0px 0;
+}
+
+.nothing {
+  font-size: 2.0em;
+  color: gray;
+  padding-bottom: 25px;
+  opacity: 0.8;
+}
+
+.empty_div {
+  width: 120px;
+  height: 101px;
+  margin: auto;
+  opacity: 0.8;
+}
+
+.now {
+  font-size: 1.5em;
+  color: gray;
+  padding-top: 5px;
+  opacity: 0.8;
+}
+
+.empty_btn {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background-color: rgba(128, 128, 128, 0.75);
+  font-size: 35px;
+  color: white;
+}
+
 /*==============================*/
 
 span.satusedit.ion-android-create {
