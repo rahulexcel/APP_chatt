@@ -14,10 +14,10 @@
                      tx.executeSql('CREATE TABLE IF NOT EXISTS messages(id INTEGER PRIMARY KEY AUTOINCREMENT, message_id TEXT, message TEXT, message_status TEXT, user_id TEXT, user_name TEXT, user_profile_image TEXT, roomId TEXT, message_type TEXT,  messageTime INTEGER)');
                  }
                  function errorInSchema() {
-                     console.log("Error to create schema");
+                     
                  }
                  function successInSchema() {
-                     console.log("Schema creation successful");
+                    
                  }
              },
              service.saveMessageInDb = function(message, message_status, user_id, user_name, user_profile_image, roomId, messageTime) {
@@ -32,11 +32,11 @@
                      });
                  }
                  function error(err) {
-                     console.log("Error processing SQL: " + err.code);
+                    
                      q.reject(err);
                  }
                  function success(results) {
-                     console.log("New Data Inserted!");
+                     
                  }
                  return q.promise;
              },
@@ -49,10 +49,10 @@
                      tx.executeSql("UPDATE messages SET message_id='"+messageId+"', messageTime='"+messageTime+"', message_status='sent' WHERE id="+localMessageId);
                  }
                  function error(err) {
-                     console.log("Error processing SQL: " + err.code);
+                     
                  }
                  function success() {
-                     console.log("successfully updated to sent!");
+                     
                  }
              },
              service.updateMessageStatusToSeen = function(messageId) {
@@ -64,10 +64,10 @@
                      tx.executeSql("UPDATE messages SET message_status= 'seen' WHERE message_id= '"+messageId+"'");
                  }
                  function error(err) {
-                     console.log("Error processing SQL: " + err.code);
+                    
                  }
                  function success() {
-                     console.log("successfully updated to SEEN!");
+                     
                  }
              },
                 service.updateUserProfie = function(prifilePic) {
@@ -94,14 +94,14 @@
                  dbobj.transaction(populateDB, error, success);
                  function populateDB(tx) {
                      tx.executeSql('INSERT INTO messages(message, message_status, message_id, user_name,user_profile_image, roomId, messageTime, message_type,user_id) VALUES ("' + message + '","' + message_status + '","' + message_id + '","' + user_name + '", "' + user_profile_image + '", "' + room_id + '", "' + message_time + '", "' + message_type +'","' + user_id +'")',[],function(tx, results){
-                        // console.log(results.insertId);
+                       
                      });
                  }
                  function error(err) {
-                     console.log("Error processing SQL: " + err.code);
+                     
                  }
                  function success(results) {
-                     console.log("New Data Inserted On New Room Messages!");
+                     
                  }
              },
              service.updateDbOnRoomOpen = function(messages, roomId) {
@@ -158,11 +158,11 @@
                      });
                  }
                  function error(err) {
-                     console.log("Error processing SQL: " + err.code);
+                    
                      q.reject(err);
                  }
                  function success(results) {
-                     console.log("Data is fetched from db");
+                    
                  }
                  return q.promise;
              },
@@ -182,10 +182,10 @@
                      });
                  }
                  function error(err) {
-                     console.log("Error processing SQL: " + err.code);
+                     
                  }
                  function success(results) {
-                     console.log("Data is fetched from db");
+                     
                  }
              },
              service.updateMessageStatusToSentWhenAppComesOnline = function(localMessageId) {
@@ -197,10 +197,10 @@
                      tx.executeSql("UPDATE messages SET message_status='sent' WHERE id="+localMessageId);
                  }
                  function error(err) {
-                     console.log("Error processing SQL: " + err.code);
+                    
                  }
                  function success() {
-                     console.log("successfully updated to sent!");
+                    
                  }
              }
          return service;

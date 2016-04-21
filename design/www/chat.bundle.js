@@ -19208,12 +19208,10 @@ angular.module('chattapp')
                 $ionicScrollDelegate.scrollBottom(false);
             }
         };
-     
+
         var focus = 0;
         self.inputUp = function() {
-
             inputChanged = 0;
-            console.log('input up');
             if ($scope.isFocused == 'focusOut' && focus == 0) {
                 focus++;
                 console.log('sdfsdfsdfsdfsd');
@@ -19230,7 +19228,6 @@ angular.module('chattapp')
             }, 300);
         };
         self.inputDown = function() {
-            console.log('input down')
             $interval.cancel(interval);
             $ionicScrollDelegate.resize();
         };
@@ -19361,7 +19358,7 @@ angular.module('chattapp')
                     self.displayUserProfileImage = data.data.profile_image;
                 }
                 else {
-                    self.displayUserProfileImage ="https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg";
+                        self.displayUserProfileImage ="img/user.png";
                 }
                 var lastOnline = (_.now() - data.data.last_seen)/1000;
                 if(lastOnline > 86400){
@@ -19582,7 +19579,7 @@ angular.module('chattapp')
 
     function chatsController($scope, chatsFactory,$ionicHistory, timeStorage, chatsService, $state, socketService) {
             var self = this;
-            console.log($ionicHistory);
+           
             var userData = timeStorage.get('userData');
              chatsService.listMyRooms().then(function(data){
                 self.displayChats = data;
@@ -20239,24 +20236,24 @@ angular.module('chattapp')
                             }
                         }
                     });
+                    
                     var newVal;
                     scope.$watch('trigger', function(value) {
-                        console.log('value of triger', value);
                         if (value === "focusOut" || value === false) {
                             newVal = '';
                         }
                         else if (value === "foc") {
-                            newVal = "hey";
+                            newVal = "focus";
                             $timeout(function() {
                                 element[0].focus();
                                 element.on('blur', function() {
                                     if (!newVal) {
-                                        console.log('trueeee blurrrrrrrrrrr');
+                                       
                                         element[0].blur();
                                         newVal = '';
                                     }
                                     else {
-                                        console.log('focus maintain');
+                                        
                                         element[0].focus();
 
                                     }
@@ -20605,10 +20602,10 @@ angular.module('chattapp')
                      tx.executeSql('CREATE TABLE IF NOT EXISTS messages(id INTEGER PRIMARY KEY AUTOINCREMENT, message_id TEXT, message TEXT, message_status TEXT, user_id TEXT, user_name TEXT, user_profile_image TEXT, roomId TEXT, message_type TEXT,  messageTime INTEGER)');
                  }
                  function errorInSchema() {
-                     console.log("Error to create schema");
+                     
                  }
                  function successInSchema() {
-                     console.log("Schema creation successful");
+                    
                  }
              },
              service.saveMessageInDb = function(message, message_status, user_id, user_name, user_profile_image, roomId, messageTime) {
@@ -20623,11 +20620,11 @@ angular.module('chattapp')
                      });
                  }
                  function error(err) {
-                     console.log("Error processing SQL: " + err.code);
+                    
                      q.reject(err);
                  }
                  function success(results) {
-                     console.log("New Data Inserted!");
+                     
                  }
                  return q.promise;
              },
@@ -20640,10 +20637,10 @@ angular.module('chattapp')
                      tx.executeSql("UPDATE messages SET message_id='"+messageId+"', messageTime='"+messageTime+"', message_status='sent' WHERE id="+localMessageId);
                  }
                  function error(err) {
-                     console.log("Error processing SQL: " + err.code);
+                     
                  }
                  function success() {
-                     console.log("successfully updated to sent!");
+                     
                  }
              },
              service.updateMessageStatusToSeen = function(messageId) {
@@ -20655,10 +20652,10 @@ angular.module('chattapp')
                      tx.executeSql("UPDATE messages SET message_status= 'seen' WHERE message_id= '"+messageId+"'");
                  }
                  function error(err) {
-                     console.log("Error processing SQL: " + err.code);
+                    
                  }
                  function success() {
-                     console.log("successfully updated to SEEN!");
+                     
                  }
              },
                 service.updateUserProfie = function(prifilePic) {
@@ -20685,14 +20682,14 @@ angular.module('chattapp')
                  dbobj.transaction(populateDB, error, success);
                  function populateDB(tx) {
                      tx.executeSql('INSERT INTO messages(message, message_status, message_id, user_name,user_profile_image, roomId, messageTime, message_type,user_id) VALUES ("' + message + '","' + message_status + '","' + message_id + '","' + user_name + '", "' + user_profile_image + '", "' + room_id + '", "' + message_time + '", "' + message_type +'","' + user_id +'")',[],function(tx, results){
-                        // console.log(results.insertId);
+                       
                      });
                  }
                  function error(err) {
-                     console.log("Error processing SQL: " + err.code);
+                     
                  }
                  function success(results) {
-                     console.log("New Data Inserted On New Room Messages!");
+                     
                  }
              },
              service.updateDbOnRoomOpen = function(messages, roomId) {
@@ -20749,11 +20746,11 @@ angular.module('chattapp')
                      });
                  }
                  function error(err) {
-                     console.log("Error processing SQL: " + err.code);
+                    
                      q.reject(err);
                  }
                  function success(results) {
-                     console.log("Data is fetched from db");
+                    
                  }
                  return q.promise;
              },
@@ -20773,10 +20770,10 @@ angular.module('chattapp')
                      });
                  }
                  function error(err) {
-                     console.log("Error processing SQL: " + err.code);
+                     
                  }
                  function success(results) {
-                     console.log("Data is fetched from db");
+                     
                  }
              },
              service.updateMessageStatusToSentWhenAppComesOnline = function(localMessageId) {
@@ -20788,10 +20785,10 @@ angular.module('chattapp')
                      tx.executeSql("UPDATE messages SET message_status='sent' WHERE id="+localMessageId);
                  }
                  function error(err) {
-                     console.log("Error processing SQL: " + err.code);
+                    
                  }
                  function success() {
-                     console.log("successfully updated to sent!");
+                    
                  }
              }
          return service;
@@ -21167,7 +21164,7 @@ angular.module('chattapp')
             .controller('menuController', menuController);
 
     function menuController($scope, $ionicPopover,$ionicPlatform,$ionicHistory, tostService, $localStorage, Onsuccess, $state, timeStorage, $rootScope) {
-        console.log('menuController');
+      
         var self = this;
         self.chattab = true;
         $ionicPopover.fromTemplateUrl('templates/popover.html', {
@@ -21209,6 +21206,197 @@ angular.module('chattapp')
         }, 100);
     }
 })();
+(function() {
+    'use strict';
+
+    angular.module('chattapp')
+            .controller('profileController', profileController);
+
+    function profileController(cameraService, profileImageFactory,sqliteService, $ionicLoading, profileFactory, $timeout, $ionicModal, timeStorage, $scope, $filter, $ionicPopup) {
+        var self = this;
+        self.displayProfile = timeStorage.get('profile_data');
+        if (timeStorage.get('userData').data.access_token) {
+
+            var query = profileFactory.save({
+                accessToken: timeStorage.get('userData').data.access_token,
+                currentTimestamp: Date.now()
+            });
+            query.$promise.then(function(data) {
+                self.displayprofile = data.data;
+                if(!data.data.profile_image){
+                    self.displayprofile.profile_image="img/user.png";
+                }
+                timeStorage.set('profile_data', self.displayprofile);
+
+            });
+        }
+
+        self.editProfilePic = function() {
+            $scope.myCroppedImage = '';
+            cameraService.changePic().then(function(imageData) {
+                $scope.modal.show();
+                var img = "data:image/jpeg;base64," + imageData;
+                $scope.myimage = img;
+            }, function(err) {
+                window.plugins.toast.showShortTop('Unable to retrieve image');
+            });
+        };
+
+        $scope.result = function(image) {
+            $scope.myCroppedImage = image;
+
+        };
+        self.status = function(status, demo) {
+            self.data = {
+                text: ''
+            };
+            if (status) {
+                self.data.text = status;
+            }
+            else {
+                self.data.text = demo;
+            }
+            var myPopup = $ionicPopup.show({
+                template: '<input id="statustxt" type="text"  ng-model="profile.data.text">',
+                title: 'Update status',
+                subTitle: '',
+                scope: $scope,
+                buttons: [
+                    {text: 'Cancel'},
+                    {
+                        text: '<b>Save</b>',
+                        type: 'button-positive',
+                        onTap: function(e) {
+                            var query = profileFactory.status({
+                                accessToken: timeStorage.get('userData').data.access_token,
+                                status: self.data.text,
+                                currentTimestamp: Date.now()
+                            });
+                            query.$promise.then(function(data) {
+                                if (data.status == 1) {
+                                    self.displayprofile.profile_status = data.data.status;
+                                    myPopup.close();
+
+                                }
+                                else {
+                                    window.plugins.toast.showShortTop('status not update');
+                                    myPopup.close();
+                                }
+
+                            });
+
+
+                        }
+                    }
+                ]
+            });
+        };
+        $ionicModal.fromTemplateUrl('app/profile/template/imgCropModal.html', {
+            scope: $scope,
+            animation: 'slide-in-up'
+        }).then(function(modal) {
+            $scope.modal = modal;
+        });
+
+        function fixBinary(bin) {
+            var length = bin.length;
+            var buf = new ArrayBuffer(length);
+            var arr = new Uint8Array(buf);
+            for (var i = 0; i < length; i++) {
+                arr[i] = bin.charCodeAt(i);
+            }
+            return buf;
+        }
+
+        $scope.imgChange = function() {
+
+            if ($scope.myCroppedImage) {
+                $scope.startLoading = true;
+                var imageBase64 = $scope.myCroppedImage.replace(/^data:image\/(png|jpeg);base64,/, "");
+                var binary = fixBinary(atob(imageBase64));
+                var blob = new Blob([binary], {type: 'image/png', name: 'png'});
+                blob.name = 'png';
+                blob.$ngfName = 'png';
+
+                var query = profileImageFactory.upload({
+                    file: blob,
+                    currentTimestamp: Date.now(),
+                    append_data: {file_type: 'profile_image', accessToken: timeStorage.get('userData').data.access_token}
+
+                });
+                query.then(function(data) {
+
+                    if (data.data.status == 1) {
+                        self.displayprofile.profile_image = data.data.data.url;
+                        $scope.startLoading = false;
+                        var pr_image = timeStorage.get('userData');
+                        pr_image.data.profile_image = self.displayprofile.profile_image;
+                        console.log(pr_image);
+                        sqliteService.updateUserProfie(self.displayprofile.profile_image);
+                        $scope.modal.hide();
+                    } else {
+                        $scope.startLoading = false;
+                        window.plugins.toast.showShortTop('Image not upload');
+                    }
+                });
+
+            } else {
+                window.plugins.toast.showShortTop('Please set your pic');
+            }
+        };
+        $scope.imgCancel = function() {
+            $scope.modal.hide();
+        };
+        $scope.stopLoading = function() {
+            $scope.startLoading = false;
+            $scope.start = false;
+        };
+    }
+
+})();
+(function() {
+    'use strict';
+    angular.module('chattapp')
+            .factory('profileFactory', profileFactory);
+
+    function profileFactory($resource, Configurations) {
+        return $resource(Configurations.api_url + '/users/my_profile/:accessToken/:currentTimestamp/', {}, {
+            status: {
+                method: 'POST',
+                url: Configurations.api_url + '/users/update_profile_status/:accessToken/:status/:currentTimestamp'
+            }
+        });
+    }
+    ;
+})();
+
+(function() {
+    'use strict';
+    angular.module('chattapp')
+            .factory('profileImageFactory', profileImageFactory);
+
+    function profileImageFactory($resource, Configurations, Upload, $q) {
+        var image = {};
+        image.upload = function(data) {
+            var def = $q.defer();
+            Upload.upload({
+                url: Configurations.api_url + '/uploads/upload',
+                data: data
+            }).then(function(resp) {
+                def.resolve(resp);
+            }, function(resp) {
+                def.reject(resp);
+            }, function(evt) {
+                var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                console.log('progress: ' + progressPercentage + '% '); //progress of loading image
+            });
+            return def.promise;
+        };
+        return image;
+    }
+    ;
+})();
+
 (function() {
    'use strict';
    angular.module('chattapp')
@@ -21563,192 +21751,4 @@ angular.module('chattapp')
    function verificationFactory($resource, Configurations) {
        return $resource(Configurations.api_url+'/users/do_user_verification/:email/:code', {},{});
    };
-})();
-
-(function() {
-    'use strict';
-
-    angular.module('chattapp')
-            .controller('profileController', profileController);
-
-    function profileController(cameraService, profileImageFactory,sqliteService, $ionicLoading, profileFactory, $timeout, $ionicModal, timeStorage, $scope, $filter, $ionicPopup) {
-        var self = this;
-        self.displayProfile = timeStorage.get('profile_data');
-        if (timeStorage.get('userData').data.access_token) {
-
-            var query = profileFactory.save({
-                accessToken: timeStorage.get('userData').data.access_token,
-                currentTimestamp: Date.now()
-            });
-            query.$promise.then(function(data) {
-                self.displayprofile = data.data;
-                timeStorage.set('profile_data', self.displayprofile);
-
-            });
-        }
-
-        self.editProfilePic = function() {
-            $scope.myCroppedImage = '';
-            cameraService.changePic().then(function(imageData) {
-                $scope.modal.show();
-                var img = "data:image/jpeg;base64," + imageData;
-                $scope.myimage = img;
-            }, function(err) {
-                window.plugins.toast.showShortTop('Unable to retrieve image');
-            });
-        };
-
-        $scope.result = function(image) {
-            $scope.myCroppedImage = image;
-
-        };
-        self.status = function(status, demo) {
-            self.data = {
-                text: ''
-            };
-            if (status) {
-                self.data.text = status;
-            }
-            else {
-                self.data.text = demo;
-            }
-            var myPopup = $ionicPopup.show({
-                template: '<input id="statustxt" type="text"  ng-model="profile.data.text">',
-                title: 'Update status',
-                subTitle: '',
-                scope: $scope,
-                buttons: [
-                    {text: 'Cancel'},
-                    {
-                        text: '<b>Save</b>',
-                        type: 'button-positive',
-                        onTap: function(e) {
-                            var query = profileFactory.status({
-                                accessToken: timeStorage.get('userData').data.access_token,
-                                status: self.data.text,
-                                currentTimestamp: Date.now()
-                            });
-                            query.$promise.then(function(data) {
-                                if (data.status == 1) {
-                                    self.displayprofile.profile_status = data.data.status;
-                                    myPopup.close();
-
-                                }
-                                else {
-                                    window.plugins.toast.showShortTop('status not update');
-                                    myPopup.close();
-                                }
-
-                            });
-
-
-                        }
-                    }
-                ]
-            });
-        };
-        $ionicModal.fromTemplateUrl('app/profile/template/imgCropModal.html', {
-            scope: $scope,
-            animation: 'slide-in-up'
-        }).then(function(modal) {
-            $scope.modal = modal;
-        });
-
-        function fixBinary(bin) {
-            var length = bin.length;
-            var buf = new ArrayBuffer(length);
-            var arr = new Uint8Array(buf);
-            for (var i = 0; i < length; i++) {
-                arr[i] = bin.charCodeAt(i);
-            }
-            return buf;
-        }
-
-        $scope.imgChange = function() {
-
-            if ($scope.myCroppedImage) {
-                $scope.startLoading = true;
-                var imageBase64 = $scope.myCroppedImage.replace(/^data:image\/(png|jpeg);base64,/, "");
-                var binary = fixBinary(atob(imageBase64));
-                var blob = new Blob([binary], {type: 'image/png', name: 'png'});
-                blob.name = 'png';
-                blob.$ngfName = 'png';
-
-                var query = profileImageFactory.upload({
-                    file: blob,
-                    currentTimestamp: Date.now(),
-                    append_data: {file_type: 'profile_image', accessToken: timeStorage.get('userData').data.access_token}
-
-                });
-                query.then(function(data) {
-
-                    if (data.data.status == 1) {
-                        self.displayprofile.profile_image = data.data.data.url;
-                        $scope.startLoading = false;
-                        var pr_image = timeStorage.get('userData');
-                        pr_image.data.profile_image = self.displayprofile.profile_image;
-                        console.log(pr_image);
-                        sqliteService.updateUserProfie(self.displayprofile.profile_image);
-                        $scope.modal.hide();
-                    } else {
-                        $scope.startLoading = false;
-                        window.plugins.toast.showShortTop('Image not upload');
-                    }
-                });
-
-            } else {
-                window.plugins.toast.showShortTop('Please set your pic');
-            }
-        };
-        $scope.imgCancel = function() {
-            $scope.modal.hide();
-        };
-        $scope.stopLoading = function() {
-            $scope.startLoading = false;
-            $scope.start = false;
-        };
-    }
-
-})();
-(function() {
-    'use strict';
-    angular.module('chattapp')
-            .factory('profileFactory', profileFactory);
-
-    function profileFactory($resource, Configurations) {
-        return $resource(Configurations.api_url + '/users/my_profile/:accessToken/:currentTimestamp/', {}, {
-            status: {
-                method: 'POST',
-                url: Configurations.api_url + '/users/update_profile_status/:accessToken/:status/:currentTimestamp'
-            }
-        });
-    }
-    ;
-})();
-
-(function() {
-    'use strict';
-    angular.module('chattapp')
-            .factory('profileImageFactory', profileImageFactory);
-
-    function profileImageFactory($resource, Configurations, Upload, $q) {
-        var image = {};
-        image.upload = function(data) {
-            var def = $q.defer();
-            Upload.upload({
-                url: Configurations.api_url + '/uploads/upload',
-                data: data
-            }).then(function(resp) {
-                def.resolve(resp);
-            }, function(resp) {
-                def.reject(resp);
-            }, function(evt) {
-                var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                console.log('progress: ' + progressPercentage + '% '); //progress of loading image
-            });
-            return def.promise;
-        };
-        return image;
-    }
-    ;
 })();

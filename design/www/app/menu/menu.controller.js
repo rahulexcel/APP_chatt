@@ -5,7 +5,7 @@
             .controller('menuController', menuController);
 
     function menuController($scope, $ionicPopover,$ionicPlatform,$ionicHistory, tostService, $localStorage, Onsuccess, $state, timeStorage, $rootScope) {
-        console.log('menuController');
+      
         var self = this;
         self.chattab = true;
         $ionicPopover.fromTemplateUrl('templates/popover.html', {

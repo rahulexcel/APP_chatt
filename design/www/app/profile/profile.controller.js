@@ -15,6 +15,9 @@
             });
             query.$promise.then(function(data) {
                 self.displayprofile = data.data;
+                if(!data.data.profile_image){
+                    self.displayprofile.profile_image="img/user.png";
+                }
                 timeStorage.set('profile_data', self.displayprofile);
 
             });

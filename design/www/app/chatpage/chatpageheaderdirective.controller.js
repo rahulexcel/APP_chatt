@@ -76,7 +76,7 @@
                     self.displayUserProfileImage = data.data.profile_image;
                 }
                 else {
-                    self.displayUserProfileImage ="https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg";
+                        self.displayUserProfileImage ="img/user.png";
                 }
                 var lastOnline = (_.now() - data.data.last_seen)/1000;
                 if(lastOnline > 86400){

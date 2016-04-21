@@ -6,7 +6,7 @@
 
     function chatsController($scope, chatsFactory,$ionicHistory, timeStorage, chatsService, $state, socketService) {
             var self = this;
-            console.log($ionicHistory);
+           
             var userData = timeStorage.get('userData');
              chatsService.listMyRooms().then(function(data){
                 self.displayChats = data;
