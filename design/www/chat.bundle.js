@@ -45551,13 +45551,9 @@ angular.module('chattapp')
             .controller('loginController', loginController);
 
     function loginController($state, loginFactory, timeStorage, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService, $ionicLoading) {
-        console.log('login');
         var self = this;
-        
         var deviceUUID = timeStorage.get('deviceUUID');
         var devicePlatform = timeStorage.get('devicePlatform');
-        
-
         self.googleRegister = function() {
             var promise = googleLogin.startLogin();
             promise.then(function(googleData) {
@@ -45645,8 +45641,6 @@ angular.module('chattapp')
             });
         }
         ;
-        
-
     }
 })();
 (function() {
