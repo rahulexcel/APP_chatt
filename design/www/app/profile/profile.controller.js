@@ -4,7 +4,7 @@
     angular.module('chattapp')
             .controller('profileController', profileController);
 
-    function profileController(cameraService, profileImageFactory, $ionicLoading, profileFactory, $timeout, $ionicModal, timeStorage, $scope, $filter, $ionicPopup) {
+    function profileController(cameraService, profileImageFactory,sqliteService, $ionicLoading, profileFactory, $timeout, $ionicModal, timeStorage, $scope, $filter, $ionicPopup) {
         var self = this;
         self.displayProfile = timeStorage.get('profile_data');
         if (timeStorage.get('userData').data.access_token) {
@@ -16,6 +16,7 @@
             query.$promise.then(function(data) {
                 self.displayprofile = data.data;
                 timeStorage.set('profile_data', self.displayprofile);
+
             });
         }
 
@@ -117,6 +118,10 @@
                     if (data.data.status == 1) {
                         self.displayprofile.profile_image = data.data.data.url;
                         $scope.startLoading = false;
+                        var pr_image = timeStorage.get('userData');
+                        pr_image.data.profile_image = self.displayprofile.profile_image;
+                        console.log(pr_image);
+                        sqliteService.updateUserProfie(self.displayprofile.profile_image);
                         $scope.modal.hide();
                     } else {
                         $scope.startLoading = false;

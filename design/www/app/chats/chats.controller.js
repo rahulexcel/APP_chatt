@@ -4,8 +4,9 @@
     angular.module('chattapp')
         .controller('chatsController', chatsController);
 
-    function chatsController($scope, chatsFactory, timeStorage, chatsService, $state, socketService) {
+    function chatsController($scope, chatsFactory,$ionicHistory, timeStorage, chatsService, $state, socketService) {
             var self = this;
+            console.log($ionicHistory);
             var userData = timeStorage.get('userData');
              chatsService.listMyRooms().then(function(data){
                 self.displayChats = data;
@@ -21,6 +22,9 @@
                     self.displayChats = data;
                     $scope.$evalAsync();
                 });
+             });
+             $scope.$on('update_room_unread_notification', function (event, response) {
+             	socketService.update_room_unread_notification(response.data);
              });
              self.roomClick = function(roomData){
                 var clickRoomUserData = {

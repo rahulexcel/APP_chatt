@@ -4,7 +4,7 @@
     angular.module('chattapp')
             .controller('chatPageHeaderDirectiveController', chatPageHeaderDirectiveController);
 
-    function chatPageHeaderDirectiveController($state, timeStorage, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService) {
+    function chatPageHeaderDirectiveController($state, timeStorage, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory) {
         var self = this;
         self.leaveGroupSpinner = false;
         self.deleteGroupSpinner = false;
@@ -21,7 +21,11 @@
             $state.go('app.chats');
         };
         self.openModelWithSpinner = true;
-        infoApi();
+        if (!chatWithUserData.id) {
+            infoApi();
+        } else{
+            infoApiUser();
+        }
         function infoApi() {
             var userData = timeStorage.get('userData');
             var query = getRoomInfoFactory.save({
@@ -57,10 +61,42 @@
                 self.infoUserList = data.data.room.room_users;
             });
         }
+        function infoApiUser(){
+            var userData = timeStorage.get('userData');
+            var query = getUserProfileFactory.save({
+                accessToken: userData.data.access_token,
+                user_id: self.id,
+                currentTimestamp: _.now()
+            });
+            query.$promise.then(function(data) {
+                self.displayUserProfileName = data.data.name;
+                self.displayUserProfileId = data.data.user_id;
+                self.displayUserProfileLastSeenInTimeStamp = data.data.last_seen;
+                if (data.data.profile_image) {
+                    self.displayUserProfileImage = data.data.profile_image;
+                }
+                else {
+                    self.displayUserProfileImage ="https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg";
+                }
+                var lastOnline = (_.now() - data.data.last_seen)/1000;
+                if(lastOnline > 86400){
+                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("MMMM Do YYYY, h:mm a");
+                } else{
+                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("h:mm a");
+                }
+                self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
+                self.displayUserProfilePublicRooms = data.data.user_public_rooms;
+                self.displayUserProfileStatus = data.data.profile_status;
+            });
+        }
         self.openInfo = function() {
             self.deleteIconRotate = -1;
             if (!chatWithUserData.id) {
+                infoApi();
                 $scope.infoModel.show();
+            } else{
+                infoApiUser();
+                $scope.infoModelUser.show();
             }
         };
         var hideSheet;
@@ -73,7 +109,6 @@
                 titleText: 'Confirm to leave ' + self.infoName + ' !',
                 cancelText: 'Cancel',
                 cancel: function() {
-
                 },
                 buttonClicked: function(index) {
                     if (index == 0) {
@@ -117,6 +152,11 @@
         });
         $ionicModal.fromTemplateUrl('infoModel.html', function($ionicModal) {
             $scope.infoModel = $ionicModal;
+        }, {
+            scope: $scope
+        });
+        $ionicModal.fromTemplateUrl('infoModelUser.html', function($ionicModal) {
+            $scope.infoModelUser = $ionicModal;
         }, {
             scope: $scope
         });
