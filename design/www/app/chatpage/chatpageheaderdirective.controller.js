@@ -4,7 +4,7 @@
     angular.module('chattapp')
             .controller('chatPageHeaderDirectiveController', chatPageHeaderDirectiveController);
 
-    function chatPageHeaderDirectiveController($state, timeStorage, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService) {
+    function chatPageHeaderDirectiveController($state, timeStorage, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService, sqliteService) {
 
         var self = this;
         self.leaveGroupSpinner = false;
@@ -25,9 +25,7 @@
         if (!chatWithUserData.id) {
             infoApi();
         } else {
-
             infoApiUser(self.id);
-
         }
         function infoApi() {
             var userData = timeStorage.get('userData');
@@ -142,7 +140,6 @@
                 titleText: 'Confirm to delete ' + userData.name + ' From ' + self.infoName + ' !',
                 cancelText: 'Cancel',
                 cancel: function() {
-
                 },
                 buttonClicked: function(index) {
                     if (index == 0) {
@@ -234,7 +231,6 @@
                 window.plugins.toast.showShortTop('Unable to retrieve image');
             });
         };
-
         $scope.result = function(image) {
             $scope.myCroppedImage = image;
         };
@@ -247,7 +243,6 @@
             }
             return buf;
         }
-
         $scope.imgChange = function() {
             if ($scope.myCroppedImage) {
                 $scope.startLoading = true;
@@ -284,6 +279,26 @@
             $scope.startLoading = false;
             $scope.start = false;
         };
+        $ionicPopover.fromTemplateUrl('app/chatpage/templates/privateChatPopover.html', {
+            scope: $scope,
+        }).then(function(popover) {
+            $scope.popover = popover;
+        });
+        self.openPopover = function($event) {
+            $scope.popover.show($event);
+        };
+        self.leaveChat = function(){
+            sqliteService.leaveChat($stateParams.roomId);
+            $state.go('app.chats');
+        }
+        self.blockUser = function(){
+            sqliteService.leaveChat($stateParams.roomId);
+            $state.go('app.chats');
+        }
+        self.addInGroup = function(){
+            $state.go('app.addInGroup');
+            $scope.popover.hide();
+        }
 
     }
 })();

@@ -102,6 +102,21 @@
 .scroll-content{
     background-color: #fff;
 }
+
+.popover {
+  height: auto !important;
+}
+.popover ion-header-bar {
+  position: relative;
+}
+.popover ion-content {
+  top: 0;
+  position: relative;
+}
+.popover-inner-content {
+  width: 100%;
+  padding: 5px 20px;
+}
 /*Placeholder css*/
 ::-webkit-input-placeholder { /* Safari, Chrome and Opera */
     color: #BDBDBD!important;
@@ -606,6 +621,13 @@ a.active{
     font-size: 30px!important;
     color: #ff3232!important;
 }
+.addingroup-icon{
+    position: absolute;
+    right: 8px;
+    top: 16px;
+    font-size: 30px!important;
+    color: green!important;
+}
 .infoModel-spinner{
     font-size: 50px;
     color: #fff;
@@ -710,8 +732,12 @@ a.active{
         width: 81%;
     }
 }
+.popover-menu-btn{
+     position: absolute;
+     right: 32px;
+}
 .userin{
-    width:350px;
+    width:100%;
     position:absolute;
     top:4px;
     left:32px;
