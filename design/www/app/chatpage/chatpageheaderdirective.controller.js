@@ -307,6 +307,7 @@
             $state.go('app.addInGroup');
             $scope.popover.hide();
         }
+        self.muteNotifications = true;
 
     }
 })();

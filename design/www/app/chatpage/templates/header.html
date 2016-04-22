@@ -49,6 +49,17 @@
                     </div>
                 </div>
                 <div class="m-b m-t-sm h4">
+                    <ul class="list user-container">
+                      <li class="item item-toggle">
+                         Mute Notifications
+                         <label class="toggle toggle-balanced">
+                           <input type="checkbox" ng-model="chatPageHeader.muteNotifications">
+                           <div class="track">
+                             <div class="handle"></div>
+                           </div>
+                         </label>
+                      </li>
+                    </ul>
                     <div class="list" id="chats">
                         <div class="user-container" ng-repeat="infoUser in chatPageHeader.infoUserList| orderBy:'-last_seen'">
                             <a class="item item-avatar hover infoModel-button">
