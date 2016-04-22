@@ -287,6 +287,14 @@
         self.openPopover = function($event) {
             $scope.popover.show($event);
         };
+        $ionicPopover.fromTemplateUrl('app/chatpage/templates/publicChatPopover.html', {
+            scope: $scope,
+        }).then(function(popover) {
+            $scope.openGroupPopover = popover;
+        });
+        self.openGroupPopover = function($event) {
+            $scope.openGroupPopover.show($event);
+        };
         self.leaveChat = function(){
             sqliteService.leaveChat($stateParams.roomId);
             $state.go('app.chats');

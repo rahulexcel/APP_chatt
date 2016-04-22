@@ -1,0 +1,15 @@
+<ion-popover-view>
+  <ion-content>
+    <div class="list">
+      <a class="item" ng-click="chatPageHeader.openInfo(); openGroupPopover.hide()">
+        Manage Room
+      </a>
+      <a class="item" ng-click="chatPageHeader.leaveGroup(); openGroupPopover.hide()">
+        Leave Room
+      </a>
+      <a class="item" ui-sref="app.inviteInGroup" ng-click="openGroupPopover.hide()">
+        Invite Users
+      </a>
+    </div>
+  </ion-content>
+</ion-popover-view>

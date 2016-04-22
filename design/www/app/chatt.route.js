@@ -97,6 +97,17 @@
                       controllerAs: 'addInGroup'
                     }
                 }
+            })   
+            .state('app.inviteInGroup', {
+                url: '/inviteInGroup',
+                cache:false,
+                views: {
+                   'menuContent': {
+                      templateUrl: 'app/inviteingroup/inviteingroup.html',
+                      controller: 'inviteInGroupController',
+                      controllerAs: 'inviteInGroup'
+                    }
+                }
             });
         // if none of the above states are matched, use this as the fallback
         // $urlRouterProvider.otherwise('/login');
