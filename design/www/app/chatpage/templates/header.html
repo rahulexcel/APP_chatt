@@ -9,6 +9,8 @@
             <img class='img-circle mycl' ng-src='{{chatPageHeader.image}}'>
         </div>
         <div class='button button-clear fontC'  ng-click="chatPageHeader.openInfo()"> <div class="chatName">{{chatPageHeader.name}} </div><div class="lastSeen headLast">{{chatPageHeader.lastSeen}}</div></div>
+        <button ng-if="chatPageHeader.id" class="button button-icon ion-android-more-vertical pull-right popover-menu-btn" ng-click="chatPageHeader.openPopover($event)"></button>
+        <button ng-if="!chatPageHeader.id" class="button button-icon ion-android-more-vertical pull-right popover-menu-btn" ng-click="chatPageHeader.openGroupPopover($event)"></button>
     </div>
 </div> 
 

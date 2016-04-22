@@ -102,5 +102,10 @@
         }, {
             scope: $scope
         });
+        self.roomTypes = [
+            'Public',
+            'Private'
+        ];
+        self.userGroupType = 'Public';
     }
 })();

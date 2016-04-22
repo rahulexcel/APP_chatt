@@ -81,10 +81,10 @@
                      tx.executeSql("UPDATE messages SET user_profile_image= '"+prifilePic+"' WHERE user_id= '"+userData.data.user_id+"'");
                  }
                  function error(err) {
-                     console.log("Error processing SQL: " + err.code);
+                    
                  }
                  function success() {
-                     console.log("successfully updated to SEEN!");
+                    
                  }
              },
              service.gotNewRoomMessage = function(message, message_id, message_status, message_time, user_name, user_profile_image, room_id, message_type,user_id) {
@@ -201,6 +201,19 @@
                  }
                  function success() {
                     
+                 }
+             },
+             service.leaveChat = function(roomId) {
+                var dbobj = window.sqlitePlugin.openDatabase({
+                     name: "chattappDB"
+                 });
+                 dbobj.transaction(populateDB, error, success);
+                 function populateDB(tx) {
+                     tx.executeSql("DELETE from messages WHERE roomid='"+roomId+"'");
+                 }
+                 function error(err) {
+                 }
+                 function success() {
                  }
              }
          return service;

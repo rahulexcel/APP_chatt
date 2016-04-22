@@ -85829,6 +85829,121 @@ a.dark {
   -webkit-transition-duration: 0s;
   transition-duration: 0s;
 }
+/* Empty. Add your own CSS if you like */
+
+.error {
+  color: red;
+}
+
+.submitted .ng-invalid {
+  border: 1px solid red;
+}
+
+.m-b {
+  margin-bottom: 0px;
+}
+
+.md-form-group {
+  position: relative;
+  padding: 18px 0 19px 0;
+}
+
+.navbar {
+  margin-bottom: 0px;
+}
+
+.mycam_icon {
+  font-size: 20px;
+  padding: 13px 0 0 8px;
+}
+
+.prpicim {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+  margin-top: 10px;
+}
+
+#cropedim {
+  margin: 0 auto;
+  width: 200px;
+  height: 200px;
+}
+
+.loadingModal {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: black;
+  opacity: 0.7;
+}
+
+.icnModal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+span.satusedit.ion-android-create {
+  padding: 0 0 0 8px;
+}
+
+span.status_edit {
+  margin-left: 20px;
+  border-left: 1px solid;
+}
+
+.mypanel {
+  margin-bottom: 0px !important;
+}
+
+.myimage {
+  height: 280px;
+}
+
+.myprbt {
+  margin-right: 20px;
+}
+
+.modal-backdrop.active {
+  z-index: 9;
+}
+
+.marginTop {
+  margin-top: 10px;
+}
+
+.paddingBottom {
+  padding: 0 0 10px 0;
+}
+
+img.img-circle.mycl {
+  width: 35px;
+  height: 35px;
+}
+
+@media not all, (-webkit-min-device-pixel-ratio: 1.5), not all, (min-resolution: 144dpi), (min-resolution: 1.5dppx) {
+  .tabs {
+    background-image: none !important;
+  }
+}
+
+.version.ng-binding {
+  text-align: center;
+  font-size: 17px;
+}
+
+.popover {
+  border: none !important;
+  border-radius: 0px !important;
+}
+
+/*ion-popover-view.profile_popover.popover.none.ng-enter.active.ng-enter-active {
+    margin-left: 0px;
+    opacity: 1;
+    height: auto !important;
+    width: auto !important;
+}*/
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
@@ -97002,6 +97117,25 @@ img-crop canvas {
   background-color: #fff;
 }
 
+.popover {
+  height: auto !important;
+  width: auto !important;
+}
+
+.popover ion-header-bar {
+  position: relative;
+}
+
+.popover ion-content {
+  top: 0;
+  position: relative;
+}
+
+.popover-inner-content {
+  width: 100%;
+  padding: 5px 20px;
+}
+
 /*Placeholder css*/
 
 ::-webkit-input-placeholder {
@@ -97622,6 +97756,14 @@ a.active {
   color: #ff3232!important;
 }
 
+.addingroup-icon {
+  position: absolute;
+  right: 8px;
+  top: 16px;
+  font-size: 30px!important;
+  color: green!important;
+}
+
 .infoModel-spinner {
   font-size: 50px;
   color: #fff;
@@ -97769,8 +97911,13 @@ a.active {
   }
 }
 
+.popover-menu-btn {
+  position: absolute;
+  right: 32px;
+}
+
 .userin {
-  width: 350px;
+  width: 100%;
   position: absolute;
   top: 4px;
   left: 32px;
@@ -97821,9 +97968,6 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
   background-color: blue;
 }
 
-<<<<<<< HEAD
-
-=======
 .update-pic-btn {
   border-radius: 0px!important;
 }
@@ -97840,7 +97984,46 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
   color: gray!important;
 }
 
->>>>>>> 798875f42eac7fe82ed8e4df42e3b7d521be2b46
+.noItem {
+  border-bottom: none!important;
+}
+
+.empty {
+  text-align: center;
+  padding: 40% 0px 0px 0;
+}
+
+.nothing {
+  font-size: 2.0em;
+  color: gray;
+  padding-bottom: 25px;
+  opacity: 0.8;
+}
+
+.empty_div {
+  width: 120px;
+  height: 101px;
+  margin: auto;
+  opacity: 0.8;
+}
+
+.now {
+  font-size: 1.5em;
+  color: gray;
+  padding-top: 5px;
+  opacity: 0.8;
+}
+
+.empty_btn {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background-color: rgba(128, 128, 128, 0.75);
+  font-size: 35px;
+  color: white;
+}
+
+/*==============================*/
 
 span.satusedit.ion-android-create {
   padding: 0 0 0 8px;

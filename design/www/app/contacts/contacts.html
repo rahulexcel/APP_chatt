@@ -1,21 +1,20 @@
-
 <ion-view view-title="Search" id="background" hide-back-button="true">
-<!--    <ion-nav-buttons side="right">
-   <button class="button button-icon ion-ios-search-strong pull-right white" ng-click="contacts.searchOpen()"></button>
- </ion-nav-buttons>
-    <ion-nav-buttons side="left">
-           <input type="text" ng-class="contacts.isSearchOpen ? 'search-box-open' : 'search-box-close'">
-    </ion-nav-buttons>-->
-<ion-header-bar class='bar-stable'>
-   <p class="title">CONTACTS
-   <button class="button button-icon ion-android-more-vertical pull-right" style="margin-top: 5px;" ng-click="menu.popover.show($event)"></button>
-   <button class="button button-icon ion-ios-search-strong pull-right white" style="margin-top: 5px;" ng-click="contacts.searchOpen()"></button>
-   <input type="text" ng-class="contacts.isSearchOpen ? 'search-box-open' : 'search-box-close'">
-   </p>
-</ion-header-bar>
+  <ion-header-bar class='bar-stable'>
+     <p class="title">CONTACTS
+     <button class="button button-icon ion-android-more-vertical pull-right" style="margin-top: 5px;" ng-click="menu.popover.show($event)"></button>
+     <button class="button button-icon ion-ios-search-strong pull-right white" style="margin-top: 5px;" ng-click="contacts.searchOpen()"></button>
+     <input type="text" ng-class="contacts.isSearchOpen ? 'search-box-open' : 'search-box-close'">
+     </p>
+  </ion-header-bar>
    <ion-content scroll="true" class="has-footer">
+      <ion-list >
+            <ion-item ng-hide="contacts.displaycontacts.length > 0" class="noItem" >
+                <div class="empty" >
+                  <div class='nothing'>'No users found!'</div>
+              </div>
+          </ion-item>
+      </ion-list>
       <div class="list" id="chats">
-         <h4 ng-hide="contacts.displaycontacts.length > 0" class="text-center">'No users found'</h4>
          <div class="user-container" ng-repeat="contact in contacts.displaycontacts">
             <a class="item item-avatar hover item-icon-right" ng-click="contacts.openUserProfile(contact, $index)">
                <img class="avatar" ng-src="{{contact.pic}}">

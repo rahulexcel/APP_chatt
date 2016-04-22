@@ -102,6 +102,22 @@
 .scroll-content{
     background-color: #fff;
 }
+
+.popover {
+  height: auto !important;
+  width:auto !important;
+}
+.popover ion-header-bar {
+  position: relative;
+}
+.popover ion-content {
+  top: 0;
+  position: relative;
+}
+.popover-inner-content {
+  width: 100%;
+  padding: 5px 20px;
+}
 /*Placeholder css*/
 ::-webkit-input-placeholder { /* Safari, Chrome and Opera */
     color: #BDBDBD!important;
@@ -606,6 +622,13 @@ a.active{
     font-size: 30px!important;
     color: #ff3232!important;
 }
+.addingroup-icon{
+    position: absolute;
+    right: 8px;
+    top: 16px;
+    font-size: 30px!important;
+    color: green!important;
+}
 .infoModel-spinner{
     font-size: 50px;
     color: #fff;
@@ -710,8 +733,12 @@ a.active{
         width: 81%;
     }
 }
+.popover-menu-btn{
+     position: absolute;
+     right: 32px;
+}
 .userin{
-    width:350px;
+    width:100%;
     position:absolute;
     top:4px;
     left:32px;
@@ -752,9 +779,6 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
     border-radius: 50%!important;
     background-color: blue;
 }
-<<<<<<< HEAD
-
-=======
 .update-pic-btn{
     border-radius: 0px!important;
 }
@@ -767,7 +791,39 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
 .offline{
     color: gray!important;
 }
->>>>>>> 798875f42eac7fe82ed8e4df42e3b7d521be2b46
+.noItem{
+    border-bottom: none!important;
+}
+.empty{
+    text-align: center;
+    padding: 40% 0px 0px 0;
+}
+.nothing {
+    font-size: 2.0em;
+    color: gray;
+    padding-bottom: 25px;
+    opacity: 0.8;
+}
+.empty_div {
+    width: 120px;
+    height: 101px;
+    margin: auto;
+    opacity: 0.8;
+}
+.now {
+    font-size: 1.5em;
+    color: gray;
+    padding-top: 5px;
+    opacity: 0.8;
+}
+.empty_btn {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background-color: rgba(128, 128, 128, 0.75);
+    font-size: 35px;
+    color: white;
+}
 /*==============================*/
 span.satusedit.ion-android-create {
     padding: 0 0 0 8px;

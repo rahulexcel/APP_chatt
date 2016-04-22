@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    angular.module('chattapp', ['ionic', 'ngStorage','ngFileUpload','ngImgCrop', 'ngResource', 'GoogleLoginService', 'facebookLoginService', 'ngMessages'])
+    angular.module('chattapp', ['ionic', 'ngStorage','ngFileUpload','ngImgCrop', 'ngResource','GoogleLoginService', 'facebookLoginService', 'ngMessages'])
 
     .config(function($stateProvider, $urlRouterProvider) {
         $stateProvider
@@ -12,27 +12,6 @@
                 templateUrl: 'app/login/login.html',
                 controller: 'loginController',
                 controllerAs: 'login'
-            })
-            .state('register', {
-                url: '/register',
-                cache: false,
-                templateUrl: 'app/register/register.html',
-                controller: 'registerController',
-                controllerAs: 'register'
-            })
-            .state('verification', {
-                url: '/verification',
-                cache: false,
-                templateUrl: 'app/verification/verification.html',
-                controller: 'verificationController',
-                controllerAs: 'verification'
-            })
-            .state('forgotPassword', {
-                url: '/forgotPassword',
-                cache: false,
-                templateUrl: 'app/forgotpassword/forgotpassword.html',
-                controller: 'forgotPasswordController',
-                controllerAs: 'forgotPassword'
             })
             .state('app', {
                 url: '/app',
@@ -50,17 +29,6 @@
                     templateUrl: 'app/contacts/contacts.html',
                     controller: 'contactsController',
                     controllerAs: 'contacts'
-                  }
-                }
-              })
-            .state('app.resetpassword', {
-                url: '/resetpassword',
-                cache:false,
-                views: {
-                  'menuContent': {
-                    templateUrl: 'app/resetpassword/resetpassword.html',
-                    controller: 'resetPasswordController',
-                    controllerAs: 'resetpassword'
                   }
                 }
               })
@@ -116,6 +84,28 @@
                       templateUrl: 'app/publicchats/publicchats.html',
                       controller: 'publicChatsController',
                       controllerAs: 'publicChats'
+                    }
+                }
+            })   
+            .state('app.addInGroup', {
+                url: '/addInGroup',
+                cache:false,
+                views: {
+                   'menuContent': {
+                      templateUrl: 'app/addingroup/addingroup.html',
+                      controller: 'addInGroupController',
+                      controllerAs: 'addInGroup'
+                    }
+                }
+            })   
+            .state('app.inviteInGroup', {
+                url: '/inviteInGroup',
+                cache:false,
+                views: {
+                   'menuContent': {
+                      templateUrl: 'app/inviteingroup/inviteingroup.html',
+                      controller: 'inviteInGroupController',
+                      controllerAs: 'inviteInGroup'
                     }
                 }
             });

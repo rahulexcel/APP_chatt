@@ -1,7 +1,10 @@
 <ion-view view-title="PROFILE">
+    <ion-nav-buttons side="right">
+        <button class="button button-icon ion-android-more-vertical pull-right white" ng-click="profile.openPopover($event)"></button>
+    </ion-nav-buttons>
     <ion-content id="profile" class="has-header has-footer" ng-click="stopLoading()">
         <div style="width:100%;">
-            
+
             <div class="col-md-12 col-sm-12 col-xs-12 no-pad-left-right">
                 <div class="panel panel-card">
 
@@ -47,4 +50,5 @@
 
         </div>
     </ion-content>
+    
 </ion-view>
