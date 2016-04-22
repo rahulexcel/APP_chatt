@@ -87,9 +87,9 @@ img.img-circle.mycl {
     border:none !important;
     border-radius: 0px !important;
 }
-ion-popover-view.profile_popover.popover.none.ng-enter.active.ng-enter-active {
+/*ion-popover-view.profile_popover.popover.none.ng-enter.active.ng-enter-active {
     margin-left: 0px;
     opacity: 1;
     height: auto !important;
     width: auto !important;
-}
+}*/

@@ -42,6 +42,12 @@
     <input type="text" class="md-input" ng-model="publicChats.userGroupDescription" autocomplete="off" required>
     <label>Description</label>
     </div>
+    <div class="md-form-group float-label">
+    <label>Room Type</label>
+    <select ng-model="publicChats.userGroupType">
+        <option value="{{roomType}}" ng-repeat="roomType in publicChats.roomTypes">{{roomType}}</option>
+    </select>
+    </div>
     <button ng-disabled="publicChats.createGroupOption" ng-click="publicChats.createGroup()" class="md-btn md-raised pink btn-block p-h-md">Create</button>
     </form>
     </div>

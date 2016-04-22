@@ -85938,12 +85938,12 @@ img.img-circle.mycl {
   border-radius: 0px !important;
 }
 
-ion-popover-view.profile_popover.popover.none.ng-enter.active.ng-enter-active {
-  margin-left: 0px;
-  opacity: 1;
-  height: auto !important;
-  width: auto !important;
-}
+/*ion-popover-view.profile_popover.popover.none.ng-enter.active.ng-enter-active {
+    margin-left: 0px;
+    opacity: 1;
+    height: auto !important;
+    width: auto !important;
+}*/
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
@@ -97119,6 +97119,7 @@ img-crop canvas {
 
 .popover {
   height: auto !important;
+  width: auto !important;
 }
 
 .popover ion-header-bar {
