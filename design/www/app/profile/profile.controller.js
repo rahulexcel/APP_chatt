@@ -7,6 +7,9 @@
     function profileController(cameraService, profileImageFactory, $state, $ionicPopover, sqliteService, $ionicLoading, profileFactory, $timeout, $ionicModal, timeStorage, $scope, $filter, $ionicPopup) {
         var self = this;
         self.displayProfile = timeStorage.get('profile_data');
+        document.addEventListener("deviceready", function() {
+            $scope.version = AppVersion.version;
+        });
         if (timeStorage.get('userData').data.access_token) {
 
             var query = profileFactory.save({
@@ -33,13 +36,15 @@
         self.closePopover = function() {
             self.popover.hide();
         };
+        $scope.myCroppedImage = '';
         self.editProfilePic = function() {
-            $scope.myCroppedImage = '';
             cameraService.changePic().then(function(imageData) {
                 $scope.modal.show();
                 var img = "data:image/jpeg;base64," + imageData;
                 $scope.myimage = img;
+                $ionicLoading.hide();
             }, function(err) {
+                $ionicLoading.hide();
                 window.plugins.toast.showShortTop('Unable to retrieve image');
             });
         };
@@ -112,49 +117,77 @@
             return buf;
         }
 
-        $scope.imgChange = function() {
-
-            if ($scope.myCroppedImage) {
-                $scope.startLoading = true;
-                var imageBase64 = $scope.myCroppedImage.replace(/^data:image\/(png|jpeg);base64,/, "");
-                var binary = fixBinary(atob(imageBase64));
-                var blob = new Blob([binary], {type: 'image/png', name: 'png'});
-                blob.name = 'png';
-                blob.$ngfName = 'png';
-
-                var query = profileImageFactory.upload({
-                    file: blob,
-                    currentTimestamp: Date.now(),
-                    append_data: {file_type: 'profile_image', accessToken: timeStorage.get('userData').data.access_token}
-
-                });
-                query.then(function(data) {
-
-                    if (data.data.status == 1) {
-                        self.displayprofile.profile_image = data.data.data.url;
-                        $scope.startLoading = false;
-                        var pr_image = timeStorage.get('userData');
-                        pr_image.data.profile_image = self.displayprofile.profile_image;
-                        console.log(pr_image);
-                        sqliteService.updateUserProfie(self.displayprofile.profile_image);
-                        $scope.modal.hide();
-                    } else {
-                        $scope.startLoading = false;
-                        window.plugins.toast.showShortTop('Image not upload');
-                    }
-                });
-
+        $scope.imgChange = function(imageType) {
+            if (imageType == "bgImage") {
+                timeStorage.set('bgImage', $scope.myBgCroppedImage);
+                $scope.backGroundModal.hide();
+                window.plugins.toast.showShortTop('Background Set');
             } else {
-                window.plugins.toast.showShortTop('Please set your pic');
+                if ($scope.myCroppedImage) {
+                    $scope.startLoading = true;
+                    var imageBase64 = $scope.myCroppedImage.replace(/^data:image\/(png|jpeg);base64,/, "");
+                    var binary = fixBinary(atob(imageBase64));
+                    var blob = new Blob([binary], {type: 'image/png', name: 'png'});
+                    blob.name = 'png';
+                    blob.$ngfName = 'png';
+
+                    var query = profileImageFactory.upload({
+                        file: blob,
+                        currentTimestamp: Date.now(),
+                        append_data: {file_type: 'profile_image', accessToken: timeStorage.get('userData').data.access_token}
+
+                    });
+                    query.then(function(data) {
+
+                        if (data.data.status == 1) {
+                            self.displayprofile.profile_image = data.data.data.url;
+                            $scope.startLoading = false;
+                            var pr_image = timeStorage.get('userData');
+                            pr_image.data.profile_image = self.displayprofile.profile_image;
+                            console.log(pr_image);
+                            sqliteService.updateUserProfie(self.displayprofile.profile_image);
+                            $scope.modal.hide();
+                        } else {
+                            $scope.startLoading = false;
+                            window.plugins.toast.showShortTop('Image not upload');
+                        }
+                    });
+
+                } else {
+                    window.plugins.toast.showShortTop('Please set your pic');
+                }
             }
         };
         $scope.imgCancel = function() {
             $scope.modal.hide();
+            $scope.backGroundModal.hide();
         };
         $scope.stopLoading = function() {
             $scope.startLoading = false;
             $scope.start = false;
         };
+        $scope.bgimage = '';
+        $scope.myBgCroppedImage = '';
+        $scope.backGround = function() {
+            cameraService.changePic().then(function(imageData) {
+                var img = "data:image/jpeg;base64," + imageData;
+                $scope.backGroundModal.show();
+                $ionicLoading.hide();
+                $scope.bgimage = img;
+            }, function(err) {
+                $ionicLoading.hide();
+                window.plugins.toast.showShortTop('Unable to retrieve image');
+            });
+        };
+        $scope.imgBg = function(image) {
+            $scope.myBgCroppedImage = image;
+        };
+        $ionicModal.fromTemplateUrl('app/profile/template/backGround.html', {
+            scope: $scope,
+            animation: 'slide-in-up'
+        }).then(function(modal) {
+            $scope.backGroundModal = modal;
+        });
 
     }
 

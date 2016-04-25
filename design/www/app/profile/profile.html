@@ -4,11 +4,13 @@
     </ion-nav-buttons>
     <ion-content id="profile" class="has-header has-footer" ng-click="stopLoading()">
         <div style="width:100%;">
-
+            <div class="loadingModal" ng-click="stopLoading()" ng-if="startLoading">
+                <ion-spinner class="icnModal" icon="android"></ion-spinner>
+            </div>
             <div class="col-md-12 col-sm-12 col-xs-12 no-pad-left-right">
                 <div class="panel panel-card">
 
-                    <div class="r-t pos-rlt" md-ink-ripple style="background:url({{profile.displayprofile.profile_image}})  center; background-size:cover;background-repeat: no-repeat;color: #3F51B5">
+                    <div class="r-t pos-rlt" md-ink-ripple style="background:url({{profile.displayprofile.profile_image}})  center; background-size:cover;background-repeat: no-repeat;color: #3F51B5;">
                         <div class="p-lg bg-white-overlay text-center r-t">
                             <a href class="w-xs inline myim" ng-if="profile.displayprofile.profile_image">
                                 <img id="profileImage" src="{{profile.displayprofile.profile_image}}" class="img-circle profile-pic">
@@ -50,5 +52,5 @@
 
         </div>
     </ion-content>
-    
+
 </ion-view>
