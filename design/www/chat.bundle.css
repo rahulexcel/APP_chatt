@@ -85944,6 +85944,27 @@ img.img-circle.mycl {
     height: auto !important;
     width: auto !important;
 }*/
+
+.item.right-chat {
+  background: transparent;
+}
+
+.item.left-chat {
+  background: transparent;
+}
+
+.item.left-chat.alert-message {
+  background-color: transparent !important;
+}
+
+.myContent {
+  background-color: transparent !important;
+}
+
+.myImg {
+  width: 100%;
+  padding: 40px 0 0 0;
+}
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
