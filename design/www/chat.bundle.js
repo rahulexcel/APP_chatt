@@ -22049,7 +22049,6 @@ angular.module('chattapp')
                             $scope.startLoading = false;
                             var pr_image = timeStorage.get('userData');
                             pr_image.data.profile_image = self.displayprofile.profile_image;
-                            console.log(pr_image);
                             sqliteService.updateUserProfie(self.displayprofile.profile_image);
                             $scope.modal.hide();
                         } else {
