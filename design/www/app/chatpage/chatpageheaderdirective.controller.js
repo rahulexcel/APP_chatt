@@ -307,6 +307,15 @@
             $state.go('app.addInGroup');
             $scope.popover.hide();
         }
+        $ionicPopover.fromTemplateUrl('app/chatpage/templates/attachfilepopover.html', {
+            scope: $scope,
+        }).then(function(popover) {
+            $scope.openAttachFilePopover = popover;
+        });
+        self.openAttachFilePopover = function($event) {
+            $scope.openAttachFilePopover.show($event);
+        };
+        self.muteNotifications = true;
 
     }
 })();

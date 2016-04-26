@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    angular.module('chattapp', ['ionic', 'ngStorage','ngFileUpload','ngImgCrop', 'ngResource','GoogleLoginService', 'facebookLoginService', 'ngMessages'])
+    angular.module('chattapp', ['ionic', 'ngStorage','ngFileUpload','ngImgCrop', 'ngResource','GoogleLoginService', 'facebookLoginService', 'ngMessages', 'ngSanitize', 'emojiApp'])
 
     .config(function($stateProvider, $urlRouterProvider) {
         $stateProvider

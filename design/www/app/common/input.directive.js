@@ -1,7 +1,7 @@
 angular.module('chattapp')
-        .directive('input', function($timeout) {
+        .directive('inputFeild', function($timeout) {
             return {
-                restrict: 'E',
+                restrict: 'ACE',
                 scope: {
                     'returnClose': '=',
                     'onReturn': '&',
