@@ -10,21 +10,22 @@
         self.image = userData.data.profile_image;
         self.name = userData.data.name;
         self.user_id = userData.data.user_id;
+        $scope.emojiMessage={};
         self.sendMessage = function() {
-            if (self.message == '') {
+            if ($scope.emojiMessage.rawhtml == '') {
             } else {
                 var currentTimeStamp = _.now();
                 socketService.roomOpen($stateParams.roomId);
-                sqliteService.saveMessageInDb(self.message, 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId) {
+                sqliteService.saveMessageInDb($scope.emojiMessage.rawhtml, 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId) {
                     if (timeStorage.get('network')) {
                     } else {
-                        socketService.room_message(lastInsertId, $stateParams.roomId, self.message, currentTimeStamp);
+                        socketService.room_message(lastInsertId, $stateParams.roomId, $scope.emojiMessage.rawhtml, currentTimeStamp);
                     }
 
                     var currentMessage = {
                         "id": lastInsertId,
                         "image": userData.data.profile_image,
-                        "message": self.message,
+                        "message": $scope.emojiMessage.rawhtml,
                         "messageTime": moment(currentTimeStamp).format("hh:mm a"),
                         "timeStamp": currentTimeStamp,
                         "name": userData.data.name,
@@ -33,7 +34,7 @@
                     };
                     $rootScope.$broadcast('displayChatMessages', {data: currentMessage});
                     $ionicScrollDelegate.scrollBottom(false);
-                    self.message = '';
+                    $scope.emojiMessage = {};
                     $interval.cancel(interval);
                     $timeout.cancel(inputChangedPromise);
                 }, 100);
@@ -42,7 +43,8 @@
         };
 
         var focus = 0;
-        self.inputUp = function() {
+        function inputUp() {
+            console.log('inputUp');
             inputChanged = 0;
             if ($scope.isFocused == 'focusOut' && focus == 0) {
                 focus++;
@@ -59,7 +61,8 @@
                 $ionicScrollDelegate.scrollBottom(false);
             }, 300);
         };
-        self.inputDown = function() {
+        function inputDown() {
+            console.log('inputDown');
             $interval.cancel(interval);
             $ionicScrollDelegate.resize();
         };
@@ -67,7 +70,8 @@
         var i = 0;
         var interval;
         var inputChangedPromise;
-        self.writingMessage = function() {
+        function writingMessage() {
+            console.log('writing message')
             if (inputChanged == 0) {
                 socketService.writingMessage($stateParams.roomId);
                 inputChanged = 1;
@@ -88,5 +92,8 @@
                 i = 1;
             }
         };
+        document.addEventListener('focusIn', inputUp, false);
+        document.addEventListener('focusOut', inputDown, false);
+        document.addEventListener('change', writingMessage, false);
     }
 })();
