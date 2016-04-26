@@ -40,6 +40,7 @@
             timeStorage.remove('chatWithUserData');
             timeStorage.remove('displayPublicChats');
             timeStorage.remove('profile_data');
+            timeStorage.remove('bgImage');
             if (ionic.Platform.isAndroid()) {
                 facebookConnectPlugin.logout();
             }
