@@ -17,7 +17,8 @@
     "moment-timezone": "0.5.3",
     "jstz": "38263a9e22",
     "jstzdetect": "1.0.6",
-    "ng-img-crop": "0.3.2"
+    "ng-img-crop": "0.3.2",
+    "angular-sanitize":"1.4.3"
   },
   "dependencies": {
     "ng-file-upload": "^12.0.4"

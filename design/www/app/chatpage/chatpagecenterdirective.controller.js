@@ -106,7 +106,6 @@
             currentTimestamp: _.now()
             });
             query.$promise.then(function(data) {
-                console.log(data);
                 socketService.update_message_status(data.data.messages, $stateParams.roomId);
                 sqliteService.updateDbOnRoomOpen(data.data.messages, $stateParams.roomId).then(function(){
                     sqliteService.getMessageDataFromDB($stateParams.roomId).then(function(response){

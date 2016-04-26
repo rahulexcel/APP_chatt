@@ -22,6 +22,7 @@
              },
              service.saveMessageInDb = function(message, message_status, user_id, user_name, user_profile_image, roomId, messageTime) {
                 var q = $q.defer();
+                message = message.replace(/"/g,"\\'");
                 var dbobj = window.sqlitePlugin.openDatabase({
                      name: "chattappDB"
                  });
@@ -32,7 +33,6 @@
                      });
                  }
                  function error(err) {
-                    
                      q.reject(err);
                  }
                  function success(results) {
@@ -144,7 +144,7 @@
                         for (var i = 0; i < results.rows.length; i++) {
                                  var newData = {};
                                  newData.id = results.rows.item(i).message_id;
-                                 newData.message = results.rows.item(i).message;
+                                 newData.message = results.rows.item(i).message.replace(/\\'/g,'"');
                                  newData.messageTime = moment.unix(results.rows.item(i).messageTime).tz(timeZoneService.getTimeZone()).format("hh:mm a");
                                  newData.timeStamp = results.rows.item(i).messageTime;
                                  newData.name = results.rows.item(i).user_name;
