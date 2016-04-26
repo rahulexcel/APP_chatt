@@ -110,10 +110,9 @@
         }
 
         $scope.imgChange = function(imageType) {
-            console.log('image uploading call');
-//            } else {
+            
             if ($scope.myCroppedImage || $scope.myBgCroppedImage) {
-                console.log('image uploading call enter');
+              
                 var imageData, appenddata;
                 if (imageType == "bgImage") {
                     imageData = $scope.myBgCroppedImage;
@@ -134,17 +133,17 @@
                     append_data: appenddata
                 });
                 query.then(function(data) {
-                    console.log(data);
+                   
                     if (data.data.status == 1) {
                         if (data.data.data.container == "images_room_background") {
-                            console.log('this is background');
+                           
                             timeStorage.set('bgImage', data.data.data.url);
                             $scope.startLoading = false;
                             $scope.backGroundModal.hide();
                             window.plugins.toast.showShortTop('Background Set');
                         }
                         else {
-                            console.log('this is profile');
+                            
                             self.displayprofile.profile_image = data.data.data.url;
                             $scope.startLoading = false;
                             var pr_image = timeStorage.get('userData');
