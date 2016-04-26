@@ -4,7 +4,7 @@
     angular.module('chattapp')
             .controller('chatPageHeaderDirectiveController', chatPageHeaderDirectiveController);
 
-    function chatPageHeaderDirectiveController($state, timeStorage, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService, sqliteService) {
+    function chatPageHeaderDirectiveController($state, timeStorage, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService, sqliteService, $ionicLoading) {
 
         var self = this;
         self.leaveGroupSpinner = false;
@@ -145,7 +145,6 @@
                     if (index == 0) {
                         deleteUserFromGroupSheet();
                         $scope.infoModel.show();
-                        self.deleteIconRotate = index;
                         socketService.removeUserFromGroup(userData, $stateParams.roomId);
                     }
                 }
@@ -315,6 +314,16 @@
         self.openAttachFilePopover = function($event) {
             $scope.openAttachFilePopover.show($event);
         };
+        self.attachImage = function() {
+            cameraService.changePic().then(function(imageData) {
+                $ionicLoading.hide();
+            }, function(err) {
+                $ionicLoading.hide();
+            });
+        };
+        self.inviteInGroup = function() {
+            timeStorage.set('inviteInGroupId', $stateParams.roomId, 1);
+        }
         self.muteNotifications = true;
 
     }

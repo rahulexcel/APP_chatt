@@ -44,9 +44,11 @@
             if (type == 'update_room_unread_notification') {
                 $rootScope.$broadcast('update_room_unread_notification', {data: data});
             }
-
             if (type == 'get_user_profile') {
                 $rootScope.$broadcast('got_user_updated_profile', {data: data});
+            }
+            if (type == 'admin_add_user_to_public_room') {
+                $rootScope.$broadcast('admin_added_user_to_public_room', {data: data});
             }
 
         });
@@ -160,6 +162,10 @@
                     var userData = timeStorage.get('userData');
                     socket.emit('APP_SOCKET_EMIT', 'room_open', {accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now()});
 
+                },
+                service.addInGroup = function(roomId, userId) {
+                    var userData = timeStorage.get('userData');
+                    socket.emit('APP_SOCKET_EMIT', 'admin_add_user_to_public_room', {accessToken: userData.data.access_token, room_id: roomId, user_id:userId, currentTimestamp: _.now()});
                 };
         return service;
     }
