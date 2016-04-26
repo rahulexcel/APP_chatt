@@ -24813,7 +24813,7 @@ angular.module('chattapp')
     angular.module('chattapp')
             .controller('chatPageHeaderDirectiveController', chatPageHeaderDirectiveController);
 
-    function chatPageHeaderDirectiveController($state, timeStorage, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService, sqliteService) {
+    function chatPageHeaderDirectiveController($state, timeStorage, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService, sqliteService, $ionicLoading) {
 
         var self = this;
         self.leaveGroupSpinner = false;
@@ -24954,7 +24954,6 @@ angular.module('chattapp')
                     if (index == 0) {
                         deleteUserFromGroupSheet();
                         $scope.infoModel.show();
-                        self.deleteIconRotate = index;
                         socketService.removeUserFromGroup(userData, $stateParams.roomId);
                     }
                 }
@@ -25124,6 +25123,16 @@ angular.module('chattapp')
         self.openAttachFilePopover = function($event) {
             $scope.openAttachFilePopover.show($event);
         };
+        self.attachImage = function() {
+            cameraService.changePic().then(function(imageData) {
+                $ionicLoading.hide();
+            }, function(err) {
+                $ionicLoading.hide();
+            });
+        };
+        self.inviteInGroup = function() {
+            timeStorage.set('inviteInGroupId', $stateParams.roomId, 1);
+        }
         self.muteNotifications = true;
 
     }
@@ -26129,9 +26138,11 @@ angular.module('chattapp')
             if (type == 'update_room_unread_notification') {
                 $rootScope.$broadcast('update_room_unread_notification', {data: data});
             }
-
             if (type == 'get_user_profile') {
                 $rootScope.$broadcast('got_user_updated_profile', {data: data});
+            }
+            if (type == 'admin_add_user_to_public_room') {
+                $rootScope.$broadcast('admin_added_user_to_public_room', {data: data});
             }
 
         });
@@ -26245,6 +26256,10 @@ angular.module('chattapp')
                     var userData = timeStorage.get('userData');
                     socket.emit('APP_SOCKET_EMIT', 'room_open', {accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now()});
 
+                },
+                service.addInGroup = function(roomId, userId) {
+                    var userData = timeStorage.get('userData');
+                    socket.emit('APP_SOCKET_EMIT', 'admin_add_user_to_public_room', {accessToken: userData.data.access_token, room_id: roomId, user_id:userId, currentTimestamp: _.now()});
                 };
         return service;
     }
@@ -26643,14 +26658,56 @@ angular.module('chattapp')
     angular.module('chattapp')
         .controller('inviteInGroupController', inviteInGroupController);
 
-    function inviteInGroupController(timeStorage) {
+    function inviteInGroupController(timeStorage, inviteInGroupService, socketService, $scope) {
         var self = this;
-        self.displayinviteInGroup = timeStorage.get('displayPrivateChats');
-        self.inviteUser = function(index){
+        inviteInGroupService.userlist().then(function(data){
+            self.displayinviteInGroup = data;
+        });
+        self.inviteUser = function(ClickUserData, index){
             self.clickRoomSpinner = index;
+            socketService.addInGroup(timeStorage.get('inviteInGroupId'), ClickUserData.id);
         }
+        $scope.$on('admin_added_user_to_public_room', function (event, response) {
+            self.clickRoomSpinner = -1;
+            inviteInGroupService.userlist().then(function(data){
+                self.displayinviteInGroup = data;
+            });
+         });
     }
 })();
+ (function() {
+     'use strict';
+     angular.module('chattapp')
+         .factory('inviteInGroupService', inviteInGroupService);
+
+     function inviteInGroupService(timeStorage, timeZoneService, $q, getRoomInfoFactory) {
+         var service = {};
+         service.userlist = function() {
+            var q = $q.defer();
+            var roomId = timeStorage.get('inviteInGroupId');
+            var userData = timeStorage.get('userData');
+            var query = getRoomInfoFactory.save({
+                accessToken: userData.data.access_token,
+                room_id: roomId,
+                currentTimestamp: _.now()
+            });
+            query.$promise.then(function(data) {
+                var noRoomData = [];
+                if (data.data.admin_friends_not_room_members) {
+                    for (var i = 0; i < data.data.admin_friends_not_room_members.length; i++) {
+                        data.data.admin_friends_not_room_members[i].last_seen = moment.unix(data.data.admin_friends_not_room_members[i].last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
+                    }
+                    q.resolve(data.data.admin_friends_not_room_members);
+                } else{
+                    q.resolve(noRoomData);
+                }
+                
+            });
+             return q.promise;
+         }
+         return service;
+     };
+ })();
 (function() {
     'use strict';
 
