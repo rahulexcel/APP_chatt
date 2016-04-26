@@ -735,6 +735,10 @@ a.active{
         width: 81%;
     }
 }
+.popover-menu-btn-file-attach{
+    padding-right: 15%!important;
+    color: white!important;
+}
 #emojibtn{
     position: absolute;
     top: 5px;

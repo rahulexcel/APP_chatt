@@ -312,7 +312,7 @@
         }).then(function(popover) {
             $scope.openAttachFilePopover = popover;
         });
-        self.openGroupPopover = function($event) {
+        self.openAttachFilePopover = function($event) {
             $scope.openAttachFilePopover.show($event);
         };
         self.muteNotifications = true;
