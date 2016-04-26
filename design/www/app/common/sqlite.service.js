@@ -88,6 +88,7 @@
                  }
              },
              service.gotNewRoomMessage = function(message, message_id, message_status, message_time, user_name, user_profile_image, room_id, message_type,user_id) {
+                message = message.replace(/"/g,"\\'");
                 var dbobj = window.sqlitePlugin.openDatabase({
                      name: "chattappDB"
                  });
