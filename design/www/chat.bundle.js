@@ -26512,20 +26512,6 @@ angular.module('chattapp')
     };
 
 })();
- (function() {
-    'use strict';
-
-    angular.module('chattapp')
-        .controller('inviteInGroupController', inviteInGroupController);
-
-    function inviteInGroupController(timeStorage) {
-        var self = this;
-        self.displayinviteInGroup = timeStorage.get('displayPrivateChats');
-        self.inviteUser = function(index){
-            self.clickRoomSpinner = index;
-        }
-    }
-})();
 (function() {
     'use strict';
 
@@ -26650,6 +26636,437 @@ angular.module('chattapp')
        return $resource(Configurations.api_url+'/users/get_user_profile/:accessToken/:user_id/:currentTimestamp', {},{});
    };
 })();
+ (function() {
+    'use strict';
+
+    angular.module('chattapp')
+        .controller('inviteInGroupController', inviteInGroupController);
+
+    function inviteInGroupController(timeStorage) {
+        var self = this;
+        self.displayinviteInGroup = timeStorage.get('displayPrivateChats');
+        self.inviteUser = function(index){
+            self.clickRoomSpinner = index;
+        }
+    }
+})();
+(function() {
+    'use strict';
+
+    angular.module('chattapp')
+            .controller('loginController', loginController);
+
+    function loginController($state, loginFactory, timeStorage, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService, $ionicLoading) {
+        var self = this;
+        var deviceUUID = timeStorage.get('deviceUUID');
+        var devicePlatform = timeStorage.get('devicePlatform');
+        self.googleRegister = function() {
+            var promise = googleLogin.startLogin();
+            promise.then(function(googleData) {
+                $ionicLoading.show();
+                console.log(googleData);
+                timeStorage.set('userEmail', googleData.email, 1);
+                var query = loginFactory.save({
+                    action_type: 'google',
+                    social_id: googleData.google_id,
+                    platform: devicePlatform,
+                    token: $localStorage.gcmToken,
+                    action: 'login_register',
+                    device_id: deviceUUID,
+                    email: googleData.email,
+                    name: googleData.name,
+                    currentTimestamp: _.now(),
+                    password: '',
+                    profile_image: googleData.picture
+                });
+                query.$promise.then(function(data) {
+                    $ionicLoading.hide();
+                    console.log(data);
+                    tostService.notify('Welcome "' + data.data.name + '"', 'top');
+                    timeStorage.set('userEmail', googleData.email, 1);
+                    timeStorage.set('userData', data, 1);
+                    // lastUsesTimeService.updateTime();
+                    $state.go('app.chats');
+                    $ionicHistory.nextViewOptions({
+                        historyRoot: true,
+                        disableBack: true
+                    });
+                });
+            }, function(data) {
+                console.log(data);
+            });
+        };
+        self.facebookRegister = function() {
+            facebookLogin.login().then(function(fbData) {
+                console.log(fbData);
+                if (fbData.id) {
+                    loginWithFBApi(fbData);
+                    $ionicLoading.show();
+                }
+                if (fbData == 'unknown') {
+                    facebookLogin.fbLoginSuccess().then(function(fbData1) {
+                        console.log(fbData1);
+                        loginWithFBApi(fbData1);
+                        $ionicLoading.show();
+                    }, function(data) {
+                        console.log(data);
+                    });
+                }
+            }, function(data) {
+                console.log(data);
+            });
+        };
+
+        function loginWithFBApi(fbData) {
+            timeStorage.set('userEmail', fbData.email, 1);
+            var query = loginFactory.save({
+                action_type: 'facebook',
+                social_id: fbData.id,
+                platform: devicePlatform,
+                token: $localStorage.gcmToken,
+                action: 'login_register',
+                device_id: deviceUUID,
+                email: fbData.email,
+                name: fbData.name,
+                currentTimestamp: _.now(),
+                password: '',
+                profile_image: 'http://graph.facebook.com/' + fbData.id + '/picture?type=large'
+            });
+            query.$promise.then(function(data) {
+                $ionicLoading.hide();
+                console.log(data);
+                tostService.notify('Welcome "' + data.data.name + '"', 'top');
+                timeStorage.set('userEmail', fbData.email, 1);
+                timeStorage.set('userData', data, 1);
+                // lastUsesTimeService.updateTime();
+                $state.go('app.chats');
+                $ionicHistory.nextViewOptions({
+                    historyRoot: true,
+                    disableBack: true
+                });
+            });
+        }
+        ;
+    }
+})();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('loginFactory', loginFactory);
+
+   function loginFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/users/register_login/:action_type/:action/:social_id/:platform/:device_id/:token/:email/:password', {},{});
+   };
+})();
+
+(function() {
+    'use strict';
+
+    angular.module('chattapp')
+            .controller('menuController', menuController);
+
+    function menuController($scope, $ionicPopover, socketService, $ionicPlatform, $ionicHistory, tostService, $localStorage, Onsuccess, $state, timeStorage, $rootScope) {
+
+        var self = this;
+        self.chattab = true;
+        $ionicPopover.fromTemplateUrl('templates/popover.html', {
+            scope: $scope,
+        }).then(function(popover) {
+            self.popover = popover;
+        });
+        self.search = function(state) {
+            if (timeStorage.get('network')) {
+                window.plugins.toast.showShortTop('You need to online to access this');
+            }
+            else
+            {
+                $state.go(state);
+            }
+        };
+        Onsuccess.footerTab(function(a, b, c, d) {
+            self.chattab = a;
+            self.searchb = b;
+            self.setting = c;
+            self.group = d;
+        });
+        $scope.logout = function() {
+            window.sqlitePlugin.deleteDatabase({name: "chattappDB", location: 1});
+            
+            socketService.logout();
+            timeStorage.remove('google_access_token');
+            timeStorage.remove('userEmail');
+            timeStorage.remove('userData');
+            timeStorage.remove('displayPrivateChats');
+            timeStorage.remove('listUsers');
+            timeStorage.remove('chatWithUserData');
+            timeStorage.remove('displayPublicChats');
+            timeStorage.remove('profile_data');
+            timeStorage.remove('bgImage');
+            if (ionic.Platform.isAndroid()) {
+                facebookConnectPlugin.logout();
+            }
+            ;
+            $state.go('login');
+        };
+        var count = 0;
+        $ionicPlatform.registerBackButtonAction(function() {
+            var view = $ionicHistory.currentView();
+            if (view.stateId == 'login' && count == 0 || view.stateId == 'app.chats' && count == 0) {
+                tostService.notify('Press Back Button Again To Exit The App!', 'Bottom');
+                count++;
+                $timeout(function() {
+                    count = 0;
+                }, 3000);
+            } else if (view.stateId == 'login' && count == 1 || view.stateId == 'app.chats' && count == 1) {
+                navigator.app.exitApp();
+                count = 0;
+            } else {
+                $ionicHistory.goBack();
+                count = 0;
+            }
+        }, 100);
+    }
+})();
+(function() {
+    'use strict';
+    angular.module('chattapp')
+            .controller('profileController', profileController);
+    function profileController(cameraService, profileImageFactory, $state, $ionicPopover, sqliteService, $ionicLoading, profileFactory, $timeout, $ionicModal, timeStorage, $scope, $filter, $ionicPopup) {
+        var self = this;
+        self.displayProfile = timeStorage.get('profile_data');
+        document.addEventListener("deviceready", function() {
+            $scope.version = AppVersion.version;
+        });
+        if (timeStorage.get('userData').data.access_token) {
+
+            var query = profileFactory.save({
+                accessToken: timeStorage.get('userData').data.access_token,
+                currentTimestamp: Date.now()
+            });
+            query.$promise.then(function(data) {
+                self.displayprofile = data.data;
+                if (!data.data.profile_image) {
+                    self.displayprofile.profile_image = "img/user.png";
+                }
+                timeStorage.set('profile_data', self.displayprofile);
+            });
+        }
+        $ionicPopover.fromTemplateUrl('app/profile/template/popover.html', {
+            scope: $scope
+        }).then(function(popover) {
+            self.popover = popover;
+        });
+        self.openPopover = function($event) {
+            self.popover.show($event);
+        };
+        self.closePopover = function() {
+            self.popover.hide();
+        };
+        $scope.myCroppedImage = '';
+        self.editProfilePic = function() {
+            cameraService.changePic().then(function(imageData) {
+                $scope.modal.show();
+                var img = "data:image/jpeg;base64," + imageData;
+                $scope.myimage = img;
+                $ionicLoading.hide();
+            }, function(err) {
+                $ionicLoading.hide();
+                window.plugins.toast.showShortTop('Unable to retrieve image');
+            });
+        };
+        self.hidepop = function() {
+            self.popover.hide();
+        };
+        $scope.result = function(image) {
+            $scope.myCroppedImage = image;
+        };
+        self.status = function(status, demo) {
+            self.data = {
+                text: ''
+            };
+            if (status) {
+                self.data.text = status;
+            }
+            else {
+                self.data.text = demo;
+            }
+            var myPopup = $ionicPopup.show({
+                template: '<input id="statustxt" type="text"  ng-model="profile.data.text">',
+                title: 'Update status',
+                subTitle: '',
+                scope: $scope,
+                buttons: [
+                    {text: 'Cancel'},
+                    {
+                        text: '<b>Save</b>',
+                        type: 'button-positive',
+                        onTap: function(e) {
+                            var query = profileFactory.status({
+                                accessToken: timeStorage.get('userData').data.access_token,
+                                status: self.data.text,
+                                currentTimestamp: Date.now()
+                            });
+                            query.$promise.then(function(data) {
+                                if (data.status == 1) {
+                                    self.displayprofile.profile_status = data.data.status;
+                                    myPopup.close();
+                                }
+                                else {
+                                    window.plugins.toast.showShortTop('status not update');
+                                    myPopup.close();
+                                }
+
+                            });
+                        }
+                    }
+                ]
+            });
+        };
+        $ionicModal.fromTemplateUrl('app/profile/template/imgCropModal.html', {
+            scope: $scope,
+            animation: 'slide-in-up'
+        }).then(function(modal) {
+            $scope.modal = modal;
+        });
+        function fixBinary(bin) {
+            var length = bin.length;
+            var buf = new ArrayBuffer(length);
+            var arr = new Uint8Array(buf);
+            for (var i = 0; i < length; i++) {
+                arr[i] = bin.charCodeAt(i);
+            }
+            return buf;
+        }
+
+        $scope.imgChange = function(imageType) {
+            console.log('image uploading call');
+//            } else {
+            if ($scope.myCroppedImage || $scope.myBgCroppedImage) {
+                console.log('image uploading call enter');
+                var imageData, appenddata;
+                if (imageType == "bgImage") {
+                    imageData = $scope.myBgCroppedImage;
+                    appenddata = {file_type: 'room_background_image', accessToken: timeStorage.get('userData').data.access_token}
+                } else {
+                    imageData = $scope.myCroppedImage;
+                    appenddata = {file_type: 'profile_image', accessToken: timeStorage.get('userData').data.access_token}
+                }
+                $scope.startLoading = true;
+                var imageBase64 = imageData.replace(/^data:image\/(png|jpeg);base64,/, "");
+                var binary = fixBinary(atob(imageBase64));
+                var blob = new Blob([binary], {type: 'image/png', name: 'png'});
+                blob.name = 'png';
+                blob.$ngfName = 'png';
+                var query = profileImageFactory.upload({
+                    file: blob,
+                    currentTimestamp: Date.now(),
+                    append_data: appenddata
+                });
+                query.then(function(data) {
+                    console.log(data);
+                    if (data.data.status == 1) {
+                        if (data.data.data.container == "images_room_background") {
+                            console.log('this is background');
+                            timeStorage.set('bgImage', data.data.data.url);
+                            $scope.startLoading = false;
+                            $scope.backGroundModal.hide();
+                            window.plugins.toast.showShortTop('Background Set');
+                        }
+                        else {
+                            console.log('this is profile');
+                            self.displayprofile.profile_image = data.data.data.url;
+                            $scope.startLoading = false;
+                            var pr_image = timeStorage.get('userData');
+                            pr_image.data.profile_image = self.displayprofile.profile_image;
+                            sqliteService.updateUserProfie(self.displayprofile.profile_image);
+                            $scope.modal.hide();
+                        }
+                    } else {
+                        $scope.startLoading = false;
+                        window.plugins.toast.showShortTop('Image not upload');
+                    }
+                });
+            } else {
+                window.plugins.toast.showShortTop('Please set your pic');
+            }
+//            }
+        };
+        $scope.imgCancel = function() {
+            $scope.modal.hide();
+            $scope.backGroundModal.hide();
+        };
+        $scope.stopLoading = function() {
+            $scope.startLoading = false;
+            $scope.start = false;
+        };
+        $scope.bgimage = '';
+        $scope.myBgCroppedImage = '';
+        $scope.backGround = function() {
+            cameraService.changePic().then(function(imageData) {
+                var img = "data:image/jpeg;base64," + imageData;
+                $scope.backGroundModal.show();
+                $ionicLoading.hide();
+                $scope.bgimage = img;
+            }, function(err) {
+                $ionicLoading.hide();
+                window.plugins.toast.showShortTop('Unable to retrieve image');
+            });
+        };
+        $scope.imgBg = function(image) {
+            $scope.myBgCroppedImage = image;
+        };
+        $ionicModal.fromTemplateUrl('app/profile/template/backGround.html', {
+            scope: $scope,
+            animation: 'slide-in-up'
+        }).then(function(modal) {
+            $scope.backGroundModal = modal;
+        });
+    }
+
+})();
+(function() {
+    'use strict';
+    angular.module('chattapp')
+            .factory('profileFactory', profileFactory);
+
+    function profileFactory($resource, Configurations) {
+        return $resource(Configurations.api_url + '/users/my_profile/:accessToken/:currentTimestamp/', {}, {
+            status: {
+                method: 'POST',
+                url: Configurations.api_url + '/users/update_profile_status/:accessToken/:status/:currentTimestamp'
+            }
+        });
+    }
+    ;
+})();
+
+(function() {
+    'use strict';
+    angular.module('chattapp')
+            .factory('profileImageFactory', profileImageFactory);
+
+    function profileImageFactory($resource, Configurations, Upload, $q) {
+        var image = {};
+        image.upload = function(data) {
+            var def = $q.defer();
+            Upload.upload({
+                url: Configurations.api_url + '/uploads/upload',
+                data: data
+            }).then(function(resp) {
+                def.resolve(resp);
+            }, function(resp) {
+                def.reject(resp);
+            }, function(evt) {
+                var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                console.log('progress: ' + progressPercentage + '% '); //progress of loading image
+            });
+            return def.promise;
+        };
+        return image;
+    }
+    ;
+})();
+
 (function() {
    'use strict';
    angular.module('chattapp')
@@ -26823,182 +27240,6 @@ angular.module('chattapp')
     'use strict';
 
     angular.module('chattapp')
-            .controller('loginController', loginController);
-
-    function loginController($state, loginFactory, timeStorage, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService, $ionicLoading) {
-        var self = this;
-        var deviceUUID = timeStorage.get('deviceUUID');
-        var devicePlatform = timeStorage.get('devicePlatform');
-        self.googleRegister = function() {
-            var promise = googleLogin.startLogin();
-            promise.then(function(googleData) {
-                $ionicLoading.show();
-                console.log(googleData);
-                timeStorage.set('userEmail', googleData.email, 1);
-                var query = loginFactory.save({
-                    action_type: 'google',
-                    social_id: googleData.google_id,
-                    platform: devicePlatform,
-                    token: $localStorage.gcmToken,
-                    action: 'login_register',
-                    device_id: deviceUUID,
-                    email: googleData.email,
-                    name: googleData.name,
-                    currentTimestamp: _.now(),
-                    password: '',
-                    profile_image: googleData.picture
-                });
-                query.$promise.then(function(data) {
-                    $ionicLoading.hide();
-                    console.log(data);
-                    tostService.notify('Welcome "' + data.data.name + '"', 'top');
-                    timeStorage.set('userEmail', googleData.email, 1);
-                    timeStorage.set('userData', data, 1);
-                    // lastUsesTimeService.updateTime();
-                    $state.go('app.chats');
-                    $ionicHistory.nextViewOptions({
-                        historyRoot: true,
-                        disableBack: true
-                    });
-                });
-            }, function(data) {
-                console.log(data);
-            });
-        };
-        self.facebookRegister = function() {
-            facebookLogin.login().then(function(fbData) {
-                console.log(fbData);
-                if (fbData.id) {
-                    loginWithFBApi(fbData);
-                    $ionicLoading.show();
-                }
-                if (fbData == 'unknown') {
-                    facebookLogin.fbLoginSuccess().then(function(fbData1) {
-                        console.log(fbData1);
-                        loginWithFBApi(fbData1);
-                        $ionicLoading.show();
-                    }, function(data) {
-                        console.log(data);
-                    });
-                }
-            }, function(data) {
-                console.log(data);
-            });
-        };
-
-        function loginWithFBApi(fbData) {
-            timeStorage.set('userEmail', fbData.email, 1);
-            var query = loginFactory.save({
-                action_type: 'facebook',
-                social_id: fbData.id,
-                platform: devicePlatform,
-                token: $localStorage.gcmToken,
-                action: 'login_register',
-                device_id: deviceUUID,
-                email: fbData.email,
-                name: fbData.name,
-                currentTimestamp: _.now(),
-                password: '',
-                profile_image: 'http://graph.facebook.com/' + fbData.id + '/picture?type=large'
-            });
-            query.$promise.then(function(data) {
-                $ionicLoading.hide();
-                console.log(data);
-                tostService.notify('Welcome "' + data.data.name + '"', 'top');
-                timeStorage.set('userEmail', fbData.email, 1);
-                timeStorage.set('userData', data, 1);
-                // lastUsesTimeService.updateTime();
-                $state.go('app.chats');
-                $ionicHistory.nextViewOptions({
-                    historyRoot: true,
-                    disableBack: true
-                });
-            });
-        }
-        ;
-    }
-})();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('loginFactory', loginFactory);
-
-   function loginFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/users/register_login/:action_type/:action/:social_id/:platform/:device_id/:token/:email/:password', {},{});
-   };
-})();
-
-(function() {
-    'use strict';
-
-    angular.module('chattapp')
-            .controller('menuController', menuController);
-
-    function menuController($scope, $ionicPopover, socketService, $ionicPlatform, $ionicHistory, tostService, $localStorage, Onsuccess, $state, timeStorage, $rootScope) {
-
-        var self = this;
-        self.chattab = true;
-        $ionicPopover.fromTemplateUrl('templates/popover.html', {
-            scope: $scope,
-        }).then(function(popover) {
-            self.popover = popover;
-        });
-        self.search = function(state) {
-            if (timeStorage.get('network')) {
-                window.plugins.toast.showShortTop('You need to online to access this');
-            }
-            else
-            {
-                $state.go(state);
-            }
-        };
-        Onsuccess.footerTab(function(a, b, c, d) {
-            self.chattab = a;
-            self.searchb = b;
-            self.setting = c;
-            self.group = d;
-        });
-        $scope.logout = function() {
-            window.sqlitePlugin.deleteDatabase({name: "chattappDB", location: 1});
-            
-            socketService.logout();
-            timeStorage.remove('google_access_token');
-            timeStorage.remove('userEmail');
-            timeStorage.remove('userData');
-            timeStorage.remove('displayPrivateChats');
-            timeStorage.remove('listUsers');
-            timeStorage.remove('chatWithUserData');
-            timeStorage.remove('displayPublicChats');
-            timeStorage.remove('profile_data');
-            if (ionic.Platform.isAndroid()) {
-                facebookConnectPlugin.logout();
-            }
-            ;
-            $state.go('login');
-        };
-        var count = 0;
-        $ionicPlatform.registerBackButtonAction(function() {
-            var view = $ionicHistory.currentView();
-            if (view.stateId == 'login' && count == 0 || view.stateId == 'app.chats' && count == 0) {
-                tostService.notify('Press Back Button Again To Exit The App!', 'Bottom');
-                count++;
-                $timeout(function() {
-                    count = 0;
-                }, 3000);
-            } else if (view.stateId == 'login' && count == 1 || view.stateId == 'app.chats' && count == 1) {
-                navigator.app.exitApp();
-                count = 0;
-            } else {
-                $ionicHistory.goBack();
-                count = 0;
-            }
-        }, 100);
-    }
-})();
-(function() {
-    'use strict';
-
-    angular.module('chattapp')
             .controller('settingController', settingController);
 
     function settingController(socketService, timeStorage, $state) {
@@ -27020,239 +27261,4 @@ angular.module('chattapp')
             $state.go('login');
         };
     }
-})();
-(function() {
-    'use strict';
-
-    angular.module('chattapp')
-            .controller('profileController', profileController);
-
-    function profileController(cameraService, profileImageFactory, $state, $ionicPopover, sqliteService, $ionicLoading, profileFactory, $timeout, $ionicModal, timeStorage, $scope, $filter, $ionicPopup) {
-        var self = this;
-        self.displayProfile = timeStorage.get('profile_data');
-        document.addEventListener("deviceready", function() {
-            $scope.version = AppVersion.version;
-        });
-        if (timeStorage.get('userData').data.access_token) {
-
-            var query = profileFactory.save({
-                accessToken: timeStorage.get('userData').data.access_token,
-                currentTimestamp: Date.now()
-            });
-            query.$promise.then(function(data) {
-                self.displayprofile = data.data;
-                if (!data.data.profile_image) {
-                    self.displayprofile.profile_image = "img/user.png";
-                }
-                timeStorage.set('profile_data', self.displayprofile);
-
-            });
-        }
-        $ionicPopover.fromTemplateUrl('app/profile/template/popover.html', {
-            scope: $scope
-        }).then(function(popover) {
-            self.popover = popover;
-        });
-        self.openPopover = function($event) {
-            self.popover.show($event);
-        };
-        self.closePopover = function() {
-            self.popover.hide();
-        };
-        $scope.myCroppedImage = '';
-        self.editProfilePic = function() {
-            cameraService.changePic().then(function(imageData) {
-                $scope.modal.show();
-                var img = "data:image/jpeg;base64," + imageData;
-                $scope.myimage = img;
-                $ionicLoading.hide();
-            }, function(err) {
-                $ionicLoading.hide();
-                window.plugins.toast.showShortTop('Unable to retrieve image');
-            });
-        };
-        self.hidepop = function() {
-            self.popover.hide();
-        };
-        $scope.result = function(image) {
-            $scope.myCroppedImage = image;
-
-        };
-        self.status = function(status, demo) {
-            self.data = {
-                text: ''
-            };
-            if (status) {
-                self.data.text = status;
-            }
-            else {
-                self.data.text = demo;
-            }
-            var myPopup = $ionicPopup.show({
-                template: '<input id="statustxt" type="text"  ng-model="profile.data.text">',
-                title: 'Update status',
-                subTitle: '',
-                scope: $scope,
-                buttons: [
-                    {text: 'Cancel'},
-                    {
-                        text: '<b>Save</b>',
-                        type: 'button-positive',
-                        onTap: function(e) {
-                            var query = profileFactory.status({
-                                accessToken: timeStorage.get('userData').data.access_token,
-                                status: self.data.text,
-                                currentTimestamp: Date.now()
-                            });
-                            query.$promise.then(function(data) {
-                                if (data.status == 1) {
-                                    self.displayprofile.profile_status = data.data.status;
-                                    myPopup.close();
-
-                                }
-                                else {
-                                    window.plugins.toast.showShortTop('status not update');
-                                    myPopup.close();
-                                }
-
-                            });
-
-
-                        }
-                    }
-                ]
-            });
-        };
-        $ionicModal.fromTemplateUrl('app/profile/template/imgCropModal.html', {
-            scope: $scope,
-            animation: 'slide-in-up'
-        }).then(function(modal) {
-            $scope.modal = modal;
-        });
-
-        function fixBinary(bin) {
-            var length = bin.length;
-            var buf = new ArrayBuffer(length);
-            var arr = new Uint8Array(buf);
-            for (var i = 0; i < length; i++) {
-                arr[i] = bin.charCodeAt(i);
-            }
-            return buf;
-        }
-
-        $scope.imgChange = function(imageType) {
-            if (imageType == "bgImage") {
-                timeStorage.set('bgImage', $scope.myBgCroppedImage);
-                $scope.backGroundModal.hide();
-                window.plugins.toast.showShortTop('Background Set');
-            } else {
-                if ($scope.myCroppedImage) {
-                    $scope.startLoading = true;
-                    var imageBase64 = $scope.myCroppedImage.replace(/^data:image\/(png|jpeg);base64,/, "");
-                    var binary = fixBinary(atob(imageBase64));
-                    var blob = new Blob([binary], {type: 'image/png', name: 'png'});
-                    blob.name = 'png';
-                    blob.$ngfName = 'png';
-
-                    var query = profileImageFactory.upload({
-                        file: blob,
-                        currentTimestamp: Date.now(),
-                        append_data: {file_type: 'profile_image', accessToken: timeStorage.get('userData').data.access_token}
-
-                    });
-                    query.then(function(data) {
-
-                        if (data.data.status == 1) {
-                            self.displayprofile.profile_image = data.data.data.url;
-                            $scope.startLoading = false;
-                            var pr_image = timeStorage.get('userData');
-                            pr_image.data.profile_image = self.displayprofile.profile_image;
-                            sqliteService.updateUserProfie(self.displayprofile.profile_image);
-                            $scope.modal.hide();
-                        } else {
-                            $scope.startLoading = false;
-                            window.plugins.toast.showShortTop('Image not upload');
-                        }
-                    });
-
-                } else {
-                    window.plugins.toast.showShortTop('Please set your pic');
-                }
-            }
-        };
-        $scope.imgCancel = function() {
-            $scope.modal.hide();
-            $scope.backGroundModal.hide();
-        };
-        $scope.stopLoading = function() {
-            $scope.startLoading = false;
-            $scope.start = false;
-        };
-        $scope.bgimage = '';
-        $scope.myBgCroppedImage = '';
-        $scope.backGround = function() {
-            cameraService.changePic().then(function(imageData) {
-                var img = "data:image/jpeg;base64," + imageData;
-                $scope.backGroundModal.show();
-                $ionicLoading.hide();
-                $scope.bgimage = img;
-            }, function(err) {
-                $ionicLoading.hide();
-                window.plugins.toast.showShortTop('Unable to retrieve image');
-            });
-        };
-        $scope.imgBg = function(image) {
-            $scope.myBgCroppedImage = image;
-        };
-        $ionicModal.fromTemplateUrl('app/profile/template/backGround.html', {
-            scope: $scope,
-            animation: 'slide-in-up'
-        }).then(function(modal) {
-            $scope.backGroundModal = modal;
-        });
-
-    }
-
-})();
-(function() {
-    'use strict';
-    angular.module('chattapp')
-            .factory('profileFactory', profileFactory);
-
-    function profileFactory($resource, Configurations) {
-        return $resource(Configurations.api_url + '/users/my_profile/:accessToken/:currentTimestamp/', {}, {
-            status: {
-                method: 'POST',
-                url: Configurations.api_url + '/users/update_profile_status/:accessToken/:status/:currentTimestamp'
-            }
-        });
-    }
-    ;
-})();
-
-(function() {
-    'use strict';
-    angular.module('chattapp')
-            .factory('profileImageFactory', profileImageFactory);
-
-    function profileImageFactory($resource, Configurations, Upload, $q) {
-        var image = {};
-        image.upload = function(data) {
-            var def = $q.defer();
-            Upload.upload({
-                url: Configurations.api_url + '/uploads/upload',
-                data: data
-            }).then(function(resp) {
-                def.resolve(resp);
-            }, function(resp) {
-                def.reject(resp);
-            }, function(evt) {
-                var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                console.log('progress: ' + progressPercentage + '% '); //progress of loading image
-            });
-            return def.promise;
-        };
-        return image;
-    }
-    ;
 })();
