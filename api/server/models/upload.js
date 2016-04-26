@@ -96,6 +96,17 @@ module.exports = function(File) {
                                         })
                                     }
                                 }
+                                else if( file_type == 'room_background_image' ){
+                                    User.update_room_background_image(accessToken, upload_file_url, currentTimestamp, function( ignore_param, status, message, data ){
+                                        if( status == 1 ){
+                                            console.log( 'success upload and updated' );
+                                            callback( null, 1, 'success upload and updated', obj );
+                                        }else{
+                                            console.log( 'success upload and fail to update' );
+                                            callback( null, 0, 'success upload and fail to update', obj );
+                                        }
+                                    })
+                                }
                                 else{
                                     callback( null, 0, 'success upload but no use', {} );
                                 }
