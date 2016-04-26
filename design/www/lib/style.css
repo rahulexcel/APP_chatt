@@ -736,7 +736,7 @@ a.active{
     }
 }
 .popover-menu-btn-file-attach{
-    padding-right: 15%!important;
+    padding-right: 20%!important;
     color: white!important;
 }
 #emojibtn{
@@ -768,7 +768,7 @@ img.img-circle.mycl {
 }
 .button.button-clear.fontC{
     color:#fff !important;
-    width: 60%;
+    width: 50%;
 }
 button.button.back-button.buttons.button-clear.header-item.mybt {
     margin-left: 5px;
