@@ -1732,7 +1732,121 @@ module.exports = function (Room) {
                 }
             }
     );
-//********************************* END logged in user can update his profile **********************************
+    //********************************* END logged in user can update his profile **********************************
+    
+    
+    
+    //********************************* START admin can add member to his room **********************************
+    Room.admin_add_user_to_public_room = function ( accessToken, room_id, to_be_add_user_id, currentTimestamp, callback) {
+        var User = Room.app.models.User;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 0, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 0, 'UnAuthorized', {});
+                }else{
+                    var userId = accessToken.userId
+                    var org_user_id  = userId;
+                    logged_userId = new ObjectID( userId );
+                    Room.find({
+                        "where" : {
+                            room_type : 'public',
+                            _id : new ObjectID( room_id )
+                        }
+                    }, function( err, result ){
+                        if( err ){
+                            callback(null, 0, 'try again', {});
+                        }else{
+                            if( result.length == 0 ){
+                                callback(null, 0, 'Public room not exists', {});
+                            }else{
+                                result = result[0];
+                                result = result.toJSON();
+                                var room_name = result.room_name;
+                                var room_owner = result.room_owner;
+                                if( room_owner.toString() != logged_userId.toString() ){
+                                    callback(null, 0, 'You are not admin of this room', {});
+                                }else{
+                                    var room_existing_users = result.room_users;
+                                    var user_already_member = false;
+                                    if( typeof room_existing_users != 'undefined' && room_existing_users.length > 0 ){
+                                        for( var k in room_existing_users ){
+                                            if( room_existing_users[k].toString() == to_be_add_user_id.toString() ){
+                                                user_already_member = true;
+                                            }
+                                        }
+                                    }
+                                    if( user_already_member == true  ){
+                                        var data = {
+                                            room_id : room_id
+                                        }
+                                        callback(null, 2, 'Already room member', data );
+                                    }else{
+                                        Room.update({
+                                            room_type : 'public',
+                                            _id : new ObjectID( room_id )
+                                        },{
+                                            '$push': {'room_users': new ObjectID( to_be_add_user_id ) }
+                                        },{ 
+                                            allowExtendedOperators: true 
+                                        },function (err, result2) {
+                                            if (err) {
+                                                callback(null, 0, 'try again', {});
+                                            } else {
+                                                User.FN_get_user_by_id( to_be_add_user_id, function( u_status, u_message, u_data ){
+                                                    if( u_status == 1 ){
+                                                        var join_user_info = {
+                                                            name : u_data.name,
+                                                            profile_image : u_data.profile_image,
+                                                            room_id : room_id,
+                                                        }
+                                                        var data = {
+                                                            room_id : room_id,
+                                                            room_name : room_name,
+                                                            join_user_info : join_user_info
+                                                        }
+                                                        callback(null, 1, 'Public room joined', data );
+                                                    }else{
+                                                        var data = {
+                                                            room_id : room_id,
+                                                            room_name : room_name
+                                                        }
+                                                        callback(null, 0, 'error while getting user info', data );
+                                                    }
+                                                })
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    })
+                }
+            }
+        });
+    };
+    Room.remoteMethod(
+            'admin_add_user_to_public_room', {
+                description: 'admin can add member to his room',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'},
+                    {arg: 'room_id', type: 'string'},
+                    {arg: 'user_id', type: 'string'},
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/admin_add_user_to_public_room',
+                }
+            }
+    );
+    //********************************* START admin can add member to his room **********************************
+    
     
     
     

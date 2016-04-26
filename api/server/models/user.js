@@ -94,7 +94,8 @@ module.exports = function (User) {
                                                         user_id: accessToken.userId,
                                                         access_token: accessToken.id,
                                                         name : result.name,
-                                                        profile_image : result.profile_image
+                                                        profile_image : result.profile_image,
+                                                        room_background_image : result.room_background_image
                                                     };
                                                     callback(null, 1, 'Success login', data);
                                                 }
@@ -128,7 +129,8 @@ module.exports = function (User) {
                                                             user_id: result.id,
                                                             access_token: accessToken.id,
                                                             name : result.name,
-                                                            profile_image : result.profile_image
+                                                            profile_image : result.profile_image,
+                                                            room_background_image : result.room_background_image
                                                         };
                                                         callback(null, 1, 'Success login', data);
                                                     }
@@ -913,7 +915,7 @@ module.exports = function (User) {
                             if( user == null ){
                                 callback(null, 0, 'user not found', {});
                             }else{
-                                user.updateAttribute('profile_image', image_url, function (err, user) {
+                                user.updateAttribute('room_background_image', image_url, function (err, user) {
                                     if (err) {
                                         callback(null, 0, 'Error', {});
                                     } else {
