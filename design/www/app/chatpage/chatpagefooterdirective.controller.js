@@ -44,7 +44,6 @@
 
         var focus = 0;
         function inputUp() {
-            console.log('inputUp');
             inputChanged = 0;
             if ($scope.isFocused == 'focusOut' && focus == 0) {
                 focus++;
@@ -62,7 +61,6 @@
             }, 300);
         };
         function inputDown() {
-            console.log('inputDown');
             $interval.cancel(interval);
             $ionicScrollDelegate.resize();
         };
@@ -71,7 +69,6 @@
         var interval;
         var inputChangedPromise;
         function writingMessage() {
-            console.log('writing message')
             if (inputChanged == 0) {
                 socketService.writingMessage($stateParams.roomId);
                 inputChanged = 1;
