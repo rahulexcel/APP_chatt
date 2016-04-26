@@ -30,6 +30,7 @@
     width: 200px;
     height: 200px;
 }
+
 .loadingModal{
     position: absolute;
     width: 100%;
@@ -93,3 +94,19 @@ img.img-circle.mycl {
     height: auto !important;
     width: auto !important;
 }*/
+.item.right-chat {
+    background: transparent;
+}
+.item.left-chat {
+    background: transparent;
+}
+.item.left-chat.alert-message {
+    background-color: transparent !important;
+}
+.myContent{
+    background-color:transparent !important;
+}
+.myImg{
+    width: 100%;
+    padding: 40px 0 0 0;
+}
