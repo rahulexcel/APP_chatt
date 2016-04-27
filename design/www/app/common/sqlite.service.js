@@ -204,7 +204,7 @@
                     
                  }
              },
-             service.leaveChat = function(roomId) {
+             service.leavePrivateChat = function(roomId) {
                 var dbobj = window.sqlitePlugin.openDatabase({
                      name: "chattappDB"
                  });

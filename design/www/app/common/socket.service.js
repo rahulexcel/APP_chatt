@@ -50,6 +50,9 @@
             if (type == 'admin_add_user_to_public_room') {
                 $rootScope.$broadcast('admin_added_user_to_public_room', {data: data});
             }
+            if (type == 'delete_private_room') {
+                $rootScope.$broadcast('private_room_deleted', {data: data});
+            }
 
         });
         socket.on('response_update_message_status', function(data) {
