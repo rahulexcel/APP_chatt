@@ -11,7 +11,7 @@
         var accessToken = userData.data.access_token;
 
         if (timeStorage.get('network')) {
-            window.plugins.toast.showShortTop('Connect to come online');
+             window.plugins.toast.showShortTop('Connect to come online');
         }
         else {
             contactsService.listUsers();
