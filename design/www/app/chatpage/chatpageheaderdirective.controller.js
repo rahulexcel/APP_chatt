@@ -295,8 +295,22 @@
             $scope.openGroupPopover.show($event);
         };
         self.leaveChat = function(){
-            sqliteService.leaveChat($stateParams.roomId);
-            $state.go('app.chats');
+            var leaveChatSheet = $ionicActionSheet.show({
+                buttons: [{
+                        text: '<p class="text-center">Yes</p>'
+                    }],
+                titleText: 'Confirm to Leave!',
+                cancelText: 'Cancel',
+                cancel: function() {
+                },
+                buttonClicked: function(index) {
+                    if (index == 0) {
+                        socketService.leavePrivateChat($stateParams.roomId);
+                        sqliteService.leaveChat($stateParams.roomId);
+                        $state.go('app.chats');
+                    }
+                }
+            });
         }
         self.blockUser = function(){
             sqliteService.leaveChat($stateParams.roomId);

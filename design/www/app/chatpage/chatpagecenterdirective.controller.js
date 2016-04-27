@@ -13,8 +13,7 @@
          }
          self.height=screen.height;
          if($localStorage['bgImage']){
-             
-             self.background=$localStorage['bgImage'];
+            self.background=$localStorage['bgImage'];
          }
          var userData = timeStorage.get('userData');
          self.user_id = userData.data.user_id;
@@ -102,7 +101,7 @@
             accessToken:userData.data.access_token,
             room_id:$stateParams.roomId,
             page: 0,
-            limit:20,
+            limit:40,
             currentTimestamp: _.now()
             });
             query.$promise.then(function(data) {
@@ -132,6 +131,6 @@
                 doRefreshPageValue++;
                 $scope.$broadcast('scroll.refreshComplete');
             });
-         }
+         };
      }
  })();
