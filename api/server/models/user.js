@@ -452,6 +452,7 @@ module.exports = function (User) {
                                     id: {neq: access_token_userid},
                                     verification_status: 1*1,
                                     friends : { 'nin' : [access_token_userid] },
+                                    blocked_users : { 'nin' : [access_token_userid] },
                                 };
                                 User.find({
                                     where: where,
