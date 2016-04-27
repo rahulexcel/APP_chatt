@@ -30,8 +30,7 @@
 
         self.createGroupOption = false;
         self.createGroup = function() {
-            console.log(network)
-            if (network) {
+           if (network) {
                 if (self.userGroupName && self.userGroupDescription) {
                     self.createGroupOption = true;
                     var userData = timeStorage.get('userData');
@@ -64,8 +63,7 @@
         };
 
         self.clickOnRoom = function(roomData, index) {
-            console.log(network)
-            if (network) {
+           if (network) {
                 self.clickRoomSpinner = index;
                 $scope.room_id = roomData.id;
                 var userData = timeStorage.get('userData');
