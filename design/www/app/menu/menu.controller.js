@@ -16,7 +16,8 @@
         self.search = function(state) {
             
             if (timeStorage.get('network')) {
-                window.plugins.toast.showShortTop('You need to online to access this');
+//                window.plugins.toast.showShortTop('You need to online to access this');
+                $state.go(state);
             }
             else
             {
@@ -42,7 +43,7 @@
         });
         $scope.logout = function() {
             window.sqlitePlugin.deleteDatabase({name: "chattappDB", location: 1});
-            
+
             socketService.logout();
             timeStorage.remove('google_access_token');
             timeStorage.remove('userEmail');
@@ -52,6 +53,7 @@
             timeStorage.remove('chatWithUserData');
             timeStorage.remove('displayPublicChats');
             timeStorage.remove('profile_data');
+            timeStorage.remove('bgImage');
             if (ionic.Platform.isAndroid()) {
                 facebookConnectPlugin.logout();
             }

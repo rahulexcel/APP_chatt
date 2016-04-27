@@ -4,12 +4,16 @@
      angular.module('chattapp')
          .controller('chatPageCenterDirectiveController', chatPageCenterDirectiveController);
 
-     function chatPageCenterDirectiveController($scope, $state, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, sqliteService, chatpageService, timeZoneService) {
+     function chatPageCenterDirectiveController($scope, $state,$localStorage,$timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, sqliteService, chatpageService, timeZoneService) {
          var self = this;
          var chatWithUserData = timeStorage.get('chatWithUserData');
          self.isPublicRoom = true;
          if(chatWithUserData.id){
             self.isPublicRoom = false;   
+         }
+         self.height=screen.height;
+         if($localStorage['bgImage']){
+            self.background=$localStorage['bgImage'];
          }
          var userData = timeStorage.get('userData');
          self.user_id = userData.data.user_id;
@@ -97,11 +101,10 @@
             accessToken:userData.data.access_token,
             room_id:$stateParams.roomId,
             page: 0,
-            limit:20,
+            limit:40,
             currentTimestamp: _.now()
             });
             query.$promise.then(function(data) {
-                console.log(data);
                 socketService.update_message_status(data.data.messages, $stateParams.roomId);
                 sqliteService.updateDbOnRoomOpen(data.data.messages, $stateParams.roomId).then(function(){
                     sqliteService.getMessageDataFromDB($stateParams.roomId).then(function(response){
@@ -128,6 +131,6 @@
                 doRefreshPageValue++;
                 $scope.$broadcast('scroll.refreshComplete');
             });
-         }
+         };
      }
  })();

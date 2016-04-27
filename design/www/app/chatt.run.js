@@ -49,12 +49,13 @@
                     }
                     document.addEventListener("online", onOnline, false);
                     function onOnline() {
+                        sqliteService.deviceIsNowOnline();
                         $rootScope.$broadcast('now_device_is_online', {data: ''});
                         timeStorage.remove('network');
-                        sqliteService.deviceIsNowOnline();
                     }
                     document.addEventListener("offline", onOffline, false);
                     function onOffline() {
+                         $rootScope.$broadcast('now_device_is_ofline', {data: ''});
                         timeStorage.set('network', 'offline', 24);
                     }
                     

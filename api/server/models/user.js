@@ -94,7 +94,8 @@ module.exports = function (User) {
                                                         user_id: accessToken.userId,
                                                         access_token: accessToken.id,
                                                         name : result.name,
-                                                        profile_image : result.profile_image
+                                                        profile_image : result.profile_image,
+                                                        room_background_image : result.room_background_image
                                                     };
                                                     callback(null, 1, 'Success login', data);
                                                 }
@@ -128,7 +129,8 @@ module.exports = function (User) {
                                                             user_id: result.id,
                                                             access_token: accessToken.id,
                                                             name : result.name,
-                                                            profile_image : result.profile_image
+                                                            profile_image : result.profile_image,
+                                                            room_background_image : result.room_background_image
                                                         };
                                                         callback(null, 1, 'Success login', data);
                                                     }
@@ -177,6 +179,7 @@ module.exports = function (User) {
                                     registration_date_time: UTIL.currentDateTimeDay(currentTimestamp),
                                     profile_image: profile_image,
                                     profile_status: '',
+                                    room_background_image : ''
                                 }, function (err, user) {
                                     if (err) {
                                         callback(null, 0, err, {});
@@ -894,6 +897,114 @@ module.exports = function (User) {
     );
 //********************************* END logged in user can update his profile **********************************
 
+
+//********************************* START logged in user can update his room background image ( images will be comman for all rooms )**********************************
+    User.update_room_background_image = function ( accessToken, image_url, currentTimestamp, callback) {
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 0, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 0, 'UnAuthorized', {});
+                }else{
+                    var userId = accessToken.userId
+                    User.findById(userId, function (err, user) {
+                        if (err) {
+                            callback(null, 0, 'UnAuthorized', {});
+                        } else {
+                            if( user == null ){
+                                callback(null, 0, 'user not found', {});
+                            }else{
+                                user.updateAttribute('room_background_image', image_url, function (err, user) {
+                                    if (err) {
+                                        callback(null, 0, 'Error', {});
+                                    } else {
+                                        d = {
+                                            room_background_image : image_url
+                                        }
+                                        callback(null, 1, 'Background image updated', d);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    };
+    User.remoteMethod(
+            'update_room_background_image', {
+                description: 'logged in user can update his chat background image',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'image_url', type: 'string'}, 
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/update_profile_image',
+                }
+            }
+    );
+//********************************* END logged in user can update his room background image ( images will be comman for all rooms )**********************************
+
+
+
+    //********************************* START LAST SEEN **********************************
+    User.geo_location = function ( accessToken, geo_lat, geo_long, currentTimestamp, callback) {
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 0, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 0, 'UnAuthorized', {});
+                }else{
+                    var userId = accessToken.userId
+                    User.findById(userId, function (err, user) {
+                        if (err) {
+                            callback(null, 0, 'UnAuthorized', {});
+                        } else {
+                            var server_time = UTIL.currentTimestamp();
+                            user.updateAttributes({
+                                'geo_lat' : geo_lat,
+                                'geo_long' : geo_long
+                            },function (err, user) {
+                                if (err) {
+                                    callback(null, 0, 'Error', {});
+                                } else {
+                                    callback(null, 1, 'Geo locations updated successfully', {});
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    };
+    User.remoteMethod(
+            'geo_location', {
+                description: 'update geo locations of user',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'geo_lat', type: 'string'}, 
+                    {arg: 'geo_long', type: 'string'}, 
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/geo_location',
+                }
+            }
+    );
+    //********************************* END LAST SEEN **********************************
 
 
 

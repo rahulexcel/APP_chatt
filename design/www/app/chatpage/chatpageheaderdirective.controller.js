@@ -4,7 +4,7 @@
     angular.module('chattapp')
             .controller('chatPageHeaderDirectiveController', chatPageHeaderDirectiveController);
 
-    function chatPageHeaderDirectiveController($state, timeStorage, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService, sqliteService) {
+    function chatPageHeaderDirectiveController($state, timeStorage, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService, sqliteService, $ionicLoading) {
 
         var self = this;
         self.leaveGroupSpinner = false;
@@ -145,7 +145,6 @@
                     if (index == 0) {
                         deleteUserFromGroupSheet();
                         $scope.infoModel.show();
-                        self.deleteIconRotate = index;
                         socketService.removeUserFromGroup(userData, $stateParams.roomId);
                     }
                 }
@@ -295,10 +294,26 @@
         self.openGroupPopover = function($event) {
             $scope.openGroupPopover.show($event);
         };
-        self.leaveChat = function(){
-            sqliteService.leaveChat($stateParams.roomId);
-            $state.go('app.chats');
+        self.leavePrivateChat = function(){
+            var leaveChatSheet = $ionicActionSheet.show({
+                buttons: [{
+                        text: '<p class="text-center">Yes</p>'
+                    }],
+                titleText: 'Confirm to Leave!',
+                cancelText: 'Cancel',
+                cancel: function() {
+                },
+                buttonClicked: function(index) {
+                    if (index == 0) {
+                        socketService.leavePrivateChat($stateParams.roomId);
+                    }
+                }
+            });
         }
+        $scope.$on('private_room_deleted', function(event, data) {
+            sqliteService.leavePrivateChat($stateParams.roomId);
+            $state.go('app.chats');
+        });
         self.blockUser = function(){
             sqliteService.leaveChat($stateParams.roomId);
             $state.go('app.chats');
@@ -307,6 +322,25 @@
             $state.go('app.addInGroup');
             $scope.popover.hide();
         }
+        $ionicPopover.fromTemplateUrl('app/chatpage/templates/attachfilepopover.html', {
+            scope: $scope,
+        }).then(function(popover) {
+            $scope.openAttachFilePopover = popover;
+        });
+        self.openAttachFilePopover = function($event) {
+            $scope.openAttachFilePopover.show($event);
+        };
+        self.attachImage = function() {
+            cameraService.changePic().then(function(imageData) {
+                $ionicLoading.hide();
+            }, function(err) {
+                $ionicLoading.hide();
+            });
+        };
+        self.inviteInGroup = function() {
+            timeStorage.set('inviteInGroupId', $stateParams.roomId, 1);
+        }
+        self.muteNotifications = true;
 
     }
 })();

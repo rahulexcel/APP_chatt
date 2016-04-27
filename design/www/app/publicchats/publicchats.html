@@ -1,7 +1,7 @@
 <ion-view view-title="Rooms" id="background" hide-back-button="true">
     <ion-content class="has-footer">
         <ion-list >
-            <ion-item ng-hide="publicChats.displayPublicChat.length > 0" class="noItem" >
+            <ion-item ng-show="!publicChats.displayPublicChat.length > 0" class="noItem" >
                 <div class="empty" >
                     <div class='nothing'>'No rooms found!'</div>
                         <div ng-click="modal.show()" class='empty_div'>

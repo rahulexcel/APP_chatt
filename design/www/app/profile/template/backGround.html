@@ -1,0 +1,18 @@
+<ion-modal-view class="mymodal">
+    <div class="loadingModal" ng-click="stopLoading()" ng-if="startLoading">
+      <ion-spinner class="icnModal" icon="android"></ion-spinner>
+    </div>
+    <div class="cropArea">
+        <img-crop result-image-quality="1.0" result-image-size="200" image="bgimage" area-type="square" result-image="myBgCroppedImage" on-change="imgBg(myBgCroppedImage)"></img-crop>
+    </div>
+    <div class="cancelbt" ng-click="imgCancel()">
+        <span class="mysize ion-close-round"></span>
+    </div>
+    <div class="primage">Background</div>
+
+    <div class="prpicim"><img id="croperim" src="{{myBgCroppedImage}}" />
+    </div>
+    <div class="mybtim">
+        <button md-ink-ripple class="md-btn md-raised btn-block p-h-md btn-primary update-pic-btn" ng-click="imgChange('bgImage')">Update Pic</button>
+    </div>
+</ion-modal-view>

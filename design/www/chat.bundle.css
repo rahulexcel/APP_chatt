@@ -85944,6 +85944,27 @@ img.img-circle.mycl {
     height: auto !important;
     width: auto !important;
 }*/
+
+.item.right-chat {
+  background: transparent;
+}
+
+.item.left-chat {
+  background: transparent;
+}
+
+.item.left-chat.alert-message {
+  background-color: transparent !important;
+}
+
+.myContent {
+  background-color: transparent !important;
+}
+
+.myImg {
+  width: 100%;
+  padding: 40px 0 0 0;
+}
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
@@ -97559,9 +97580,11 @@ a.tab-item:hover {
 }
 
 .send-msg {
-  margin-left: 6px;
+  position: absolute;
+  top: 8px;
+  right: 0px;
   background-color: #3F51B5!important;
-  border: 1px solid #fff!important;
+  /*border: 1px solid #fff!important;*/
   border-radius: 50%;
 }
 
@@ -97911,6 +97934,20 @@ a.active {
   }
 }
 
+.popover-menu-btn-file-attach {
+  padding-right: 20%!important;
+  color: white!important;
+}
+
+#emojibtn {
+  position: absolute;
+  top: 5px;
+  right: 11%;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+}
+
 .popover-menu-btn {
   position: absolute;
   right: 32px;
@@ -97936,7 +97973,7 @@ img.img-circle.mycl {
 
 .button.button-clear.fontC {
   color: #fff !important;
-  width: 60%;
+  width: 50%;
 }
 
 button.button.back-button.buttons.button-clear.header-item.mybt {

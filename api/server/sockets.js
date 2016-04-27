@@ -35,6 +35,16 @@ module.exports.listen = function(app){
             callback( response );
         })
     }
+    function FN_admin_add_user_to_public_room( accessToken, room_id, to_be_add_user_id, currentTimestamp, callback ){
+        Room.admin_add_user_to_public_room( accessToken, room_id, to_be_add_user_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            var response = {
+                'status' : res_status,
+                'message' : res_message,
+                'data' : res_data
+            };
+            callback( response );
+        })
+    }
     function FN_leave_public_group( accessToken, room_id, currentTimestamp, callback ){
         Room.leave_public_group( accessToken, room_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
             var response = {
@@ -135,6 +145,16 @@ module.exports.listen = function(app){
     }
     function FN_get_user_room_unread_messages( accessToken, room_id, currentTimestamp, callback ){
         Room.get_user_room_unread_messages( accessToken, room_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            var response = {
+                'status' : res_status,
+                'message' : res_message,
+                'data' : res_data
+            };
+            callback( response );
+        })
+    }
+    function FN_delete_private_room( accessToken, room_id, currentTimestamp, callback ){
+        Room.delete_private_room( accessToken, room_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
             var response = {
                 'status' : res_status,
                 'message' : res_message,
@@ -281,6 +301,44 @@ module.exports.listen = function(app){
                                     data : response.data.broadcast_data
                                 }
                                 socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT', 'join_public_room', d1 );
+                            }
+                        });
+                    }
+                });
+            }
+            else if( type == 'admin_add_user_to_public_room'){
+                var accessToken = info.accessToken;
+                var room_id = info.room_id;
+                var to_be_add_user_id = info.user_id;
+                var currentTimestamp = info.currentTimestamp;
+                console.log( 'SOCKET CALL :: admin_add_user_to_public_room :: room_id '+ room_id );
+                FN_admin_add_user_to_public_room( accessToken, room_id, to_be_add_user_id, currentTimestamp, function( response ){
+                    if( response.status == 1 ){
+                        console.log( response );
+                        var d = {
+                            type : 'alert',
+                            data : response
+                        }
+                        socket.emit( 'RESPONSE_APP_SOCKET_EMIT', 'admin_add_user_to_public_room', d ); // to the admin who removed the message
+                        //----------------------------------------------------
+                        var join_user_info = response.data.join_user_info;
+                        var joins_user_info_name = join_user_info.name;
+                        var room_name = '';
+                        if( typeof response.data.room_name != 'undefined' &&  response.data.room_name != '' ){
+                            room_name = response.data.room_name;
+                        }
+                        var msg_local_id = '';
+                        var message_type = 'room_alert_message';
+                        var message = 'Admin add ' + joins_user_info_name + ' to room';
+                        FN_room_message( msg_local_id, accessToken, room_id, message_type, message, currentTimestamp, function( response ){
+                            if( response.status == 1 ){
+                                console.log( message_type +' :: '+ message );
+                                // will be available on other users of room
+                                var d1 = {
+                                    type : 'alert',
+                                    data : response.data.broadcast_data
+                                }
+                                socket.to( room_id ).emit( 'RESPONSE_APP_SOCKET_EMIT', 'admin_add_user_to_public_room', d1 );
                             }
                         });
                     }
@@ -502,6 +560,28 @@ module.exports.listen = function(app){
                             data : response
                         }
                         socket.emit( 'RESPONSE_APP_SOCKET_EMIT','get_user_profile', d );
+                    }
+                });
+            }
+            else if( type == 'delete_private_room' ){
+                var accessToken = info.accessToken;
+                var room_id = info.room_id;
+                var currentTimestamp = info.currentTimestamp;
+                
+                console.log( 'SOCKET CALL :: delete_private_room :: for room_id - '+ room_id );
+                
+                FN_delete_private_room( accessToken, room_id, currentTimestamp, function( response ){
+                    var d = {
+                        type : 'alert',
+                        data : response
+                    }
+                    if( response.status == 1 ){
+                        socket.emit( 'RESPONSE_APP_SOCKET_EMIT', 'delete_private_room', d );
+                        if( typeof io.sockets.adapter.rooms[room_id] != 'undefined' ){
+                            if( typeof io.sockets.adapter.rooms[room_id].sockets != 'undefined'){
+                                socket.leave( room_id );
+                            }
+                        }
                     }
                 });
             }

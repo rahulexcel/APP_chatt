@@ -18,7 +18,8 @@
     "jstz": "38263a9e22",
     "jstzdetect": "1.0.6",
     "ng-img-crop": "0.3.2",
-    "ngCordova": "0.1.26-alpha"
+    "ngCordova": "0.1.26-alpha",
+    "angular-sanitize":"1.4.3"
   },
   "dependencies": {
     "ng-file-upload": "^12.0.4"
