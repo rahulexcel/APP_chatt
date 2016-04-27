@@ -50,6 +50,9 @@
             if (type == 'admin_add_user_to_public_room') {
                 $rootScope.$broadcast('admin_added_user_to_public_room', {data: data});
             }
+            if (type == 'delete_private_room') {
+                $rootScope.$broadcast('private_room_deleted', {data: data});
+            }
 
         });
         socket.on('response_update_message_status', function(data) {
@@ -166,6 +169,10 @@
                 service.addInGroup = function(roomId, userId) {
                     var userData = timeStorage.get('userData');
                     socket.emit('APP_SOCKET_EMIT', 'admin_add_user_to_public_room', {accessToken: userData.data.access_token, room_id: roomId, user_id:userId, currentTimestamp: _.now()});
+                },
+                service.leavePrivateChat = function(roomId) {
+                    var userData = timeStorage.get('userData');
+                    socket.emit('APP_SOCKET_EMIT', 'delete_private_room', {accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now()});
                 };
         return service;
     }

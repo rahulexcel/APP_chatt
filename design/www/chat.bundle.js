@@ -24417,9 +24417,9 @@ Zn._=Jn):Vn._=Jn}).call(this);
                     }
                     document.addEventListener("online", onOnline, false);
                     function onOnline() {
+                        sqliteService.deviceIsNowOnline();
                         $rootScope.$broadcast('now_device_is_online', {data: ''});
                         timeStorage.remove('network');
-                        sqliteService.deviceIsNowOnline();
                     }
                     document.addEventListener("offline", onOffline, false);
                     function onOffline() {
@@ -24550,8 +24550,7 @@ angular.module('chattapp')
          }
          self.height=screen.height;
          if($localStorage['bgImage']){
-             
-             self.background=$localStorage['bgImage'];
+            self.background=$localStorage['bgImage'];
          }
          var userData = timeStorage.get('userData');
          self.user_id = userData.data.user_id;
@@ -24639,7 +24638,7 @@ angular.module('chattapp')
             accessToken:userData.data.access_token,
             room_id:$stateParams.roomId,
             page: 0,
-            limit:20,
+            limit:40,
             currentTimestamp: _.now()
             });
             query.$promise.then(function(data) {
@@ -24669,7 +24668,7 @@ angular.module('chattapp')
                 doRefreshPageValue++;
                 $scope.$broadcast('scroll.refreshComplete');
             });
-         }
+         };
      }
  })();
  (function() {
@@ -25104,10 +25103,26 @@ angular.module('chattapp')
         self.openGroupPopover = function($event) {
             $scope.openGroupPopover.show($event);
         };
-        self.leaveChat = function(){
-            sqliteService.leaveChat($stateParams.roomId);
-            $state.go('app.chats');
+        self.leavePrivateChat = function(){
+            var leaveChatSheet = $ionicActionSheet.show({
+                buttons: [{
+                        text: '<p class="text-center">Yes</p>'
+                    }],
+                titleText: 'Confirm to Leave!',
+                cancelText: 'Cancel',
+                cancel: function() {
+                },
+                buttonClicked: function(index) {
+                    if (index == 0) {
+                        socketService.leavePrivateChat($stateParams.roomId);
+                    }
+                }
+            });
         }
+        $scope.$on('private_room_deleted', function(event, data) {
+            sqliteService.leavePrivateChat($stateParams.roomId);
+            $state.go('app.chats');
+        });
         self.blockUser = function(){
             sqliteService.leaveChat($stateParams.roomId);
             $state.go('app.chats');
@@ -26145,6 +26160,9 @@ angular.module('chattapp')
             if (type == 'admin_add_user_to_public_room') {
                 $rootScope.$broadcast('admin_added_user_to_public_room', {data: data});
             }
+            if (type == 'delete_private_room') {
+                $rootScope.$broadcast('private_room_deleted', {data: data});
+            }
 
         });
         socket.on('response_update_message_status', function(data) {
@@ -26261,6 +26279,10 @@ angular.module('chattapp')
                 service.addInGroup = function(roomId, userId) {
                     var userData = timeStorage.get('userData');
                     socket.emit('APP_SOCKET_EMIT', 'admin_add_user_to_public_room', {accessToken: userData.data.access_token, room_id: roomId, user_id:userId, currentTimestamp: _.now()});
+                },
+                service.leavePrivateChat = function(roomId) {
+                    var userData = timeStorage.get('userData');
+                    socket.emit('APP_SOCKET_EMIT', 'delete_private_room', {accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now()});
                 };
         return service;
     }
@@ -26472,7 +26494,7 @@ angular.module('chattapp')
                     
                  }
              },
-             service.leaveChat = function(roomId) {
+             service.leavePrivateChat = function(roomId) {
                 var dbobj = window.sqlitePlugin.openDatabase({
                      name: "chattappDB"
                  });
@@ -26542,7 +26564,7 @@ angular.module('chattapp')
         var accessToken = userData.data.access_token;
 
         if (timeStorage.get('network')) {
-            window.plugins.toast.showShortTop('Connect to come online');
+             window.plugins.toast.showShortTop('Connect to come online');
         }
         else {
             contactsService.listUsers();
@@ -27224,8 +27246,7 @@ angular.module('chattapp')
 
         self.createGroupOption = false;
         self.createGroup = function() {
-            console.log(network)
-            if (network) {
+           if (network) {
                 if (self.userGroupName && self.userGroupDescription) {
                     self.createGroupOption = true;
                     var userData = timeStorage.get('userData');
@@ -27258,8 +27279,7 @@ angular.module('chattapp')
         };
 
         self.clickOnRoom = function(roomData, index) {
-            console.log(network)
-            if (network) {
+           if (network) {
                 self.clickRoomSpinner = index;
                 $scope.room_id = roomData.id;
                 var userData = timeStorage.get('userData');
