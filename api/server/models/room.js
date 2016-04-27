@@ -27,6 +27,20 @@ module.exports = function (Room) {
     //-------------------------------------------------------------
     
     //--start--ROOM GENERIC function------
+    Room.FN_delete_room_messages = function( info, callback ){
+        var Message = Room.app.models.Message;
+        var room_id = info.room_id;
+        var wh = {
+            room_id : new ObjectID( room_id )
+        }
+        Message.remove( wh, function (err, result) {
+            if( err ){
+                callback( false );
+            }else{
+                callback( true );
+            }
+        })
+    }
     Room.FN_add_friend = function( info, callback ){
         var User = Room.app.models.User;
         
@@ -37,6 +51,26 @@ module.exports = function (Room) {
             id: new ObjectID( user_id )
         }, {
             '$addToSet': { 'friends': new ObjectID(chat_with_user_id) }
+        },{
+            allowExtendedOperators: true 
+        }, function (err, result) {
+            if (err) {
+                callback( false );
+            } else {
+                callback( true );
+            }
+        });
+    }
+    Room.FN_delete_friend = function( info, callback ){
+        var User = Room.app.models.User;
+        
+        var user_id = info.user_id;
+        var delete_friend_user_id = info.delete_friend_user_id;
+        
+        User.update({
+            id: new ObjectID( user_id )
+        }, {
+            '$pull': { 'friends': new ObjectID( delete_friend_user_id ) }
         },{
             allowExtendedOperators: true 
         }, function (err, result) {
@@ -1846,6 +1880,138 @@ module.exports = function (Room) {
             }
     );
     //********************************* START admin can add member to his room **********************************
+    
+    
+    
+    //********************************* START user delete private room **********************************
+    Room.delete_private_room = function ( accessToken, room_id, currentTimestamp, callback) {
+        var User = Room.app.models.User;
+        var Pushmessage = Room.app.models.Pushmessage;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 401, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 401, 'UnAuthorized', {});
+                }else{
+                    var access_token_userid = accessToken.userId
+                    User.findById(access_token_userid, function (err, user) {
+                        if (err) {
+                            callback(null, 401, 'UnAuthorized', err);
+                        } else {
+                            userId = new ObjectID( access_token_userid );
+                            var wh = {
+                                id : new ObjectID( room_id )
+                            }
+                            Room.find({
+                                "where": wh,
+                                "include": [{
+                                    relation: 'room_owner', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen','sockets','token'],
+                                    }
+                                },{
+                                    relation: 'room_users', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen','sockets','token'],
+                                    }
+                                }]
+                            },function (err, result) {
+                                if( err ){
+                                    callback(null, 0, 'try again', {});
+                                }else{
+                                    if( result.length > 0 ){
+                                        result = result[0];
+                                        result = result.toJSON();
+                                        var IS_ROOM_MEMBER = false;
+                                        var room_users = result.room_users;
+                                        var room_user_1_id = room_users[0].id;
+                                        var room_user_2_id = room_users[1].id;
+                                        
+                                        var TOKENS = [];
+                                        var push_data_name = push_data_profile_image = '';
+                                        
+                                        for( var k in room_users ){
+                                            if( access_token_userid.toString() == room_users[k].id.toString() ){
+                                                IS_ROOM_MEMBER = true;
+                                                push_data_name = room_users[k].name;
+                                                push_data_profile_image = room_users[k].profile_image;
+                                            }else{
+                                                TOKENS.push( room_users[k].token );
+                                            }
+                                        }
+                                        
+                                        if( IS_ROOM_MEMBER == false ){
+                                            callback( null, 0, 'You are not member of this room', {} );
+                                        }else{
+                                            Room.remove( wh, function (err, result) {
+                                                if( err ){
+                                                    callback(null, 0, 'try again', {});
+                                                }else{
+                                                    delete_friend_1 = {
+                                                        user_id : room_user_1_id,
+                                                        delete_friend_user_id : room_user_2_id
+                                                    }
+                                                    delete_friend_2 = {
+                                                        user_id : room_user_2_id,
+                                                        delete_friend_user_id : room_user_1_id
+                                                    }
+                                                    Room.FN_delete_friend( delete_friend_1, function(ret){
+                                                        Room.FN_delete_friend( delete_friend_2, function(ret){
+                                                            r_info = {
+                                                                room_id : room_id
+                                                            }
+                                                            Room.FN_delete_room_messages( r_info, function( ret1 ){
+                                                                
+                                                                if( TOKENS.length > 0 ){
+                                                                    var push_msg_info = {
+                                                                        name : push_data_name,
+                                                                        profile_image : push_data_profile_image
+                                                                    }
+                                                                    Pushmessage.create_push_message( 'private_room_deleted', TOKENS , push_msg_info, function( ignore_param, p_status, p_message, p_data){
+                                                                    })  
+                                                                }
+                                                                
+                                                                var data = {
+                                                                    room_id : room_id,
+                                                                }
+                                                                callback(null, 1, 'Room deleted', data );
+                                                            })
+                                                        });
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    }else{
+                                        callback( null, 0, 'Room not found', {} );
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    };
+    Room.remoteMethod(
+            'delete_private_room', {
+                description: 'user delete private room',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'room_id', type: 'string'},
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/delete_private_room',
+                }
+            }
+    );
+    //********************************* END user delete private room **********************************
     
     
     

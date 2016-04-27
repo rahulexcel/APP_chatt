@@ -36,7 +36,7 @@ module.exports.listen = function(app){
         })
     }
     function FN_admin_add_user_to_public_room( accessToken, room_id, to_be_add_user_id, currentTimestamp, callback ){
-        Room.join_public_room( accessToken, room_id, to_be_add_user_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+        Room.admin_add_user_to_public_room( accessToken, room_id, to_be_add_user_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
             var response = {
                 'status' : res_status,
                 'message' : res_message,
@@ -145,6 +145,16 @@ module.exports.listen = function(app){
     }
     function FN_get_user_room_unread_messages( accessToken, room_id, currentTimestamp, callback ){
         Room.get_user_room_unread_messages( accessToken, room_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            var response = {
+                'status' : res_status,
+                'message' : res_message,
+                'data' : res_data
+            };
+            callback( response );
+        })
+    }
+    function FN_delete_private_room( accessToken, room_id, currentTimestamp, callback ){
+        Room.delete_private_room( accessToken, room_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
             var response = {
                 'status' : res_status,
                 'message' : res_message,
@@ -299,7 +309,7 @@ module.exports.listen = function(app){
             else if( type == 'admin_add_user_to_public_room'){
                 var accessToken = info.accessToken;
                 var room_id = info.room_id;
-                var to_be_add_user_id = info.to_be_add_user_id;
+                var to_be_add_user_id = info.user_id;
                 var currentTimestamp = info.currentTimestamp;
                 console.log( 'SOCKET CALL :: admin_add_user_to_public_room :: room_id '+ room_id );
                 FN_admin_add_user_to_public_room( accessToken, room_id, to_be_add_user_id, currentTimestamp, function( response ){
@@ -550,6 +560,28 @@ module.exports.listen = function(app){
                             data : response
                         }
                         socket.emit( 'RESPONSE_APP_SOCKET_EMIT','get_user_profile', d );
+                    }
+                });
+            }
+            else if( type == 'delete_private_room' ){
+                var accessToken = info.accessToken;
+                var room_id = info.room_id;
+                var currentTimestamp = info.currentTimestamp;
+                
+                console.log( 'SOCKET CALL :: delete_private_room :: for room_id - '+ room_id );
+                
+                FN_delete_private_room( accessToken, room_id, currentTimestamp, function( response ){
+                    var d = {
+                        type : 'alert',
+                        data : response
+                    }
+                    if( response.status == 1 ){
+                        socket.emit( 'RESPONSE_APP_SOCKET_EMIT', 'delete_private_room', d );
+                        if( typeof io.sockets.adapter.rooms[room_id] != 'undefined' ){
+                            if( typeof io.sockets.adapter.rooms[room_id].sockets != 'undefined'){
+                                socket.leave( room_id );
+                            }
+                        }
                     }
                 });
             }

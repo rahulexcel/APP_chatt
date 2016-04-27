@@ -107,6 +107,17 @@ module.exports = function (Pushmessage) {
             });
             callback( message );            
         }
+        else if( type == 'private_room_deleted'){
+            var message = new gcm.Message();
+            
+            var message_body = info.name + ' ends chat with you';
+            message.addData('priority', 'high');
+            message.addData('title', info.name );
+            message.addData('icon', info.profile_image );
+            message.addData('image', info.profile_image );
+            message.addData('body', message_body );
+            callback( message );
+        }
         else{
             callback( false);
         }
@@ -118,7 +129,8 @@ module.exports = function (Pushmessage) {
         var valid_type = [
             'room_message', // when user get a message and is not seen at the time of push message
             'private_room_created', // when user A create a private message with user B,  push message will be sent to user B
-            'remove_public_room_member' // when a user is removed from public group by admin, push message will be sent to removed user
+            'remove_public_room_member', // when a user is removed from public group by admin, push message will be sent to removed user
+            'private_room_deleted' // when any user of a private room delete a room, push message will be sent to another user
         ];
         if( valid_type.indexOf(type) == -1 ){
             callback(null, 0, 'Invalid type', {});
@@ -246,7 +258,7 @@ module.exports = function (Pushmessage) {
                     }
                 });
             }
-            else if( pm_type == 'private_room_created' || pm_type == 'remove_public_room_member'){
+            else if( pm_type == 'private_room_deleted' || pm_type == 'remove_public_room_member' || pm_type == 'private_room_created'){
                 pm_data_info =  pm_data.message_info;
                 pm_data_tokens = pm_data.tokens;
                 Pushmessage.get_push_message_structure( pm_type, pm_data_info, function( gcm_message ){

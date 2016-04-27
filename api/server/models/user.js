@@ -954,6 +954,58 @@ module.exports = function (User) {
 
 
 
+    //********************************* START LAST SEEN **********************************
+    User.geo_location = function ( accessToken, geo_lat, geo_long, currentTimestamp, callback) {
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 0, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 0, 'UnAuthorized', {});
+                }else{
+                    var userId = accessToken.userId
+                    User.findById(userId, function (err, user) {
+                        if (err) {
+                            callback(null, 0, 'UnAuthorized', {});
+                        } else {
+                            var server_time = UTIL.currentTimestamp();
+                            user.updateAttributes({
+                                'geo_lat' : geo_lat,
+                                'geo_long' : geo_long
+                            },function (err, user) {
+                                if (err) {
+                                    callback(null, 0, 'Error', {});
+                                } else {
+                                    callback(null, 1, 'Geo locations updated successfully', {});
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    };
+    User.remoteMethod(
+            'geo_location', {
+                description: 'update geo locations of user',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'geo_lat', type: 'string'}, 
+                    {arg: 'geo_long', type: 'string'}, 
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/geo_location',
+                }
+            }
+    );
+    //********************************* END LAST SEEN **********************************
+
 
 
 
