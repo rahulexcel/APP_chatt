@@ -163,6 +163,16 @@ module.exports.listen = function(app){
             callback( response );
         })
     }
+    function FN_block_private_room( accessToken, room_id, currentTimestamp, callback ){
+        Room.block_private_room( accessToken, room_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            var response = {
+                'status' : res_status,
+                'message' : res_message,
+                'data' : res_data
+            };
+            callback( response );
+        })
+    }
     
     //------------------------------------
     //------------------------------------
@@ -577,6 +587,28 @@ module.exports.listen = function(app){
                     }
                     if( response.status == 1 ){
                         socket.emit( 'RESPONSE_APP_SOCKET_EMIT', 'delete_private_room', d );
+                        if( typeof io.sockets.adapter.rooms[room_id] != 'undefined' ){
+                            if( typeof io.sockets.adapter.rooms[room_id].sockets != 'undefined'){
+                                socket.leave( room_id );
+                            }
+                        }
+                    }
+                });
+            }
+            else if( type == 'block_private_room' ){
+                var accessToken = info.accessToken;
+                var room_id = info.room_id;
+                var currentTimestamp = info.currentTimestamp;
+                
+                console.log( 'SOCKET CALL :: block_user :: for room_id - '+ room_id );
+                
+                FN_block_private_room( accessToken, room_id, currentTimestamp, function( response ){
+                    var d = {
+                        type : 'alert',
+                        data : response
+                    }
+                    if( response.status == 1 ){
+                        socket.emit( 'RESPONSE_APP_SOCKET_EMIT', 'block_private_room', d );
                         if( typeof io.sockets.adapter.rooms[room_id] != 'undefined' ){
                             if( typeof io.sockets.adapter.rooms[room_id].sockets != 'undefined'){
                                 socket.leave( room_id );
