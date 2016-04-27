@@ -5,6 +5,25 @@ var generatePassword = require('password-generator');
 var ObjectID = require('mongodb').ObjectID;
 module.exports = function (User) {
     //--start--USER GENERIC function------
+    User.FN_unblock_user = function( info, callback ){
+        var user_id = info.user_id;
+        var unblock_user_id = info.unblock_user_id;
+        
+        User.update({
+            id: new ObjectID( user_id )
+        }, {
+            '$pull': { 'blocked_users': new ObjectID( unblock_user_id ) }
+        },{
+            allowExtendedOperators: true 
+        }, function (err, result) {
+            if (err) {
+                callback( false );
+            } else {
+                callback( true );
+            }
+        });
+    }
+    
     User.FN_get_user_by_id = function( userId, callback ){
         var where = {
             'where' : {
@@ -579,10 +598,33 @@ module.exports = function (User) {
                     callback(null, 0, 'UnAuthorized', {});
                 }else{
                     var userId = accessToken.userId
-                    User.findById(userId, function (err, user) {
+                    
+                    var where1 = {
+                        'id' : new ObjectID( userId )
+                    };
+                    
+                    //User.findById(userId, function (err, user) {
+                    User.find({
+                        "where": where1,
+                        "include": [{
+                            relation: 'blocked_users', 
+                            scope: {
+                                fields: ['name','profile_image','last_seen','status'],
+                            }
+                        }]
+                    },function( err, user ){
                         if (err) {
                             callback(null, 0, 'UnAuthorized', {});
                         } else {
+                            
+                            user = user[0];
+                            
+                            var user = user.toJSON();
+                            var blocked_users = [];
+                            if( typeof user.blocked_users != 'undefined' && user.blocked_users.length > 0 ){
+                                blocked_users = user.blocked_users;
+                            }
+                            
                             Room.find({
                                 'where':{
                                     room_users : {'all':[new ObjectID( userId )]}
@@ -611,6 +653,8 @@ module.exports = function (User) {
                                         'last_seen' : user.last_seen,
                                         'user_private_rooms' : user_private_rooms,
                                         'user_public_rooms' : user_public_rooms,
+                                        'user_blocked_users' : blocked_users.length,
+                                        'blocked_users' : blocked_users
                                     }
                                     callback(null, 1, 'User profile details', USER_PROFILE);
                                 }
@@ -955,7 +999,7 @@ module.exports = function (User) {
 
 
 
-    //********************************* START LAST SEEN **********************************
+    //********************************* START update geo location **********************************
     User.geo_location = function ( accessToken, geo_lat, geo_long, currentTimestamp, callback) {
         User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
             if( err ){
@@ -1005,7 +1049,60 @@ module.exports = function (User) {
                 }
             }
     );
-    //********************************* END LAST SEEN **********************************
+    //********************************* END update geo location **********************************
+    
+    
+    //********************************* START unblock user **********************************
+    User.unblock_user = function ( accessToken, user_id, currentTimestamp, callback) {
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 0, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 0, 'UnAuthorized', {});
+                }else{
+                    var userId = accessToken.userId
+                    User.findById(userId, function (err, user) {
+                        if (err) {
+                            callback(null, 0, 'UnAuthorized', {});
+                        } else {
+                            var unblock_data = {
+                                user_id : userId,
+                                unblock_user_id : user_id
+                            }
+                            User.FN_unblock_user( unblock_data, function( ret ){
+                                if( ret == false ){
+                                    callback(null, 0, 'try again', {});
+                                }else{
+                                    callback(null, 1, 'Successfully unblocked', {} );
+                                }
+                            })
+                        }
+                    });
+                }
+            }
+        });
+    };
+    User.remoteMethod(
+            'unblock_user', {
+                description: 'update geo locations of user',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'user_id', type: 'string'}, 
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/unblock_user',
+                }
+            }
+    );
+    //********************************* END update geo location **********************************
+    
 
 
 
