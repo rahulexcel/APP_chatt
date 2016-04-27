@@ -14,11 +14,23 @@
             self.popover = popover;
         });
         self.search = function(state) {
+            
             if (timeStorage.get('network')) {
                 window.plugins.toast.showShortTop('You need to online to access this');
             }
             else
             {
+                if(state == 'app.contacts')
+                {
+                cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
+                if(!enabled)
+                {
+                cordova.plugins.diagnostic.switchToLocationSettings();   
+                }
+                }, function(error) {
+                //error
+                });
+                }
                 $state.go(state);
             }
         };
@@ -46,6 +58,7 @@
             ;
             $state.go('login');
         };
+
         var count = 0;
         $ionicPlatform.registerBackButtonAction(function() {
             var view = $ionicHistory.currentView();
@@ -63,5 +76,6 @@
                 count = 0;
             }
         }, 100);
+    
     }
 })();

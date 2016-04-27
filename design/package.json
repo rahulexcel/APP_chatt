@@ -47,7 +47,11 @@
       },
       "locator": "phonegap-plugin-push",
       "id": "phonegap-plugin-push"
-    }
+    },
+    "cordova-plugin-app-event",
+    "cordova-plugin-appversion",
+    "cordova-plugin-camera",
+    "cordova-sqlite-storage"
   ],
   "cordovaPlatforms": [
     "android"

@@ -4,7 +4,7 @@
     angular.module('chattapp')
             .controller('contactsController', contactsController);
 
-    function contactsController($scope, contactsFactory, $filter, contactsService, $ionicLoading, timeStorage, $localStorage, $state, socketService, $ionicModal, getUserProfileFactory) {
+    function contactsController($scope, contactsFactory, $filter, contactsService, $ionicLoading, timeStorage, $localStorage, $state, socketService, $ionicModal, getUserProfileFactory, $cordovaGeolocation) {
         delete $localStorage.chatWithUserData;
         var self = this;
         var userData = timeStorage.get('userData');

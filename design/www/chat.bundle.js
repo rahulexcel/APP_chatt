@@ -4236,603 +4236,11 @@ c){g.push("<a ");h.isDefined(b)&&g.push('target="',b,'" ');g.push('href="',a.rep
 		momentProperties._z = null;
 	}
 
-	loadData({
-		"version": "2016c",
-		"zones": [
-			"Africa/Abidjan|GMT|0|0||48e5",
-			"Africa/Khartoum|EAT|-30|0||51e5",
-			"Africa/Algiers|CET|-10|0||26e5",
-			"Africa/Lagos|WAT|-10|0||17e6",
-			"Africa/Maputo|CAT|-20|0||26e5",
-			"Africa/Cairo|EET EEST|-20 -30|010101010|1Cby0 Fb0 c10 8n0 8Nd0 gL0 e10 mn0|15e6",
-			"Africa/Casablanca|WET WEST|0 -10|01010101010101010101010101010101010101010|1Cco0 Db0 1zd0 Lz0 1Nf0 wM0 co0 go0 1o00 s00 dA0 vc0 11A0 A00 e00 y00 11A0 uM0 e00 Dc0 11A0 s00 e00 IM0 WM0 mo0 gM0 LA0 WM0 jA0 e00 Rc0 11A0 e00 e00 U00 11A0 8o0 e00 11A0|32e5",
-			"Europe/Paris|CET CEST|-10 -20|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|11e6",
-			"Africa/Johannesburg|SAST|-20|0||84e5",
-			"Africa/Tripoli|EET CET CEST|-20 -10 -20|0120|1IlA0 TA0 1o00|11e5",
-			"Africa/Windhoek|WAST WAT|-20 -10|01010101010101010101010|1C1c0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 11B0|32e4",
-			"America/Adak|HST HDT|a0 90|01010101010101010101010|1BR00 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|326",
-			"America/Anchorage|AKST AKDT|90 80|01010101010101010101010|1BQX0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|30e4",
-			"America/Santo_Domingo|AST|40|0||29e5",
-			"America/Araguaina|BRT BRST|30 20|010|1IdD0 Lz0|14e4",
-			"America/Argentina/Buenos_Aires|ART|30|0|",
-			"America/Asuncion|PYST PYT|30 40|01010101010101010101010|1C430 1a10 1fz0 1a10 1fz0 1cN0 17b0 1ip0 17b0 1ip0 17b0 1ip0 19X0 1fB0 19X0 1fB0 19X0 1ip0 17b0 1ip0 17b0 1ip0|28e5",
-			"America/Panama|EST|50|0||15e5",
-			"America/Bahia|BRT BRST|30 20|010|1FJf0 Rb0|27e5",
-			"America/Bahia_Banderas|MST CDT CST|70 50 60|01212121212121212121212|1C1l0 1nW0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0|84e3",
-			"America/Fortaleza|BRT|30|0||34e5",
-			"America/Managua|CST|60|0||22e5",
-			"America/Manaus|AMT|40|0||19e5",
-			"America/Bogota|COT|50|0||90e5",
-			"America/Denver|MST MDT|70 60|01010101010101010101010|1BQV0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|26e5",
-			"America/Campo_Grande|AMST AMT|30 40|01010101010101010101010|1BIr0 1zd0 On0 1zd0 Rb0 1zd0 Lz0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 On0 1zd0 On0 1C10 Lz0 1C10 Lz0 1C10|77e4",
-			"America/Cancun|CST CDT EST|60 50 50|010101010102|1C1k0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 Dd0|63e4",
-			"America/Caracas|VET|4u|0||29e5",
-			"America/Cayenne|GFT|30|0||58e3",
-			"America/Chicago|CST CDT|60 50|01010101010101010101010|1BQU0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|92e5",
-			"America/Chihuahua|MST MDT|70 60|01010101010101010101010|1C1l0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0|81e4",
-			"America/Phoenix|MST|70|0||42e5",
-			"America/Los_Angeles|PST PDT|80 70|01010101010101010101010|1BQW0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|15e6",
-			"America/New_York|EST EDT|50 40|01010101010101010101010|1BQT0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|21e6",
-			"America/Rio_Branco|AMT ACT|40 50|01|1KLE0|31e4",
-			"America/Fort_Nelson|PST PDT MST|80 70 70|010101010102|1BQW0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0|39e2",
-			"America/Halifax|AST ADT|40 30|01010101010101010101010|1BQS0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|39e4",
-			"America/Godthab|WGT WGST|30 20|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|17e3",
-			"America/Goose_Bay|AST ADT|40 30|01010101010101010101010|1BQQ1 1zb0 Op0 1zcX Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|76e2",
-			"America/Grand_Turk|EST EDT AST|50 40 40|0101010101012|1BQT0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|37e2",
-			"America/Guayaquil|ECT|50|0||27e5",
-			"America/Guyana|GYT|40|0||80e4",
-			"America/Havana|CST CDT|50 40|01010101010101010101010|1BQR0 1wo0 U00 1zc0 U00 1qM0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Rc0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0 Oo0 1zc0|21e5",
-			"America/La_Paz|BOT|40|0||19e5",
-			"America/Lima|PET|50|0||11e6",
-			"America/Mexico_City|CST CDT|60 50|01010101010101010101010|1C1k0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0|20e6",
-			"America/Metlakatla|PST AKST AKDT|80 90 80|012121212121|1PAa0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|14e2",
-			"America/Miquelon|PMST PMDT|30 20|01010101010101010101010|1BQR0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|61e2",
-			"America/Montevideo|UYST UYT|20 30|010101010101|1BQQ0 1ld0 14n0 1ld0 14n0 1o10 11z0 1o10 11z0 1o10 11z0|17e5",
-			"America/Noronha|FNT|20|0||30e2",
-			"America/North_Dakota/Beulah|MST MDT CST CDT|70 60 60 50|01232323232323232323232|1BQV0 1zb0 Oo0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0",
-			"America/Paramaribo|SRT|30|0||24e4",
-			"America/Port-au-Prince|EST EDT|50 40|010101010|1GI70 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|23e5",
-			"America/Santiago|CLST CLT|30 40|010101010101010101010|1C1f0 1fB0 1nX0 G10 1EL0 Op0 1zb0 Rd0 1wn0 Rd0 46n0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0|62e5",
-			"America/Sao_Paulo|BRST BRT|20 30|01010101010101010101010|1BIq0 1zd0 On0 1zd0 Rb0 1zd0 Lz0 1C10 Lz0 1C10 On0 1zd0 On0 1zd0 On0 1zd0 On0 1C10 Lz0 1C10 Lz0 1C10|20e6",
-			"America/Scoresbysund|EGT EGST|10 0|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|452",
-			"America/St_Johns|NST NDT|3u 2u|01010101010101010101010|1BQPv 1zb0 Op0 1zcX Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|11e4",
-			"Antarctica/Casey|CAST AWST|-b0 -80|0101|1BN30 40P0 KL0|10",
-			"Antarctica/Davis|DAVT DAVT|-50 -70|0101|1BPw0 3Wn0 KN0|70",
-			"Antarctica/DumontDUrville|DDUT|-a0|0||80",
-			"Antarctica/Macquarie|AEDT MIST|-b0 -b0|01|1C140|1",
-			"Antarctica/Mawson|MAWT|-50|0||60",
-			"Pacific/Auckland|NZDT NZST|-d0 -c0|01010101010101010101010|1C120 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00|14e5",
-			"Antarctica/Rothera|ROTT|30|0||130",
-			"Antarctica/Syowa|SYOT|-30|0||20",
-			"Antarctica/Troll|UTC CEST|0 -20|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|40",
-			"Antarctica/Vostok|VOST|-60|0||25",
-			"Asia/Baghdad|AST|-30|0||66e5",
-			"Asia/Almaty|ALMT|-60|0||15e5",
-			"Asia/Amman|EET EEST|-20 -30|010101010101010101010|1BVy0 1qM0 11A0 1o00 11A0 4bX0 Dd0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0|25e5",
-			"Asia/Anadyr|ANAT ANAST ANAT|-c0 -c0 -b0|0120|1BWe0 1qN0 WM0|13e3",
-			"Asia/Aqtobe|AQTT|-50|0||27e4",
-			"Asia/Ashgabat|TMT|-50|0||41e4",
-			"Asia/Baku|AZT AZST|-40 -50|0101010101010|1BWo0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00|27e5",
-			"Asia/Bangkok|ICT|-70|0||15e6",
-			"Asia/Barnaul|+06 +07|-60 -70|010101|1BWk0 1qM0 WM0 8Hz0 3rd0",
-			"Asia/Beirut|EET EEST|-20 -30|01010101010101010101010|1BWm0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0|22e5",
-			"Asia/Bishkek|KGT|-60|0||87e4",
-			"Asia/Brunei|BNT|-80|0||42e4",
-			"Asia/Kolkata|IST|-5u|0||15e6",
-			"Asia/Chita|YAKT YAKST YAKT IRKT|-90 -a0 -a0 -80|010230|1BWh0 1qM0 WM0 8Hz0 3re0|33e4",
-			"Asia/Choibalsan|CHOT CHOST|-80 -90|0101010101010|1O8G0 1cJ0 1cP0 1cJ0 1cP0 1fx0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0|38e3",
-			"Asia/Shanghai|CST|-80|0||23e6",
-			"Asia/Dhaka|BDT|-60|0||16e6",
-			"Asia/Damascus|EET EEST|-20 -30|01010101010101010101010|1C0m0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0 WN0 1qL0 WN0 1qL0 11B0 1nX0 11B0 1nX0 11B0 1nX0 11B0 1qL0|26e5",
-			"Asia/Dili|TLT|-90|0||19e4",
-			"Asia/Dubai|GST|-40|0||39e5",
-			"Asia/Dushanbe|TJT|-50|0||76e4",
-			"Asia/Gaza|EET EEST|-20 -30|01010101010101010101010|1BVW1 SKX 1xd1 MKX 1AN0 1a00 1fA0 1cL0 1cN0 1nX0 1210 1nz0 1220 1ny0 1220 1qm0 1220 1ny0 1220 1ny0 1220 1ny0|18e5",
-			"Asia/Hebron|EET EEST|-20 -30|0101010101010101010101010|1BVy0 Tb0 1xd1 MKX bB0 cn0 1cN0 1a00 1fA0 1cL0 1cN0 1nX0 1210 1nz0 1220 1ny0 1220 1qm0 1220 1ny0 1220 1ny0 1220 1ny0|25e4",
-			"Asia/Hong_Kong|HKT|-80|0||73e5",
-			"Asia/Hovd|HOVT HOVST|-70 -80|0101010101010|1O8H0 1cJ0 1cP0 1cJ0 1cP0 1fx0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0|81e3",
-			"Asia/Irkutsk|IRKT IRKST IRKT|-80 -90 -90|01020|1BWi0 1qM0 WM0 8Hz0|60e4",
-			"Europe/Istanbul|EET EEST|-20 -30|01010101010101010101010|1BWp0 1qM0 Xc0 1qo0 WM0 1qM0 11A0 1o00 1200 1nA0 11A0 1tA0 U00 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|13e6",
-			"Asia/Jakarta|WIB|-70|0||31e6",
-			"Asia/Jayapura|WIT|-90|0||26e4",
-			"Asia/Jerusalem|IST IDT|-20 -30|01010101010101010101010|1BVA0 17X0 1kp0 1dz0 1c10 1aL0 1eN0 1oL0 10N0 1oL0 10N0 1oL0 10N0 1rz0 W10 1rz0 W10 1rz0 10N0 1oL0 10N0 1oL0|81e4",
-			"Asia/Kabul|AFT|-4u|0||46e5",
-			"Asia/Kamchatka|PETT PETST PETT|-c0 -c0 -b0|0120|1BWe0 1qN0 WM0|18e4",
-			"Asia/Karachi|PKT|-50|0||24e6",
-			"Asia/Urumqi|XJT|-60|0||32e5",
-			"Asia/Kathmandu|NPT|-5J|0||12e5",
-			"Asia/Khandyga|VLAT VLAST VLAT YAKT YAKT|-a0 -b0 -b0 -a0 -90|010234|1BWg0 1qM0 WM0 17V0 7zD0|66e2",
-			"Asia/Krasnoyarsk|KRAT KRAST KRAT|-70 -80 -80|01020|1BWj0 1qM0 WM0 8Hz0|10e5",
-			"Asia/Kuala_Lumpur|MYT|-80|0||71e5",
-			"Asia/Magadan|MAGT MAGST MAGT MAGT|-b0 -c0 -c0 -a0|01023|1BWf0 1qM0 WM0 8Hz0|95e3",
-			"Asia/Makassar|WITA|-80|0||15e5",
-			"Asia/Manila|PHT|-80|0||24e6",
-			"Europe/Athens|EET EEST|-20 -30|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|35e5",
-			"Asia/Novokuznetsk|KRAT NOVST NOVT NOVT|-70 -70 -60 -70|01230|1BWj0 1qN0 WM0 8Hz0|55e4",
-			"Asia/Novosibirsk|NOVT NOVST NOVT|-60 -70 -70|01020|1BWk0 1qM0 WM0 8Hz0|15e5",
-			"Asia/Omsk|OMST OMSST OMST|-60 -70 -70|01020|1BWk0 1qM0 WM0 8Hz0|12e5",
-			"Asia/Oral|ORAT|-50|0||27e4",
-			"Asia/Pyongyang|KST KST|-90 -8u|01|1P4D0|29e5",
-			"Asia/Qyzylorda|QYZT|-60|0||73e4",
-			"Asia/Rangoon|MMT|-6u|0||48e5",
-			"Asia/Sakhalin|SAKT SAKST SAKT|-a0 -b0 -b0|010202|1BWg0 1qM0 WM0 8Hz0 3rd0|58e4",
-			"Asia/Tashkent|UZT|-50|0||23e5",
-			"Asia/Seoul|KST|-90|0||23e6",
-			"Asia/Singapore|SGT|-80|0||56e5",
-			"Asia/Srednekolymsk|MAGT MAGST MAGT SRET|-b0 -c0 -c0 -b0|01023|1BWf0 1qM0 WM0 8Hz0|35e2",
-			"Asia/Tbilisi|GET|-40|0||11e5",
-			"Asia/Tehran|IRST IRDT|-3u -4u|01010101010101010101010|1BTUu 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0 1cN0 1dz0 1cp0 1dz0 1cp0 1dz0 1cp0 1dz0|14e6",
-			"Asia/Thimphu|BTT|-60|0||79e3",
-			"Asia/Tokyo|JST|-90|0||38e6",
-			"Asia/Ulaanbaatar|ULAT ULAST|-80 -90|0101010101010|1O8G0 1cJ0 1cP0 1cJ0 1cP0 1fx0 1cP0 1cJ0 1cP0 1cJ0 1cP0 1cJ0|12e5",
-			"Asia/Ust-Nera|MAGT MAGST MAGT VLAT VLAT|-b0 -c0 -c0 -b0 -a0|010234|1BWf0 1qM0 WM0 17V0 7zD0|65e2",
-			"Asia/Vladivostok|VLAT VLAST VLAT|-a0 -b0 -b0|01020|1BWg0 1qM0 WM0 8Hz0|60e4",
-			"Asia/Yakutsk|YAKT YAKST YAKT|-90 -a0 -a0|01020|1BWh0 1qM0 WM0 8Hz0|28e4",
-			"Asia/Yekaterinburg|YEKT YEKST YEKT|-50 -60 -60|01020|1BWl0 1qM0 WM0 8Hz0|14e5",
-			"Asia/Yerevan|AMT AMST|-40 -50|01010|1BWm0 1qM0 WM0 1qM0|13e5",
-			"Atlantic/Azores|AZOT AZOST|10 0|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|25e4",
-			"Europe/Lisbon|WET WEST|0 -10|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|27e5",
-			"Atlantic/Cape_Verde|CVT|10|0||50e4",
-			"Atlantic/South_Georgia|GST|20|0||30",
-			"Atlantic/Stanley|FKST FKT|30 40|010|1C6R0 U10|21e2",
-			"Australia/Sydney|AEDT AEST|-b0 -a0|01010101010101010101010|1C140 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0|40e5",
-			"Australia/Adelaide|ACDT ACST|-au -9u|01010101010101010101010|1C14u 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1cM0 1fA0 1cM0 1cM0 1cM0 1cM0|11e5",
-			"Australia/Brisbane|AEST|-a0|0||20e5",
-			"Australia/Darwin|ACST|-9u|0||12e4",
-			"Australia/Eucla|ACWST|-8J|0||368",
-			"Australia/Lord_Howe|LHDT LHST|-b0 -au|01010101010101010101010|1C130 1cMu 1cLu 1cMu 1cLu 1fAu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1cMu 1cLu 1fAu 1cLu 1cMu 1cLu 1cMu|347",
-			"Australia/Perth|AWST|-80|0||18e5",
-			"Pacific/Easter|EASST EAST|50 60|010101010101010101010|1C1f0 1fB0 1nX0 G10 1EL0 Op0 1zb0 Rd0 1wn0 Rd0 46n0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0 1Nb0 Ap0|30e2",
-			"Europe/Dublin|GMT IST|0 -10|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|12e5",
-			"Etc/GMT+1|GMT+1|10|0|",
-			"Etc/GMT+10|GMT+10|a0|0|",
-			"Etc/GMT+11|GMT+11|b0|0|",
-			"Etc/GMT+12|GMT+12|c0|0|",
-			"Etc/GMT+2|GMT+2|20|0|",
-			"Etc/GMT+3|GMT+3|30|0|",
-			"Etc/GMT+4|GMT+4|40|0|",
-			"Etc/GMT+5|GMT+5|50|0|",
-			"Etc/GMT+6|GMT+6|60|0|",
-			"Etc/GMT+7|GMT+7|70|0|",
-			"Etc/GMT+8|GMT+8|80|0|",
-			"Etc/GMT+9|GMT+9|90|0|",
-			"Etc/GMT-1|GMT-1|-10|0|",
-			"Etc/GMT-10|GMT-10|-a0|0|",
-			"Etc/GMT-11|GMT-11|-b0|0|",
-			"Etc/GMT-12|GMT-12|-c0|0|",
-			"Etc/GMT-13|GMT-13|-d0|0|",
-			"Etc/GMT-14|GMT-14|-e0|0|",
-			"Etc/GMT-2|GMT-2|-20|0|",
-			"Etc/GMT-3|GMT-3|-30|0|",
-			"Etc/GMT-4|GMT-4|-40|0|",
-			"Etc/GMT-5|GMT-5|-50|0|",
-			"Etc/GMT-6|GMT-6|-60|0|",
-			"Etc/GMT-7|GMT-7|-70|0|",
-			"Etc/GMT-8|GMT-8|-80|0|",
-			"Etc/GMT-9|GMT-9|-90|0|",
-			"Etc/UCT|UCT|0|0|",
-			"Etc/UTC|UTC|0|0|",
-			"Europe/Astrakhan|+03 +04|-30 -40|010101|1BWn0 1qM0 WM0 8Hz0 3rd0",
-			"Europe/London|GMT BST|0 -10|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|10e6",
-			"Europe/Chisinau|EET EEST|-20 -30|01010101010101010101010|1BWo0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00|67e4",
-			"Europe/Kaliningrad|EET EEST FET|-20 -30 -30|01020|1BWo0 1qM0 WM0 8Hz0|44e4",
-			"Europe/Minsk|EET EEST FET MSK|-20 -30 -30 -30|01023|1BWo0 1qM0 WM0 8Hy0|19e5",
-			"Europe/Moscow|MSK MSD MSK|-30 -40 -40|01020|1BWn0 1qM0 WM0 8Hz0|16e6",
-			"Europe/Samara|SAMT SAMST SAMT|-40 -40 -30|0120|1BWm0 1qN0 WM0|12e5",
-			"Europe/Simferopol|EET EEST MSK MSK|-20 -30 -40 -30|01010101023|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11z0 1nW0|33e4",
-			"Pacific/Honolulu|HST|a0|0||37e4",
-			"Indian/Chagos|IOT|-60|0||30e2",
-			"Indian/Christmas|CXT|-70|0||21e2",
-			"Indian/Cocos|CCT|-6u|0||596",
-			"Indian/Kerguelen|TFT|-50|0||130",
-			"Indian/Mahe|SCT|-40|0||79e3",
-			"Indian/Maldives|MVT|-50|0||35e4",
-			"Indian/Mauritius|MUT|-40|0||15e4",
-			"Indian/Reunion|RET|-40|0||84e4",
-			"Pacific/Majuro|MHT|-c0|0||28e3",
-			"MET|MET MEST|-10 -20|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00",
-			"Pacific/Chatham|CHADT CHAST|-dJ -cJ|01010101010101010101010|1C120 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00|600",
-			"Pacific/Apia|SST SDT WSDT WSST|b0 a0 -e0 -d0|01012323232323232323232|1Dbn0 1ff0 1a00 CI0 AQ0 1cM0 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1a00 1fA0 1cM0 1fA0 1a00 1fA0 1a00|37e3",
-			"Pacific/Bougainville|PGT BST|-a0 -b0|01|1NwE0|18e4",
-			"Pacific/Chuuk|CHUT|-a0|0||49e3",
-			"Pacific/Efate|VUT|-b0|0||66e3",
-			"Pacific/Enderbury|PHOT|-d0|0||1",
-			"Pacific/Fakaofo|TKT TKT|b0 -d0|01|1Gfn0|483",
-			"Pacific/Fiji|FJST FJT|-d0 -c0|01010101010101010101010|1BWe0 1o00 Rc0 1wo0 Ao0 1Nc0 Ao0 1Q00 xz0 1SN0 uM0 1SM0 uM0 1VA0 s00 1VA0 uM0 1SM0 uM0 1SM0 uM0 1SM0|88e4",
-			"Pacific/Funafuti|TVT|-c0|0||45e2",
-			"Pacific/Galapagos|GALT|60|0||25e3",
-			"Pacific/Gambier|GAMT|90|0||125",
-			"Pacific/Guadalcanal|SBT|-b0|0||11e4",
-			"Pacific/Guam|ChST|-a0|0||17e4",
-			"Pacific/Kiritimati|LINT|-e0|0||51e2",
-			"Pacific/Kosrae|KOST|-b0|0||66e2",
-			"Pacific/Marquesas|MART|9u|0||86e2",
-			"Pacific/Pago_Pago|SST|b0|0||37e2",
-			"Pacific/Nauru|NRT|-c0|0||10e3",
-			"Pacific/Niue|NUT|b0|0||12e2",
-			"Pacific/Norfolk|NFT NFT|-bu -b0|01|1PoCu|25e4",
-			"Pacific/Noumea|NCT|-b0|0||98e3",
-			"Pacific/Palau|PWT|-90|0||21e3",
-			"Pacific/Pitcairn|PST|80|0||56",
-			"Pacific/Pohnpei|PONT|-b0|0||34e3",
-			"Pacific/Port_Moresby|PGT|-a0|0||25e4",
-			"Pacific/Rarotonga|CKT|a0|0||13e3",
-			"Pacific/Tahiti|TAHT|a0|0||18e4",
-			"Pacific/Tarawa|GILT|-c0|0||29e3",
-			"Pacific/Tongatapu|TOT|-d0|0||75e3",
-			"Pacific/Wake|WAKT|-c0|0||16e3",
-			"Pacific/Wallis|WFT|-c0|0||94"
-		],
-		"links": [
-			"Africa/Abidjan|Africa/Accra",
-			"Africa/Abidjan|Africa/Bamako",
-			"Africa/Abidjan|Africa/Banjul",
-			"Africa/Abidjan|Africa/Bissau",
-			"Africa/Abidjan|Africa/Conakry",
-			"Africa/Abidjan|Africa/Dakar",
-			"Africa/Abidjan|Africa/Freetown",
-			"Africa/Abidjan|Africa/Lome",
-			"Africa/Abidjan|Africa/Monrovia",
-			"Africa/Abidjan|Africa/Nouakchott",
-			"Africa/Abidjan|Africa/Ouagadougou",
-			"Africa/Abidjan|Africa/Sao_Tome",
-			"Africa/Abidjan|Africa/Timbuktu",
-			"Africa/Abidjan|America/Danmarkshavn",
-			"Africa/Abidjan|Atlantic/Reykjavik",
-			"Africa/Abidjan|Atlantic/St_Helena",
-			"Africa/Abidjan|Etc/GMT",
-			"Africa/Abidjan|Etc/GMT+0",
-			"Africa/Abidjan|Etc/GMT-0",
-			"Africa/Abidjan|Etc/GMT0",
-			"Africa/Abidjan|Etc/Greenwich",
-			"Africa/Abidjan|GMT",
-			"Africa/Abidjan|GMT+0",
-			"Africa/Abidjan|GMT-0",
-			"Africa/Abidjan|GMT0",
-			"Africa/Abidjan|Greenwich",
-			"Africa/Abidjan|Iceland",
-			"Africa/Algiers|Africa/Tunis",
-			"Africa/Cairo|Egypt",
-			"Africa/Casablanca|Africa/El_Aaiun",
-			"Africa/Johannesburg|Africa/Maseru",
-			"Africa/Johannesburg|Africa/Mbabane",
-			"Africa/Khartoum|Africa/Addis_Ababa",
-			"Africa/Khartoum|Africa/Asmara",
-			"Africa/Khartoum|Africa/Asmera",
-			"Africa/Khartoum|Africa/Dar_es_Salaam",
-			"Africa/Khartoum|Africa/Djibouti",
-			"Africa/Khartoum|Africa/Juba",
-			"Africa/Khartoum|Africa/Kampala",
-			"Africa/Khartoum|Africa/Mogadishu",
-			"Africa/Khartoum|Africa/Nairobi",
-			"Africa/Khartoum|Indian/Antananarivo",
-			"Africa/Khartoum|Indian/Comoro",
-			"Africa/Khartoum|Indian/Mayotte",
-			"Africa/Lagos|Africa/Bangui",
-			"Africa/Lagos|Africa/Brazzaville",
-			"Africa/Lagos|Africa/Douala",
-			"Africa/Lagos|Africa/Kinshasa",
-			"Africa/Lagos|Africa/Libreville",
-			"Africa/Lagos|Africa/Luanda",
-			"Africa/Lagos|Africa/Malabo",
-			"Africa/Lagos|Africa/Ndjamena",
-			"Africa/Lagos|Africa/Niamey",
-			"Africa/Lagos|Africa/Porto-Novo",
-			"Africa/Maputo|Africa/Blantyre",
-			"Africa/Maputo|Africa/Bujumbura",
-			"Africa/Maputo|Africa/Gaborone",
-			"Africa/Maputo|Africa/Harare",
-			"Africa/Maputo|Africa/Kigali",
-			"Africa/Maputo|Africa/Lubumbashi",
-			"Africa/Maputo|Africa/Lusaka",
-			"Africa/Tripoli|Libya",
-			"America/Adak|America/Atka",
-			"America/Adak|US/Aleutian",
-			"America/Anchorage|America/Juneau",
-			"America/Anchorage|America/Nome",
-			"America/Anchorage|America/Sitka",
-			"America/Anchorage|America/Yakutat",
-			"America/Anchorage|US/Alaska",
-			"America/Argentina/Buenos_Aires|America/Argentina/Catamarca",
-			"America/Argentina/Buenos_Aires|America/Argentina/ComodRivadavia",
-			"America/Argentina/Buenos_Aires|America/Argentina/Cordoba",
-			"America/Argentina/Buenos_Aires|America/Argentina/Jujuy",
-			"America/Argentina/Buenos_Aires|America/Argentina/La_Rioja",
-			"America/Argentina/Buenos_Aires|America/Argentina/Mendoza",
-			"America/Argentina/Buenos_Aires|America/Argentina/Rio_Gallegos",
-			"America/Argentina/Buenos_Aires|America/Argentina/Salta",
-			"America/Argentina/Buenos_Aires|America/Argentina/San_Juan",
-			"America/Argentina/Buenos_Aires|America/Argentina/San_Luis",
-			"America/Argentina/Buenos_Aires|America/Argentina/Tucuman",
-			"America/Argentina/Buenos_Aires|America/Argentina/Ushuaia",
-			"America/Argentina/Buenos_Aires|America/Buenos_Aires",
-			"America/Argentina/Buenos_Aires|America/Catamarca",
-			"America/Argentina/Buenos_Aires|America/Cordoba",
-			"America/Argentina/Buenos_Aires|America/Jujuy",
-			"America/Argentina/Buenos_Aires|America/Mendoza",
-			"America/Argentina/Buenos_Aires|America/Rosario",
-			"America/Campo_Grande|America/Cuiaba",
-			"America/Chicago|America/Indiana/Knox",
-			"America/Chicago|America/Indiana/Tell_City",
-			"America/Chicago|America/Knox_IN",
-			"America/Chicago|America/Matamoros",
-			"America/Chicago|America/Menominee",
-			"America/Chicago|America/North_Dakota/Center",
-			"America/Chicago|America/North_Dakota/New_Salem",
-			"America/Chicago|America/Rainy_River",
-			"America/Chicago|America/Rankin_Inlet",
-			"America/Chicago|America/Resolute",
-			"America/Chicago|America/Winnipeg",
-			"America/Chicago|CST6CDT",
-			"America/Chicago|Canada/Central",
-			"America/Chicago|US/Central",
-			"America/Chicago|US/Indiana-Starke",
-			"America/Chihuahua|America/Mazatlan",
-			"America/Chihuahua|Mexico/BajaSur",
-			"America/Denver|America/Boise",
-			"America/Denver|America/Cambridge_Bay",
-			"America/Denver|America/Edmonton",
-			"America/Denver|America/Inuvik",
-			"America/Denver|America/Ojinaga",
-			"America/Denver|America/Shiprock",
-			"America/Denver|America/Yellowknife",
-			"America/Denver|Canada/Mountain",
-			"America/Denver|MST7MDT",
-			"America/Denver|Navajo",
-			"America/Denver|US/Mountain",
-			"America/Fortaleza|America/Belem",
-			"America/Fortaleza|America/Maceio",
-			"America/Fortaleza|America/Recife",
-			"America/Fortaleza|America/Santarem",
-			"America/Halifax|America/Glace_Bay",
-			"America/Halifax|America/Moncton",
-			"America/Halifax|America/Thule",
-			"America/Halifax|Atlantic/Bermuda",
-			"America/Halifax|Canada/Atlantic",
-			"America/Havana|Cuba",
-			"America/Los_Angeles|America/Dawson",
-			"America/Los_Angeles|America/Ensenada",
-			"America/Los_Angeles|America/Santa_Isabel",
-			"America/Los_Angeles|America/Tijuana",
-			"America/Los_Angeles|America/Vancouver",
-			"America/Los_Angeles|America/Whitehorse",
-			"America/Los_Angeles|Canada/Pacific",
-			"America/Los_Angeles|Canada/Yukon",
-			"America/Los_Angeles|Mexico/BajaNorte",
-			"America/Los_Angeles|PST8PDT",
-			"America/Los_Angeles|US/Pacific",
-			"America/Los_Angeles|US/Pacific-New",
-			"America/Managua|America/Belize",
-			"America/Managua|America/Costa_Rica",
-			"America/Managua|America/El_Salvador",
-			"America/Managua|America/Guatemala",
-			"America/Managua|America/Regina",
-			"America/Managua|America/Swift_Current",
-			"America/Managua|America/Tegucigalpa",
-			"America/Managua|Canada/East-Saskatchewan",
-			"America/Managua|Canada/Saskatchewan",
-			"America/Manaus|America/Boa_Vista",
-			"America/Manaus|America/Porto_Velho",
-			"America/Manaus|Brazil/West",
-			"America/Mexico_City|America/Merida",
-			"America/Mexico_City|America/Monterrey",
-			"America/Mexico_City|Mexico/General",
-			"America/New_York|America/Detroit",
-			"America/New_York|America/Fort_Wayne",
-			"America/New_York|America/Indiana/Indianapolis",
-			"America/New_York|America/Indiana/Marengo",
-			"America/New_York|America/Indiana/Petersburg",
-			"America/New_York|America/Indiana/Vevay",
-			"America/New_York|America/Indiana/Vincennes",
-			"America/New_York|America/Indiana/Winamac",
-			"America/New_York|America/Indianapolis",
-			"America/New_York|America/Iqaluit",
-			"America/New_York|America/Kentucky/Louisville",
-			"America/New_York|America/Kentucky/Monticello",
-			"America/New_York|America/Louisville",
-			"America/New_York|America/Montreal",
-			"America/New_York|America/Nassau",
-			"America/New_York|America/Nipigon",
-			"America/New_York|America/Pangnirtung",
-			"America/New_York|America/Thunder_Bay",
-			"America/New_York|America/Toronto",
-			"America/New_York|Canada/Eastern",
-			"America/New_York|EST5EDT",
-			"America/New_York|US/East-Indiana",
-			"America/New_York|US/Eastern",
-			"America/New_York|US/Michigan",
-			"America/Noronha|Brazil/DeNoronha",
-			"America/Panama|America/Atikokan",
-			"America/Panama|America/Cayman",
-			"America/Panama|America/Coral_Harbour",
-			"America/Panama|America/Jamaica",
-			"America/Panama|EST",
-			"America/Panama|Jamaica",
-			"America/Phoenix|America/Creston",
-			"America/Phoenix|America/Dawson_Creek",
-			"America/Phoenix|America/Hermosillo",
-			"America/Phoenix|MST",
-			"America/Phoenix|US/Arizona",
-			"America/Rio_Branco|America/Eirunepe",
-			"America/Rio_Branco|America/Porto_Acre",
-			"America/Rio_Branco|Brazil/Acre",
-			"America/Santiago|Antarctica/Palmer",
-			"America/Santiago|Chile/Continental",
-			"America/Santo_Domingo|America/Anguilla",
-			"America/Santo_Domingo|America/Antigua",
-			"America/Santo_Domingo|America/Aruba",
-			"America/Santo_Domingo|America/Barbados",
-			"America/Santo_Domingo|America/Blanc-Sablon",
-			"America/Santo_Domingo|America/Curacao",
-			"America/Santo_Domingo|America/Dominica",
-			"America/Santo_Domingo|America/Grenada",
-			"America/Santo_Domingo|America/Guadeloupe",
-			"America/Santo_Domingo|America/Kralendijk",
-			"America/Santo_Domingo|America/Lower_Princes",
-			"America/Santo_Domingo|America/Marigot",
-			"America/Santo_Domingo|America/Martinique",
-			"America/Santo_Domingo|America/Montserrat",
-			"America/Santo_Domingo|America/Port_of_Spain",
-			"America/Santo_Domingo|America/Puerto_Rico",
-			"America/Santo_Domingo|America/St_Barthelemy",
-			"America/Santo_Domingo|America/St_Kitts",
-			"America/Santo_Domingo|America/St_Lucia",
-			"America/Santo_Domingo|America/St_Thomas",
-			"America/Santo_Domingo|America/St_Vincent",
-			"America/Santo_Domingo|America/Tortola",
-			"America/Santo_Domingo|America/Virgin",
-			"America/Sao_Paulo|Brazil/East",
-			"America/St_Johns|Canada/Newfoundland",
-			"Asia/Aqtobe|Asia/Aqtau",
-			"Asia/Ashgabat|Asia/Ashkhabad",
-			"Asia/Baghdad|Asia/Aden",
-			"Asia/Baghdad|Asia/Bahrain",
-			"Asia/Baghdad|Asia/Kuwait",
-			"Asia/Baghdad|Asia/Qatar",
-			"Asia/Baghdad|Asia/Riyadh",
-			"Asia/Bangkok|Asia/Ho_Chi_Minh",
-			"Asia/Bangkok|Asia/Phnom_Penh",
-			"Asia/Bangkok|Asia/Saigon",
-			"Asia/Bangkok|Asia/Vientiane",
-			"Asia/Dhaka|Asia/Dacca",
-			"Asia/Dubai|Asia/Muscat",
-			"Asia/Hong_Kong|Hongkong",
-			"Asia/Jakarta|Asia/Pontianak",
-			"Asia/Jerusalem|Asia/Tel_Aviv",
-			"Asia/Jerusalem|Israel",
-			"Asia/Kathmandu|Asia/Katmandu",
-			"Asia/Kolkata|Asia/Calcutta",
-			"Asia/Kolkata|Asia/Colombo",
-			"Asia/Kuala_Lumpur|Asia/Kuching",
-			"Asia/Makassar|Asia/Ujung_Pandang",
-			"Asia/Seoul|ROK",
-			"Asia/Shanghai|Asia/Chongqing",
-			"Asia/Shanghai|Asia/Chungking",
-			"Asia/Shanghai|Asia/Harbin",
-			"Asia/Shanghai|Asia/Macao",
-			"Asia/Shanghai|Asia/Macau",
-			"Asia/Shanghai|Asia/Taipei",
-			"Asia/Shanghai|PRC",
-			"Asia/Shanghai|ROC",
-			"Asia/Singapore|Singapore",
-			"Asia/Tashkent|Asia/Samarkand",
-			"Asia/Tehran|Iran",
-			"Asia/Thimphu|Asia/Thimbu",
-			"Asia/Tokyo|Japan",
-			"Asia/Ulaanbaatar|Asia/Ulan_Bator",
-			"Asia/Urumqi|Asia/Kashgar",
-			"Australia/Adelaide|Australia/Broken_Hill",
-			"Australia/Adelaide|Australia/South",
-			"Australia/Adelaide|Australia/Yancowinna",
-			"Australia/Brisbane|Australia/Lindeman",
-			"Australia/Brisbane|Australia/Queensland",
-			"Australia/Darwin|Australia/North",
-			"Australia/Lord_Howe|Australia/LHI",
-			"Australia/Perth|Australia/West",
-			"Australia/Sydney|Australia/ACT",
-			"Australia/Sydney|Australia/Canberra",
-			"Australia/Sydney|Australia/Currie",
-			"Australia/Sydney|Australia/Hobart",
-			"Australia/Sydney|Australia/Melbourne",
-			"Australia/Sydney|Australia/NSW",
-			"Australia/Sydney|Australia/Tasmania",
-			"Australia/Sydney|Australia/Victoria",
-			"Etc/UCT|UCT",
-			"Etc/UTC|Etc/Universal",
-			"Etc/UTC|Etc/Zulu",
-			"Etc/UTC|UTC",
-			"Etc/UTC|Universal",
-			"Etc/UTC|Zulu",
-			"Europe/Astrakhan|Europe/Ulyanovsk",
-			"Europe/Athens|Asia/Nicosia",
-			"Europe/Athens|EET",
-			"Europe/Athens|Europe/Bucharest",
-			"Europe/Athens|Europe/Helsinki",
-			"Europe/Athens|Europe/Kiev",
-			"Europe/Athens|Europe/Mariehamn",
-			"Europe/Athens|Europe/Nicosia",
-			"Europe/Athens|Europe/Riga",
-			"Europe/Athens|Europe/Sofia",
-			"Europe/Athens|Europe/Tallinn",
-			"Europe/Athens|Europe/Uzhgorod",
-			"Europe/Athens|Europe/Vilnius",
-			"Europe/Athens|Europe/Zaporozhye",
-			"Europe/Chisinau|Europe/Tiraspol",
-			"Europe/Dublin|Eire",
-			"Europe/Istanbul|Asia/Istanbul",
-			"Europe/Istanbul|Turkey",
-			"Europe/Lisbon|Atlantic/Canary",
-			"Europe/Lisbon|Atlantic/Faeroe",
-			"Europe/Lisbon|Atlantic/Faroe",
-			"Europe/Lisbon|Atlantic/Madeira",
-			"Europe/Lisbon|Portugal",
-			"Europe/Lisbon|WET",
-			"Europe/London|Europe/Belfast",
-			"Europe/London|Europe/Guernsey",
-			"Europe/London|Europe/Isle_of_Man",
-			"Europe/London|Europe/Jersey",
-			"Europe/London|GB",
-			"Europe/London|GB-Eire",
-			"Europe/Moscow|Europe/Volgograd",
-			"Europe/Moscow|W-SU",
-			"Europe/Paris|Africa/Ceuta",
-			"Europe/Paris|Arctic/Longyearbyen",
-			"Europe/Paris|Atlantic/Jan_Mayen",
-			"Europe/Paris|CET",
-			"Europe/Paris|Europe/Amsterdam",
-			"Europe/Paris|Europe/Andorra",
-			"Europe/Paris|Europe/Belgrade",
-			"Europe/Paris|Europe/Berlin",
-			"Europe/Paris|Europe/Bratislava",
-			"Europe/Paris|Europe/Brussels",
-			"Europe/Paris|Europe/Budapest",
-			"Europe/Paris|Europe/Busingen",
-			"Europe/Paris|Europe/Copenhagen",
-			"Europe/Paris|Europe/Gibraltar",
-			"Europe/Paris|Europe/Ljubljana",
-			"Europe/Paris|Europe/Luxembourg",
-			"Europe/Paris|Europe/Madrid",
-			"Europe/Paris|Europe/Malta",
-			"Europe/Paris|Europe/Monaco",
-			"Europe/Paris|Europe/Oslo",
-			"Europe/Paris|Europe/Podgorica",
-			"Europe/Paris|Europe/Prague",
-			"Europe/Paris|Europe/Rome",
-			"Europe/Paris|Europe/San_Marino",
-			"Europe/Paris|Europe/Sarajevo",
-			"Europe/Paris|Europe/Skopje",
-			"Europe/Paris|Europe/Stockholm",
-			"Europe/Paris|Europe/Tirane",
-			"Europe/Paris|Europe/Vaduz",
-			"Europe/Paris|Europe/Vatican",
-			"Europe/Paris|Europe/Vienna",
-			"Europe/Paris|Europe/Warsaw",
-			"Europe/Paris|Europe/Zagreb",
-			"Europe/Paris|Europe/Zurich",
-			"Europe/Paris|Poland",
-			"Pacific/Auckland|Antarctica/McMurdo",
-			"Pacific/Auckland|Antarctica/South_Pole",
-			"Pacific/Auckland|NZ",
-			"Pacific/Chatham|NZ-CHAT",
-			"Pacific/Chuuk|Pacific/Truk",
-			"Pacific/Chuuk|Pacific/Yap",
-			"Pacific/Easter|Chile/EasterIsland",
-			"Pacific/Guam|Pacific/Saipan",
-			"Pacific/Honolulu|HST",
-			"Pacific/Honolulu|Pacific/Johnston",
-			"Pacific/Honolulu|US/Hawaii",
-			"Pacific/Majuro|Kwajalein",
-			"Pacific/Majuro|Pacific/Kwajalein",
-			"Pacific/Pago_Pago|Pacific/Midway",
-			"Pacific/Pago_Pago|Pacific/Samoa",
-			"Pacific/Pago_Pago|US/Samoa",
-			"Pacific/Pohnpei|Pacific/Ponape"
-		]
-	});
-
+	// INJECT DATA
 
 	return moment;
 }));
+
 /**
  * @license AngularJS v1.4.8
  * (c) 2010-2015 Google, Inc. http://angularjs.org
@@ -6205,7 +5613,7 @@ angular.module('ngResource', ['ng']).
 })(window, window.angular);
 
 /*!
- * jQuery JavaScript Library v2.2.2
+ * jQuery JavaScript Library v2.2.3
  * http://jquery.com/
  *
  * Includes Sizzle.js
@@ -6215,7 +5623,7 @@ angular.module('ngResource', ['ng']).
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2016-03-17T17:51Z
+ * Date: 2016-04-05T19:26Z
  */
 
 (function( global, factory ) {
@@ -6271,7 +5679,7 @@ var support = {};
 
 
 var
-	version = "2.2.2",
+	version = "2.2.3",
 
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {
@@ -15681,7 +15089,7 @@ jQuery.fn.load = function( url, params, callback ) {
 		// If it fails, this function gets "jqXHR", "status", "error"
 		} ).always( callback && function( jqXHR, status ) {
 			self.each( function() {
-				callback.apply( self, response || [ jqXHR.responseText, status, jqXHR ] );
+				callback.apply( this, response || [ jqXHR.responseText, status, jqXHR ] );
 			} );
 		} );
 	}
@@ -19336,7 +18744,7 @@ Zn._=Jn):Vn._=Jn}).call(this);
 (function() {
     'use strict';
 
-    angular.module('chattapp', ['ionic', 'ngStorage','ngFileUpload','ngImgCrop', 'ngResource','GoogleLoginService', 'facebookLoginService', 'ngMessages'])
+    angular.module('chattapp', ['ionic', 'ngStorage','ngFileUpload','ngImgCrop', 'ngResource','GoogleLoginService', 'facebookLoginService', 'ngMessages', 'ngCordova'])
 
     .config(function($stateProvider, $urlRouterProvider) {
         $stateProvider
@@ -19447,25 +18855,26 @@ Zn._=Jn):Vn._=Jn}).call(this);
         // if none of the above states are matched, use this as the fallback
         // $urlRouterProvider.otherwise('/login');
     });
-
 })();
 (function() {
     'use strict';
 
     angular.module('chattapp')
 
-            .run(function($rootScope, $ionicPlatform, timeStorage, $state, Configurations, deviceService, pushNotification, lastUsesTimeService, $localStorage, sqliteService) {
+            .run(function($rootScope, $ionicPlatform, timeStorage, $interval, $state, Configurations, deviceService, pushNotification, lastUsesTimeService, $localStorage, sqliteService, geoLocation) {
                 $ionicPlatform.ready(function() {
                     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
                     // for form inputs)
                     if (window.cordova && window.cordova.plugins.Keyboard) {
                         cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
                         cordova.plugins.Keyboard.disableScroll(true);
+                        
                     }
                     if (window.StatusBar) {
                         // org.apache.cordova.statusbar required
                         StatusBar.styleDefault();
                     }
+                    Branch.setDebug(true);
                 });
                 $rootScope.$on('$stateChangeStart',
                         function(event, toState, toParams, fromState, fromParams, options) {
@@ -19479,6 +18888,7 @@ Zn._=Jn):Vn._=Jn}).call(this);
                 window.socket = io(Configurations.socketApi);
                 document.addEventListener("deviceready", function() {
 
+                    geoLocation.update();
                     timeStorage.set('deviceUUID', deviceService.getuuid(), 1);
                     timeStorage.set('devicePlatform', deviceService.platform(), 1);
                     pushNotification.push();
@@ -19505,6 +18915,7 @@ Zn._=Jn):Vn._=Jn}).call(this);
                     function onOffline() {
                         timeStorage.set('network', 'offline', 24);
                     }
+                    
                 });
             });
 })();
@@ -19530,6 +18941,15 @@ angular.module('chattapp')
                 color: {"a": "#FA8072 ", "b": "#00FFFF ", "c": "#7FFFD4 ", "d": "#000000 ", "e": "#0000FF ", "f": "#8A2BE2 ", "g": "#A52A2A ", "h": "#DEB887 ", "i": "#5F9EA0 ", "j": "#7FFF00 ", "k": "#D2691E ", "l": "#DC143C ", "m": "#00008B ", "n": "#008B8B ", "o": "#B8860B ", "p": "#006400 ", "q": "#8B008B ", "r": "#FF8C00 ", "s": "#8B0000 ", "t": "#8FBC8F ", "u": "#483D8B ", "v": "#2F4F4F ", "w": "#9400D3 ", "x": "#FF1493 ", "y": "#696969 ", "z": "#1E90FF ", "0": "#FF00FF ", "1": "#FFD700 ", "2": "#ADFF2F ", "3": "#FF69B4 ", "4": "#4B0082 ", "5": "#7CFC00 ", "6": "#800000 ", "7": "#800080 ", "8": "#FF6347 ", "9": "#6A5ACD "}
             });
 })();
+/*!
+ * ngCordova
+ * v0.1.26-alpha
+ * Copyright 2015 Drifty Co. http://drifty.com/
+ * See LICENSE in this repository for license information
+ */
+!function(){angular.module("ngCordova",["ngCordova.plugins"]),angular.module("ngCordova.plugins.actionSheet",[]).factory("$cordovaActionSheet",["$q","$window",function(e,n){return{show:function(r){var o=e.defer();return n.plugins.actionsheet.show(r,function(e){o.resolve(e)}),o.promise},hide:function(){return n.plugins.actionsheet.hide()}}}]),angular.module("ngCordova.plugins.adMob",[]).factory("$cordovaAdMob",["$q","$window",function(e,n){return{createBannerView:function(r){var o=e.defer();return n.plugins.AdMob.createBannerView(r,function(){o.resolve()},function(){o.reject()}),o.promise},createInterstitialView:function(r){var o=e.defer();return n.plugins.AdMob.createInterstitialView(r,function(){o.resolve()},function(){o.reject()}),o.promise},requestAd:function(r){var o=e.defer();return n.plugins.AdMob.requestAd(r,function(){o.resolve()},function(){o.reject()}),o.promise},showAd:function(r){var o=e.defer();return n.plugins.AdMob.showAd(r,function(){o.resolve()},function(){o.reject()}),o.promise},requestInterstitialAd:function(r){var o=e.defer();return n.plugins.AdMob.requestInterstitialAd(r,function(){o.resolve()},function(){o.reject()}),o.promise}}}]),angular.module("ngCordova.plugins.appAvailability",[]).factory("$cordovaAppAvailability",["$q",function(e){return{check:function(n){var r=e.defer();return appAvailability.check(n,function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise}}}]),angular.module("ngCordova.plugins.appRate",[]).provider("$cordovaAppRate",[function(){this.setPreferences=function(e){e&&angular.isObject(e)&&(AppRate.preferences.useLanguage=e.language||null,AppRate.preferences.displayAppName=e.appName||"",AppRate.preferences.promptAgainForEachNewVersion=e.promptForNewVersion||!0,AppRate.preferences.openStoreInApp=e.openStoreInApp||!1,AppRate.preferences.usesUntilPrompt=e.usesUntilPrompt||3,AppRate.preferences.useCustomRateDialog=e.useCustomRateDialog||!1,AppRate.preferences.storeAppURL.ios=e.iosURL||null,AppRate.preferences.storeAppURL.android=e.androidURL||null,AppRate.preferences.storeAppURL.blackberry=e.blackberryURL||null,AppRate.preferences.storeAppURL.windows8=e.windowsURL||null)},this.setCustomLocale=function(e){var n={title:"Rate %@",message:"If you enjoy using %@, would you mind taking a moment to rate it? It won’t take more than a minute. Thanks for your support!",cancelButtonLabel:"No, Thanks",laterButtonLabel:"Remind Me Later",rateButtonLabel:"Rate It Now"};n=angular.extend(n,e),AppRate.preferences.customLocale=n},this.$get=["$q",function(e){return{promptForRating:function(n){var r=e.defer(),o=AppRate.promptForRating(n);return r.resolve(o),r.promise},navigateToAppStore:function(){var n=e.defer(),r=AppRate.navigateToAppStore();return n.resolve(r),n.promise},onButtonClicked:function(e){AppRate.onButtonClicked=function(n){e.call(this,n)}},onRateDialogShow:function(e){AppRate.onRateDialogShow=e()}}}]}]),angular.module("ngCordova.plugins.appVersion",[]).factory("$cordovaAppVersion",["$q",function(e){return{getAppName:function(){var n=e.defer();return cordova.getAppVersion.getAppName(function(e){n.resolve(e)}),n.promise},getPackageName:function(){var n=e.defer();return cordova.getAppVersion.getPackageName(function(e){n.resolve(e)}),n.promise},getVersionNumber:function(){var n=e.defer();return cordova.getAppVersion.getVersionNumber(function(e){n.resolve(e)}),n.promise},getVersionCode:function(){var n=e.defer();return cordova.getAppVersion.getVersionCode(function(e){n.resolve(e)}),n.promise}}}]),angular.module("ngCordova.plugins.backgroundGeolocation",[]).factory("$cordovaBackgroundGeolocation",["$q","$window",function(e,n){return{init:function(){n.navigator.geolocation.getCurrentPosition(function(e){return e})},configure:function(r){this.init();var o=e.defer();return n.plugins.backgroundGeoLocation.configure(function(e){o.notify(e),n.plugins.backgroundGeoLocation.finish()},function(e){o.reject(e)},r),this.start(),o.promise},start:function(){var r=e.defer();return n.plugins.backgroundGeoLocation.start(function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise},stop:function(){var r=e.defer();return n.plugins.backgroundGeoLocation.stop(function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise}}}]),angular.module("ngCordova.plugins.badge",[]).factory("$cordovaBadge",["$q",function(e){return{hasPermission:function(){var n=e.defer();return cordova.plugins.notification.badge.hasPermission(function(e){e?n.resolve(!0):n.reject("You do not have permission")}),n.promise},promptForPermission:function(){return cordova.plugins.notification.badge.promptForPermission()},set:function(n,r,o){var t=e.defer();return cordova.plugins.notification.badge.hasPermission(function(e){e?t.resolve(cordova.plugins.notification.badge.set(n,r,o)):t.reject("You do not have permission to set Badge")}),t.promise},get:function(){var n=e.defer();return cordova.plugins.notification.badge.hasPermission(function(e){e?cordova.plugins.notification.badge.get(function(e){n.resolve(e)}):n.reject("You do not have permission to get Badge")}),n.promise},clear:function(n,r){var o=e.defer();return cordova.plugins.notification.badge.hasPermission(function(e){e?o.resolve(cordova.plugins.notification.badge.clear(n,r)):o.reject("You do not have permission to clear Badge")}),o.promise},increase:function(n,r,o){var t=e.defer();return this.hasPermission().then(function(){t.resolve(cordova.plugins.notification.badge.increase(n,r,o))},function(){t.reject("You do not have permission to increase Badge")}),t.promise},decrease:function(n,r,o){var t=e.defer();return this.hasPermission().then(function(){t.resolve(cordova.plugins.notification.badge.decrease(n,r,o))},function(){t.reject("You do not have permission to decrease Badge")}),t.promise},configure:function(e){return cordova.plugins.notification.badge.configure(e)}}}]),angular.module("ngCordova.plugins.barcodeScanner",[]).factory("$cordovaBarcodeScanner",["$q",function(e){return{scan:function(n){var r=e.defer();return cordova.plugins.barcodeScanner.scan(function(e){r.resolve(e)},function(e){r.reject(e)},n),r.promise},encode:function(n,r){var o=e.defer();return n=n||"TEXT_TYPE",cordova.plugins.barcodeScanner.encode(n,r,function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise}}}]),angular.module("ngCordova.plugins.batteryStatus",[]).factory("$cordovaBatteryStatus",["$rootScope","$window","$timeout",function(e,n,r){var o=function(n){r(function(){e.$broadcast("$cordovaBatteryStatus:status",n)})},t=function(n){r(function(){e.$broadcast("$cordovaBatteryStatus:critical",n)})},i=function(n){r(function(){e.$broadcast("$cordovaBatteryStatus:low",n)})};return document.addEventListener("deviceready",function(){navigator.battery&&(n.addEventListener("batterystatus",o,!1),n.addEventListener("batterycritical",t,!1),n.addEventListener("batterylow",i,!1))},!1),!0}]).run(["$injector",function(e){e.get("$cordovaBatteryStatus")}]),angular.module("ngCordova.plugins.beacon",[]).factory("$cordovaBeacon",["$window","$rootScope","$timeout","$q",function(e,n,r,o){var t=null,i=null,a=null,c=null,u=null,s=null,l=null,f=null;return document.addEventListener("deviceready",function(){if(e.cordova&&e.cordova.plugins&&e.cordova.plugins.locationManager){var o=new e.cordova.plugins.locationManager.Delegate;o.didDetermineStateForRegion=function(e){r(function(){n.$broadcast("$cordovaBeacon:didDetermineStateForRegion",e)}),t&&t(e)},o.didStartMonitoringForRegion=function(e){r(function(){n.$broadcast("$cordovaBeacon:didStartMonitoringForRegion",e)}),i&&i(e)},o.didExitRegion=function(e){r(function(){n.$broadcast("$cordovaBeacon:didExitRegion",e)}),a&&a(e)},o.didEnterRegion=function(e){r(function(){n.$broadcast("$cordovaBeacon:didEnterRegion",e)}),c&&c(e)},o.didRangeBeaconsInRegion=function(e){r(function(){n.$broadcast("$cordovaBeacon:didRangeBeaconsInRegion",e)}),u&&u(e)},o.peripheralManagerDidStartAdvertising=function(e){r(function(){n.$broadcast("$cordovaBeacon:peripheralManagerDidStartAdvertising",e)}),s&&s(e)},o.peripheralManagerDidUpdateState=function(e){r(function(){n.$broadcast("$cordovaBeacon:peripheralManagerDidUpdateState",e)}),l&&l(e)},o.didChangeAuthorizationStatus=function(e){r(function(){n.$broadcast("$cordovaBeacon:didChangeAuthorizationStatus",e)}),f&&f(e)},e.cordova.plugins.locationManager.setDelegate(o)}},!1),{setCallbackDidDetermineStateForRegion:function(e){t=e},setCallbackDidStartMonitoringForRegion:function(e){i=e},setCallbackDidExitRegion:function(e){a=e},setCallbackDidEnterRegion:function(e){c=e},setCallbackDidRangeBeaconsInRegion:function(e){u=e},setCallbackPeripheralManagerDidStartAdvertising:function(e){s=e},setCallbackPeripheralManagerDidUpdateState:function(e){l=e},setCallbackDidChangeAuthorizationStatus:function(e){f=e},createBeaconRegion:function(n,r,o,t,i){return o=o||void 0,t=t||void 0,new e.cordova.plugins.locationManager.BeaconRegion(n,r,o,t,i)},isBluetoothEnabled:function(){return o.when(e.cordova.plugins.locationManager.isBluetoothEnabled())},enableBluetooth:function(){return o.when(e.cordova.plugins.locationManager.enableBluetooth())},disableBluetooth:function(){return o.when(e.cordova.plugins.locationManager.disableBluetooth())},startMonitoringForRegion:function(n){return o.when(e.cordova.plugins.locationManager.startMonitoringForRegion(n))},stopMonitoringForRegion:function(n){return o.when(e.cordova.plugins.locationManager.stopMonitoringForRegion(n))},requestStateForRegion:function(n){return o.when(e.cordova.plugins.locationManager.requestStateForRegion(n))},startRangingBeaconsInRegion:function(n){return o.when(e.cordova.plugins.locationManager.startRangingBeaconsInRegion(n))},stopRangingBeaconsInRegion:function(n){return o.when(e.cordova.plugins.locationManager.stopRangingBeaconsInRegion(n))},getAuthorizationStatus:function(){return o.when(e.cordova.plugins.locationManager.getAuthorizationStatus())},requestWhenInUseAuthorization:function(){return o.when(e.cordova.plugins.locationManager.requestWhenInUseAuthorization())},requestAlwaysAuthorization:function(){return o.when(e.cordova.plugins.locationManager.requestAlwaysAuthorization())},getMonitoredRegions:function(){return o.when(e.cordova.plugins.locationManager.getMonitoredRegions())},getRangedRegions:function(){return o.when(e.cordova.plugins.locationManager.getRangedRegions())},isRangingAvailable:function(){return o.when(e.cordova.plugins.locationManager.isRangingAvailable())},isMonitoringAvailableForClass:function(n){return o.when(e.cordova.plugins.locationManager.isMonitoringAvailableForClass(n))},startAdvertising:function(n,r){return o.when(e.cordova.plugins.locationManager.startAdvertising(n,r))},stopAdvertising:function(){return o.when(e.cordova.plugins.locationManager.stopAdvertising())},isAdvertisingAvailable:function(){return o.when(e.cordova.plugins.locationManager.isAdvertisingAvailable())},isAdvertising:function(){return o.when(e.cordova.plugins.locationManager.isAdvertising())},disableDebugLogs:function(){return o.when(e.cordova.plugins.locationManager.disableDebugLogs())},enableDebugNotifications:function(){return o.when(e.cordova.plugins.locationManager.enableDebugNotifications())},disableDebugNotifications:function(){return o.when(e.cordova.plugins.locationManager.disableDebugNotifications())},enableDebugLogs:function(){return o.when(e.cordova.plugins.locationManager.enableDebugLogs())},appendToDeviceLog:function(n){return o.when(e.cordova.plugins.locationManager.appendToDeviceLog(n))}}}]),angular.module("ngCordova.plugins.ble",[]).factory("$cordovaBLE",["$q","$timeout","$log",function(e,n,r){return{scan:function(r,o){var t=e.defer();return ble.startScan(r,function(e){t.notify(e)},function(e){t.reject(e)}),n(function(){ble.stopScan(function(){t.resolve()},function(e){t.reject(e)})},1e3*o),t.promise},startScan:function(e,n,r){return ble.startScan(e,n,r)},stopScan:function(){var n=e.defer();return ble.stopScan(function(){n.resolve()},function(e){n.reject(e)}),n.promise},connect:function(n){var r=e.defer();return ble.connect(n,function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise},disconnect:function(n){var r=e.defer();return ble.disconnect(n,function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise},read:function(n,r,o){var t=e.defer();return ble.read(n,r,o,function(e){t.resolve(e)},function(e){t.reject(e)}),t.promise},write:function(n,r,o,t){var i=e.defer();return ble.write(n,r,o,t,function(e){i.resolve(e)},function(e){i.reject(e)}),i.promise},writeWithoutResponse:function(n,r,o,t){var i=e.defer();return ble.writeWithoutResponse(n,r,o,t,function(e){i.resolve(e)},function(e){i.reject(e)}),i.promise},writeCommand:function(e,n,o,t){return r.warning("writeCommand is deprecated, use writeWithoutResponse"),this.writeWithoutResponse(e,n,o,t)},startNotification:function(e,n,r,o,t){return ble.startNotification(e,n,r,o,t)},stopNotification:function(n,r,o){var t=e.defer();return ble.stopNotification(n,r,o,function(e){t.resolve(e)},function(e){t.reject(e)}),t.promise},isConnected:function(n){var r=e.defer();return ble.isConnected(n,function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise},enable:function(){var n=e.defer();return ble.enable(function(e){n.resolve(e)},function(e){n.reject(e)}),n.promise},isEnabled:function(){var n=e.defer();return ble.isEnabled(function(e){n.resolve(e)},function(e){n.reject(e)}),n.promise}}}]),angular.module("ngCordova.plugins.bluetoothSerial",[]).factory("$cordovaBluetoothSerial",["$q","$window",function(e,n){return{connect:function(r){var o=e.defer(),t=e.defer(),i=!1;return n.bluetoothSerial.connect(r,function(){i=!0,o.resolve(t)},function(e){i===!1&&t.reject(e),o.reject(e)}),o.promise},connectInsecure:function(r){var o=e.defer();return n.bluetoothSerial.connectInsecure(r,function(){o.resolve()},function(e){o.reject(e)}),o.promise},disconnect:function(){var r=e.defer();return n.bluetoothSerial.disconnect(function(){r.resolve()},function(e){r.reject(e)}),r.promise},list:function(){var r=e.defer();return n.bluetoothSerial.list(function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise},discoverUnpaired:function(){var r=e.defer();return n.bluetoothSerial.discoverUnpaired(function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise},setDeviceDiscoveredListener:function(){var r=e.defer();return n.bluetoothSerial.setDeviceDiscoveredListener(function(e){r.notify(e)}),r.promise},clearDeviceDiscoveredListener:function(){n.bluetoothSerial.clearDeviceDiscoveredListener()},showBluetoothSettings:function(){var r=e.defer();return n.bluetoothSerial.showBluetoothSettings(function(){r.resolve()},function(e){r.reject(e)}),r.promise},isEnabled:function(){var r=e.defer();return n.bluetoothSerial.isEnabled(function(){r.resolve()},function(){r.reject()}),r.promise},enable:function(){var r=e.defer();return n.bluetoothSerial.enable(function(){r.resolve()},function(){r.reject()}),r.promise},isConnected:function(){var r=e.defer();return n.bluetoothSerial.isConnected(function(){r.resolve()},function(){r.reject()}),r.promise},available:function(){var r=e.defer();return n.bluetoothSerial.available(function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise},read:function(){var r=e.defer();return n.bluetoothSerial.read(function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise},readUntil:function(r){var o=e.defer();return n.bluetoothSerial.readUntil(r,function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},write:function(r){var o=e.defer();return n.bluetoothSerial.write(r,function(){o.resolve()},function(e){o.reject(e)}),o.promise},subscribe:function(r){var o=e.defer();return n.bluetoothSerial.subscribe(r,function(e){o.notify(e)},function(e){o.reject(e)}),o.promise},subscribeRawData:function(){var r=e.defer();return n.bluetoothSerial.subscribeRawData(function(e){r.notify(e)},function(e){r.reject(e)}),r.promise},unsubscribe:function(){var r=e.defer();return n.bluetoothSerial.unsubscribe(function(){r.resolve()},function(e){r.reject(e)}),r.promise},unsubscribeRawData:function(){var r=e.defer();return n.bluetoothSerial.unsubscribeRawData(function(){r.resolve()},function(e){r.reject(e)}),r.promise},clear:function(){var r=e.defer();return n.bluetoothSerial.clear(function(){r.resolve()},function(e){r.reject(e)}),r.promise},readRSSI:function(){var r=e.defer();return n.bluetoothSerial.readRSSI(function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise}}}]),angular.module("ngCordova.plugins.brightness",[]).factory("$cordovaBrightness",["$q","$window",function(e,n){return{get:function(){var r=e.defer();return n.cordova?n.cordova.plugins.brightness.getBrightness(function(e){r.resolve(e)},function(e){r.reject(e)}):r.reject("Not supported without cordova.js"),r.promise},set:function(r){var o=e.defer();return n.cordova?n.cordova.plugins.brightness.setBrightness(r,function(e){o.resolve(e)},function(e){o.reject(e)}):o.reject("Not supported without cordova.js"),o.promise},setKeepScreenOn:function(r){var o=e.defer();return n.cordova?n.cordova.plugins.brightness.setKeepScreenOn(r,function(e){o.resolve(e)},function(e){o.reject(e)}):o.reject("Not supported without cordova.js"),o.promise}}}]),angular.module("ngCordova.plugins.calendar",[]).factory("$cordovaCalendar",["$q","$window",function(e,n){return{createCalendar:function(r){var o=e.defer(),t=n.plugins.calendar.getCreateCalendarOptions();return"string"==typeof r?t.calendarName=r:t=angular.extend(t,r),n.plugins.calendar.createCalendar(t,function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},deleteCalendar:function(r){var o=e.defer();return n.plugins.calendar.deleteCalendar(r,function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},createEvent:function(r){var o=e.defer(),t={title:null,location:null,notes:null,startDate:null,endDate:null};return t=angular.extend(t,r),n.plugins.calendar.createEvent(t.title,t.location,t.notes,new Date(t.startDate),new Date(t.endDate),function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},createEventWithOptions:function(r){var o=e.defer(),t=[],i=window.plugins.calendar.getCalendarOptions(),a={title:null,location:null,notes:null,startDate:null,endDate:null};t=Object.keys(a);for(var c in r)-1===t.indexOf(c)?i[c]=r[c]:a[c]=r[c];return n.plugins.calendar.createEventWithOptions(a.title,a.location,a.notes,new Date(a.startDate),new Date(a.endDate),i,function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},createEventInteractively:function(r){var o=e.defer(),t={title:null,location:null,notes:null,startDate:null,endDate:null};return t=angular.extend(t,r),n.plugins.calendar.createEventInteractively(t.title,t.location,t.notes,new Date(t.startDate),new Date(t.endDate),function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},createEventInNamedCalendar:function(r){var o=e.defer(),t={title:null,location:null,notes:null,startDate:null,endDate:null,calendarName:null};return t=angular.extend(t,r),n.plugins.calendar.createEventInNamedCalendar(t.title,t.location,t.notes,new Date(t.startDate),new Date(t.endDate),t.calendarName,function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},findEvent:function(r){var o=e.defer(),t={title:null,location:null,notes:null,startDate:null,endDate:null};return t=angular.extend(t,r),n.plugins.calendar.findEvent(t.title,t.location,t.notes,new Date(t.startDate),new Date(t.endDate),function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},listEventsInRange:function(r,o){var t=e.defer();return n.plugins.calendar.listEventsInRange(r,o,function(e){t.resolve(e)},function(e){t.reject(e)}),t.promise},listCalendars:function(){var r=e.defer();return n.plugins.calendar.listCalendars(function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise},findAllEventsInNamedCalendar:function(r){var o=e.defer();return n.plugins.calendar.findAllEventsInNamedCalendar(r,function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},modifyEvent:function(r){var o=e.defer(),t={title:null,location:null,notes:null,startDate:null,endDate:null,newTitle:null,newLocation:null,newNotes:null,newStartDate:null,newEndDate:null};return t=angular.extend(t,r),n.plugins.calendar.modifyEvent(t.title,t.location,t.notes,new Date(t.startDate),new Date(t.endDate),t.newTitle,t.newLocation,t.newNotes,new Date(t.newStartDate),new Date(t.newEndDate),function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},deleteEvent:function(r){var o=e.defer(),t={newTitle:null,location:null,notes:null,startDate:null,endDate:null};return t=angular.extend(t,r),n.plugins.calendar.deleteEvent(t.newTitle,t.location,t.notes,new Date(t.startDate),new Date(t.endDate),function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise}}}]),angular.module("ngCordova.plugins.camera",[]).factory("$cordovaCamera",["$q",function(e){return{getPicture:function(n){var r=e.defer();return navigator.camera?(navigator.camera.getPicture(function(e){r.resolve(e)},function(e){r.reject(e)},n),r.promise):(r.resolve(null),r.promise)},cleanup:function(){var n=e.defer();return navigator.camera.cleanup(function(){n.resolve()},function(e){n.reject(e)}),n.promise}}}]),angular.module("ngCordova.plugins.capture",[]).factory("$cordovaCapture",["$q",function(e){return{captureAudio:function(n){var r=e.defer();return navigator.device.capture?(navigator.device.capture.captureAudio(function(e){r.resolve(e)},function(e){r.reject(e)},n),r.promise):(r.resolve(null),r.promise)},captureImage:function(n){var r=e.defer();return navigator.device.capture?(navigator.device.capture.captureImage(function(e){r.resolve(e)},function(e){r.reject(e)},n),r.promise):(r.resolve(null),r.promise)},captureVideo:function(n){var r=e.defer();return navigator.device.capture?(navigator.device.capture.captureVideo(function(e){r.resolve(e)},function(e){r.reject(e)},n),r.promise):(r.resolve(null),r.promise)}}}]),angular.module("ngCordova.plugins.cardIO",[]).provider("$cordovaNgCardIO",[function(){var e=["card_type","redacted_card_number","card_number","expiry_month","expiry_year","short_expiry_year","cvv","zip"],n={expiry:!0,cvv:!0,zip:!1,suppressManual:!1,suppressConfirm:!1,hideLogo:!0};this.setCardIOResponseFields=function(n){n&&angular.isArray(n)&&(e=n)},this.setScanerConfig=function(e){e&&angular.isObject(e)&&(n.expiry=e.expiry||!0,n.cvv=e.cvv||!0,n.zip=e.zip||!1,n.suppressManual=e.suppressManual||!1,n.suppressConfirm=e.suppressConfirm||!1,n.hideLogo=e.hideLogo||!0)},this.$get=["$q",function(r){return{scanCard:function(){var o=r.defer();return CardIO.scan(n,function(n){if(null===n)o.reject(null);else{for(var r={},t=0,i=e.length;i>t;t++){var a=e[t];"short_expiry_year"===a?r[a]=String(n.expiry_year).substr(2,2)||"":r[a]=n[a]||""}o.resolve(r)}},function(){o.reject(null)}),o.promise}}}]}]),angular.module("ngCordova.plugins.clipboard",[]).factory("$cordovaClipboard",["$q","$window",function(e,n){return{copy:function(r){var o=e.defer();return n.cordova.plugins.clipboard.copy(r,function(){o.resolve()},function(){o.reject()}),o.promise},paste:function(){var r=e.defer();return n.cordova.plugins.clipboard.paste(function(e){r.resolve(e)},function(){r.reject()}),r.promise}}}]),angular.module("ngCordova.plugins.contacts",[]).factory("$cordovaContacts",["$q",function(e){return{save:function(n){var r=e.defer(),o=navigator.contacts.create(n);return o.save(function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise},remove:function(n){var r=e.defer(),o=navigator.contacts.create(n);return o.remove(function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise},clone:function(e){var n=navigator.contacts.create(e);return n.clone(e)},find:function(n){var r=e.defer(),o=n.fields||["id","displayName"];return delete n.fields,0===Object.keys(n).length?navigator.contacts.find(o,function(e){r.resolve(e)},function(e){r.reject(e)}):navigator.contacts.find(o,function(e){r.resolve(e)},function(e){r.reject(e)},n),r.promise},pickContact:function(){var n=e.defer();return navigator.contacts.pickContact(function(e){n.resolve(e)},function(e){n.reject(e)}),n.promise}}}]),angular.module("ngCordova.plugins.datePicker",[]).factory("$cordovaDatePicker",["$window","$q",function(e,n){return{show:function(r){var o=n.defer();return r=r||{date:new Date,mode:"date"},e.datePicker.show(r,function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise}}}]),angular.module("ngCordova.plugins.device",[]).factory("$cordovaDevice",[function(){return{getDevice:function(){return device},getCordova:function(){return device.cordova},getModel:function(){return device.model},getName:function(){return device.name},getPlatform:function(){return device.platform},getUUID:function(){return device.uuid},getVersion:function(){return device.version},getManufacturer:function(){return device.manufacturer}}}]),angular.module("ngCordova.plugins.deviceMotion",[]).factory("$cordovaDeviceMotion",["$q",function(e){return{getCurrentAcceleration:function(){var n=e.defer();return angular.isUndefined(navigator.accelerometer)||!angular.isFunction(navigator.accelerometer.getCurrentAcceleration)?(n.reject("Device do not support watchAcceleration"),n.promise):(navigator.accelerometer.getCurrentAcceleration(function(e){n.resolve(e)},function(e){n.reject(e)}),n.promise)},watchAcceleration:function(n){var r=e.defer();if(angular.isUndefined(navigator.accelerometer)||!angular.isFunction(navigator.accelerometer.watchAcceleration))return r.reject("Device do not support watchAcceleration"),r.promise;var o=navigator.accelerometer.watchAcceleration(function(e){r.notify(e)},function(e){r.reject(e)},n);return r.promise.cancel=function(){navigator.accelerometer.clearWatch(o)},r.promise.clearWatch=function(e){navigator.accelerometer.clearWatch(e||o)},r.promise.watchID=o,r.promise},clearWatch:function(e){return navigator.accelerometer.clearWatch(e)}}}]),angular.module("ngCordova.plugins.deviceOrientation",[]).factory("$cordovaDeviceOrientation",["$q",function(e){var n={frequency:3e3};return{getCurrentHeading:function(){var n=e.defer();return navigator.compass?(navigator.compass.getCurrentHeading(function(e){n.resolve(e)},function(e){n.reject(e)}),n.promise):(n.reject("No compass on Device"),n.promise)},watchHeading:function(r){var o=e.defer();if(!navigator.compass)return o.reject("No compass on Device"),o.promise;var t=angular.extend(n,r),i=navigator.compass.watchHeading(function(e){o.notify(e)},function(e){o.reject(e)},t);return o.promise.cancel=function(){navigator.compass.clearWatch(i)},o.promise.clearWatch=function(e){navigator.compass.clearWatch(e||i)},o.promise.watchID=i,o.promise},clearWatch:function(e){return navigator.compass.clearWatch(e)}}}]),angular.module("ngCordova.plugins.dialogs",[]).factory("$cordovaDialogs",["$q","$window",function(e,n){return{alert:function(r,o,t){var i=e.defer();return n.navigator.notification?navigator.notification.alert(r,function(){i.resolve()},o,t):(n.alert(r),i.resolve()),i.promise},confirm:function(r,o,t){var i=e.defer();return n.navigator.notification?navigator.notification.confirm(r,function(e){i.resolve(e)},o,t):n.confirm(r)?i.resolve(1):i.resolve(2),i.promise},prompt:function(r,o,t,i){var a=e.defer();if(n.navigator.notification)navigator.notification.prompt(r,function(e){a.resolve(e)},o,t,i);else{var c=n.prompt(r,i);null!==c?a.resolve({input1:c,buttonIndex:1}):a.resolve({input1:c,buttonIndex:2})}return a.promise},beep:function(e){return navigator.notification.beep(e)},activityStart:function(n,r){var o=e.defer();return"android"===cordova.platformId?(navigator.notification.activityStart(r,n),o.resolve()):o.reject(n,r),o.promise},activityStop:function(){var n=e.defer();return"android"===cordova.platformId?(navigator.notification.activityStop(),n.resolve()):n.reject(),n.promise},progressStart:function(n,r){var o=e.defer();return"android"===cordova.platformId?(navigator.notification.progressStart(r,n),o.resolve()):o.reject(n,r),o.promise},progressStop:function(){var n=e.defer();return"android"===cordova.platformId?(navigator.notification.progressStop(),n.resolve()):n.reject(),n.promise},progressValue:function(n){var r=e.defer();return"android"===cordova.platformId?(navigator.notification.progressValue(n),r.resolve()):r.reject(n),r.promise}}}]),angular.module("ngCordova.plugins.emailComposer",[]).factory("$cordovaEmailComposer",["$q",function(e){return{isAvailable:function(){var n=e.defer();return cordova.plugins.email.isAvailable(function(e){e?n.resolve():n.reject()}),n.promise},open:function(n){var r=e.defer();return cordova.plugins.email.open(n,function(){r.reject()}),r.promise},addAlias:function(e,n){cordova.plugins.email.addAlias(e,n)}}}]),angular.module("ngCordova.plugins.facebook",[]).provider("$cordovaFacebook",[function(){this.browserInit=function(e,n){this.appID=e,this.appVersion=n||"v2.0",facebookConnectPlugin.browserInit(this.appID,this.appVersion)},this.$get=["$q",function(e){return{login:function(n){var r=e.defer();return facebookConnectPlugin.login(n,function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise},showDialog:function(n){var r=e.defer();return facebookConnectPlugin.showDialog(n,function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise},api:function(n,r){var o=e.defer();return facebookConnectPlugin.api(n,r,function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},getAccessToken:function(){var n=e.defer();return facebookConnectPlugin.getAccessToken(function(e){n.resolve(e)},function(e){n.reject(e)}),n.promise},getLoginStatus:function(){var n=e.defer();return facebookConnectPlugin.getLoginStatus(function(e){n.resolve(e)},function(e){n.reject(e)}),n.promise},logout:function(){var n=e.defer();return facebookConnectPlugin.logout(function(e){n.resolve(e)},function(e){n.reject(e)}),n.promise}}}]}]),angular.module("ngCordova.plugins.facebookAds",[]).factory("$cordovaFacebookAds",["$q","$window",function(e,n){return{setOptions:function(r){var o=e.defer();return n.FacebookAds.setOptions(r,function(){o.resolve()},function(){o.reject()}),o.promise},createBanner:function(r){var o=e.defer();return n.FacebookAds.createBanner(r,function(){o.resolve()},function(){o.reject()}),o.promise},removeBanner:function(){var r=e.defer();return n.FacebookAds.removeBanner(function(){r.resolve()},function(){r.reject()}),r.promise},showBanner:function(r){var o=e.defer();return n.FacebookAds.showBanner(r,function(){o.resolve()},function(){o.reject()}),o.promise},showBannerAtXY:function(r,o){var t=e.defer();return n.FacebookAds.showBannerAtXY(r,o,function(){t.resolve()},function(){t.reject()}),t.promise},hideBanner:function(){var r=e.defer();return n.FacebookAds.hideBanner(function(){r.resolve()},function(){r.reject()}),r.promise},prepareInterstitial:function(r){var o=e.defer();return n.FacebookAds.prepareInterstitial(r,function(){o.resolve()},function(){o.reject()}),o.promise},showInterstitial:function(){var r=e.defer();return n.FacebookAds.showInterstitial(function(){r.resolve()},function(){r.reject()}),r.promise}}}]),angular.module("ngCordova.plugins.file",[]).constant("$cordovaFileError",{1:"NOT_FOUND_ERR",2:"SECURITY_ERR",3:"ABORT_ERR",4:"NOT_READABLE_ERR",5:"ENCODING_ERR",6:"NO_MODIFICATION_ALLOWED_ERR",7:"INVALID_STATE_ERR",8:"SYNTAX_ERR",9:"INVALID_MODIFICATION_ERR",10:"QUOTA_EXCEEDED_ERR",11:"TYPE_MISMATCH_ERR",12:"PATH_EXISTS_ERR"}).provider("$cordovaFile",[function(){this.$get=["$q","$window","$cordovaFileError",function(e,n,r){return{getFreeDiskSpace:function(){var n=e.defer();return cordova.exec(function(e){n.resolve(e)},function(e){n.reject(e)},"File","getFreeDiskSpace",[]),n.promise},checkDir:function(o,t){var i=e.defer();/^\//.test(t)&&i.reject("directory cannot start with /");try{var a=o+t;n.resolveLocalFileSystemURL(a,function(e){e.isDirectory===!0?i.resolve(e):i.reject({code:13,message:"input is not a directory"})},function(e){e.message=r[e.code],i.reject(e)})}catch(c){c.message=r[c.code],i.reject(c)}return i.promise},checkFile:function(o,t){var i=e.defer();/^\//.test(t)&&i.reject("directory cannot start with /");try{var a=o+t;n.resolveLocalFileSystemURL(a,function(e){e.isFile===!0?i.resolve(e):i.reject({code:13,message:"input is not a file"})},function(e){e.message=r[e.code],i.reject(e)})}catch(c){c.message=r[c.code],i.reject(c)}return i.promise},createDir:function(o,t,i){var a=e.defer();/^\//.test(t)&&a.reject("directory cannot start with /"),
+i=i?!1:!0;var c={create:!0,exclusive:i};try{n.resolveLocalFileSystemURL(o,function(e){e.getDirectory(t,c,function(e){a.resolve(e)},function(e){e.message=r[e.code],a.reject(e)})},function(e){e.message=r[e.code],a.reject(e)})}catch(u){u.message=r[u.code],a.reject(u)}return a.promise},createFile:function(o,t,i){var a=e.defer();/^\//.test(t)&&a.reject("file-name cannot start with /"),i=i?!1:!0;var c={create:!0,exclusive:i};try{n.resolveLocalFileSystemURL(o,function(e){e.getFile(t,c,function(e){a.resolve(e)},function(e){e.message=r[e.code],a.reject(e)})},function(e){e.message=r[e.code],a.reject(e)})}catch(u){u.message=r[u.code],a.reject(u)}return a.promise},removeDir:function(o,t){var i=e.defer();/^\//.test(t)&&i.reject("file-name cannot start with /");try{n.resolveLocalFileSystemURL(o,function(e){e.getDirectory(t,{create:!1},function(e){e.remove(function(){i.resolve({success:!0,fileRemoved:e})},function(e){e.message=r[e.code],i.reject(e)})},function(e){e.message=r[e.code],i.reject(e)})},function(e){e.message=r[e.code],i.reject(e)})}catch(a){a.message=r[a.code],i.reject(a)}return i.promise},removeFile:function(o,t){var i=e.defer();/^\//.test(t)&&i.reject("file-name cannot start with /");try{n.resolveLocalFileSystemURL(o,function(e){e.getFile(t,{create:!1},function(e){e.remove(function(){i.resolve({success:!0,fileRemoved:e})},function(e){e.message=r[e.code],i.reject(e)})},function(e){e.message=r[e.code],i.reject(e)})},function(e){e.message=r[e.code],i.reject(e)})}catch(a){a.message=r[a.code],i.reject(a)}return i.promise},removeRecursively:function(o,t){var i=e.defer();/^\//.test(t)&&i.reject("file-name cannot start with /");try{n.resolveLocalFileSystemURL(o,function(e){e.getDirectory(t,{create:!1},function(e){e.removeRecursively(function(){i.resolve({success:!0,fileRemoved:e})},function(e){e.message=r[e.code],i.reject(e)})},function(e){e.message=r[e.code],i.reject(e)})},function(e){e.message=r[e.code],i.reject(e)})}catch(a){a.message=r[a.code],i.reject(a)}return i.promise},writeFile:function(o,t,i,a){var c=e.defer();/^\//.test(t)&&c.reject("file-name cannot start with /"),a=a?!1:!0;var u={create:!0,exclusive:a};try{n.resolveLocalFileSystemURL(o,function(e){e.getFile(t,u,function(e){e.createWriter(function(e){u.append===!0&&e.seek(e.length),u.truncate&&e.truncate(u.truncate),e.onwriteend=function(e){this.error?c.reject(this.error):c.resolve(e)},e.write(i),c.promise.abort=function(){e.abort()}})},function(e){e.message=r[e.code],c.reject(e)})},function(e){e.message=r[e.code],c.reject(e)})}catch(s){s.message=r[s.code],c.reject(s)}return c.promise},writeExistingFile:function(o,t,i){var a=e.defer();/^\//.test(t)&&a.reject("file-name cannot start with /");try{n.resolveLocalFileSystemURL(o,function(e){e.getFile(t,{create:!1},function(e){e.createWriter(function(e){e.seek(e.length),e.onwriteend=function(e){this.error?a.reject(this.error):a.resolve(e)},e.write(i),a.promise.abort=function(){e.abort()}})},function(e){e.message=r[e.code],a.reject(e)})},function(e){e.message=r[e.code],a.reject(e)})}catch(c){c.message=r[c.code],a.reject(c)}return a.promise},readAsText:function(o,t){var i=e.defer();/^\//.test(t)&&i.reject("file-name cannot start with /");try{n.resolveLocalFileSystemURL(o,function(e){e.getFile(t,{create:!1},function(e){e.file(function(e){var n=new FileReader;n.onloadend=function(e){void 0!==e.target.result||null!==e.target.result?i.resolve(e.target.result):void 0!==e.target.error||null!==e.target.error?i.reject(e.target.error):i.reject({code:null,message:"READER_ONLOADEND_ERR"})},n.readAsText(e)})},function(e){e.message=r[e.code],i.reject(e)})},function(e){e.message=r[e.code],i.reject(e)})}catch(a){a.message=r[a.code],i.reject(a)}return i.promise},readAsDataURL:function(o,t){var i=e.defer();/^\//.test(t)&&i.reject("file-name cannot start with /");try{n.resolveLocalFileSystemURL(o,function(e){e.getFile(t,{create:!1},function(e){e.file(function(e){var n=new FileReader;n.onloadend=function(e){void 0!==e.target.result||null!==e.target.result?i.resolve(e.target.result):void 0!==e.target.error||null!==e.target.error?i.reject(e.target.error):i.reject({code:null,message:"READER_ONLOADEND_ERR"})},n.readAsDataURL(e)})},function(e){e.message=r[e.code],i.reject(e)})},function(e){e.message=r[e.code],i.reject(e)})}catch(a){a.message=r[a.code],i.reject(a)}return i.promise},readAsBinaryString:function(o,t){var i=e.defer();/^\//.test(t)&&i.reject("file-name cannot start with /");try{n.resolveLocalFileSystemURL(o,function(e){e.getFile(t,{create:!1},function(e){e.file(function(e){var n=new FileReader;n.onloadend=function(e){void 0!==e.target.result||null!==e.target.result?i.resolve(e.target.result):void 0!==e.target.error||null!==e.target.error?i.reject(e.target.error):i.reject({code:null,message:"READER_ONLOADEND_ERR"})},n.readAsBinaryString(e)})},function(e){e.message=r[e.code],i.reject(e)})},function(e){e.message=r[e.code],i.reject(e)})}catch(a){a.message=r[a.code],i.reject(a)}return i.promise},readAsArrayBuffer:function(o,t){var i=e.defer();/^\//.test(t)&&i.reject("file-name cannot start with /");try{n.resolveLocalFileSystemURL(o,function(e){e.getFile(t,{create:!1},function(e){e.file(function(e){var n=new FileReader;n.onloadend=function(e){void 0!==e.target.result||null!==e.target.result?i.resolve(e.target.result):void 0!==e.target.error||null!==e.target.error?i.reject(e.target.error):i.reject({code:null,message:"READER_ONLOADEND_ERR"})},n.readAsArrayBuffer(e)})},function(e){e.message=r[e.code],i.reject(e)})},function(e){e.message=r[e.code],i.reject(e)})}catch(a){a.message=r[a.code],i.reject(a)}return i.promise},moveFile:function(r,o,t,i){var a=e.defer();i=i||o,(/^\//.test(o)||/^\//.test(i))&&a.reject("file-name cannot start with /");try{n.resolveLocalFileSystemURL(r,function(e){e.getFile(o,{create:!1},function(e){n.resolveLocalFileSystemURL(t,function(n){e.moveTo(n,i,function(e){a.resolve(e)},function(e){a.reject(e)})},function(e){a.reject(e)})},function(e){a.reject(e)})},function(e){a.reject(e)})}catch(c){a.reject(c)}return a.promise},moveDir:function(r,o,t,i){var a=e.defer();i=i||o,(/^\//.test(o)||/^\//.test(i))&&a.reject("file-name cannot start with /");try{n.resolveLocalFileSystemURL(r,function(e){e.getDirectory(o,{create:!1},function(e){n.resolveLocalFileSystemURL(t,function(n){e.moveTo(n,i,function(e){a.resolve(e)},function(e){a.reject(e)})},function(e){a.reject(e)})},function(e){a.reject(e)})},function(e){a.reject(e)})}catch(c){a.reject(c)}return a.promise},copyDir:function(o,t,i,a){var c=e.defer();a=a||t,(/^\//.test(t)||/^\//.test(a))&&c.reject("file-name cannot start with /");try{n.resolveLocalFileSystemURL(o,function(e){e.getDirectory(t,{create:!1,exclusive:!1},function(e){n.resolveLocalFileSystemURL(i,function(n){e.copyTo(n,a,function(e){c.resolve(e)},function(e){e.message=r[e.code],c.reject(e)})},function(e){e.message=r[e.code],c.reject(e)})},function(e){e.message=r[e.code],c.reject(e)})},function(e){e.message=r[e.code],c.reject(e)})}catch(u){u.message=r[u.code],c.reject(u)}return c.promise},copyFile:function(o,t,i,a){var c=e.defer();a=a||t,/^\//.test(t)&&c.reject("file-name cannot start with /");try{n.resolveLocalFileSystemURL(o,function(e){e.getFile(t,{create:!1,exclusive:!1},function(e){n.resolveLocalFileSystemURL(i,function(n){e.copyTo(n,a,function(e){c.resolve(e)},function(e){e.message=r[e.code],c.reject(e)})},function(e){e.message=r[e.code],c.reject(e)})},function(e){e.message=r[e.code],c.reject(e)})},function(e){e.message=r[e.code],c.reject(e)})}catch(u){u.message=r[u.code],c.reject(u)}return c.promise},readFileMetadata:function(o,t){var i=e.defer();/^\//.test(t)&&i.reject("directory cannot start with /");try{var a=o+t;n.resolveLocalFileSystemURL(a,function(e){e.file(function(e){i.resolve(e)},function(e){e.message=r[e.code],i.reject(e)})},function(e){e.message=r[e.code],i.reject(e)})}catch(c){c.message=r[c.code],i.reject(c)}return i.promise}}}]}]),angular.module("ngCordova.plugins.fileOpener2",[]).factory("$cordovaFileOpener2",["$q",function(e){return{open:function(n,r){var o=e.defer();return cordova.plugins.fileOpener2.open(n,r,{error:function(e){o.reject(e)},success:function(){o.resolve()}}),o.promise},uninstall:function(n){var r=e.defer();return cordova.plugins.fileOpener2.uninstall(n,{error:function(e){r.reject(e)},success:function(){r.resolve()}}),r.promise},appIsInstalled:function(n){var r=e.defer();return cordova.plugins.fileOpener2.appIsInstalled(n,{success:function(e){r.resolve(e)}}),r.promise}}}]),angular.module("ngCordova.plugins.fileTransfer",[]).factory("$cordovaFileTransfer",["$q","$timeout",function(e,n){return{download:function(r,o,t,i){var a=e.defer(),c=new FileTransfer,u=t&&t.encodeURI===!1?r:encodeURI(r);return t&&void 0!==t.timeout&&null!==t.timeout&&(n(function(){c.abort()},t.timeout),t.timeout=null),c.onprogress=function(e){a.notify(e)},a.promise.abort=function(){c.abort()},c.download(u,o,a.resolve,a.reject,i,t),a.promise},upload:function(r,o,t,i){var a=e.defer(),c=new FileTransfer,u=t&&t.encodeURI===!1?r:encodeURI(r);return t&&void 0!==t.timeout&&null!==t.timeout&&(n(function(){c.abort()},t.timeout),t.timeout=null),c.onprogress=function(e){a.notify(e)},a.promise.abort=function(){c.abort()},c.upload(o,u,a.resolve,a.reject,t,i),a.promise}}}]),angular.module("ngCordova.plugins.flashlight",[]).factory("$cordovaFlashlight",["$q","$window",function(e,n){return{available:function(){var r=e.defer();return n.plugins.flashlight.available(function(e){r.resolve(e)}),r.promise},switchOn:function(){var r=e.defer();return n.plugins.flashlight.switchOn(function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise},switchOff:function(){var r=e.defer();return n.plugins.flashlight.switchOff(function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise},toggle:function(){var r=e.defer();return n.plugins.flashlight.toggle(function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise}}}]),angular.module("ngCordova.plugins.flurryAds",[]).factory("$cordovaFlurryAds",["$q","$window",function(e,n){return{setOptions:function(r){var o=e.defer();return n.FlurryAds.setOptions(r,function(){o.resolve()},function(){o.reject()}),o.promise},createBanner:function(r){var o=e.defer();return n.FlurryAds.createBanner(r,function(){o.resolve()},function(){o.reject()}),o.promise},removeBanner:function(){var r=e.defer();return n.FlurryAds.removeBanner(function(){r.resolve()},function(){r.reject()}),r.promise},showBanner:function(r){var o=e.defer();return n.FlurryAds.showBanner(r,function(){o.resolve()},function(){o.reject()}),o.promise},showBannerAtXY:function(r,o){var t=e.defer();return n.FlurryAds.showBannerAtXY(r,o,function(){t.resolve()},function(){t.reject()}),t.promise},hideBanner:function(){var r=e.defer();return n.FlurryAds.hideBanner(function(){r.resolve()},function(){r.reject()}),r.promise},prepareInterstitial:function(r){var o=e.defer();return n.FlurryAds.prepareInterstitial(r,function(){o.resolve()},function(){o.reject()}),o.promise},showInterstitial:function(){var r=e.defer();return n.FlurryAds.showInterstitial(function(){r.resolve()},function(){r.reject()}),r.promise}}}]),angular.module("ngCordova.plugins.ga",[]).factory("$cordovaGA",["$q","$window",function(e,n){return{init:function(r,o){var t=e.defer();return o=o>=0?o:10,n.plugins.gaPlugin.init(function(e){t.resolve(e)},function(e){t.reject(e)},r,o),t.promise},trackEvent:function(r,o,t,i,a,c){var u=e.defer();return n.plugins.gaPlugin.trackEvent(function(e){u.resolve(e)},function(e){u.reject(e)},t,i,a,c),u.promise},trackPage:function(r,o,t){var i=e.defer();return n.plugins.gaPlugin.trackPage(function(e){i.resolve(e)},function(e){i.reject(e)},t),i.promise},setVariable:function(r,o,t,i){var a=e.defer();return n.plugins.gaPlugin.setVariable(function(e){a.resolve(e)},function(e){a.reject(e)},t,i),a.promise},exit:function(){var r=e.defer();return n.plugins.gaPlugin.exit(function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise}}}]),angular.module("ngCordova.plugins.geolocation",[]).factory("$cordovaGeolocation",["$q",function(e){return{getCurrentPosition:function(n){var r=e.defer();return navigator.geolocation.getCurrentPosition(function(e){r.resolve(e)},function(e){r.reject(e)},n),r.promise},watchPosition:function(n){var r=e.defer(),o=navigator.geolocation.watchPosition(function(e){r.notify(e)},function(e){r.reject(e)},n);return r.promise.cancel=function(){navigator.geolocation.clearWatch(o)},r.promise.clearWatch=function(e){navigator.geolocation.clearWatch(e||o)},r.promise.watchID=o,r.promise},clearWatch:function(e){return navigator.geolocation.clearWatch(e)}}}]),angular.module("ngCordova.plugins.globalization",[]).factory("$cordovaGlobalization",["$q",function(e){return{getPreferredLanguage:function(){var n=e.defer();return navigator.globalization.getPreferredLanguage(function(e){n.resolve(e)},function(e){n.reject(e)}),n.promise},getLocaleName:function(){var n=e.defer();return navigator.globalization.getLocaleName(function(e){n.resolve(e)},function(e){n.reject(e)}),n.promise},getFirstDayOfWeek:function(){var n=e.defer();return navigator.globalization.getFirstDayOfWeek(function(e){n.resolve(e)},function(e){n.reject(e)}),n.promise},dateToString:function(n,r){var o=e.defer();return navigator.globalization.dateToString(n,function(e){o.resolve(e)},function(e){o.reject(e)},r),o.promise},stringToDate:function(n,r){var o=e.defer();return navigator.globalization.stringToDate(n,function(e){o.resolve(e)},function(e){o.reject(e)},r),o.promise},getDatePattern:function(n){var r=e.defer();return navigator.globalization.getDatePattern(function(e){r.resolve(e)},function(e){r.reject(e)},n),r.promise},getDateNames:function(n){var r=e.defer();return navigator.globalization.getDateNames(function(e){r.resolve(e)},function(e){r.reject(e)},n),r.promise},isDayLightSavingsTime:function(n){var r=e.defer();return navigator.globalization.isDayLightSavingsTime(n,function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise},numberToString:function(n,r){var o=e.defer();return navigator.globalization.numberToString(n,function(e){o.resolve(e)},function(e){o.reject(e)},r),o.promise},stringToNumber:function(n,r){var o=e.defer();return navigator.globalization.stringToNumber(n,function(e){o.resolve(e)},function(e){o.reject(e)},r),o.promise},getNumberPattern:function(n){var r=e.defer();return navigator.globalization.getNumberPattern(function(e){r.resolve(e)},function(e){r.reject(e)},n),r.promise},getCurrencyPattern:function(n){var r=e.defer();return navigator.globalization.getCurrencyPattern(n,function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise}}}]),angular.module("ngCordova.plugins.googleAds",[]).factory("$cordovaGoogleAds",["$q","$window",function(e,n){return{setOptions:function(r){var o=e.defer();return n.AdMob.setOptions(r,function(){o.resolve()},function(){o.reject()}),o.promise},createBanner:function(r){var o=e.defer();return n.AdMob.createBanner(r,function(){o.resolve()},function(){o.reject()}),o.promise},removeBanner:function(){var r=e.defer();return n.AdMob.removeBanner(function(){r.resolve()},function(){r.reject()}),r.promise},showBanner:function(r){var o=e.defer();return n.AdMob.showBanner(r,function(){o.resolve()},function(){o.reject()}),o.promise},showBannerAtXY:function(r,o){var t=e.defer();return n.AdMob.showBannerAtXY(r,o,function(){t.resolve()},function(){t.reject()}),t.promise},hideBanner:function(){var r=e.defer();return n.AdMob.hideBanner(function(){r.resolve()},function(){r.reject()}),r.promise},prepareInterstitial:function(r){var o=e.defer();return n.AdMob.prepareInterstitial(r,function(){o.resolve()},function(){o.reject()}),o.promise},showInterstitial:function(){var r=e.defer();return n.AdMob.showInterstitial(function(){r.resolve()},function(){r.reject()}),r.promise}}}]),angular.module("ngCordova.plugins.googleAnalytics",[]).factory("$cordovaGoogleAnalytics",["$q","$window",function(e,n){return{startTrackerWithId:function(r){var o=e.defer();return n.analytics.startTrackerWithId(r,function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},setUserId:function(r){var o=e.defer();return n.analytics.setUserId(r,function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},debugMode:function(){var r=e.defer();return n.analytics.debugMode(function(e){r.resolve(e)},function(){r.reject()}),r.promise},trackView:function(r){var o=e.defer();return n.analytics.trackView(r,function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},addCustomDimension:function(r,o){var t=e.defer();return n.analytics.addCustomDimension(r,o,function(){t.resolve()},function(e){t.reject(e)}),t.promise},trackEvent:function(r,o,t,i){var a=e.defer();return n.analytics.trackEvent(r,o,t,i,function(e){a.resolve(e)},function(e){a.reject(e)}),a.promise},trackException:function(r,o){var t=e.defer();return n.analytics.trackException(r,o,function(e){t.resolve(e)},function(e){t.reject(e)}),t.promise},trackTiming:function(r,o,t,i){var a=e.defer();return n.analytics.trackTiming(r,o,t,i,function(e){a.resolve(e)},function(e){a.reject(e)}),a.promise},addTransaction:function(r,o,t,i,a,c){var u=e.defer();return n.analytics.addTransaction(r,o,t,i,a,c,function(e){u.resolve(e)},function(e){u.reject(e)}),u.promise},addTransactionItem:function(r,o,t,i,a,c,u){var s=e.defer();return n.analytics.addTransactionItem(r,o,t,i,a,c,u,function(e){s.resolve(e)},function(e){s.reject(e)}),s.promise}}}]),angular.module("ngCordova.plugins.googleMap",[]).factory("$cordovaGoogleMap",["$q","$window",function(e,n){var r=null;return{getMap:function(o){var t=e.defer();if(n.plugin.google.maps){var i=document.getElementById("map_canvas");r=n.plugin.google.maps.Map.getMap(o),r.setDiv(i),t.resolve(r)}else t.reject(null);return t.promise},isMapLoaded:function(){return!!r},addMarker:function(n){var o=e.defer();return r.addMarker(n,function(e){o.resolve(e)}),o.promise},getMapTypeIds:function(){return n.plugin.google.maps.mapTypeId},setVisible:function(n){var o=e.defer();return r.setVisible(n),o.promise},cleanup:function(){r=null}}}]),angular.module("ngCordova.plugins.googlePlayGame",[]).factory("$cordovaGooglePlayGame",["$q",function(e){return{auth:function(){var n=e.defer();return googleplaygame.auth(function(e){return n.resolve(e)},function(e){return n.reject(e)}),n.promise},signout:function(){var n=e.defer();return googleplaygame.signout(function(e){return n.resolve(e)},function(e){return n.reject(e)}),n.promise},isSignedIn:function(){var n=e.defer();return googleplaygame.isSignedIn(function(e){return n.resolve(e)},function(e){return n.reject(e)}),n.promise},showPlayer:function(){var n=e.defer();return googleplaygame.showPlayer(function(e){return n.resolve(e)},function(e){return n.reject(e)}),n.promise},submitScore:function(n){var r=e.defer();return googleplaygame.submitScore(n,function(e){return r.resolve(e)},function(e){return r.reject(e)}),r.promise},showAllLeaderboards:function(){var n=e.defer();return googleplaygame.showAllLeaderboards(function(e){return n.resolve(e)},function(e){return n.reject(e)}),n.promise},showLeaderboard:function(n){var r=e.defer();return googleplaygame.showLeaderboard(n,function(e){return r.resolve(e)},function(e){return r.reject(e)}),r.promise},unlockAchievement:function(n){var r=e.defer();return googleplaygame.unlockAchievement(n,function(e){return r.resolve(e)},function(e){return r.reject(e)}),r.promise},incrementAchievement:function(n){var r=e.defer();return googleplaygame.incrementAchievement(n,function(e){return r.resolve(e)},function(e){return r.reject(e)}),r.promise},showAchievements:function(){var n=e.defer();return googleplaygame.showAchievements(function(e){return n.resolve(e)},function(e){return n.reject(e)}),n.promise}}}]),angular.module("ngCordova.plugins.googlePlus",[]).factory("$cordovaGooglePlus",["$q","$window",function(e,n){return{login:function(r){var o=e.defer();return void 0===r&&(r={}),n.plugins.googleplus.login({iOSApiKey:r},function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},silentLogin:function(r){var o=e.defer();return void 0===r&&(r={}),n.plugins.googleplus.trySilentLogin({iOSApiKey:r},function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},logout:function(){var r=e.defer();n.plugins.googleplus.logout(function(e){r.resolve(e)})},disconnect:function(){var r=e.defer();n.plugins.googleplus.disconnect(function(e){r.resolve(e)})},isAvailable:function(){var r=e.defer();return n.plugins.googleplus.isAvailable(function(e){e?r.resolve(e):r.reject(e)}),r.promise}}}]),angular.module("ngCordova.plugins.healthKit",[]).factory("$cordovaHealthKit",["$q","$window",function(e,n){return{isAvailable:function(){var r=e.defer();return n.plugins.healthkit.available(function(e){r.resolve(e)},function(e){r.reject(e)}),r.promise},checkAuthStatus:function(r){var o=e.defer();return r=r||"HKQuantityTypeIdentifierHeight",n.plugins.healthkit.checkAuthStatus({type:r},function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},requestAuthorization:function(r,o){var t=e.defer();return r=r||["HKCharacteristicTypeIdentifierDateOfBirth","HKQuantityTypeIdentifierActiveEnergyBurned","HKQuantityTypeIdentifierHeight"],o=o||["HKQuantityTypeIdentifierActiveEnergyBurned","HKQuantityTypeIdentifierHeight","HKQuantityTypeIdentifierDistanceCycling"],n.plugins.healthkit.requestAuthorization({readTypes:r,writeTypes:o},function(e){t.resolve(e)},function(e){t.reject(e)}),t.promise},readDateOfBirth:function(){var r=e.defer();return n.plugins.healthkit.readDateOfBirth(function(e){r.resolve(e)},function(e){r.resolve(e)}),r.promise},readGender:function(){var r=e.defer();return n.plugins.healthkit.readGender(function(e){r.resolve(e)},function(e){r.resolve(e)}),r.promise},saveWeight:function(r,o,t){var i=e.defer();return n.plugins.healthkit.saveWeight({unit:o||"lb",amount:r,date:t||new Date},function(e){i.resolve(e)},function(e){i.resolve(e)}),i.promise},readWeight:function(r){var o=e.defer();return n.plugins.healthkit.readWeight({unit:r||"lb"},function(e){o.resolve(e)},function(e){o.resolve(e)}),o.promise},saveHeight:function(r,o,t){var i=e.defer();return n.plugins.healthkit.saveHeight({unit:o||"in",amount:r,date:t||new Date},function(e){i.resolve(e)},function(e){i.resolve(e)}),i.promise},readHeight:function(r){var o=e.defer();return n.plugins.healthkit.readHeight({unit:r||"in"},function(e){o.resolve(e)},function(e){o.resolve(e)}),o.promise},findWorkouts:function(){var r=e.defer();return n.plugins.healthkit.findWorkouts({},function(e){r.resolve(e)},function(e){r.resolve(e)}),r.promise},saveWorkout:function(r){var o=e.defer();return n.plugins.healthkit.saveWorkout(r,function(e){o.resolve(e)},function(e){o.resolve(e)}),o.promise},querySampleType:function(r){var o=e.defer();return n.plugins.healthkit.querySampleType(r,function(e){o.resolve(e)},function(e){o.resolve(e)}),o.promise}}}]),angular.module("ngCordova.plugins.httpd",[]).factory("$cordovaHttpd",["$q",function(e){return{startServer:function(n){var r=e.defer();return cordova.plugins.CorHttpd.startServer(n,function(){r.resolve()},function(){r.reject()}),r.promise},stopServer:function(){var n=e.defer();return cordova.plugins.CorHttpd.stopServer(function(){n.resolve()},function(){n.reject()}),n.promise},getURL:function(){var n=e.defer();return cordova.plugins.CorHttpd.getURL(function(e){n.resolve(e)},function(){n.reject()}),n.promise},getLocalPath:function(){var n=e.defer();return cordova.plugins.CorHttpd.getLocalPath(function(e){n.resolve(e)},function(){n.reject()}),n.promise}}}]),angular.module("ngCordova.plugins.iAd",[]).factory("$cordovaiAd",["$q","$window",function(e,n){return{setOptions:function(r){var o=e.defer();return n.iAd.setOptions(r,function(){o.resolve()},function(){o.reject()}),o.promise},createBanner:function(r){var o=e.defer();return n.iAd.createBanner(r,function(){o.resolve()},function(){o.reject()}),o.promise},removeBanner:function(){var r=e.defer();return n.iAd.removeBanner(function(){r.resolve()},function(){r.reject()}),r.promise},showBanner:function(r){var o=e.defer();return n.iAd.showBanner(r,function(){o.resolve()},function(){o.reject()}),o.promise},showBannerAtXY:function(r,o){var t=e.defer();return n.iAd.showBannerAtXY(r,o,function(){t.resolve()},function(){t.reject()}),t.promise},hideBanner:function(){var r=e.defer();return n.iAd.hideBanner(function(){r.resolve()},function(){r.reject()}),r.promise},prepareInterstitial:function(r){var o=e.defer();return n.iAd.prepareInterstitial(r,function(){o.resolve()},function(){o.reject()}),o.promise},showInterstitial:function(){var r=e.defer();return n.iAd.showInterstitial(function(){r.resolve()},function(){r.reject()}),r.promise}}}]),angular.module("ngCordova.plugins.imagePicker",[]).factory("$cordovaImagePicker",["$q","$window",function(e,n){return{getPictures:function(r){var o=e.defer();return n.imagePicker.getPictures(function(e){o.resolve(e)},function(e){o.reject(e)},r),o.promise}}}]),angular.module("ngCordova.plugins.inAppBrowser",[]).provider("$cordovaInAppBrowser",[function(){var e,n=this.defaultOptions={};this.setDefaultOptions=function(e){n=angular.extend(n,e)},this.$get=["$rootScope","$q","$window","$timeout",function(r,o,t,i){return{open:function(a,c,u){var s=o.defer();if(u&&!angular.isObject(u))return s.reject("options must be an object"),s.promise;var l=angular.extend({},n,u),f=[];angular.forEach(l,function(e,n){f.push(n+"="+e)});var d=f.join();return e=t.open(a,c,d),e.addEventListener("loadstart",function(e){i(function(){r.$broadcast("$cordovaInAppBrowser:loadstart",e)})},!1),e.addEventListener("loadstop",function(e){s.resolve(e),i(function(){r.$broadcast("$cordovaInAppBrowser:loadstop",e)})},!1),e.addEventListener("loaderror",function(e){s.reject(e),i(function(){r.$broadcast("$cordovaInAppBrowser:loaderror",e)})},!1),e.addEventListener("exit",function(e){i(function(){r.$broadcast("$cordovaInAppBrowser:exit",e)})},!1),s.promise},close:function(){e.close(),e=null},show:function(){e.show()},executeScript:function(n){var r=o.defer();return e.executeScript(n,function(e){r.resolve(e)}),r.promise},insertCSS:function(n){var r=o.defer();return e.insertCSS(n,function(e){r.resolve(e)}),r.promise}}}]}]),angular.module("ngCordova.plugins.insomnia",[]).factory("$cordovaInsomnia",["$window",function(e){return{keepAwake:function(){return e.plugins.insomnia.keepAwake()},allowSleepAgain:function(){return e.plugins.insomnia.allowSleepAgain()}}}]),angular.module("ngCordova.plugins.instagram",[]).factory("$cordovaInstagram",["$q",function(e){return{share:function(n){var r=e.defer();return window.Instagram?(Instagram.share(n.image,n.caption,function(e){e?r.reject(e):r.resolve(!0)}),r.promise):(console.error("Tried to call Instagram.share but the Instagram plugin isn't installed!"),r.resolve(null),r.promise)},isInstalled:function(){var n=e.defer();return window.Instagram?(Instagram.isInstalled(function(e,r){e?n.reject(e):n.resolve(r)}),n.promise):(console.error("Tried to call Instagram.isInstalled but the Instagram plugin isn't installed!"),n.resolve(null),n.promise)}}}]),angular.module("ngCordova.plugins.keyboard",[]).factory("$cordovaKeyboard",["$rootScope",function(e){var n=function(){e.$evalAsync(function(){e.$broadcast("$cordovaKeyboard:show")})},r=function(){e.$evalAsync(function(){e.$broadcast("$cordovaKeyboard:hide")})};return document.addEventListener("deviceready",function(){cordova.plugins.Keyboard&&(window.addEventListener("native.keyboardshow",n,!1),window.addEventListener("native.keyboardhide",r,!1))}),{hideAccessoryBar:function(e){return cordova.plugins.Keyboard.hideKeyboardAccessoryBar(e)},close:function(){return cordova.plugins.Keyboard.close()},show:function(){return cordova.plugins.Keyboard.show()},disableScroll:function(e){return cordova.plugins.Keyboard.disableScroll(e)},isVisible:function(){return cordova.plugins.Keyboard.isVisible},clearShowWatch:function(){document.removeEventListener("native.keyboardshow",n),e.$$listeners["$cordovaKeyboard:show"]=[]},clearHideWatch:function(){document.removeEventListener("native.keyboardhide",r),e.$$listeners["$cordovaKeyboard:hide"]=[]}}}]),angular.module("ngCordova.plugins.keychain",[]).factory("$cordovaKeychain",["$q",function(e){return{getForKey:function(n,r){var o=e.defer(),t=new Keychain;return t.getForKey(o.resolve,o.reject,n,r),o.promise},setForKey:function(n,r,o){var t=e.defer(),i=new Keychain;return i.setForKey(t.resolve,t.reject,n,r,o),t.promise},removeForKey:function(n,r){var o=e.defer(),t=new Keychain;return t.removeForKey(o.resolve,o.reject,n,r),o.promise}}}]),angular.module("ngCordova.plugins.launchNavigator",[]).factory("$cordovaLaunchNavigator",["$q",function(e){return{navigate:function(n,r,o){var t=e.defer();return launchnavigator.navigate(n,r,function(){t.resolve()},function(e){t.reject(e)},o),t.promise}}}]),angular.module("ngCordova.plugins.localNotification",[]).factory("$cordovaLocalNotification",["$q","$window","$rootScope","$timeout",function(e,n,r,o){return document.addEventListener("deviceready",function(){n.cordova&&n.cordova.plugins&&n.cordova.plugins.notification&&n.cordova.plugins.notification.local&&(n.cordova.plugins.notification.local.on("schedule",function(e,n){o(function(){r.$broadcast("$cordovaLocalNotification:schedule",e,n)})}),n.cordova.plugins.notification.local.on("trigger",function(e,n){o(function(){r.$broadcast("$cordovaLocalNotification:trigger",e,n)})}),n.cordova.plugins.notification.local.on("update",function(e,n){o(function(){r.$broadcast("$cordovaLocalNotification:update",e,n)})}),n.cordova.plugins.notification.local.on("clear",function(e,n){o(function(){r.$broadcast("$cordovaLocalNotification:clear",e,n)})}),n.cordova.plugins.notification.local.on("clearall",function(e){o(function(){r.$broadcast("$cordovaLocalNotification:clearall",e)})}),n.cordova.plugins.notification.local.on("cancel",function(e,n){o(function(){r.$broadcast("$cordovaLocalNotification:cancel",e,n)})}),n.cordova.plugins.notification.local.on("cancelall",function(e){o(function(){r.$broadcast("$cordovaLocalNotification:cancelall",e)})}),n.cordova.plugins.notification.local.on("click",function(e,n){o(function(){r.$broadcast("$cordovaLocalNotification:click",e,n)})}))},!1),{schedule:function(r,o){var t=e.defer();return o=o||null,n.cordova.plugins.notification.local.schedule(r,function(e){t.resolve(e)},o),t.promise},add:function(r,o){console.warn('Deprecated: use "schedule" instead.');var t=e.defer();return o=o||null,n.cordova.plugins.notification.local.schedule(r,function(e){t.resolve(e)},o),t.promise},update:function(r,o){var t=e.defer();return o=o||null,n.cordova.plugins.notification.local.update(r,function(e){t.resolve(e)},o),t.promise},clear:function(r,o){var t=e.defer();return o=o||null,n.cordova.plugins.notification.local.clear(r,function(e){t.resolve(e)},o),t.promise},clearAll:function(r){var o=e.defer();return r=r||null,n.cordova.plugins.notification.local.clearAll(function(e){o.resolve(e)},r),o.promise},cancel:function(r,o){var t=e.defer();return o=o||null,n.cordova.plugins.notification.local.cancel(r,function(e){t.resolve(e)},o),t.promise},cancelAll:function(r){var o=e.defer();return r=r||null,n.cordova.plugins.notification.local.cancelAll(function(e){o.resolve(e)},r),o.promise},isPresent:function(r,o){var t=e.defer();return o=o||null,n.cordova.plugins.notification.local.isPresent(r,function(e){t.resolve(e)},o),t.promise},isScheduled:function(r,o){var t=e.defer();return o=o||null,n.cordova.plugins.notification.local.isScheduled(r,function(e){t.resolve(e)},o),t.promise},isTriggered:function(r,o){var t=e.defer();return o=o||null,n.cordova.plugins.notification.local.isTriggered(r,function(e){t.resolve(e)},o),t.promise},hasPermission:function(r){var o=e.defer();return r=r||null,n.cordova.plugins.notification.local.hasPermission(function(e){e?o.resolve(e):o.reject(e)},r),o.promise},registerPermission:function(r){var o=e.defer();return r=r||null,n.cordova.plugins.notification.local.registerPermission(function(e){e?o.resolve(e):o.reject(e)},r),o.promise},promptForPermission:function(r){console.warn('Deprecated: use "registerPermission" instead.');var o=e.defer();return r=r||null,n.cordova.plugins.notification.local.registerPermission(function(e){
+e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();return r=r||null,n.cordova.plugins.notification.local.getAllIds(function(e){o.resolve(e)},r),o.promise},getIds:function(r){var o=e.defer();return r=r||null,n.cordova.plugins.notification.local.getIds(function(e){o.resolve(e)},r),o.promise},getScheduledIds:function(r){var o=e.defer();return r=r||null,n.cordova.plugins.notification.local.getScheduledIds(function(e){o.resolve(e)},r),o.promise},getTriggeredIds:function(r){var o=e.defer();return r=r||null,n.cordova.plugins.notification.local.getTriggeredIds(function(e){o.resolve(e)},r),o.promise},get:function(r,o){var t=e.defer();return o=o||null,n.cordova.plugins.notification.local.get(r,function(e){t.resolve(e)},o),t.promise},getAll:function(r){var o=e.defer();return r=r||null,n.cordova.plugins.notification.local.getAll(function(e){o.resolve(e)},r),o.promise},getScheduled:function(r,o){var t=e.defer();return o=o||null,n.cordova.plugins.notification.local.getScheduled(r,function(e){t.resolve(e)},o),t.promise},getAllScheduled:function(r){var o=e.defer();return r=r||null,n.cordova.plugins.notification.local.getAllScheduled(function(e){o.resolve(e)},r),o.promise},getTriggered:function(r,o){var t=e.defer();return o=o||null,n.cordova.plugins.notification.local.getTriggered(r,function(e){t.resolve(e)},o),t.promise},getAllTriggered:function(r){var o=e.defer();return r=r||null,n.cordova.plugins.notification.local.getAllTriggered(function(e){o.resolve(e)},r),o.promise},getDefaults:function(){return n.cordova.plugins.notification.local.getDefaults()},setDefaults:function(e){n.cordova.plugins.notification.local.setDefaults(e)}}}]),angular.module("ngCordova.plugins.mMediaAds",[]).factory("$cordovaMMediaAds",["$q","$window",function(e,n){return{setOptions:function(r){var o=e.defer();return n.mMedia.setOptions(r,function(){o.resolve()},function(){o.reject()}),o.promise},createBanner:function(r){var o=e.defer();return n.mMedia.createBanner(r,function(){o.resolve()},function(){o.reject()}),o.promise},removeBanner:function(){var r=e.defer();return n.mMedia.removeBanner(function(){r.resolve()},function(){r.reject()}),r.promise},showBanner:function(r){var o=e.defer();return n.mMedia.showBanner(r,function(){o.resolve()},function(){o.reject()}),o.promise},showBannerAtXY:function(r,o){var t=e.defer();return n.mMedia.showBannerAtXY(r,o,function(){t.resolve()},function(){t.reject()}),t.promise},hideBanner:function(){var r=e.defer();return n.mMedia.hideBanner(function(){r.resolve()},function(){r.reject()}),r.promise},prepareInterstitial:function(r){var o=e.defer();return n.mMedia.prepareInterstitial(r,function(){o.resolve()},function(){o.reject()}),o.promise},showInterstitial:function(){var r=e.defer();return n.mMedia.showInterstitial(function(){r.resolve()},function(){r.reject()}),r.promise}}}]),angular.module("ngCordova.plugins.media",[]).service("NewMedia",["$q","$interval",function(e,n){function r(e){angular.isDefined(s)||(s=n(function(){0>d&&(d=e.getDuration(),a&&d>0&&a.notify({duration:d})),e.getCurrentPosition(function(e){e>-1&&(f=e)},function(e){console.log("Error getting pos="+e)}),a&&a.notify({position:f})},1e3))}function o(){angular.isDefined(s)&&(n.cancel(s),s=void 0)}function t(){f=-1,d=-1}function i(e){this.media=new Media(e,function(e){o(),t(),a.resolve(e)},function(e){o(),t(),a.reject(e)},function(e){l=e,a.notify({status:l})})}var a,c,u,s,l=null,f=-1,d=-1;return i.prototype.play=function(n){return a=e.defer(),"object"!=typeof n&&(n={}),this.media.play(n),r(this.media),a.promise},i.prototype.pause=function(){o(),this.media.pause()},i.prototype.stop=function(){this.media.stop()},i.prototype.release=function(){this.media.release(),this.media=void 0},i.prototype.seekTo=function(e){this.media.seekTo(e)},i.prototype.setVolume=function(e){this.media.setVolume(e)},i.prototype.startRecord=function(){this.media.startRecord()},i.prototype.stopRecord=function(){this.media.stopRecord()},i.prototype.currentTime=function(){return c=e.defer(),this.media.getCurrentPosition(function(e){c.resolve(e)}),c.promise},i.prototype.getDuration=function(){return u=e.defer(),this.media.getDuration(function(e){u.resolve(e)}),u.promise},i}]).factory("$cordovaMedia",["NewMedia",function(e){return{newMedia:function(n){return new e(n)}}}]),angular.module("ngCordova.plugins.mobfoxAds",[]).factory("$cordovaMobFoxAds",["$q","$window",function(e,n){return{setOptions:function(r){var o=e.defer();return n.MobFox.setOptions(r,function(){o.resolve()},function(){o.reject()}),o.promise},createBanner:function(r){var o=e.defer();return n.MobFox.createBanner(r,function(){o.resolve()},function(){o.reject()}),o.promise},removeBanner:function(){var r=e.defer();return n.MobFox.removeBanner(function(){r.resolve()},function(){r.reject()}),r.promise},showBanner:function(r){var o=e.defer();return n.MobFox.showBanner(r,function(){o.resolve()},function(){o.reject()}),o.promise},showBannerAtXY:function(r,o){var t=e.defer();return n.MobFox.showBannerAtXY(r,o,function(){t.resolve()},function(){t.reject()}),t.promise},hideBanner:function(){var r=e.defer();return n.MobFox.hideBanner(function(){r.resolve()},function(){r.reject()}),r.promise},prepareInterstitial:function(r){var o=e.defer();return n.MobFox.prepareInterstitial(r,function(){o.resolve()},function(){o.reject()}),o.promise},showInterstitial:function(){var r=e.defer();return n.MobFox.showInterstitial(function(){r.resolve()},function(){r.reject()}),r.promise}}}]),angular.module("ngCordova.plugins",["ngCordova.plugins.actionSheet","ngCordova.plugins.adMob","ngCordova.plugins.appAvailability","ngCordova.plugins.appRate","ngCordova.plugins.appVersion","ngCordova.plugins.backgroundGeolocation","ngCordova.plugins.badge","ngCordova.plugins.barcodeScanner","ngCordova.plugins.batteryStatus","ngCordova.plugins.beacon","ngCordova.plugins.ble","ngCordova.plugins.bluetoothSerial","ngCordova.plugins.brightness","ngCordova.plugins.calendar","ngCordova.plugins.camera","ngCordova.plugins.capture","ngCordova.plugins.clipboard","ngCordova.plugins.contacts","ngCordova.plugins.datePicker","ngCordova.plugins.device","ngCordova.plugins.deviceMotion","ngCordova.plugins.deviceOrientation","ngCordova.plugins.dialogs","ngCordova.plugins.emailComposer","ngCordova.plugins.facebook","ngCordova.plugins.facebookAds","ngCordova.plugins.file","ngCordova.plugins.fileTransfer","ngCordova.plugins.fileOpener2","ngCordova.plugins.flashlight","ngCordova.plugins.flurryAds","ngCordova.plugins.ga","ngCordova.plugins.geolocation","ngCordova.plugins.globalization","ngCordova.plugins.googleAds","ngCordova.plugins.googleAnalytics","ngCordova.plugins.googleMap","ngCordova.plugins.googlePlayGame","ngCordova.plugins.googlePlus","ngCordova.plugins.healthKit","ngCordova.plugins.httpd","ngCordova.plugins.iAd","ngCordova.plugins.imagePicker","ngCordova.plugins.inAppBrowser","ngCordova.plugins.instagram","ngCordova.plugins.keyboard","ngCordova.plugins.keychain","ngCordova.plugins.launchNavigator","ngCordova.plugins.localNotification","ngCordova.plugins.media","ngCordova.plugins.mMediaAds","ngCordova.plugins.mobfoxAds","ngCordova.plugins.mopubAds","ngCordova.plugins.nativeAudio","ngCordova.plugins.network","ngCordova.plugins.pinDialog","ngCordova.plugins.preferences","ngCordova.plugins.printer","ngCordova.plugins.progressIndicator","ngCordova.plugins.push","ngCordova.plugins.push_v5","ngCordova.plugins.sms","ngCordova.plugins.socialSharing","ngCordova.plugins.spinnerDialog","ngCordova.plugins.splashscreen","ngCordova.plugins.sqlite","ngCordova.plugins.statusbar","ngCordova.plugins.toast","ngCordova.plugins.touchid","ngCordova.plugins.vibration","ngCordova.plugins.videoCapturePlus","ngCordova.plugins.zip","ngCordova.plugins.insomnia"]),angular.module("ngCordova.plugins.mopubAds",[]).factory("$cordovaMoPubAds",["$q","$window",function(e,n){return{setOptions:function(r){var o=e.defer();return n.MoPub.setOptions(r,function(){o.resolve()},function(){o.reject()}),o.promise},createBanner:function(r){var o=e.defer();return n.MoPub.createBanner(r,function(){o.resolve()},function(){o.reject()}),o.promise},removeBanner:function(){var r=e.defer();return n.MoPub.removeBanner(function(){r.resolve()},function(){r.reject()}),r.promise},showBanner:function(r){var o=e.defer();return n.MoPub.showBanner(r,function(){o.resolve()},function(){o.reject()}),o.promise},showBannerAtXY:function(r,o){var t=e.defer();return n.MoPub.showBannerAtXY(r,o,function(){t.resolve()},function(){t.reject()}),t.promise},hideBanner:function(){var r=e.defer();return n.MoPub.hideBanner(function(){r.resolve()},function(){r.reject()}),r.promise},prepareInterstitial:function(r){var o=e.defer();return n.MoPub.prepareInterstitial(r,function(){o.resolve()},function(){o.reject()}),o.promise},showInterstitial:function(){var r=e.defer();return n.MoPub.showInterstitial(function(){r.resolve()},function(){r.reject()}),r.promise}}}]),angular.module("ngCordova.plugins.nativeAudio",[]).factory("$cordovaNativeAudio",["$q","$window",function(e,n){return{preloadSimple:function(r,o){var t=e.defer();return n.plugins.NativeAudio.preloadSimple(r,o,function(e){t.resolve(e)},function(e){t.reject(e)}),t.promise},preloadComplex:function(r,o,t,i,a){var c=e.defer();return n.plugins.NativeAudio.preloadComplex(r,o,t,i,a,function(e){c.resolve(e)},function(e){c.reject(e)}),c.promise},play:function(r,o){var t=e.defer();return n.plugins.NativeAudio.play(r,function(e){t.resolve(e)},function(e){t.reject(e)},o),t.promise},stop:function(r){var o=e.defer();return n.plugins.NativeAudio.stop(r,function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},loop:function(r){var o=e.defer();return n.plugins.NativeAudio.loop(r,function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},unload:function(r){var o=e.defer();return n.plugins.NativeAudio.unload(r,function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},setVolumeForComplexAsset:function(r,o){var t=e.defer();return n.plugins.NativeAudio.setVolumeForComplexAsset(r,o,function(e){t.resolve(e)},function(e){t.reject(e)}),t.promise}}}]),angular.module("ngCordova.plugins.network",[]).factory("$cordovaNetwork",["$rootScope","$timeout",function(e,n){var r=function(){var r=navigator.connection.type;n(function(){e.$broadcast("$cordovaNetwork:offline",r)})},o=function(){var r=navigator.connection.type;n(function(){e.$broadcast("$cordovaNetwork:online",r)})};return document.addEventListener("deviceready",function(){navigator.connection&&(document.addEventListener("offline",r,!1),document.addEventListener("online",o,!1))}),{getNetwork:function(){return navigator.connection.type},isOnline:function(){var e=navigator.connection.type;return e!==Connection.UNKNOWN&&e!==Connection.NONE},isOffline:function(){var e=navigator.connection.type;return e===Connection.UNKNOWN||e===Connection.NONE},clearOfflineWatch:function(){document.removeEventListener("offline",r),e.$$listeners["$cordovaNetwork:offline"]=[]},clearOnlineWatch:function(){document.removeEventListener("online",o),e.$$listeners["$cordovaNetwork:online"]=[]}}}]).run(["$injector",function(e){e.get("$cordovaNetwork")}]),angular.module("ngCordova.plugins.pinDialog",[]).factory("$cordovaPinDialog",["$q","$window",function(e,n){return{prompt:function(r,o,t){var i=e.defer();return n.plugins.pinDialog.prompt(r,function(e){i.resolve(e)},o,t),i.promise}}}]),angular.module("ngCordova.plugins.preferences",[]).factory("$cordovaPreferences",["$window","$q",function(e,n){return{pluginNotEnabledMessage:"Plugin not enabled",decoratePromise:function(e){e.success=function(n){return e.then(n),e},e.error=function(n){return e.then(null,n),e}},store:function(r,o,t){function i(e){c.resolve(e)}function a(e){c.reject(new Error(e))}var c=n.defer(),u=c.promise;if(e.plugins){var s;s=3===arguments.length?e.plugins.appPreferences.store(t,r,o):e.plugins.appPreferences.store(r,o),s.then(i,a)}else c.reject(new Error(this.pluginNotEnabledMessage));return this.decoratePromise(u),u},fetch:function(r,o){function t(e){a.resolve(e)}function i(e){a.reject(new Error(e))}var a=n.defer(),c=a.promise;if(e.plugins){var u;u=2===arguments.length?e.plugins.appPreferences.fetch(o,r):e.plugins.appPreferences.fetch(r),u.then(t,i)}else a.reject(new Error(this.pluginNotEnabledMessage));return this.decoratePromise(c),c},remove:function(r,o){function t(e){a.resolve(e)}function i(e){a.reject(new Error(e))}var a=n.defer(),c=a.promise;if(e.plugins){var u;u=2===arguments.length?e.plugins.appPreferences.remove(o,r):e.plugins.appPreferences.remove(r),u.then(t,i)}else a.reject(new Error(this.pluginNotEnabledMessage));return this.decoratePromise(c),c},show:function(){function r(e){t.resolve(e)}function o(e){t.reject(new Error(e))}var t=n.defer(),i=t.promise;return e.plugins?e.plugins.appPreferences.show().then(r,o):t.reject(new Error(this.pluginNotEnabledMessage)),this.decoratePromise(i),i}}}]),angular.module("ngCordova.plugins.printer",[]).factory("$cordovaPrinter",["$q","$window",function(e,n){return{isAvailable:function(){var r=e.defer();return n.plugin.printer.isAvailable(function(e){r.resolve(e)}),r.promise},print:function(r,o){var t=e.defer();return n.plugin.printer.print(r,o,function(){t.resolve()}),t.promise}}}]),angular.module("ngCordova.plugins.progressIndicator",[]).factory("$cordovaProgress",[function(){return{show:function(e){var n=e||"Please wait...";return ProgressIndicator.show(n)},showSimple:function(e){var n=e||!1;return ProgressIndicator.showSimple(n)},showSimpleWithLabel:function(e,n){var r=e||!1,o=n||"Loading...";return ProgressIndicator.showSimpleWithLabel(r,o)},showSimpleWithLabelDetail:function(e,n,r){var o=e||!1,t=n||"Loading...",i=r||"Please wait";return ProgressIndicator.showSimpleWithLabelDetail(o,t,i)},showDeterminate:function(e,n){var r=e||!1,o=n||5e4;return ProgressIndicator.showDeterminate(r,o)},showDeterminateWithLabel:function(e,n,r){var o=e||!1,t=n||5e4,i=r||"Loading...";return ProgressIndicator.showDeterminateWithLabel(o,t,i)},showAnnular:function(e,n){var r=e||!1,o=n||5e4;return ProgressIndicator.showAnnular(r,o)},showAnnularWithLabel:function(e,n,r){var o=e||!1,t=n||5e4,i=r||"Loading...";return ProgressIndicator.showAnnularWithLabel(o,t,i)},showBar:function(e,n){var r=e||!1,o=n||5e4;return ProgressIndicator.showBar(r,o)},showBarWithLabel:function(e,n,r){var o=e||!1,t=n||5e4,i=r||"Loading...";return ProgressIndicator.showBarWithLabel(o,t,i)},showSuccess:function(e,n){var r=e||!1,o=n||"Success";return ProgressIndicator.showSuccess(r,o)},showText:function(e,n,r){var o=e||!1,t=n||"Warning",i=r||"center";return ProgressIndicator.showText(o,t,i)},hide:function(){return ProgressIndicator.hide()}}}]),angular.module("ngCordova.plugins.push",[]).factory("$cordovaPush",["$q","$window","$rootScope","$timeout",function(e,n,r,o){return{onNotification:function(e){o(function(){r.$broadcast("$cordovaPush:notificationReceived",e)})},register:function(r){var o,t=e.defer();return void 0!==r&&void 0===r.ecb&&(o=null===document.querySelector("[ng-app]")?"document.body":"document.querySelector('[ng-app]')",r.ecb="angular.element("+o+").injector().get('$cordovaPush').onNotification"),n.plugins.pushNotification.register(function(e){t.resolve(e)},function(e){t.reject(e)},r),t.promise},unregister:function(r){var o=e.defer();return n.plugins.pushNotification.unregister(function(e){o.resolve(e)},function(e){o.reject(e)},r),o.promise},setBadgeNumber:function(r){var o=e.defer();return n.plugins.pushNotification.setApplicationIconBadgeNumber(function(e){o.resolve(e)},function(e){o.reject(e)},r),o.promise}}}]),angular.module("ngCordova.plugins.push_v5",[]).factory("$cordovaPushV5",["$q","$rootScope","$timeout",function(e,n,r){var o;return{initialize:function(n){var r=e.defer();return o=PushNotification.init(n),r.resolve(o),r.promise},onNotification:function(){r(function(){o.on("notification",function(e){n.$emit("$cordovaPushV5:notificationReceived",e)})})},onError:function(){r(function(){o.on("error",function(e){n.$emit("$cordovaPushV5:errorOccurred",e)})})},register:function(){var n=e.defer();return void 0===o?n.reject(new Error("init must be called before any other operation")):o.on("registration",function(e){n.resolve(e.registrationId)}),n.promise},unregister:function(){var n=e.defer();return void 0===o?n.reject(new Error("init must be called before any other operation")):o.unregister(function(e){n.resolve(e)},function(e){n.reject(e)}),n.promise},getBadgeNumber:function(){var n=e.defer();return void 0===o?n.reject(new Error("init must be called before any other operation")):o.getApplicationIconBadgeNumber(function(e){n.resolve(e)},function(e){n.reject(e)}),n.promise},setBadgeNumber:function(n){var r=e.defer();return void 0===o?r.reject(new Error("init must be called before any other operation")):o.setApplicationIconBadgeNumber(function(e){r.resolve(e)},function(e){r.reject(e)},n),r.promise},finish:function(){var n=e.defer();return void 0===o?n.reject(new Error("init must be called before any other operation")):o.finish(function(e){n.resolve(e)},function(e){n.reject(e)}),n.promise}}}]),angular.module("ngCordova.plugins.screenshot",[]).factory("$cordovaScreenshot",["$q",function(e){return{captureToFile:function(n){var r=n||{},o=r.extension||"jpg",t=r.quality||"100",i=e.defer();return navigator.screenshot?(navigator.screenshot.save(function(e,n){e?i.reject(e):i.resolve(n.filePath)},o,t,r.filename),i.promise):(i.resolve(null),i.promise)},captureToUri:function(n){var r=n||{},o=r.extension||"jpg",t=r.quality||"100",i=e.defer();return navigator.screenshot?(navigator.screenshot.URI(function(e,n){e?i.reject(e):i.resolve(n.URI)},o,t,r.filename),i.promise):(i.resolve(null),i.promise)}}}]),angular.module("ngCordova.plugins.sms",[]).factory("$cordovaSms",["$q",function(e){return{send:function(n,r,o){var t=e.defer();return sms.send(n,r,o,function(e){t.resolve(e)},function(e){t.reject(e)}),t.promise}}}]),angular.module("ngCordova.plugins.socialSharing",[]).factory("$cordovaSocialSharing",["$q","$window",function(e,n){return{share:function(r,o,t,i){var a=e.defer();return o=o||null,t=t||null,i=i||null,n.plugins.socialsharing.share(r,o,t,i,function(){a.resolve(!0)},function(){a.reject(!1)}),a.promise},shareViaTwitter:function(r,o,t){var i=e.defer();return o=o||null,t=t||null,n.plugins.socialsharing.shareViaTwitter(r,o,t,function(){i.resolve(!0)},function(){i.reject(!1)}),i.promise},shareViaWhatsApp:function(r,o,t){var i=e.defer();return o=o||null,t=t||null,n.plugins.socialsharing.shareViaWhatsApp(r,o,t,function(){i.resolve(!0)},function(){i.reject(!1)}),i.promise},shareViaFacebook:function(r,o,t){var i=e.defer();return r=r||null,o=o||null,t=t||null,n.plugins.socialsharing.shareViaFacebook(r,o,t,function(){i.resolve(!0)},function(){i.reject(!1)}),i.promise},shareViaFacebookWithPasteMessageHint:function(r,o,t,i){var a=e.defer();return o=o||null,t=t||null,n.plugins.socialsharing.shareViaFacebookWithPasteMessageHint(r,o,t,i,function(){a.resolve(!0)},function(){a.reject(!1)}),a.promise},shareViaSMS:function(r,o){var t=e.defer();return n.plugins.socialsharing.shareViaSMS(r,o,function(){t.resolve(!0)},function(){t.reject(!1)}),t.promise},shareViaEmail:function(r,o,t,i,a,c){var u=e.defer();return t=t||null,i=i||null,a=a||null,c=c||null,n.plugins.socialsharing.shareViaEmail(r,o,t,i,a,c,function(){u.resolve(!0)},function(){u.reject(!1)}),u.promise},shareVia:function(r,o,t,i,a){var c=e.defer();return o=o||null,t=t||null,i=i||null,a=a||null,n.plugins.socialsharing.shareVia(r,o,t,i,a,function(){c.resolve(!0)},function(){c.reject(!1)}),c.promise},canShareViaEmail:function(){var r=e.defer();return n.plugins.socialsharing.canShareViaEmail(function(){r.resolve(!0)},function(){r.reject(!1)}),r.promise},canShareVia:function(r,o,t,i,a){var c=e.defer();return n.plugins.socialsharing.canShareVia(r,o,t,i,a,function(e){c.resolve(e)},function(e){c.reject(e)}),c.promise},available:function(){var n=e.defer();return window.plugins.socialsharing.available(function(e){e?n.resolve():n.reject()}),n.promise}}}]),angular.module("ngCordova.plugins.spinnerDialog",[]).factory("$cordovaSpinnerDialog",["$window",function(e){return{show:function(n,r,o){return o=o||!1,e.plugins.spinnerDialog.show(n,r,o)},hide:function(){return e.plugins.spinnerDialog.hide()}}}]),angular.module("ngCordova.plugins.splashscreen",[]).factory("$cordovaSplashscreen",[function(){return{hide:function(){return navigator.splashscreen.hide()},show:function(){return navigator.splashscreen.show()}}}]),angular.module("ngCordova.plugins.sqlite",[]).factory("$cordovaSQLite",["$q","$window",function(e,n){return{openDB:function(e,r){return angular.isObject(e)&&!angular.isString(e)?("undefined"!=typeof r&&(e.bgType=r),n.sqlitePlugin.openDatabase(e)):n.sqlitePlugin.openDatabase({name:e,bgType:r})},execute:function(n,r,o){var t=e.defer();return n.transaction(function(e){e.executeSql(r,o,function(e,n){t.resolve(n)},function(e,n){t.reject(n)})}),t.promise},insertCollection:function(n,r,o){var t=e.defer(),i=o.slice(0);return n.transaction(function(e){!function n(){var o=i.splice(0,1)[0];try{e.executeSql(r,o,function(e,r){0===i.length?t.resolve(r):n()},function(e,n){t.reject(n)})}catch(a){t.reject(a)}}()}),t.promise},nestedExecute:function(n,r,o,t,i){var a=e.defer();return n.transaction(function(e){e.executeSql(r,t,function(e,n){a.resolve(n),e.executeSql(o,i,function(e,n){a.resolve(n)})})},function(e,n){a.reject(n)}),a.promise},deleteDB:function(r){var o=e.defer();return n.sqlitePlugin.deleteDatabase(r,function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise}}}]),angular.module("ngCordova.plugins.statusbar",[]).factory("$cordovaStatusbar",[function(){return{overlaysWebView:function(e){return StatusBar.overlaysWebView(!!e)},STYLES:{DEFAULT:0,LIGHT_CONTENT:1,BLACK_TRANSLUCENT:2,BLACK_OPAQUE:3},style:function(e){switch(e){case 0:return StatusBar.styleDefault();case 1:return StatusBar.styleLightContent();case 2:return StatusBar.styleBlackTranslucent();case 3:return StatusBar.styleBlackOpaque();default:return StatusBar.styleDefault()}},styleColor:function(e){return StatusBar.backgroundColorByName(e)},styleHex:function(e){return StatusBar.backgroundColorByHexString(e)},hide:function(){return StatusBar.hide()},show:function(){return StatusBar.show()},isVisible:function(){return StatusBar.isVisible}}}]),angular.module("ngCordova.plugins.toast",[]).factory("$cordovaToast",["$q","$window",function(e,n){return{showShortTop:function(r){var o=e.defer();return n.plugins.toast.showShortTop(r,function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},showShortCenter:function(r){var o=e.defer();return n.plugins.toast.showShortCenter(r,function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},showShortBottom:function(r){var o=e.defer();return n.plugins.toast.showShortBottom(r,function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},showLongTop:function(r){var o=e.defer();return n.plugins.toast.showLongTop(r,function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},showLongCenter:function(r){var o=e.defer();return n.plugins.toast.showLongCenter(r,function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},showLongBottom:function(r){var o=e.defer();return n.plugins.toast.showLongBottom(r,function(e){o.resolve(e)},function(e){o.reject(e)}),o.promise},show:function(r,o,t){var i=e.defer();return n.plugins.toast.show(r,o,t,function(e){i.resolve(e)},function(e){i.reject(e)}),i.promise},hide:function(){var r=e.defer();try{n.plugins.toast.hide(),r.resolve()}catch(o){r.reject(o&&o.message)}return r.promise}}}]),angular.module("ngCordova.plugins.touchid",[]).factory("$cordovaTouchID",["$q",function(e){return{checkSupport:function(){var n=e.defer();return window.cordova?touchid.checkSupport(function(e){n.resolve(e)},function(e){n.reject(e)}):n.reject("Not supported without cordova.js"),n.promise},authenticate:function(n){var r=e.defer();return window.cordova?touchid.authenticate(function(e){r.resolve(e)},function(e){r.reject(e)},n):r.reject("Not supported without cordova.js"),r.promise}}}]),angular.module("ngCordova.plugins.upsPush",[]).factory("$cordovaUpsPush",["$q","$window","$rootScope","$timeout",function(e,n,r,o){return{register:function(t){var i=e.defer();return n.push.register(function(e){o(function(){r.$broadcast("$cordovaUpsPush:notificationReceived",e)})},function(){i.resolve()},function(e){i.reject(e)},t),i.promise},unregister:function(r){var o=e.defer();return n.push.unregister(function(){o.resolve()},function(e){o.reject(e)},r),o.promise},setBadgeNumber:function(r){var o=e.defer();return n.push.setApplicationIconBadgeNumber(function(){o.resolve()},r),o.promise}}}]),angular.module("ngCordova.plugins.vibration",[]).factory("$cordovaVibration",[function(){return{vibrate:function(e){return navigator.notification.vibrate(e)},vibrateWithPattern:function(e,n){return navigator.notification.vibrateWithPattern(e,n)},cancelVibration:function(){return navigator.notification.cancelVibration()}}}]),angular.module("ngCordova.plugins.videoCapturePlus",[]).provider("$cordovaVideoCapturePlus",[function(){var e={};this.setLimit=function(n){e.limit=n},this.setMaxDuration=function(n){e.duration=n},this.setHighQuality=function(n){e.highquality=n},this.useFrontCamera=function(n){e.frontcamera=n},this.setPortraitOverlay=function(n){e.portraitOverlay=n},this.setLandscapeOverlay=function(n){e.landscapeOverlay=n},this.setOverlayText=function(n){e.overlayText=n},this.$get=["$q","$window",function(n,r){return{captureVideo:function(o){var t=n.defer();return r.plugins.videocaptureplus?(r.plugins.videocaptureplus.captureVideo(t.resolve,t.reject,angular.extend({},e,o)),t.promise):(t.resolve(null),t.promise)}}}]}]),angular.module("ngCordova.plugins.zip",[]).factory("$cordovaZip",["$q","$window",function(e,n){return{unzip:function(r,o){var t=e.defer();return n.zip.unzip(r,o,function(e){0===e?t.resolve():t.reject()},function(e){t.notify(e)}),t.promise}}}])}();
  (function() {
     'use strict';
 
@@ -20396,130 +19816,6 @@ angular.module('chattapp')
                 return directive;
             });
 })();
-(function() {
-    'use strict';
-
-    angular.module('chattapp')
-            .controller('contactsController', contactsController);
-
-    function contactsController($scope, contactsFactory, $filter, contactsService, $ionicLoading, timeStorage, $localStorage, $state, socketService, $ionicModal, getUserProfileFactory) {
-        delete $localStorage.chatWithUserData;
-        var self = this;
-        var userData = timeStorage.get('userData');
-        var accessToken = userData.data.access_token;
-        self.displaycontacts = timeStorage.get('listUsers');
-        contactsService.listUsers();
-        $scope.$on('updatedlistUsers', function(event, response) {
-            self.displaycontacts = response.data;
-            $scope.$evalAsync();
-        });
-        self.chatWithUser = function(name, id, pic, lastSeen) {
-            self.startChatspinner = true;
-            var chatWithUser = {
-                "name": name,
-                "id": id,
-                "pic": pic,
-                "lastSeen": self.displayUserProfileLastSeenInTimeStamp
-            }
-            timeStorage.set('chatWithUserData', chatWithUser, 1);
-            socketService.create_room(id).then(function(data) {
-                $scope.modal.hide();
-                $state.go('app.chatpage', {roomId: data.data.room_id});
-            });
-        }
-        self.isSearchOpen = false;
-        self.searchOpen = function() {
-            if (self.isSearchOpen) {
-                self.isSearchOpen = false;
-            } else {
-                self.isSearchOpen = true;
-            }
-        }
-        self.openUserProfile = function(clickData, index) {
-            self.spinnerIndex = index;
-            var userData = timeStorage.get('userData');
-            var query = getUserProfileFactory.save({
-                accessToken: userData.data.access_token,
-                user_id: clickData.id,
-                currentTimestamp: _.now()
-            });
-            query.$promise.then(function(data) {
-                self.spinnerIndex = -1;
-                self.displayUserProfileName = data.data.name;
-                self.displayUserProfileId = data.data.user_id;
-                self.displayUserProfileLastSeenInTimeStamp = data.data.last_seen;
-                if (data.data.profile_image) {
-                    self.displayUserProfileImage = data.data.profile_image;
-                }
-                else {
-                    self.displayUserProfileImage ="https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg";
-                }
-                var lastOnline = (_.now() - data.data.last_seen)/1000;
-                if(lastOnline > 86400){
-                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("MMMM Do YYYY, h:mm a");
-                } else{
-                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("h:mm a");
-                }
-                self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
-                self.displayUserProfilePublicRooms = data.data.user_public_rooms;
-                self.displayUserProfileStatus = data.data.profile_status;
-                $scope.modal.show();
-            });
-        }
-        $ionicModal.fromTemplateUrl('contactUser.html', function($ionicModal) {
-            $scope.modal = $ionicModal;
-        }, {
-            scope: $scope,
-        });
-    }
-})();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('contactsFactory', contactsFactory);
-
-   function contactsFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/users/list_users', {},{});
-   };
-})();
- (function() {
-     'use strict';
-     angular.module('chattapp')
-         .factory('contactsService', contactsService);
-
-     function contactsService(timeStorage, $rootScope, contactsFactory, timeZoneService) {
-         var service = {};
-         service.listUsers = function() {
-            var userData =  timeStorage.get('userData');
-            var query = contactsFactory.save({
-                 accessToken: userData.data.access_token,
-                 page: 0,
-                 limit:100,
-                 currentTimestamp: _.now()
-             });
-             query.$promise.then(function(data) {
-                 var newData = [];
-                 for(var i = 0; i < data.data.length; i++){
-                    data.data[i].lastSeen = moment.unix(data.data[i].lastSeen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a"),
-                    newData.push(data.data[i]); 
-                 }
-                 timeStorage.set('listUsers', newData, 1);
-                 $rootScope.$broadcast('updatedlistUsers', { data: newData });
-             });
-         }
-         return service;
-     };
-
- })();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('getUserProfileFactory', getUserProfileFactory);
-
-   function getUserProfileFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/users/get_user_profile/:accessToken/:user_id/:currentTimestamp', {},{});
-   };
-})();
  (function() {
      'use strict';
      angular.module('chattapp')
@@ -20662,6 +19958,30 @@ var service = {};
         }
         return service;
     }
+ (function() {
+    'use strict';
+    angular.module('chattapp')
+            .factory('geoLocation', geoLocation);
+
+    function geoLocation($cordovaGeolocation,$interval,timeStorage) {
+        return {
+            update: function() {
+                $interval(function() {
+                    var posOptions = {timeout: 10000, enableHighAccuracy: false};
+                    $cordovaGeolocation
+                    .getCurrentPosition(posOptions)
+                    .then(function (position) {
+                    console.log(position);
+                    timeStorage.set('geoLocation',position,1);
+                    }, function(err) {
+                    //error process
+                    });
+                    }, 4000);
+            }
+        }
+    };
+
+})();
 var googleLoginService = angular.module('GoogleLoginService', ['ngStorage']);
 googleLoginService.factory('timeStorage', ['$localStorage', function($localStorage) {
     var timeStorage = {};
@@ -20890,16 +20210,19 @@ googleLoginService.factory('googleLogin', [
 (function() {
     'use strict';
     angular.module('chattapp')
-            .factory('myInterceptor', function($localStorage, $injector) {
+            .factory('myInterceptor', function($localStorage, $injector, timeStorage) {
                 var requestInterceptor = {
                     data: null,
                     request: function(config) {
+                        var location = timeStorage.get('geoLocation');
+                        var lat=location.coords.latitude;
+                        var lang=location.coords.longitude;
                         var currentUser = $localStorage.userData;
                         if (currentUser) {
                             var accessToken = currentUser.data.access_token;
                             var configURL = config.url;
                             if (configURL.substring(0, 10) == 'http://144') {
-                                config.url = config.url + '?access_token=' + accessToken + '&currentTimestamp=' + _.now() + '';
+                                config.url = config.url + '?access_token=' + accessToken + '&currentTimestamp=' + _.now() + '&geo_lat=' + lat + '&geo_long=' + lang + '';
                                 if (config.data.append_data)
                                 {
                                     _.each(config.data.append_data, function(value, key)
@@ -21667,6 +20990,130 @@ angular.module('chattapp')
     };
 
 })();
+(function() {
+    'use strict';
+
+    angular.module('chattapp')
+            .controller('contactsController', contactsController);
+
+    function contactsController($scope, contactsFactory, $filter, contactsService, $ionicLoading, timeStorage, $localStorage, $state, socketService, $ionicModal, getUserProfileFactory, $cordovaGeolocation) {
+        delete $localStorage.chatWithUserData;
+        var self = this;
+        var userData = timeStorage.get('userData');
+        var accessToken = userData.data.access_token;
+        self.displaycontacts = timeStorage.get('listUsers');
+        contactsService.listUsers();
+        $scope.$on('updatedlistUsers', function(event, response) {
+            self.displaycontacts = response.data;
+            $scope.$evalAsync();
+        });
+        self.chatWithUser = function(name, id, pic, lastSeen) {
+            self.startChatspinner = true;
+            var chatWithUser = {
+                "name": name,
+                "id": id,
+                "pic": pic,
+                "lastSeen": self.displayUserProfileLastSeenInTimeStamp
+            }
+            timeStorage.set('chatWithUserData', chatWithUser, 1);
+            socketService.create_room(id).then(function(data) {
+                $scope.modal.hide();
+                $state.go('app.chatpage', {roomId: data.data.room_id});
+            });
+        }
+        self.isSearchOpen = false;
+        self.searchOpen = function() {
+            if (self.isSearchOpen) {
+                self.isSearchOpen = false;
+            } else {
+                self.isSearchOpen = true;
+            }
+        }
+        self.openUserProfile = function(clickData, index) {
+            self.spinnerIndex = index;
+            var userData = timeStorage.get('userData');
+            var query = getUserProfileFactory.save({
+                accessToken: userData.data.access_token,
+                user_id: clickData.id,
+                currentTimestamp: _.now()
+            });
+            query.$promise.then(function(data) {
+                self.spinnerIndex = -1;
+                self.displayUserProfileName = data.data.name;
+                self.displayUserProfileId = data.data.user_id;
+                self.displayUserProfileLastSeenInTimeStamp = data.data.last_seen;
+                if (data.data.profile_image) {
+                    self.displayUserProfileImage = data.data.profile_image;
+                }
+                else {
+                    self.displayUserProfileImage ="https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg";
+                }
+                var lastOnline = (_.now() - data.data.last_seen)/1000;
+                if(lastOnline > 86400){
+                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("MMMM Do YYYY, h:mm a");
+                } else{
+                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("h:mm a");
+                }
+                self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
+                self.displayUserProfilePublicRooms = data.data.user_public_rooms;
+                self.displayUserProfileStatus = data.data.profile_status;
+                $scope.modal.show();
+            });
+        }
+        $ionicModal.fromTemplateUrl('contactUser.html', function($ionicModal) {
+            $scope.modal = $ionicModal;
+        }, {
+            scope: $scope,
+        });
+    }
+})();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('contactsFactory', contactsFactory);
+
+   function contactsFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/users/list_users', {},{});
+   };
+})();
+ (function() {
+     'use strict';
+     angular.module('chattapp')
+         .factory('contactsService', contactsService);
+
+     function contactsService(timeStorage, $rootScope, contactsFactory, timeZoneService) {
+         var service = {};
+         service.listUsers = function() {
+            var userData =  timeStorage.get('userData');
+            var query = contactsFactory.save({
+                 accessToken: userData.data.access_token,
+                 page: 0,
+                 limit:100,
+                 currentTimestamp: _.now()
+             });
+             query.$promise.then(function(data) {
+                 var newData = [];
+                 for(var i = 0; i < data.data.length; i++){
+                    data.data[i].lastSeen = moment.unix(data.data[i].lastSeen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a"),
+                    newData.push(data.data[i]); 
+                 }
+                 timeStorage.set('listUsers', newData, 1);
+                 $rootScope.$broadcast('updatedlistUsers', { data: newData });
+             });
+         }
+         return service;
+     };
+
+ })();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('getUserProfileFactory', getUserProfileFactory);
+
+   function getUserProfileFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/users/get_user_profile/:accessToken/:user_id/:currentTimestamp', {},{});
+   };
+})();
  (function() {
     'use strict';
 
@@ -21708,7 +21155,8 @@ angular.module('chattapp')
                     name: googleData.name,
                     currentTimestamp: _.now(),
                     password: '',
-                    profile_image: googleData.picture
+                    profile_image: googleData.picture,
+                    // location: position
                 });
                 query.$promise.then(function(data) {
                     $ionicLoading.hide();
@@ -21806,11 +21254,23 @@ angular.module('chattapp')
             self.popover = popover;
         });
         self.search = function(state) {
+            
             if (timeStorage.get('network')) {
                 window.plugins.toast.showShortTop('You need to online to access this');
             }
             else
             {
+                if(state == 'app.contacts')
+                {
+                cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
+                if(!enabled)
+                {
+                cordova.plugins.diagnostic.switchToLocationSettings();   
+                }
+                }, function(error) {
+                //error
+                });
+                }
                 $state.go(state);
             }
         };
@@ -21838,6 +21298,7 @@ angular.module('chattapp')
             ;
             $state.go('login');
         };
+
         var count = 0;
         $ionicPlatform.registerBackButtonAction(function() {
             var view = $ionicHistory.currentView();
@@ -21855,6 +21316,7 @@ angular.module('chattapp')
                 count = 0;
             }
         }, 100);
+    
     }
 })();
 (function() {

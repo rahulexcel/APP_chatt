@@ -3,18 +3,20 @@
 
     angular.module('chattapp')
 
-            .run(function($rootScope, $ionicPlatform, timeStorage, $state, Configurations, deviceService, pushNotification, lastUsesTimeService, $localStorage, sqliteService) {
+            .run(function($rootScope, $ionicPlatform, timeStorage, $interval, $state, Configurations, deviceService, pushNotification, lastUsesTimeService, $localStorage, sqliteService, geoLocation) {
                 $ionicPlatform.ready(function() {
                     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
                     // for form inputs)
                     if (window.cordova && window.cordova.plugins.Keyboard) {
                         cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
                         cordova.plugins.Keyboard.disableScroll(true);
+                        
                     }
                     if (window.StatusBar) {
                         // org.apache.cordova.statusbar required
                         StatusBar.styleDefault();
                     }
+                    Branch.setDebug(true);
                 });
                 $rootScope.$on('$stateChangeStart',
                         function(event, toState, toParams, fromState, fromParams, options) {
@@ -28,6 +30,7 @@
                 window.socket = io(Configurations.socketApi);
                 document.addEventListener("deviceready", function() {
 
+                    geoLocation.update();
                     timeStorage.set('deviceUUID', deviceService.getuuid(), 1);
                     timeStorage.set('devicePlatform', deviceService.platform(), 1);
                     pushNotification.push();
@@ -54,6 +57,7 @@
                     function onOffline() {
                         timeStorage.set('network', 'offline', 24);
                     }
+                    
                 });
             });
 })();
