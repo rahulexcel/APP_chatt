@@ -19,7 +19,7 @@
                     data.data[i].lastSeen = moment.unix(data.data[i].lastSeen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a"),
                     newData.push(data.data[i]); 
                  }
-                 timeStorage.set('listUsers', newData, 1);
+//                 timeStorage.set('listUsers', newData, 1);
                  $rootScope.$broadcast('updatedlistUsers', { data: newData });
              });
          }
