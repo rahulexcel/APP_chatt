@@ -16,7 +16,6 @@
                         // org.apache.cordova.statusbar required
                         StatusBar.styleDefault();
                     }
-                    Branch.setDebug(true);
                 });
                 $rootScope.$on('$stateChangeStart',
                         function(event, toState, toParams, fromState, fromParams, options) {
