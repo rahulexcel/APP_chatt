@@ -25,7 +25,8 @@
                     name: googleData.name,
                     currentTimestamp: _.now(),
                     password: '',
-                    profile_image: googleData.picture
+                    profile_image: googleData.picture,
+                    // location: position
                 });
                 query.$promise.then(function(data) {
                     $ionicLoading.hide();

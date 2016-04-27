@@ -1,16 +1,19 @@
 (function() {
     'use strict';
     angular.module('chattapp')
-            .factory('myInterceptor', function($localStorage, $injector) {
+            .factory('myInterceptor', function($localStorage, $injector, timeStorage) {
                 var requestInterceptor = {
                     data: null,
                     request: function(config) {
+                        var location = timeStorage.get('geoLocation');
+                        var lat=location.coords.latitude;
+                        var lang=location.coords.longitude;
                         var currentUser = $localStorage.userData;
                         if (currentUser) {
                             var accessToken = currentUser.data.access_token;
                             var configURL = config.url;
                             if (configURL.substring(0, 10) == 'http://144') {
-                                config.url = config.url + '?access_token=' + accessToken + '&currentTimestamp=' + _.now() + '';
+                                config.url = config.url + '?access_token=' + accessToken + '&currentTimestamp=' + _.now() + '&geo_lat=' + lat + '&geo_long=' + lang + '';
                                 if (config.data.append_data)
                                 {
                                     _.each(config.data.append_data, function(value, key)

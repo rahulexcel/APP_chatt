@@ -36,7 +36,9 @@ var paths = {
         './www/app/chatt.run.js',
         './www/app/chatt.config.js',
         './www/app/chatt.constant.js',
+        './bower_components/ngCordova/dist/ng-cordova.min.js',
         './www/app/**/*.*.js'
+        
     ],
     css: [
         './bower_components/ionic/css/ionic.css',
