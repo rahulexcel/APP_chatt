@@ -9,11 +9,19 @@
         var self = this;
         var userData = timeStorage.get('userData');
         var accessToken = userData.data.access_token;
-        self.displaycontacts = timeStorage.get('listUsers');
-        contactsService.listUsers();
+
+        if (timeStorage.get('network')) {
+            window.plugins.toast.showShortTop('Connect to come online');
+        }
+        else {
+            contactsService.listUsers();
+        }
         $scope.$on('updatedlistUsers', function(event, response) {
             self.displaycontacts = response.data;
             $scope.$evalAsync();
+        });
+        $scope.$on('now_device_is_online', function(event, response) {
+            contactsService.listUsers();
         });
         self.chatWithUser = function(name, id, pic, lastSeen) {
             self.startChatspinner = true;
@@ -54,12 +62,12 @@
                     self.displayUserProfileImage = data.data.profile_image;
                 }
                 else {
-                    self.displayUserProfileImage ="https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg";
+                    self.displayUserProfileImage = "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg";
                 }
-                var lastOnline = (_.now() - data.data.last_seen)/1000;
-                if(lastOnline > 86400){
+                var lastOnline = (_.now() - data.data.last_seen) / 1000;
+                if (lastOnline > 86400) {
                     self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("MMMM Do YYYY, h:mm a");
-                } else{
+                } else {
                     self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("h:mm a");
                 }
                 self.displayUserProfilePrivateRooms = data.data.user_private_rooms;

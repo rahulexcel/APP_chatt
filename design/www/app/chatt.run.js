@@ -52,6 +52,7 @@
                     }
                     document.addEventListener("offline", onOffline, false);
                     function onOffline() {
+                         $rootScope.$broadcast('now_device_is_ofline', {data: ''});
                         timeStorage.set('network', 'offline', 24);
                     }
                 });

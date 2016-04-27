@@ -17,11 +17,11 @@
              query.$promise.then(function(data) {
                 var newData = [];
                 if(data.data.rooms){
-                    timeStorage.set('displayPublicChats', data.data.rooms, 1);
+//                    timeStorage.set('displayPublicChats', data.data.rooms, 1);
                     $rootScope.$broadcast('updatedDisplayPublicChats', { data: data.data.rooms });
                 } else{
                     $rootScope.$broadcast('updatedDisplayPublicChats', { data: newData });
-                    timeStorage.set('displayPublicChats', newData, 1);
+//                    timeStorage.set('displayPublicChats', newData, 1);
                 }
              });
          }
