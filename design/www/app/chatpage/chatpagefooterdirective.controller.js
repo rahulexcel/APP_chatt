@@ -61,7 +61,6 @@
             }, 300);
         };
         function inputDown() {
-            console.log('Input Down');
             $interval.cancel(interval);
             $ionicScrollDelegate.resize();
         };

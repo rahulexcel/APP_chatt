@@ -36,7 +36,6 @@
                 currentTimestamp: _.now()
             });
             query.$promise.then(function(data) {
-                console.log(data);
                 if (data.data.admin_friends_not_room_members) {
                     for (var i = 0; i < data.data.admin_friends_not_room_members.length; i++) {
                         data.data.admin_friends_not_room_members[i].last_seen = moment.unix(data.data.admin_friends_not_room_members[i].last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
