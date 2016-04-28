@@ -53,6 +53,12 @@
             if (type == 'delete_private_room') {
                 $rootScope.$broadcast('private_room_deleted', {data: data});
             }
+            if (type == 'mute_room_notification') {
+                $rootScope.$broadcast('room_notification_muted', {data: data});
+            }
+            if (type == 'unmute_room_notification') {
+                $rootScope.$broadcast('room_notification_unmuted', {data: data});
+            }
             if (type == 'block_private_room') {
                 $rootScope.$broadcast('private_room_blocked', {data: data});
             }
@@ -127,6 +133,14 @@
                     var userData = timeStorage.get('userData');
                     socket.emit('APP_SOCKET_EMIT', 'leave_public_group', {accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now()});
                 },
+                service.muteGroup =function(roomId){
+                    var userData = timeStorage.get('userData');
+                    socket.emit('APP_SOCKET_EMIT', 'mute_room_notification', {accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now()});
+                },
+                service.unMuteGroup =function(roomId){
+                    var userData = timeStorage.get('userData');
+                    socket.emit('APP_SOCKET_EMIT', 'unmute_room_notification', {accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now()});
+                },
                 service.removeUserFromGroup = function(removingUserData, roomId) {
                     var userData = timeStorage.get('userData');
                     socket.emit('APP_SOCKET_EMIT', 'remove_public_room_member', {accessToken: userData.data.access_token, room_id: roomId, user_id: removingUserData.id, currentTimestamp: _.now()});
@@ -185,9 +199,7 @@
                     socket.emit('APP_SOCKET_EMIT', 'block_private_room', {accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now()});
                 },
                 service.unblockUser = function(unblockUserData) {
-                    console.log(unblockUserData.id);
                     var userData = timeStorage.get('userData');
-                    console.log(userData.data.access_token);
                     socket.emit('APP_SOCKET_EMIT', 'unblock_user', {accessToken: userData.data.access_token, user_id: unblockUserData.id, currentTimestamp: _.now()});
                 };
         return service;

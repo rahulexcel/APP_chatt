@@ -2,9 +2,9 @@
     'use strict';
 
     angular.module('chattapp')
-            .controller('chatPageHeaderDirectiveController', chatPageHeaderDirectiveController);
+        .controller('chatPageHeaderDirectiveController', chatPageHeaderDirectiveController);
 
-    function chatPageHeaderDirectiveController($state, timeStorage, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService, sqliteService, $ionicLoading) {
+    function chatPageHeaderDirectiveController($state, timeStorage, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService, sqliteService, $ionicLoading, $ionicScrollDelegate) {
 
         var self = this;
         self.leaveGroupSpinner = false;
@@ -27,6 +27,7 @@
         } else {
             infoApiUser(self.id);
         }
+
         function infoApi() {
             var userData = timeStorage.get('userData');
             var query = getRoomInfoFactory.save({
@@ -46,6 +47,11 @@
                 self.infoNameShort = data.data.room.short_room_name;
                 self.infoName = data.data.room.room_name;
                 self.infoId = data.data.room.id;
+                if (data.data.room_notification_status == 1) {
+                    self.muteNotifications = true;
+                } else {
+                    self.muteNotifications = false;
+                }
                 if (data.data.room.room_image == '') {
                     self.infoImage = 'lib/group.png';
                 } else {
@@ -82,8 +88,7 @@
                 self.displayUserProfileLastSeenInTimeStamp = data.data.last_seen;
                 if (data.data.profile_image) {
                     self.displayUserProfileImage = data.data.profile_image;
-                }
-                else {
+                } else {
                     self.displayUserProfileImage = "img/user.png";
                 }
                 var lastOnline = (_.now() - data.data.last_seen) / 1000;
@@ -98,6 +103,7 @@
             });
         }
         self.openInfo = function() {
+            $ionicScrollDelegate.scrollTop();
             self.deleteIconRotate = -1;
             if (!chatWithUserData.id) {
                 infoApi();
@@ -112,12 +118,11 @@
             $scope.infoModel.hide();
             hideSheet = $ionicActionSheet.show({
                 buttons: [{
-                        text: '<p class="text-center">Yes</p>'
-                    }],
+                    text: '<p class="text-center">Yes</p>'
+                }],
                 titleText: 'Confirm to leave ' + self.infoName + ' !',
                 cancelText: 'Cancel',
-                cancel: function() {
-                },
+                cancel: function() {},
                 buttonClicked: function(index) {
                     if (index == 0) {
                         self.leaveGroupSpinner = true;
@@ -135,12 +140,11 @@
             $scope.infoModel.hide();
             var deleteUserFromGroupSheet = $ionicActionSheet.show({
                 buttons: [{
-                        text: '<p class="text-center">Yes</p>'
-                    }],
+                    text: '<p class="text-center">Yes</p>'
+                }],
                 titleText: 'Confirm to delete ' + userData.name + ' From ' + self.infoName + ' !',
                 cancelText: 'Cancel',
-                cancel: function() {
-                },
+                cancel: function() {},
                 buttonClicked: function(index) {
                     if (index == 0) {
                         deleteUserFromGroupSheet();
@@ -179,8 +183,8 @@
             $scope.infoModel.hide();
             var deleteRoomSheet = $ionicActionSheet.show({
                 buttons: [{
-                        text: '<p class="text-center">Yes</p>'
-                    }],
+                    text: '<p class="text-center">Yes</p>'
+                }],
                 titleText: 'Confirm to delete ' + self.infoName + ' !',
                 cancelText: 'Cancel',
                 cancel: function() {
@@ -233,6 +237,7 @@
         $scope.result = function(image) {
             $scope.myCroppedImage = image;
         };
+
         function fixBinary(bin) {
             var length = bin.length;
             var buf = new ArrayBuffer(length);
@@ -247,13 +252,20 @@
                 $scope.startLoading = true;
                 var imageBase64 = $scope.myCroppedImage.replace(/^data:image\/(png|jpeg);base64,/, "");
                 var binary = fixBinary(atob(imageBase64));
-                var blob = new Blob([binary], {type: 'image/png', name: 'png'});
+                var blob = new Blob([binary], {
+                    type: 'image/png',
+                    name: 'png'
+                });
                 blob.name = 'png';
                 blob.$ngfName = 'png';
                 var query = profileImageFactory.upload({
                     file: blob,
                     currentTimestamp: Date.now(),
-                    append_data: {room_id: self.infoId, file_type: 'room_image', accessToken: timeStorage.get('userData').data.access_token, }
+                    append_data: {
+                        room_id: self.infoId,
+                        file_type: 'room_image',
+                        accessToken: timeStorage.get('userData').data.access_token,
+                    }
                 });
                 query.then(function(data) {
 
@@ -294,15 +306,14 @@
         self.openGroupPopover = function($event) {
             $scope.openGroupPopover.show($event);
         };
-        self.leavePrivateChat = function(){
+        self.leavePrivateChat = function() {
             var leaveChatSheet = $ionicActionSheet.show({
                 buttons: [{
-                        text: '<p class="text-center">Yes</p>'
-                    }],
+                    text: '<p class="text-center">Yes</p>'
+                }],
                 titleText: 'Confirm to Leave!',
                 cancelText: 'Cancel',
-                cancel: function() {
-                },
+                cancel: function() {},
                 buttonClicked: function(index) {
                     if (index == 0) {
                         socketService.leavePrivateChat($stateParams.roomId);
@@ -356,7 +367,19 @@
         self.inviteInGroup = function() {
             timeStorage.set('inviteInGroupId', $stateParams.roomId, 1);
         }
-        self.muteNotifications = true;
+        self.mute = function() {
+            if (self.muteNotifications == true) {
+                socketService.unMuteGroup($stateParams.roomId);
+            } else {
+                socketService.muteGroup($stateParams.roomId);
+            }
 
+            $scope.$on('room_notification_muted', function(event, data) {
+                tostService.notify(data.data.data.message, 'top');
+            });
+            $scope.$on('room_notification_unmuted', function(event, data) {
+                tostService.notify(data.data.data.message, 'top');
+            });
+        }
     }
 })();
