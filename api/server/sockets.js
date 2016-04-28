@@ -185,6 +185,27 @@ module.exports.listen = function(app){
         })
     }
     
+    function FN_mute_room_notification( accessToken, room_id, currentTimestamp, callback ){
+        Room.mute_room_notification( accessToken, room_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            var response = {
+                'status' : res_status,
+                'message' : res_message,
+                'data' : res_data
+            };
+            callback( response );
+        })
+    }
+    function FN_unmute_room_notification( accessToken, room_id, currentTimestamp, callback ){
+        Room.unmute_room_notification( accessToken, room_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            var response = {
+                'status' : res_status,
+                'message' : res_message,
+                'data' : res_data
+            };
+            callback( response );
+        })
+    }
+    
     
     //------------------------------------
     //------------------------------------
@@ -641,6 +662,38 @@ module.exports.listen = function(app){
                     }
                     if( response.status == 1 ){
                         socket.emit( 'RESPONSE_APP_SOCKET_EMIT', 'unblock_user', d );
+                    }
+                });
+            }
+            else if( type == 'mute_room_notification' ){
+                var accessToken = info.accessToken;
+                var room_id = info.room_id;
+                var currentTimestamp = info.currentTimestamp;
+                console.log( 'SOCKET CALL :: mute_room_notification :: for room - '+ room_id );
+                FN_mute_room_notification( accessToken, room_id, currentTimestamp, function( response ){
+                    if( response.status == 1 ){
+                        var d = {
+                            type : 'info',
+                            room_id : room_id,
+                            data : response
+                        }
+                        socket.emit( 'RESPONSE_APP_SOCKET_EMIT','mute_room_notification', d );
+                    }
+                });
+            }
+            else if( type == 'unmute_room_notification' ){
+                var accessToken = info.accessToken;
+                var room_id = info.room_id;
+                var currentTimestamp = info.currentTimestamp;
+                console.log( 'SOCKET CALL :: unmute_room_notification :: for room - '+ room_id );
+                FN_unmute_room_notification( accessToken, room_id, currentTimestamp, function( response ){
+                    if( response.status == 1 ){
+                        var d = {
+                            type : 'info',
+                            room_id : room_id,
+                            data : response
+                        }
+                        socket.emit( 'RESPONSE_APP_SOCKET_EMIT','unmute_room_notification', d );
                     }
                 });
             }

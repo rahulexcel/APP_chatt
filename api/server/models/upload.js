@@ -48,6 +48,8 @@ module.exports = function(File) {
                 file_folder = 'images_room';
             }else if( file_type == 'room_background_image' ){
                 file_folder = 'images_room_background';
+            }else if( file_type == 'room_file' ){
+                file_folder = 'files_room';
             }
             
             if( file_folder == false){
@@ -106,6 +108,17 @@ module.exports = function(File) {
                                             callback( null, 0, 'success upload and fail to update', obj );
                                         }
                                     })
+                                }
+                                else if( file_type == 'room_file' ){
+                                    
+                                    console.log( '------------------------');
+                                    console.log( '-------THIS IS ROOM FILE-----------------')
+                                    console.log( '------------------------');
+                                    console.log( obj );
+                                    console.log( '------------------------');
+                                    console.log( '------------------------');
+                                    
+                                    callback( null, 1, 'success upload', obj );
                                 }
                                 else{
                                     callback( null, 0, 'success upload but no use', {} );
