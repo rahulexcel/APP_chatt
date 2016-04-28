@@ -41,6 +41,25 @@ module.exports = function (Room) {
             }
         })
     }
+    Room.FN_block_user = function( info, callback ){
+        var User = Room.app.models.User;
+        var user_id = info.user_id;
+        var block_user_id = info.block_user_id;
+        
+        User.update({
+            id: new ObjectID( user_id )
+        }, {
+            '$addToSet': { 'blocked_users': new ObjectID( block_user_id ) }
+        },{
+            allowExtendedOperators: true 
+        }, function (err, result) {
+            if (err) {
+                callback( false );
+            } else {
+                callback( true );
+            }
+        });
+    }
     Room.FN_add_friend = function( info, callback ){
         var User = Room.app.models.User;
         
@@ -1972,8 +1991,18 @@ module.exports = function (Room) {
                                                                     })  
                                                                 }
                                                                 
+                                                                var another_user_id = room_user_1_id;
+                                                                if( another_user_id.toString() == access_token_userid.toString() ){
+                                                                    another_user_id = room_user_2_id;
+                                                                }
+                                                                
                                                                 var data = {
                                                                     room_id : room_id,
+                                                                    user_id : access_token_userid,
+                                                                    another_user_id : another_user_id,
+                                                                    another_user_token : TOKENS,
+                                                                    another_user_name : push_data_name,
+                                                                    another_user_profile_image : push_data_profile_image
                                                                 }
                                                                 callback(null, 1, 'Room deleted', data );
                                                             })
@@ -2008,6 +2037,59 @@ module.exports = function (Room) {
                 ],
                 http: {
                     verb: 'post', path: '/delete_private_room',
+                }
+            }
+    );
+    //********************************* END user delete private room **********************************
+    
+    
+    //********************************* START user delete private room **********************************
+    Room.block_private_room = function ( accessToken, room_id, currentTimestamp, callback) {
+        var Pushmessage = Room.app.models.Pushmessage;
+        Room.delete_private_room( accessToken, room_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            if( res_status == 0 ){
+                callback(null, 0, 'try again', {});
+            }else{
+                var block_user_data = {
+                    user_id : res_data.user_id,
+                    block_user_id : res_data.another_user_id
+                }
+                Room.FN_block_user( block_user_data, function( ret ){
+                    if( ret == false ){
+                        callback(null, 0, 'try again', {});
+                    }else{
+                        if( typeof res_data.another_user_token != 'udefined' && res_data.another_user_token.length > 0 ){
+                            TOKENS = res_data.another_user_token;
+                            push_data_name = res_data.another_user_name;
+                            push_data_profile_image = res_data.another_user_profile_image;
+                            var push_msg_info = {
+                                name : push_data_name,
+                                profile_image : push_data_profile_image
+                            }
+                            Pushmessage.create_push_message( 'user_blocked', TOKENS , push_msg_info, function( ignore_param, p_status, p_message, p_data){
+                            })
+                        }
+                        callback(null, 1, 'Successfully blocked', {} );
+                    }
+                })
+            }
+        })
+    };
+    Room.remoteMethod(
+            'block_private_room', {
+                description: "user block a user so that he can't create private room",
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'room_id', type: 'string'},
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/block_private_room',
                 }
             }
     );
