@@ -4,7 +4,7 @@
     angular.module('chattapp')
             .controller('menuController', menuController);
 
-    function menuController($scope, $ionicPopover, socketService, $ionicPlatform, $ionicHistory, tostService, $localStorage, Onsuccess, $state, timeStorage, $rootScope) {
+    function menuController($scope, $ionicPopover, socketService, $ionicPlatform, $cordovaGeolocation, $ionicHistory, tostService, $localStorage, Onsuccess, $state, timeStorage, $rootScope) {
 
         var self = this;
         self.chattab = true;
@@ -78,6 +78,7 @@
                 count = 0;
             }
         }, 100);
+       
     
     }
 })();

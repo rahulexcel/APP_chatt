@@ -53,6 +53,12 @@
             if (type == 'delete_private_room') {
                 $rootScope.$broadcast('private_room_deleted', {data: data});
             }
+            if (type == 'mute_room_notification') {
+                $rootScope.$broadcast('room_notification_muted', {data: data});
+            }
+            if (type == 'unmute_room_notification') {
+                $rootScope.$broadcast('room_notification_unmuted', {data: data});
+            }
 
         });
         socket.on('response_update_message_status', function(data) {
@@ -120,6 +126,14 @@
                 service.leaveGroup = function(roomId) {
                     var userData = timeStorage.get('userData');
                     socket.emit('APP_SOCKET_EMIT', 'leave_public_group', {accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now()});
+                },
+                service.muteGroup =function(roomId){
+                    var userData = timeStorage.get('userData');
+                    socket.emit('APP_SOCKET_EMIT', 'mute_room_notification', {accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now()});
+                },
+                service.unMuteGroup =function(roomId){
+                    var userData = timeStorage.get('userData');
+                    socket.emit('APP_SOCKET_EMIT', 'unmute_room_notification', {accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now()});
                 },
                 service.removeUserFromGroup = function(removingUserData, roomId) {
                     var userData = timeStorage.get('userData');
