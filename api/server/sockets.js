@@ -163,6 +163,49 @@ module.exports.listen = function(app){
             callback( response );
         })
     }
+    function FN_block_private_room( accessToken, room_id, currentTimestamp, callback ){
+        Room.block_private_room( accessToken, room_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            var response = {
+                'status' : res_status,
+                'message' : res_message,
+                'data' : res_data
+            };
+            callback( response );
+        })
+    }
+    
+    function FN_unblock_user( accessToken, user_id, currentTimestamp, callback ){
+        User.unblock_user( accessToken, user_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            var response = {
+                'status' : res_status,
+                'message' : res_message,
+                'data' : res_data
+            };
+            callback( response );
+        })
+    }
+    
+    function FN_mute_room_notification( accessToken, room_id, currentTimestamp, callback ){
+        Room.mute_room_notification( accessToken, room_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            var response = {
+                'status' : res_status,
+                'message' : res_message,
+                'data' : res_data
+            };
+            callback( response );
+        })
+    }
+    function FN_unmute_room_notification( accessToken, room_id, currentTimestamp, callback ){
+        Room.unmute_room_notification( accessToken, room_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            var response = {
+                'status' : res_status,
+                'message' : res_message,
+                'data' : res_data
+            };
+            callback( response );
+        })
+    }
+    
     
     //------------------------------------
     //------------------------------------
@@ -582,6 +625,75 @@ module.exports.listen = function(app){
                                 socket.leave( room_id );
                             }
                         }
+                    }
+                });
+            }
+            else if( type == 'block_private_room' ){
+                var accessToken = info.accessToken;
+                var room_id = info.room_id;
+                var currentTimestamp = info.currentTimestamp;
+                
+                console.log( 'SOCKET CALL :: block_user :: for room_id - '+ room_id );
+                
+                FN_block_private_room( accessToken, room_id, currentTimestamp, function( response ){
+                    var d = {
+                        type : 'alert',
+                        data : response
+                    }
+                    if( response.status == 1 ){
+                        socket.emit( 'RESPONSE_APP_SOCKET_EMIT', 'block_private_room', d );
+                        if( typeof io.sockets.adapter.rooms[room_id] != 'undefined' ){
+                            if( typeof io.sockets.adapter.rooms[room_id].sockets != 'undefined'){
+                                socket.leave( room_id );
+                            }
+                        }
+                    }
+                });
+            }
+            else if( type == 'unblock_user' ){
+                var accessToken = info.accessToken;
+                var user_id = info.user_id;
+                var currentTimestamp = info.currentTimestamp;
+                console.log( 'SOCKET CALL :: unblock_user :: user to unblock - '+ user_id );
+                FN_unblock_user( accessToken, user_id, currentTimestamp, function( response ){
+                    var d = {
+                        type : 'alert',
+                        data : response
+                    }
+                    if( response.status == 1 ){
+                        socket.emit( 'RESPONSE_APP_SOCKET_EMIT', 'unblock_user', d );
+                    }
+                });
+            }
+            else if( type == 'mute_room_notification' ){
+                var accessToken = info.accessToken;
+                var room_id = info.room_id;
+                var currentTimestamp = info.currentTimestamp;
+                console.log( 'SOCKET CALL :: mute_room_notification :: for room - '+ room_id );
+                FN_mute_room_notification( accessToken, room_id, currentTimestamp, function( response ){
+                    if( response.status == 1 ){
+                        var d = {
+                            type : 'info',
+                            room_id : room_id,
+                            data : response
+                        }
+                        socket.emit( 'RESPONSE_APP_SOCKET_EMIT','mute_room_notification', d );
+                    }
+                });
+            }
+            else if( type == 'unmute_room_notification' ){
+                var accessToken = info.accessToken;
+                var room_id = info.room_id;
+                var currentTimestamp = info.currentTimestamp;
+                console.log( 'SOCKET CALL :: unmute_room_notification :: for room - '+ room_id );
+                FN_unmute_room_notification( accessToken, room_id, currentTimestamp, function( response ){
+                    if( response.status == 1 ){
+                        var d = {
+                            type : 'info',
+                            room_id : room_id,
+                            data : response
+                        }
+                        socket.emit( 'RESPONSE_APP_SOCKET_EMIT','unmute_room_notification', d );
                     }
                 });
             }

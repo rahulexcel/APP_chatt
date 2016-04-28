@@ -59,6 +59,12 @@
             if (type == 'unmute_room_notification') {
                 $rootScope.$broadcast('room_notification_unmuted', {data: data});
             }
+            if (type == 'block_private_room') {
+                $rootScope.$broadcast('private_room_blocked', {data: data});
+            }
+            if (type == 'unblock_user') {
+                $rootScope.$broadcast('user_unblocked', {data: data});
+            }
 
         });
         socket.on('response_update_message_status', function(data) {
@@ -187,6 +193,14 @@
                 service.leavePrivateChat = function(roomId) {
                     var userData = timeStorage.get('userData');
                     socket.emit('APP_SOCKET_EMIT', 'delete_private_room', {accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now()});
+                },
+                service.blockPrivateUser = function(roomId) {
+                    var userData = timeStorage.get('userData');
+                    socket.emit('APP_SOCKET_EMIT', 'block_private_room', {accessToken: userData.data.access_token, room_id: roomId, currentTimestamp: _.now()});
+                },
+                service.unblockUser = function(unblockUserData) {
+                    var userData = timeStorage.get('userData');
+                    socket.emit('APP_SOCKET_EMIT', 'unblock_user', {accessToken: userData.data.access_token, user_id: unblockUserData.id, currentTimestamp: _.now()});
                 };
         return service;
     }

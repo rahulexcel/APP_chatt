@@ -98082,6 +98082,14 @@ a.active {
   color: #ff3232!important;
 }
 
+.unblock-icon {
+  position: absolute;
+  right: 46px;
+  top: 16px;
+  font-size: 30px!important;
+  color: green!important;
+}
+
 .addingroup-icon {
   position: absolute;
   right: 8px;
