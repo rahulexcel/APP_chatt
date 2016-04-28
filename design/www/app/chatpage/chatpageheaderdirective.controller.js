@@ -314,10 +314,26 @@
             sqliteService.leavePrivateChat($stateParams.roomId);
             $state.go('app.chats');
         });
-        self.blockUser = function(){
-            sqliteService.leaveChat($stateParams.roomId);
+        self.blockPrivateUser = function(){
+            var blockPrivateUserSheet = $ionicActionSheet.show({
+                buttons: [{
+                        text: '<p class="text-center">Yes</p>'
+                    }],
+                titleText: 'Confirm to Block!',
+                cancelText: 'Cancel',
+                cancel: function() {
+                },
+                buttonClicked: function(index) {
+                    if (index == 0) {
+                        socketService.blockPrivateUser($stateParams.roomId);
+                    }
+                }
+            });
+        };
+        $scope.$on('private_room_blocked', function(event, data) {
+            sqliteService.leavePrivateChat($stateParams.roomId);
             $state.go('app.chats');
-        }
+        });
         self.addInGroup = function(){
             $state.go('app.addInGroup');
             $scope.popover.hide();
