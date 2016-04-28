@@ -2,20 +2,24 @@
     'use strict';
     angular.module('chattapp')
             .controller('profileController', profileController);
-    function profileController(cameraService, profileImageFactory, $state, $ionicPopover, sqliteService, $ionicLoading, profileFactory, $timeout, $ionicModal, timeStorage, $scope, $filter, $ionicPopup) {
+    function profileController(cameraService, profileImageFactory, $state, $ionicPopover, sqliteService, $ionicLoading, profileFactory, $timeout, $ionicModal, timeStorage, $scope, $filter, $ionicPopup, timeZoneService, socketService, tostService) {
         var self = this;
         self.displayProfile = timeStorage.get('profile_data');
         document.addEventListener("deviceready", function() {
             $scope.version = AppVersion.version;
         });
-        if (timeStorage.get('userData').data.access_token) {
-
+        profileApi();
+        function profileApi() {
             var query = profileFactory.save({
                 accessToken: timeStorage.get('userData').data.access_token,
                 currentTimestamp: Date.now()
             });
             query.$promise.then(function(data) {
                 self.displayprofile = data.data;
+                for (var i = 0; i < data.data.blocked_users.length; i++) {
+                    data.data.blocked_users[i].last_seen = moment.unix(data.data.blocked_users[i].last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
+                }
+                self.blockedUser = data.data.blocked_users;
                 if (!data.data.profile_image) {
                     self.displayprofile.profile_image = "img/user.png";
                 }
@@ -133,7 +137,6 @@
                     append_data: appenddata
                 });
                 query.then(function(data) {
-                   
                     if (data.data.status == 1) {
                         if (data.data.data.container == "images_room_background") {
                            
@@ -143,7 +146,6 @@
                             window.plugins.toast.showShortTop('Background Set');
                         }
                         else {
-                            
                             self.displayprofile.profile_image = data.data.data.url;
                             $scope.startLoading = false;
                             var pr_image = timeStorage.get('userData');
@@ -159,7 +161,6 @@
             } else {
                 window.plugins.toast.showShortTop('Please set your pic');
             }
-//            }
         };
         $scope.imgCancel = function() {
             $scope.modal.hide();
@@ -190,6 +191,16 @@
             animation: 'slide-in-up'
         }).then(function(modal) {
             $scope.backGroundModal = modal;
+        });
+        self.unblockUser = function(unblockUseData, index){
+            console.log(index);
+            self.clickOnUser = index;
+            socketService.unblockUser(unblockUseData);
+        };
+        $scope.$on('user_unblocked', function(event, data) {
+            profileApi();
+            self.clickOnUser = -1;
+            tostService.notify(data.data.data.message, 'top');
         });
     }
 

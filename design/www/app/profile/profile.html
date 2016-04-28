@@ -42,11 +42,23 @@
             <div class="list">
                 <div class="item item-icon-right" >
                     <span>My Private Rooms</span><span class="pull-right">{{profile.displayprofile.user_private_rooms}}</span>
-                    <!--<i class="icon ion-chevron-right"></i>-->
                 </div>
                 <div class="item item-icon-right">
                     <span>My Public Rooms</span><span class="pull-right">{{profile.displayprofile.user_public_rooms}}</span>
-                    <!--<i class="icon ion-chevron-right"></i>-->
+                </div>
+                <div class="item item-icon-right" ng-if="profile.displayprofile.user_blocked_users > 0">
+                    <span>My Blocked Users</span><span class="pull-right">{{profile.displayprofile.user_blocked_users}}</span>
+                </div>
+            </div>
+            <div class="list" id="chats">
+                <div class="user-container" ng-repeat="blockUser in profile.blockedUser">
+                    <a class="item item-avatar hover infoModel-button">
+                        <img class="avatar" ng-src="{{blockUser.profile_image}}">
+                        <i class="fa fa-circle user-status {{blockUser.status == 'online' && 'online' || '' }}{{blockUser.status == 'away' && 'away' || '' }}{{blockUser.status == 'offline' && 'offline' || '' }}"></i>
+                        <h3>{{blockUser.name}} <span class="fa fa-spin fa-spinner" ng-show="profile.clickOnUser == $index"></span></h3>
+                        <h3 class="lastSeen">{{blockUser.last_seen}}</h3>
+                        <p class="pull-right unblock-icon" ng-click="profile.unblockUser(blockUser, $index)"><i class="ion-android-unlock"></i></p>
+                    </a>
                 </div>
             </div>
 
