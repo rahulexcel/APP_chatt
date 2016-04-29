@@ -3,6 +3,17 @@ var lodash = require('lodash');
 var moment = require('moment');
 var generatePassword = require('password-generator');
 var ObjectID = require('mongodb').ObjectID;
+var CONFIG = require('../config');
+
+var geocoderProvider = 'google';
+var httpAdapter = 'https';
+
+var extra = {
+    apiKey : CONFIG.GOOGLE_API_KEY,
+    formatter: null
+};
+var geocoder = require('node-geocoder')(geocoderProvider, httpAdapter, extra);
+
 module.exports = function (User) {
     //--start--USER GENERIC function------
     User.FN_unblock_user = function( info, callback ){
@@ -467,17 +478,33 @@ module.exports = function (User) {
                             if (err) {
                                 callback(null, 0, 'UnAuthorized 1', err);
                             } else {
+                                var geo_long_logged_user = geo_lat_logged_user = '';
+                                if( typeof user.geo_location != 'undefined' && user.geo_location.length == 2 ){
+                                    geo_long_logged_user = user.geo_location[0];
+                                    geo_lat_logged_user = user.geo_location[1];
+                                }
+                                
+                                var users_withn_distance = 1000 * 0.621371;// miles to km //1 km
                                 var where = {
                                     id: {neq: access_token_userid},
                                     verification_status: 1*1,
                                     friends : { 'nin' : [access_token_userid] },
                                     blocked_users : { 'nin' : [access_token_userid] },
                                 };
+                                if( typeof user.geo_location != 'undefined' && user.geo_location.length == 2 ){
+                                    var user_long = user.geo_location[0];
+                                    var user_lat = user.geo_location[1];
+                                    where.geo_location = { geoWithin: { $centerSphere: [ [ user_long, user_lat ], users_withn_distance / 3963.2 ] } } 
+                                    
+                                    
+                                    //where.geo_location = { nearSphere: { $geometry: [ [ user_long, user_lat ], users_withn_distance / 3963.2 ] } } 
+                                }
+                                
                                 User.find({
                                     where: where,
                                     limit: limit,
                                     skip: num * limit,
-                                    order: 'last_seen DESC'
+                                    //order: 'last_seen DESC'
                                 }, function (err, result) {
                                     if (err) {
                                         callback(null, 0, 'Try Again', err);
@@ -490,6 +517,32 @@ module.exports = function (User) {
                                                 var userId = value.id;
                                                 var pic = value.profile_image;
                                                 var lastSeen = value.last_seen;
+                                                var geo_city = geo_address = geo_state = geo_country = '';
+                                                if( typeof value.geo_city != 'undefined' ){
+                                                    geo_city = value.geo_city;
+                                                }
+                                                if( typeof value.geo_address != 'undefined' ){
+                                                    geo_address = value.geo_address;
+                                                }
+                                                if( typeof value.geo_state != 'undefined' ){
+                                                    geo_state = value.geo_state;
+                                                }
+                                                if( typeof value.geo_country != 'undefined' ){
+                                                    geo_country = value.geo_country;
+                                                }
+                                                var geo_long_user = geo_lat_user = '';
+                                                if( typeof value.geo_location != 'undefined' && value.geo_location.length == 2 ){
+                                                    geo_long_user = value.geo_location[0];
+                                                    geo_lat_user = value.geo_location[1];
+                                                }
+                                                
+                                                var distance_from_logged_user = '';
+                                                
+                                                if( geo_long_logged_user != '' && geo_lat_logged_user != '' &&  geo_long_user != '' && geo_lat_user != '' ){
+                                                    distance_from_logged_user = UTIL.get_distance( geo_lat_logged_user, geo_long_logged_user, geo_lat_user, geo_long_user );
+                                                }
+                                                
+                                                
                                                 
                                                 var aa = {
                                                     status : value.status,
@@ -499,7 +552,19 @@ module.exports = function (User) {
                                                 User.FN_get_user_status( aa, function(s){
                                                     status = s;
                                                 });
-                                                userInfo.push({name: userName, id: userId, pic: pic, lastSeen: lastSeen, status : status });
+                                                userInfo.push({
+                                                    name: userName, 
+                                                    id: userId, 
+                                                    pic: pic, 
+                                                    lastSeen: lastSeen, 
+                                                    status : status, 
+                                                    geo_city : geo_city, 
+                                                    geo_address : geo_address,
+                                                    geo_country : geo_country,
+                                                    geo_state : geo_state,
+                                                    distance_from_logged_user : distance_from_logged_user + ' Km'
+                                                    //distance_from_logged_user : distance_from_logged_user + 'Km Away from you'
+                                                });
                                             });
                                             callback(null, 1, 'Users List', userInfo);
                                         }
@@ -1014,14 +1079,66 @@ module.exports = function (User) {
                             callback(null, 0, 'UnAuthorized', {});
                         } else {
                             var server_time = UTIL.currentTimestamp();
+                            var UPDATE_GEO_NAME = true;
+                            var geo_location_details_update_time = '';
+                            if( typeof user.geo_location_details_update_time != 'undefined' ){
+                                geo_location_details_update_time = user.geo_location_details_update_time;
+                                
+                                time_diff = server_time - geo_location_details_update_time;
+                                time_minutes = time_diff * 1  / 60 ;
+                                if( time_minutes < 5 ){
+                                    UPDATE_GEO_NAME = false;
+                                }
+                            }
                             user.updateAttributes({
-                                'geo_lat' : geo_lat,
-                                'geo_long' : geo_long
+                                'geo_location' :  [ geo_long * 1, geo_lat * 1 ]
                             },function (err, user) {
                                 if (err) {
                                     callback(null, 0, 'Error', {});
                                 } else {
-                                    callback(null, 1, 'Geo locations updated successfully', {});
+                                    if( UPDATE_GEO_NAME == true ){
+                                        geocoder.reverse({lat:geo_lat, lon:geo_long}).then(function(res) {
+                                            var geo_city = geo_address = geo_state = geo_country = '';
+                                            if( typeof res[0] != 'undefined' ){
+                                                geo_res_data = res[0];
+                                                if( typeof geo_res_data.city != 'undefined' ){
+                                                    geo_city = geo_res_data.city;
+                                                }
+                                                if( typeof geo_res_data.formattedAddress != 'undefined' ){
+                                                    geo_address = geo_res_data.formattedAddress;
+                                                }
+                                                if( typeof geo_res_data.country != 'undefined' ){
+                                                    geo_country = geo_res_data.country;
+                                                }
+                                                if( typeof geo_res_data.administrativeLevels.level1long != 'undefined' ){
+                                                    geo_state = geo_res_data.administrativeLevels.level1long;
+                                                }
+                                                if( geo_state == '' ){
+                                                    if( typeof geo_res_data.administrativeLevels.level2long != 'undefined' ){
+                                                        geo_state = geo_res_data.administrativeLevels.level2long;
+                                                    }
+                                                }
+                                            }
+                                            user.updateAttributes({
+                                                'geo_location_details_update_time' : server_time,
+                                                'geo_city' : geo_city,
+                                                'geo_state' : geo_state,
+                                                'geo_country' : geo_country,
+                                                'geo_address' :geo_address,
+                                                'geo_location_details' :  res
+                                            },function (err, user) {
+                                                if (err) {
+                                                    callback(null, 1, 'Geo locations updated successfully', {});
+                                                } else {
+                                                    callback(null, 1, 'Geo locations updated successfully', {});
+                                                }
+                                            })
+                                        }).catch(function(err) {
+                                            callback(null, 1, 'Geo locations updated successfully', {});
+                                        });
+                                    }else{
+                                        callback(null, 1, 'Geo locations updated successfully', {});
+                                    }
                                 }
                             });
                         }

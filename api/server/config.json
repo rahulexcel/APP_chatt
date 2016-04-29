@@ -26,5 +26,5 @@
     },
     "legacyExplorer": false,
     "sender": "noreply@excellencetechnologies.in",
-    "CONFIG_gcm_sender_id" : "AIzaSyD5qiC4qxrQENB3-0FX-4Y_mKGFPMF6Umo"
+    "GOOGLE_API_KEY" : "AIzaSyD5qiC4qxrQENB3-0FX-4Y_mKGFPMF6Umo"
 }
