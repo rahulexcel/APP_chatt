@@ -12,7 +12,6 @@
             var userData = timeStorage.get('userData');
              chatsService.listMyRooms().then(function(data){
                 self.displayChats = data;
-                console.log(data);
              });
              var displayChats = timeStorage.get('displayPrivateChats');
              for(var i=0; i < displayChats.length; i++){
