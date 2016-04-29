@@ -584,12 +584,12 @@ module.exports = function (Room) {
                         "include": [{
                             relation: 'room_owner', 
                             scope: {
-                                fields: ['name','profile_image','last_seen','status'],
+                                fields: ['name','profile_image','last_seen','status','geo_city','geo_state','geo_country','geo_address'],
                             }
                         },{
                             relation: 'room_users', 
                             scope: {
-                                fields: ['name','profile_image','last_seen','status'],
+                                fields: ['name','profile_image','last_seen','status','geo_city','geo_state','geo_country','geo_address'],
                             }
                         }]
                     },function (err, result) {
@@ -627,7 +627,11 @@ module.exports = function (Room) {
                                                     'icon' : k1_user.profile_image,
                                                     'main_text' : k1_user.name,
                                                     'sub_text' : k1_user.last_seen,
-                                                    'user_status' : user_status
+                                                    'user_status' : user_status,
+                                                    'geo_city' : k1_user.geo_city,
+                                                    'geo_state' : k1_user.geo_state,
+                                                    'geo_country' : k1_user.geo_country,
+                                                    'geo_address' : k1_user.geo_address
                                                 }
                                             }
                                         }
