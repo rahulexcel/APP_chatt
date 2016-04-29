@@ -3,7 +3,7 @@
    angular.module('chattapp')
            .factory('geoLocation', geoLocation);
 
-   function geoLocation($cordovaGeolocation,$interval,timeStorage) {
+   function geoLocation($cordovaGeolocation,$interval,timeStorage, $localStorage) {
        return {
            update: function() {
                $interval(function() {
@@ -11,12 +11,15 @@
                    $cordovaGeolocation
                    .getCurrentPosition(posOptions)
                    .then(function (position) {
-                   console.log(position);
-                   // timeStorage.set('geoLocation',position,1);
+                    var lat=position.coords.latitude;
+                    var lang=position.coords.longitude;
+                    $localStorage.lat=lat;
+                    $localStorage.lng=lang;
                    }, function(err) {
+                    console.log(err);
                    //error process
                    });
-                   }, 4000);
+                   }, 1000);
            }
        }
    };
