@@ -2,7 +2,7 @@ var gcm = require('node-gcm');
 var UTIL = require('../modules/generic');
 var ObjectID = require('mongodb').ObjectID;
 var CONFIG = require('../config.json');
-var PUSH_sender = new gcm.Sender( CONFIG.CONFIG_gcm_sender_id );
+var PUSH_sender = new gcm.Sender( CONFIG.GOOGLE_API_KEY );
 
 
 module.exports = function (Pushmessage) {
