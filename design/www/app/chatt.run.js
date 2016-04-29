@@ -28,7 +28,7 @@
                        });
                window.socket = io(Configurations.socketApi);
                document.addEventListener("deviceready", function() {
-                   //geoLocation.update();
+                   geoLocation.update();
                    timeStorage.set('deviceUUID', deviceService.getuuid(), 1);
                    timeStorage.set('devicePlatform', deviceService.platform(), 1);
                    pushNotification.push();

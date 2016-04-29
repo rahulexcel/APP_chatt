@@ -98065,6 +98065,13 @@ a.active {
   font-style: italic!important;
 }
 
+.distance {
+  position: absolute;
+  left: 15px!important;
+  top: 60px!important;
+  font-size: 12px!important;
+}
+
 .chat-page-list {
   padding-top: 10px;
 }
