@@ -1,18 +1,18 @@
 <!-- <ion-footer-bar class='bar bar-stable' keyboard-attach>
-	<input type='text' id="chatinput" class='form-control text-box' ng-model="chatPageFooter.message" on-return="chatPageFooter.sendMessage();" on-focus="chatPageFooter.inputUp()" on-blur="chatPageFooter.inputDown()" is-focused="{{isFocused}}" ng-change="chatPageFooter.writingMessage()" />
-	<button class='button button-positive send-msg' ng-click='chatPageFooter.sendMessage()'>
-		<i class='icon ion-paper-airplane'></i>
-	</button>
+        <input type='text' id="chatinput" class='form-control text-box' ng-model="chatPageFooter.message" on-return="chatPageFooter.sendMessage();" on-focus="chatPageFooter.inputUp()" on-blur="chatPageFooter.inputDown()" is-focused="{{isFocused}}" ng-change="chatPageFooter.writingMessage()" />
+        <button class='button button-positive send-msg' ng-click='chatPageFooter.sendMessage()'>
+                <i class='icon ion-paper-airplane'></i>
+        </button>
 </ion-fotter-bar> -->
 
 <ion-footer-bar class='bar bar-stable' keyboard-attach>
-	<div emoji-form emoji-message="emojiMessage" style="min-width: 80%;">
-    <textarea input-feild id="messageInput" ng-model="emojiMessage.messagetext" on-focus="chatPageFooter.inputUp()" on-blur="chatPageFooter.inputDown()" is-focused="{{isFocused}}" ng-change="chatPageFooter.writingMessage()"></textarea>
-    <button id="emojibtn">
-        <i class="icon icon-emoji"></i>
-    </button>
-    <button class='button button-positive send-msg' ng-click='chatPageFooter.sendMessage()'>
-		<i class='icon ion-paper-airplane'></i>
-	</button>
-</div>
+    <div emoji-form emoji-message="emojiMessage" style="min-width: 80%;">
+        <textarea is-focused id="messageInput" ng-model="emojiMessage.messagetext" on-focus="chatPageFooter.inputUp()" on-blur="chatPageFooter.inputDown()" trigger="{{isFocused}}" ng-change="chatPageFooter.writingMessage()"></textarea>
+        <button id="emojibtn">
+            <i class="icon icon-emoji"></i>
+        </button>
+        <button class='button button-positive send-msg' ng-click='chatPageFooter.sendMessage()'>
+            <i class='icon ion-paper-airplane'></i>
+        </button>
+    </div>
 </ion-fotter-bar>
