@@ -74,17 +74,6 @@
                             </a>
                         </div>
                     </div>
-                    <h5 class="pad-left-5" ng-if="chatPageHeader.admin_friends_not_room_members.length > 0">Add People</h5>
-                    <div class="list" id="chats" ng-if="chatPageHeader.is_room_owner == 1">
-                        <div class="user-container" ng-repeat="infoUser1 in chatPageHeader.admin_friends_not_room_members | orderBy:'-last_seen'">
-                            <a class="item item-avatar hover infoModel-button">
-                                <img class="avatar" ng-src="{{infoUser1.profile_image}}" ng-click="chatPageHeader.infoUserClick(infoUser1)">
-                                <i class="fa fa-circle user-status {{infoUser1.status == 'online' && 'online' || '' }}{{infoUser1.status == 'away' && 'away' || '' }}{{infoUser1.status == 'offline' && 'offline' || '' }}"></i>
-                                <h3 ng-click="chatPageHeader.infoUserClick(infoUser1)">{{infoUser1.name}}</h3>
-                                <h3 class="lastSeen" ng-click="chatPageHeader.infoUserClick(infoUser1)">{{infoUser1.last_seen}}</h3>
-                            </a>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

@@ -23,6 +23,7 @@
                        room_users.status = roomData[i].show_details_for_list.user_status;
                        room_users.geo_city=roomData[i].show_details_for_list.geo_city;
                        room_users.geo_state=roomData[i].show_details_for_list.geo_state;
+                       room_users.distance=roomData[i].show_details_for_list.distance_from_logged_user;
                        newRoomData.user_data = room_users;
                        newRoomData.room_id = roomData[i].id;
                        newRoomData.room_type = roomData[i].room_type;

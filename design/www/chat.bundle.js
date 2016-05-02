@@ -6889,7 +6889,7 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
 })(window, window.angular);
 
 /*!
- * jQuery JavaScript Library v2.2.2
+ * jQuery JavaScript Library v2.2.3
  * http://jquery.com/
  *
  * Includes Sizzle.js
@@ -6899,7 +6899,7 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2016-03-17T17:51Z
+ * Date: 2016-04-05T19:26Z
  */
 
 (function( global, factory ) {
@@ -6955,7 +6955,7 @@ var support = {};
 
 
 var
-	version = "2.2.2",
+	version = "2.2.3",
 
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {
@@ -16365,7 +16365,7 @@ jQuery.fn.load = function( url, params, callback ) {
 		// If it fails, this function gets "jqXHR", "status", "error"
 		} ).always( callback && function( jqXHR, status ) {
 			self.each( function() {
-				callback.apply( self, response || [ jqXHR.responseText, status, jqXHR ] );
+				callback.apply( this, response || [ jqXHR.responseText, status, jqXHR ] );
 			} );
 		} );
 	}
@@ -20653,7 +20653,6 @@ emojiApp.config(["$sceProvider", function(a) {
 
                 c.execCommand("enableObjectResizing", !1, !1)
             }), this.$editor.on("blur", function() {
-                console.log('blurrr is called');
                 c.execCommand("enableObjectResizing", !0, !0)
             });
             var g = this.$editor.text(),
@@ -24955,12 +24954,7 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
                 else {
                     self.displayUserProfileImage = "img/user.png";
                 }
-                var lastOnline = (_.now() - data.data.last_seen) / 1000;
-                if (lastOnline > 86400) {
-                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("MMMM Do YYYY, h:mm a");
-                } else {
-                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("h:mm a");
-                }
+                self.displayUserProfileLastSeen=moment.unix(data.data.last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
                 self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
                 self.displayUserProfilePublicRooms = data.data.user_public_rooms;
                 self.displayUserProfileStatus = data.data.profile_status;
@@ -25385,6 +25379,7 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
                        room_users.status = roomData[i].show_details_for_list.user_status;
                        room_users.geo_city=roomData[i].show_details_for_list.geo_city;
                        room_users.geo_state=roomData[i].show_details_for_list.geo_state;
+                       room_users.distance=roomData[i].show_details_for_list.distance_from_logged_user;
                        newRoomData.user_data = room_users;
                        newRoomData.room_id = roomData[i].id;
                        newRoomData.room_type = roomData[i].room_type;
@@ -26727,7 +26722,7 @@ angular.module('chattapp').directive('isFocused', function($timeout) {
     angular.module('chattapp')
             .controller('contactsController', contactsController);
 
-    function contactsController($scope, contactsFactory, $filter, contactsService, $ionicLoading, timeStorage, $localStorage, $state, socketService, $ionicModal, getUserProfileFactory, $cordovaGeolocation) {
+    function contactsController($scope, contactsFactory, $filter, contactsService, $ionicLoading, timeStorage, $localStorage, $state, socketService, $ionicModal, getUserProfileFactory, $cordovaGeolocation, timeZoneService) {
         delete $localStorage.chatWithUserData;
         var self = this;
         var userData = timeStorage.get('userData');
@@ -26737,10 +26732,12 @@ angular.module('chattapp').directive('isFocused', function($timeout) {
              window.plugins.toast.showShortTop('Connect to come online');
         }
         else {
+            self.lodingSpinner=true;
             contactsService.listUsers();
         }
         $scope.$on('updatedlistUsers', function(event, response) {
             self.displaycontacts = response.data;
+            self.lodingSpinner=false;
             $scope.$evalAsync();
         });
         $scope.$on('now_device_is_online', function(event, response) {
@@ -26787,12 +26784,7 @@ angular.module('chattapp').directive('isFocused', function($timeout) {
                 else {
                     self.displayUserProfileImage = "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg";
                 }
-                var lastOnline = (_.now() - data.data.last_seen) / 1000;
-                if (lastOnline > 86400) {
-                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("MMMM Do YYYY, h:mm a");
-                } else {
-                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("h:mm a");
-                }
+                self.displayUserProfileLastSeen=moment.unix(data.data.last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
                 self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
                 self.displayUserProfilePublicRooms = data.data.user_public_rooms;
                 self.displayUserProfileStatus = data.data.profile_status;
@@ -26861,8 +26853,10 @@ angular.module('chattapp').directive('isFocused', function($timeout) {
 
     function inviteInGroupController(timeStorage, inviteInGroupService, socketService, $scope) {
         var self = this;
+        self.loadingSpinner=true;
         inviteInGroupService.userlist().then(function(data){
             self.displayinviteInGroup = data;
+            self.loadingSpinner=false;
         });
         self.inviteUser = function(ClickUserData, index){
             self.clickRoomSpinner = index;
@@ -27003,11 +26997,13 @@ angular.module('chattapp').directive('isFocused', function($timeout) {
         });
         profileApi();
         function profileApi() {
+            self.lodingSpinner=true;
             var query = profileFactory.save({
                 accessToken: timeStorage.get('userData').data.access_token,
                 currentTimestamp: Date.now()
             });
             query.$promise.then(function(data) {
+                self.lodingSpinner=false;
                 self.displayprofile = data.data;
                 for (var i = 0; i < data.data.blocked_users.length; i++) {
                     data.data.blocked_users[i].last_seen = moment.unix(data.data.blocked_users[i].last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
@@ -27058,17 +27054,24 @@ angular.module('chattapp').directive('isFocused', function($timeout) {
             else {
                 self.data.text = demo;
             }
+            cordova.plugins.Keyboard.show();
             var myPopup = $ionicPopup.show({
-                template: '<input id="statustxt" type="text"  ng-model="profile.data.text">',
+                template: '<input id="statustxt" autofocus type="text"  ng-model="profile.data.text" >',
                 title: 'Update status',
                 subTitle: '',
                 scope: $scope,
                 buttons: [
-                    {text: 'Cancel'},
+                    {
+                        text: 'Cancel',
+                        onTap: function(e){
+                            cordova.plugins.Keyboard.close();
+                    }
+                },
                     {
                         text: '<b>Save</b>',
                         type: 'button-positive',
                         onTap: function(e) {
+                            cordova.plugins.Keyboard.close();
                             var query = profileFactory.status({
                                 accessToken: timeStorage.get('userData').data.access_token,
                                 status: self.data.text,
@@ -27107,7 +27110,6 @@ angular.module('chattapp').directive('isFocused', function($timeout) {
         }
 
         $scope.imgChange = function(imageType) {
-            
             if ($scope.myCroppedImage || $scope.myBgCroppedImage) {
               
                 var imageData, appenddata;
@@ -27315,10 +27317,12 @@ angular.module('chattapp').directive('isFocused', function($timeout) {
         }
         else {
             publicChatService.listRooms();
+            self.lodingSpinner=true;
             network = true;
         }
         $scope.$on('now_device_is_online', function(event, response) {
             network = true;
+            self.lodingSpinner=true;
             publicChatService.listRooms();
         });
          $scope.$on('now_device_is_ofline', function(event, response) {
@@ -27326,6 +27330,7 @@ angular.module('chattapp').directive('isFocused', function($timeout) {
         });
         $scope.$on('updatedDisplayPublicChats', function(event, response) {
             self.displayPublicChat = response.data;
+            self.lodingSpinner=false;
             $scope.$evalAsync();
         });
 
