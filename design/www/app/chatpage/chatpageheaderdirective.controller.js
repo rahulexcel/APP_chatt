@@ -47,7 +47,7 @@
                 self.infoNameShort = data.data.room.short_room_name;
                 self.infoName = data.data.room.room_name;
                 self.infoId = data.data.room.id;
-                console.log(self.infoId);
+             
                 if (data.data.room.room_image == '') {
                     self.infoImage = 'lib/group.png';
                 } else {
@@ -286,8 +286,7 @@
                 });
                 query.then(function(data) {
                     if (data.data.status == 1) {
-                        console.log('upload');
-                        console.log(data.data.data.url);
+                      
                         var currentTimeStamp = _.now();
                         socketService.roomOpen($stateParams.roomId);
                         sqliteService.saveMessageInDb("<img class='sendImage' src=" + data.data.data.url + ">", 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId) {
@@ -325,7 +324,7 @@
         };
         self.muteNotifications = true;
         self.localImage = function(imagei) {
-            console.log(imagei);
+           
             var currentTimeStamp = _.now();
             socketService.roomOpen($stateParams.roomId);
             sqliteService.saveMessageInDb("<img class='sendImage' ng-src=" + imagei + ">", 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId) {

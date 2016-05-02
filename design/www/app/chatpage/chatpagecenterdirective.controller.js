@@ -136,7 +136,7 @@
 
 
         $scope.imgDownload = function(msguserId, chatpageID, msg) {
-            console.log('image Download');
+           
             if (msguserId != chatpageID) {
                 var scripts = document.getElementsByTagName('img');
                 var myScript = scripts[scripts.length - 1];
@@ -150,30 +150,30 @@
                     var sync = ContentSync.sync({src: myScript.src, id: idname});
 
                     sync.on('progress', function(data) {
-                        console.log(data.progress);
+                       
                     });
 
                     sync.on('complete', function(data) {
-                        console.log(data);
+                     
                         window.resolveLocalFileSystemURL("file://" + data.localPath, function(entry) {
-                            console.log(entry);
+                         
                         }, function(error) {
-                            console.log("Error: " + error.code);
+                            
                         });
                     });
 
                     sync.on('error', function(e) {
-                        console.log(e);
+                       
                         // e 
                     });
 
                     sync.on('cancel', function() {
-                        console.log('cancel');
+                       
                         // triggered if event is cancelled 
                     });
                 }
             } else {
-                console.log('sorry this msg is send by you')
+             
             }
 
         };
