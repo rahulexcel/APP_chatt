@@ -27,6 +27,73 @@ module.exports = function (Room) {
     //-------------------------------------------------------------
     
     //--start--ROOM GENERIC function------
+    Room.FN_mute_room_notifications = function( info, callback ){
+        var room_id = info.room_id;
+        var user_id = info.user_id;
+        Room.update({
+            id: new ObjectID( room_id )
+        }, {
+            '$addToSet': { 'notification_mute_users': new ObjectID( user_id ) }
+        },{
+            allowExtendedOperators: true 
+        }, function (err, result) {
+            if (err) {
+                callback( false );
+            } else {
+                callback( true );
+            }
+        });
+    }
+    Room.FN_unmute_room_notifications = function( info, callback ){
+        var room_id = info.room_id;
+        var user_id = info.user_id;
+        Room.update({
+            id: new ObjectID( room_id )
+        }, {
+            '$pull': { 'notification_mute_users': new ObjectID( user_id ) }
+        },{
+            allowExtendedOperators: true 
+        }, function (err, result) {
+            if (err) {
+                callback( false );
+            } else {
+                callback( true );
+            }
+        });
+    }
+    Room.FN_delete_room_messages = function( info, callback ){
+        var Message = Room.app.models.Message;
+        var room_id = info.room_id;
+        var wh = {
+            room_id : new ObjectID( room_id )
+        }
+        Message.remove( wh, function (err, result) {
+            if( err ){
+                callback( false );
+            }else{
+                callback( true );
+            }
+        })
+    }
+    Room.FN_block_user = function( info, callback ){
+        var User = Room.app.models.User;
+        var user_id = info.user_id;
+        var block_user_id = info.block_user_id;
+        
+        User.update({
+            id: new ObjectID( user_id )
+        }, {
+            '$addToSet': { 'blocked_users': new ObjectID( block_user_id ) }
+        },{
+            allowExtendedOperators: true 
+        }, function (err, result) {
+            if (err) {
+                callback( false );
+            } else {
+                callback( true );
+            }
+        });
+    }
     Room.FN_add_friend = function( info, callback ){
         var User = Room.app.models.User;
         
@@ -37,6 +104,26 @@ module.exports = function (Room) {
             id: new ObjectID( user_id )
         }, {
             '$addToSet': { 'friends': new ObjectID(chat_with_user_id) }
+        },{
+            allowExtendedOperators: true 
+        }, function (err, result) {
+            if (err) {
+                callback( false );
+            } else {
+                callback( true );
+            }
+        });
+    }
+    Room.FN_delete_friend = function( info, callback ){
+        var User = Room.app.models.User;
+        
+        var user_id = info.user_id;
+        var delete_friend_user_id = info.delete_friend_user_id;
+        
+        User.update({
+            id: new ObjectID( user_id )
+        }, {
+            '$pull': { 'friends': new ObjectID( delete_friend_user_id ) }
         },{
             allowExtendedOperators: true 
         }, function (err, result) {
@@ -335,12 +422,32 @@ module.exports = function (Room) {
                                                 }
                                                 room_image = room_info.room_image;
                                                 room_users = room_info.room_users;
+                                                
+                                                notification_mute_users = [];
+                                                if( typeof room_info.notification_mute_users != 'undefined' ){
+                                                    notification_mute_users = room_info.notification_mute_users;
+                                                }
+                                                
                                                 for( var k in room_users ){
                                                     var room_user_id = room_users[k].id;
                                                     if( room_user_id.toString() != userId.toString() ){
                                                         var user_tokens = room_users[k].token;
                                                         if( typeof user_tokens != 'undefined' && user_tokens  != ''){
-                                                            TOKENS.push( user_tokens );
+                                                            
+                                                            var is_mute_norification_user = false;
+                                                            if( notification_mute_users.length > 0 ){
+                                                                for( var m in notification_mute_users ){
+                                                                    if( room_user_id.toString() == notification_mute_users[m].toString() ){
+                                                                        is_mute_norification_user = true;
+                                                                    }
+                                                                }
+                                                                
+                                                            }
+                                                            if( is_mute_norification_user == false ){
+                                                                TOKENS.push( user_tokens );
+                                                            }else{
+                                                            }
+                                                            
                                                         }
                                                     }else{
                                                         msg_by_name = room_users[k].name;
@@ -348,6 +455,8 @@ module.exports = function (Room) {
                                                     }
                                                 }
                                             });
+                                            
+                                            
                                             //----end---for push notification info--------
                                             var server_time = UTIL.currentTimestamp();
                                             var new_message = new Message({
@@ -475,12 +584,12 @@ module.exports = function (Room) {
                         "include": [{
                             relation: 'room_owner', 
                             scope: {
-                                fields: ['name','profile_image','last_seen','status'],
+                                fields: ['name','profile_image','last_seen','status','geo_city','geo_state','geo_country','geo_address'],
                             }
                         },{
                             relation: 'room_users', 
                             scope: {
-                                fields: ['name','profile_image','last_seen','status'],
+                                fields: ['name','profile_image','last_seen','status','geo_city','geo_state','geo_country','geo_address'],
                             }
                         }]
                     },function (err, result) {
@@ -518,7 +627,11 @@ module.exports = function (Room) {
                                                     'icon' : k1_user.profile_image,
                                                     'main_text' : k1_user.name,
                                                     'sub_text' : k1_user.last_seen,
-                                                    'user_status' : user_status
+                                                    'user_status' : user_status,
+                                                    'geo_city' : k1_user.geo_city,
+                                                    'geo_state' : k1_user.geo_state,
+                                                    'geo_country' : k1_user.geo_country,
+                                                    'geo_address' : k1_user.geo_address
                                                 }
                                             }
                                         }
@@ -1046,6 +1159,18 @@ module.exports = function (Room) {
                                             var kr_room_description = result.room_description;
                                             var kr_room_users  = result.room_users;
                                             
+                                            var ROOM_NOTIFICATIONS_STATUS = 1;
+                                            
+                                            var kr_notification_mute_users = [];
+                                            if( typeof result.notification_mute_users != 'undefined' && result.notification_mute_users.length > 0 ){
+                                                kr_notification_mute_users = result.notification_mute_users;
+                                                for( var m in kr_notification_mute_users ){
+                                                    if( access_token_userid.toString() == kr_notification_mute_users[m].toString() ){
+                                                        ROOM_NOTIFICATIONS_STATUS = 0;
+                                                    }
+                                                }
+                                            }
+                                            
                                             if( kr_room_users.length > 0 ){
                                                 for( var p in kr_room_users ){
                                                     pr = kr_room_users[p];
@@ -1098,7 +1223,7 @@ module.exports = function (Room) {
                                                     }
                                                 }
                                             }
-                                            
+                                            data.room_notification_status = ROOM_NOTIFICATIONS_STATUS;
                                             if( kr_room_type == 'public' && is_room_owner == 1 &&  kr_room_users.length > 0 && admin_friends.length > 0 ){
                                                 // this is for so, that he can view his friends who are not a room user and he can add that member
                                                 var admin_friends_not_room_members = [];
@@ -1846,6 +1971,399 @@ module.exports = function (Room) {
             }
     );
     //********************************* START admin can add member to his room **********************************
+    
+    
+    
+    //********************************* START user delete private room **********************************
+    Room.delete_private_room = function ( accessToken, room_id, currentTimestamp, callback) {
+        var User = Room.app.models.User;
+        var Pushmessage = Room.app.models.Pushmessage;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 401, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 401, 'UnAuthorized', {});
+                }else{
+                    var access_token_userid = accessToken.userId
+                    User.findById(access_token_userid, function (err, user) {
+                        if (err) {
+                            callback(null, 401, 'UnAuthorized', err);
+                        } else {
+                            userId = new ObjectID( access_token_userid );
+                            var wh = {
+                                id : new ObjectID( room_id )
+                            }
+                            Room.find({
+                                "where": wh,
+                                "include": [{
+                                    relation: 'room_owner', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen','sockets','token'],
+                                    }
+                                },{
+                                    relation: 'room_users', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen','sockets','token'],
+                                    }
+                                }]
+                            },function (err, result) {
+                                if( err ){
+                                    callback(null, 0, 'try again', {});
+                                }else{
+                                    if( result.length > 0 ){
+                                        result = result[0];
+                                        result = result.toJSON();
+                                        var IS_ROOM_MEMBER = false;
+                                        var room_users = result.room_users;
+                                        var room_user_1_id = room_users[0].id;
+                                        var room_user_2_id = room_users[1].id;
+                                        
+                                        var TOKENS = [];
+                                        var push_data_name = push_data_profile_image = '';
+                                        
+                                        for( var k in room_users ){
+                                            if( access_token_userid.toString() == room_users[k].id.toString() ){
+                                                IS_ROOM_MEMBER = true;
+                                                push_data_name = room_users[k].name;
+                                                push_data_profile_image = room_users[k].profile_image;
+                                            }else{
+                                                TOKENS.push( room_users[k].token );
+                                            }
+                                        }
+                                        
+                                        if( IS_ROOM_MEMBER == false ){
+                                            callback( null, 0, 'You are not member of this room', {} );
+                                        }else{
+                                            Room.remove( wh, function (err, result) {
+                                                if( err ){
+                                                    callback(null, 0, 'try again', {});
+                                                }else{
+                                                    delete_friend_1 = {
+                                                        user_id : room_user_1_id,
+                                                        delete_friend_user_id : room_user_2_id
+                                                    }
+                                                    delete_friend_2 = {
+                                                        user_id : room_user_2_id,
+                                                        delete_friend_user_id : room_user_1_id
+                                                    }
+                                                    Room.FN_delete_friend( delete_friend_1, function(ret){
+                                                        Room.FN_delete_friend( delete_friend_2, function(ret){
+                                                            r_info = {
+                                                                room_id : room_id
+                                                            }
+                                                            Room.FN_delete_room_messages( r_info, function( ret1 ){
+                                                                
+                                                                if( TOKENS.length > 0 ){
+                                                                    var push_msg_info = {
+                                                                        name : push_data_name,
+                                                                        profile_image : push_data_profile_image
+                                                                    }
+                                                                    Pushmessage.create_push_message( 'private_room_deleted', TOKENS , push_msg_info, function( ignore_param, p_status, p_message, p_data){
+                                                                    })  
+                                                                }
+                                                                
+                                                                var another_user_id = room_user_1_id;
+                                                                if( another_user_id.toString() == access_token_userid.toString() ){
+                                                                    another_user_id = room_user_2_id;
+                                                                }
+                                                                
+                                                                var data = {
+                                                                    room_id : room_id,
+                                                                    user_id : access_token_userid,
+                                                                    another_user_id : another_user_id,
+                                                                    another_user_token : TOKENS,
+                                                                    another_user_name : push_data_name,
+                                                                    another_user_profile_image : push_data_profile_image
+                                                                }
+                                                                callback(null, 1, 'Room deleted', data );
+                                                            })
+                                                        });
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    }else{
+                                        callback( null, 0, 'Room not found', {} );
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    };
+    Room.remoteMethod(
+            'delete_private_room', {
+                description: 'user delete private room',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'room_id', type: 'string'},
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/delete_private_room',
+                }
+            }
+    );
+    //********************************* END user delete private room **********************************
+    
+    
+    //********************************* START user delete private room **********************************
+    Room.block_private_room = function ( accessToken, room_id, currentTimestamp, callback) {
+        var Pushmessage = Room.app.models.Pushmessage;
+        Room.delete_private_room( accessToken, room_id, currentTimestamp, function( ignore_param, res_status, res_message, res_data ){
+            if( res_status == 0 ){
+                callback(null, 0, 'try again', {});
+            }else{
+                var block_user_data = {
+                    user_id : res_data.user_id,
+                    block_user_id : res_data.another_user_id
+                }
+                Room.FN_block_user( block_user_data, function( ret ){
+                    if( ret == false ){
+                        callback(null, 0, 'try again', {});
+                    }else{
+                        if( typeof res_data.another_user_token != 'udefined' && res_data.another_user_token.length > 0 ){
+                            TOKENS = res_data.another_user_token;
+                            push_data_name = res_data.another_user_name;
+                            push_data_profile_image = res_data.another_user_profile_image;
+                            var push_msg_info = {
+                                name : push_data_name,
+                                profile_image : push_data_profile_image
+                            }
+                            Pushmessage.create_push_message( 'user_blocked', TOKENS , push_msg_info, function( ignore_param, p_status, p_message, p_data){
+                            })
+                        }
+                        callback(null, 1, 'Successfully blocked', {} );
+                    }
+                })
+            }
+        })
+    };
+    Room.remoteMethod(
+            'block_private_room', {
+                description: "user block a user so that he can't create private room",
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'room_id', type: 'string'},
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/block_private_room',
+                }
+            }
+    );
+    //********************************* END user delete private room **********************************
+    
+    
+    
+    //********************************* START user can mute room push notification**********************************
+    Room.mute_room_notification = function ( accessToken, room_id, currentTimestamp, callback) {
+        var User = Room.app.models.User;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 401, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 401, 'UnAuthorized', {});
+                }else{
+                    var access_token_userid = accessToken.userId
+                    User.findById(access_token_userid, function (err, user) {
+                        if (err) {
+                            callback(null, 401, 'UnAuthorized', err);
+                        } else {
+                            userId = new ObjectID( access_token_userid );
+                            var wh = {
+                                id : new ObjectID( room_id )
+                            }
+                            Room.find({
+                                "where": wh,
+                                "include": [{
+                                    relation: 'room_owner', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen'],
+                                    }
+                                },{
+                                    relation: 'room_users', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen'],
+                                    }
+                                }]
+                            },function (err, result) {
+                                if( err ){
+                                    callback(null, 0, 'try again', {});
+                                }else{
+                                    if( result.length > 0 ){
+                                        result = result[0];
+                                        result = result.toJSON();
+                                        room_owner = result.room_owner;
+                                        room_users = result.room_users;
+                                        
+                                        var IS_ROOM_USER = false;
+                                        
+                                        for( var k in room_users ){
+                                            if( access_token_userid.toString() == room_users[k].id.toString() ){
+                                                IS_ROOM_USER = true;
+                                            }
+                                        }
+                                        if( IS_ROOM_USER == true ){
+                                            var mute_info = {
+                                                user_id : access_token_userid.toString(),
+                                                room_id : room_id
+                                            }
+                                            Room.FN_mute_room_notifications( mute_info, function( ret ){
+                                                if( ret == false ){
+                                                    callback(null, 0, 'try again', {});
+                                                }else{
+                                                    callback( null, 1, 'Room notifications are OFF', {} );
+                                                }
+                                            })
+                                            
+                                            
+                                        }else{
+                                            callback( null, 0, 'You are not a room user', {} );
+                                        }
+                                    }else{
+                                        callback( null, 0, 'Room not found', {} );
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    };
+    Room.remoteMethod(
+            'mute_room_notification', {
+                description: 'user can mute room push notification',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'room_id', type: 'string'}, 
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/mute_room_notification',
+                }
+            }
+    );
+    //********************************* END user can mute room push notification**********************************
+    
+    
+    //********************************* START user can unmute room push notification**********************************
+    Room.unmute_room_notification = function ( accessToken, room_id, currentTimestamp, callback) {
+        var User = Room.app.models.User;
+        User.relations.accessTokens.modelTo.findById(accessToken, function(err, accessToken) {
+            if( err ){
+                callback(null, 401, 'UnAuthorized', {});
+            }else{
+                if( !accessToken ){
+                    callback(null, 401, 'UnAuthorized', {});
+                }else{
+                    var access_token_userid = accessToken.userId
+                    User.findById(access_token_userid, function (err, user) {
+                        if (err) {
+                            callback(null, 401, 'UnAuthorized', err);
+                        } else {
+                            userId = new ObjectID( access_token_userid );
+                            var wh = {
+                                id : new ObjectID( room_id )
+                            }
+                            Room.find({
+                                "where": wh,
+                                "include": [{
+                                    relation: 'room_owner', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen'],
+                                    }
+                                },{
+                                    relation: 'room_users', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen'],
+                                    }
+                                }]
+                            },function (err, result) {
+                                if( err ){
+                                    callback(null, 0, 'try again', {});
+                                }else{
+                                    if( result.length > 0 ){
+                                        result = result[0];
+                                        result = result.toJSON();
+                                        room_owner = result.room_owner;
+                                        room_users = result.room_users;
+                                        
+                                        var IS_ROOM_USER = false;
+                                        
+                                        for( var k in room_users ){
+                                            if( access_token_userid.toString() == room_users[k].id.toString() ){
+                                                IS_ROOM_USER = true;
+                                            }
+                                        }
+                                        if( IS_ROOM_USER == true ){
+                                            var unmute_info = {
+                                                user_id : access_token_userid.toString(),
+                                                room_id : room_id
+                                            }
+                                            Room.FN_unmute_room_notifications( unmute_info, function( ret ){
+                                                if( ret == false ){
+                                                    callback(null, 0, 'try again', {});
+                                                }else{
+                                                    callback( null, 1, 'Room notifications are ON', {} );
+                                                }
+                                            })
+                                            
+                                            
+                                        }else{
+                                            callback( null, 0, 'You are not a room user', {} );
+                                        }
+                                    }else{
+                                        callback( null, 0, 'Room not found', {} );
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    };
+    Room.remoteMethod(
+            'unmute_room_notification', {
+                description: 'user can unmute room push notification',
+                accepts: [
+                    {arg: 'accessToken', type: 'string'}, 
+                    {arg: 'room_id', type: 'string'}, 
+                    {arg: 'currentTimestamp', type: 'number'}
+                ],
+                returns: [
+                    {arg: 'status', type: 'number'},
+                    {arg: 'message', type: 'string'},
+                    {arg: 'data', type: 'array'}
+                ],
+                http: {
+                    verb: 'post', path: '/unmute_room_notification',
+                }
+            }
+    );
+    //********************************* END user can unmute room push notification**********************************
+    
     
     
     

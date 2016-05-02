@@ -4,6 +4,7 @@
     angular.module('chattapp')
             .controller('chatPageCenterDirectiveController', chatPageCenterDirectiveController);
 
+
     function chatPageCenterDirectiveController($scope, $state, $localStorage, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, sqliteService, chatpageService, timeZoneService) {
         var self = this;
         var chatWithUserData = timeStorage.get('chatWithUserData');
@@ -13,7 +14,6 @@
         }
         self.height = screen.height;
         if ($localStorage['bgImage']) {
-
             self.background = $localStorage['bgImage'];
         }
         var userData = timeStorage.get('userData');
@@ -132,11 +132,12 @@
                 doRefreshPageValue++;
                 $scope.$broadcast('scroll.refreshComplete');
             });
+
         };
 
 
         $scope.imgDownload = function(msguserId, chatpageID, msg) {
-           
+
             if (msguserId != chatpageID) {
                 var scripts = document.getElementsByTagName('img');
                 var myScript = scripts[scripts.length - 1];
@@ -150,32 +151,33 @@
                     var sync = ContentSync.sync({src: myScript.src, id: idname});
 
                     sync.on('progress', function(data) {
-                       
+
                     });
 
                     sync.on('complete', function(data) {
-                     
+
                         window.resolveLocalFileSystemURL("file://" + data.localPath, function(entry) {
-                         
+
                         }, function(error) {
-                            
+
                         });
                     });
 
                     sync.on('error', function(e) {
-                       
+
                         // e 
                     });
 
                     sync.on('cancel', function() {
-                       
+
                         // triggered if event is cancelled 
                     });
                 }
             } else {
-             
+
             }
 
         };
     }
 })();
+

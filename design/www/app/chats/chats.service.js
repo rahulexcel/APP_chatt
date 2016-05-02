@@ -21,6 +21,8 @@
                        room_users.name = roomData[i].show_details_for_list.main_text;
                        room_users.id = roomData[i].show_details_for_list.user_id;
                        room_users.status = roomData[i].show_details_for_list.user_status;
+                       room_users.geo_city=roomData[i].show_details_for_list.geo_city;
+                       room_users.geo_state=roomData[i].show_details_for_list.geo_state;
                        newRoomData.user_data = room_users;
                        newRoomData.room_id = roomData[i].id;
                        newRoomData.room_type = roomData[i].room_type;
