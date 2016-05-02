@@ -1,8 +1,9 @@
 <ion-view view-title="Add In Group" id="background">
     <ion-content class="has-footer">
+    <div class="spin" ng-show="inviteInGroup.loadingSpinner"><ion-spinner icon="spiral" class="spinner-positive"></ion-spinner></div>
         <ion-list >
             <ion-item ng-hide="inviteInGroup.displayinviteInGroup.length > 0" class="noItem" >
-                <div class="empty" >
+                <div class="empty" ng-hide="inviteInGroup.loadingSpinner">
                     <div class='nothing'>'No Users!'</div>
                 </div>
             </ion-item>

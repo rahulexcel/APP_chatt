@@ -14,10 +14,12 @@
         }
         else {
             publicChatService.listRooms();
+            self.lodingSpinner=true;
             network = true;
         }
         $scope.$on('now_device_is_online', function(event, response) {
             network = true;
+            self.lodingSpinner=true;
             publicChatService.listRooms();
         });
          $scope.$on('now_device_is_ofline', function(event, response) {
@@ -25,6 +27,7 @@
         });
         $scope.$on('updatedDisplayPublicChats', function(event, response) {
             self.displayPublicChat = response.data;
+            self.lodingSpinner=false;
             $scope.$evalAsync();
         });
 

@@ -10,11 +10,13 @@
         });
         profileApi();
         function profileApi() {
+            self.lodingSpinner=true;
             var query = profileFactory.save({
                 accessToken: timeStorage.get('userData').data.access_token,
                 currentTimestamp: Date.now()
             });
             query.$promise.then(function(data) {
+                self.lodingSpinner=false;
                 self.displayprofile = data.data;
                 for (var i = 0; i < data.data.blocked_users.length; i++) {
                     data.data.blocked_users[i].last_seen = moment.unix(data.data.blocked_users[i].last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
@@ -65,17 +67,24 @@
             else {
                 self.data.text = demo;
             }
+            cordova.plugins.Keyboard.show();
             var myPopup = $ionicPopup.show({
-                template: '<input id="statustxt" type="text"  ng-model="profile.data.text">',
+                template: '<input id="statustxt" autofocus type="text"  ng-model="profile.data.text" >',
                 title: 'Update status',
                 subTitle: '',
                 scope: $scope,
                 buttons: [
-                    {text: 'Cancel'},
+                    {
+                        text: 'Cancel',
+                        onTap: function(e){
+                            cordova.plugins.Keyboard.close();
+                    }
+                },
                     {
                         text: '<b>Save</b>',
                         type: 'button-positive',
                         onTap: function(e) {
+                            cordova.plugins.Keyboard.close();
                             var query = profileFactory.status({
                                 accessToken: timeStorage.get('userData').data.access_token,
                                 status: self.data.text,
@@ -114,7 +123,6 @@
         }
 
         $scope.imgChange = function(imageType) {
-            
             if ($scope.myCroppedImage || $scope.myBgCroppedImage) {
               
                 var imageData, appenddata;

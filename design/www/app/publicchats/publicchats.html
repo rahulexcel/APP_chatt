@@ -1,8 +1,9 @@
 <ion-view view-title="Rooms" id="background" hide-back-button="true">
     <ion-content class="has-footer">
+    <div class="spin" ng-show="publicChats.lodingSpinner"><ion-spinner icon="spiral" class="spinner-positive"></ion-spinner></div>
         <ion-list >
             <ion-item ng-show="!publicChats.displayPublicChat.length > 0" class="noItem" >
-                <div class="empty" >
+                <div class="empty" ng-hide="publicChats.lodingSpinner">
                     <div class='nothing'>'No rooms found!'</div>
                         <div ng-click="modal.show()" class='empty_div'>
                             <button class="empty_btn button ion-plus" ></button>
@@ -41,12 +42,6 @@
     <div class="md-form-group float-label">
     <input type="text" class="md-input" ng-model="publicChats.userGroupDescription" autocomplete="off" required>
     <label>Description</label>
-    </div>
-    <div class="md-form-group float-label">
-    <label>Room Type</label>
-    <select ng-model="publicChats.userGroupType">
-        <option value="{{roomType}}" ng-repeat="roomType in publicChats.roomTypes">{{roomType}}</option>
-    </select>
     </div>
     <button ng-disabled="publicChats.createGroupOption" ng-click="publicChats.createGroup()" class="md-btn md-raised pink btn-block p-h-md">Create</button>
     </form>
