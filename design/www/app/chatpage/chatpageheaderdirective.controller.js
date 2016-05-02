@@ -224,62 +224,59 @@
             }
             return buf;
         }
+         var userData = timeStorage.get('userData');
         self.attachImage = function() {
-            cameraService.changePic().then(function(imageData) {
-                $ionicLoading.show({template: 'Image Uploading...'});
-                var img = "data:image/jpeg;base64," + imageData;
-                var imageBase64 = img.replace(/^data:image\/(png|jpeg);base64,/, "");
-                var binary = fixBinary(atob(imageBase64));
-                var blob = new Blob([binary], {type: 'image/png', name: 'png'});
-                blob.name = 'png';
-                blob.$ngfName = 'png';
-                $scope.imagesample = img;
-                //self.localImage(img);
-                var query = profileImageFactory.upload({
-                    file: blob,
-                    currentTimestamp: Date.now(),
-                    append_data: {room_id: $stateParams.roomId, file_type: 'room_file', accessToken: timeStorage.get('userData').data.access_token}
+           cameraService.changePic().then(function(imageData) {
+                      $ionicLoading.show({template: 'Image Uploading...'});
+                      var img = "data:image/jpeg;base64,"+imageData;
+                      var imageBase64 = img.replace(/^data:image\/(png|jpeg);base64,/, "");
+                      var binary = fixBinary(atob(imageBase64));
+                      var blob = new Blob([binary], {type: 'image/png', name: 'png'});
+                      blob.name = 'png';
+                      blob.$ngfName = 'png';
+                      $scope.imagesample = img;
+                      //self.localImage(img);
+                      var query = profileImageFactory.upload({
+                          file: blob,
+                          currentTimestamp: Date.now(),
+                          append_data: {room_id: $stateParams.roomId, file_type: 'room_file', accessToken: timeStorage.get('userData').data.access_token}
+                      });
+                      query.then(function(data) {
+                          if (data.data.status == 1) {
+  
+                              var currentTimeStamp = _.now();
+                              socketService.roomOpen($stateParams.roomId);
+                              sqliteService.saveMessageInDb("<img class='sendImage' src=" + data.data.data.url + ">", 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId) {
+                                  if (timeStorage.get('network')) {
+                                  } else {
+                                      socketService.room_message(lastInsertId, $stateParams.roomId, "<img class='sendImage' src=" + data.data.data.url + ">", currentTimeStamp);
+                                  }
+                                  $ionicLoading.hide();
+                                  var currentMessage = {
+                                      "id": lastInsertId,
+                                      "image": userData.data.profile_image,
+                                      "message": "<img class='sendImage' src=" + data.data.data.url + ">",
+                                      "messageTime": moment(currentTimeStamp).format("hh:mm a"),
+                                      "timeStamp": currentTimeStamp,
+                                      "name": userData.data.name,
+                                      "user_id": userData.data.user_id,
+                                      "message_status": 'post'
+                                  };
+  
+                                  $rootScope.$broadcast('displayChatMessages', {data: currentMessage});
+                                  $ionicScrollDelegate.scrollBottom(false);
+                              }, 100);
+  
+  
+                          } else {
+                              window.plugins.toast.showShortTop('Image not upload');
+                          }
+                      });
+                  }, function(err) {
+                      $ionicLoading.hide();
                 });
-                query.then(function(data) {
-                    if (data.data.status == 1) {
-
-                        var currentTimeStamp = _.now();
-                        socketService.roomOpen($stateParams.roomId);
-                        sqliteService.saveMessageInDb("<img class='sendImage' src=" + data.data.data.url + ">", 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId) {
-                            if (timeStorage.get('network')) {
-                            } else {
-                                socketService.room_message(lastInsertId, $stateParams.roomId, "<img class='sendImage' src=" + data.data.data.url + ">", currentTimeStamp);
-                            }
-                            $ionicLoading.hide();
-                            var currentMessage = {
-                                "id": lastInsertId,
-                                "image": userData.data.profile_image,
-                                "message": "<img class='sendImage' src=" + data.data.data.url + ">",
-                                "messageTime": moment(currentTimeStamp).format("hh:mm a"),
-                                "timeStamp": currentTimeStamp,
-                                "name": userData.data.name,
-                                "user_id": userData.data.user_id,
-                                "message_status": 'post'
-                            };
-
-                            $rootScope.$broadcast('displayChatMessages', {data: currentMessage});
-                            $ionicScrollDelegate.scrollBottom(false);
-                        }, 100);
-
-
-                    } else {
-                        window.plugins.toast.showShortTop('Image not upload');
-                    }
-                });
-            }, function(err) {
-                $ionicLoading.hide();
-            });
         };
 
-        $scope.stopLoading = function() {
-            $scope.startLoading = false;
-            $scope.start = false;
-        };
         $ionicPopover.fromTemplateUrl('app/chatpage/templates/privateChatPopover.html', {
             scope: $scope,
         }).then(function(popover) {
@@ -348,13 +345,7 @@
         self.openAttachFilePopover = function($event) {
             $scope.openAttachFilePopover.show($event);
         };
-        self.attachImage = function() {
-            cameraService.changePic().then(function(imageData) {
-                $ionicLoading.hide();
-            }, function(err) {
-                $ionicLoading.hide();
-            });
-        };
+      
         self.inviteInGroup = function() {
             timeStorage.set('inviteInGroupId', $stateParams.roomId, 1);
         };

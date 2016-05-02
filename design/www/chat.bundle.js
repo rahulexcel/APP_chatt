@@ -6889,7 +6889,7 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
 })(window, window.angular);
 
 /*!
- * jQuery JavaScript Library v2.2.3
+ * jQuery JavaScript Library v2.2.2
  * http://jquery.com/
  *
  * Includes Sizzle.js
@@ -6899,7 +6899,7 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2016-04-05T19:26Z
+ * Date: 2016-03-17T17:51Z
  */
 
 (function( global, factory ) {
@@ -6955,7 +6955,7 @@ var support = {};
 
 
 var
-	version = "2.2.3",
+	version = "2.2.2",
 
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {
@@ -16365,7 +16365,7 @@ jQuery.fn.load = function( url, params, callback ) {
 		// If it fails, this function gets "jqXHR", "status", "error"
 		} ).always( callback && function( jqXHR, status ) {
 			self.each( function() {
-				callback.apply( this, response || [ jqXHR.responseText, status, jqXHR ] );
+				callback.apply( self, response || [ jqXHR.responseText, status, jqXHR ] );
 			} );
 		} );
 	}
@@ -20653,6 +20653,7 @@ emojiApp.config(["$sceProvider", function(a) {
 
                 c.execCommand("enableObjectResizing", !1, !1)
             }), this.$editor.on("blur", function() {
+                console.log('blurrr is called');
                 c.execCommand("enableObjectResizing", !0, !0)
             });
             var g = this.$editor.text(),
@@ -25092,62 +25093,59 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
             }
             return buf;
         }
+         var userData = timeStorage.get('userData');
         self.attachImage = function() {
-            cameraService.changePic().then(function(imageData) {
-                $ionicLoading.show({template: 'Image Uploading...'});
-                var img = "data:image/jpeg;base64," + imageData;
-                var imageBase64 = img.replace(/^data:image\/(png|jpeg);base64,/, "");
-                var binary = fixBinary(atob(imageBase64));
-                var blob = new Blob([binary], {type: 'image/png', name: 'png'});
-                blob.name = 'png';
-                blob.$ngfName = 'png';
-                $scope.imagesample = img;
-                //self.localImage(img);
-                var query = profileImageFactory.upload({
-                    file: blob,
-                    currentTimestamp: Date.now(),
-                    append_data: {room_id: $stateParams.roomId, file_type: 'room_file', accessToken: timeStorage.get('userData').data.access_token}
+           cameraService.changePic().then(function(imageData) {
+                      $ionicLoading.show({template: 'Image Uploading...'});
+                      var img = "data:image/jpeg;base64,"+imageData;
+                      var imageBase64 = img.replace(/^data:image\/(png|jpeg);base64,/, "");
+                      var binary = fixBinary(atob(imageBase64));
+                      var blob = new Blob([binary], {type: 'image/png', name: 'png'});
+                      blob.name = 'png';
+                      blob.$ngfName = 'png';
+                      $scope.imagesample = img;
+                      //self.localImage(img);
+                      var query = profileImageFactory.upload({
+                          file: blob,
+                          currentTimestamp: Date.now(),
+                          append_data: {room_id: $stateParams.roomId, file_type: 'room_file', accessToken: timeStorage.get('userData').data.access_token}
+                      });
+                      query.then(function(data) {
+                          if (data.data.status == 1) {
+  
+                              var currentTimeStamp = _.now();
+                              socketService.roomOpen($stateParams.roomId);
+                              sqliteService.saveMessageInDb("<img class='sendImage' src=" + data.data.data.url + ">", 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId) {
+                                  if (timeStorage.get('network')) {
+                                  } else {
+                                      socketService.room_message(lastInsertId, $stateParams.roomId, "<img class='sendImage' src=" + data.data.data.url + ">", currentTimeStamp);
+                                  }
+                                  $ionicLoading.hide();
+                                  var currentMessage = {
+                                      "id": lastInsertId,
+                                      "image": userData.data.profile_image,
+                                      "message": "<img class='sendImage' src=" + data.data.data.url + ">",
+                                      "messageTime": moment(currentTimeStamp).format("hh:mm a"),
+                                      "timeStamp": currentTimeStamp,
+                                      "name": userData.data.name,
+                                      "user_id": userData.data.user_id,
+                                      "message_status": 'post'
+                                  };
+  
+                                  $rootScope.$broadcast('displayChatMessages', {data: currentMessage});
+                                  $ionicScrollDelegate.scrollBottom(false);
+                              }, 100);
+  
+  
+                          } else {
+                              window.plugins.toast.showShortTop('Image not upload');
+                          }
+                      });
+                  }, function(err) {
+                      $ionicLoading.hide();
                 });
-                query.then(function(data) {
-                    if (data.data.status == 1) {
-
-                        var currentTimeStamp = _.now();
-                        socketService.roomOpen($stateParams.roomId);
-                        sqliteService.saveMessageInDb("<img class='sendImage' src=" + data.data.data.url + ">", 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId) {
-                            if (timeStorage.get('network')) {
-                            } else {
-                                socketService.room_message(lastInsertId, $stateParams.roomId, "<img class='sendImage' src=" + data.data.data.url + ">", currentTimeStamp);
-                            }
-                            $ionicLoading.hide();
-                            var currentMessage = {
-                                "id": lastInsertId,
-                                "image": userData.data.profile_image,
-                                "message": "<img class='sendImage' src=" + data.data.data.url + ">",
-                                "messageTime": moment(currentTimeStamp).format("hh:mm a"),
-                                "timeStamp": currentTimeStamp,
-                                "name": userData.data.name,
-                                "user_id": userData.data.user_id,
-                                "message_status": 'post'
-                            };
-
-                            $rootScope.$broadcast('displayChatMessages', {data: currentMessage});
-                            $ionicScrollDelegate.scrollBottom(false);
-                        }, 100);
-
-
-                    } else {
-                        window.plugins.toast.showShortTop('Image not upload');
-                    }
-                });
-            }, function(err) {
-                $ionicLoading.hide();
-            });
         };
 
-        $scope.stopLoading = function() {
-            $scope.startLoading = false;
-            $scope.start = false;
-        };
         $ionicPopover.fromTemplateUrl('app/chatpage/templates/privateChatPopover.html', {
             scope: $scope,
         }).then(function(popover) {
@@ -25216,13 +25214,7 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
         self.openAttachFilePopover = function($event) {
             $scope.openAttachFilePopover.show($event);
         };
-        self.attachImage = function() {
-            cameraService.changePic().then(function(imageData) {
-                $ionicLoading.hide();
-            }, function(err) {
-                $ionicLoading.hide();
-            });
-        };
+      
         self.inviteInGroup = function() {
             timeStorage.set('inviteInGroupId', $stateParams.roomId, 1);
         };
@@ -26907,6 +26899,116 @@ angular.module('chattapp').directive('isFocused', function($timeout) {
     'use strict';
 
     angular.module('chattapp')
+            .controller('loginController', loginController);
+
+    function loginController($state, loginFactory, timeStorage, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService, $ionicLoading) {
+        var self = this;
+        var deviceUUID = timeStorage.get('deviceUUID');
+        var devicePlatform = timeStorage.get('devicePlatform');
+        self.googleRegister = function() {
+            var promise = googleLogin.startLogin();
+            promise.then(function(googleData) {
+                $ionicLoading.show();
+                console.log(googleData);
+                timeStorage.set('userEmail', googleData.email, 1);
+                var query = loginFactory.save({
+                    action_type: 'google',
+                    social_id: googleData.google_id,
+                    platform: devicePlatform,
+                    token: $localStorage.gcmToken,
+                    action: 'login_register',
+                    device_id: deviceUUID,
+                    email: googleData.email,
+                    name: googleData.name,
+                    currentTimestamp: _.now(),
+                    password: '',
+                    profile_image: googleData.picture,
+                    // location: position
+                });
+                query.$promise.then(function(data) {
+                    $ionicLoading.hide();
+                    console.log(data);
+                    tostService.notify('Welcome "' + data.data.name + '"', 'top');
+                    timeStorage.set('userEmail', googleData.email, 1);
+                    timeStorage.set('userData', data, 1);
+                    // lastUsesTimeService.updateTime();
+                    $state.go('app.chats');
+                    $ionicHistory.nextViewOptions({
+                        historyRoot: true,
+                        disableBack: true
+                    });
+                });
+            }, function(data) {
+                console.log(data);
+            });
+        };
+        self.facebookRegister = function() {
+            facebookLogin.login().then(function(fbData) {
+                console.log(fbData);
+                if (fbData.id) {
+                    loginWithFBApi(fbData);
+                    $ionicLoading.show();
+                }
+                if (fbData == 'unknown') {
+                    facebookLogin.fbLoginSuccess().then(function(fbData1) {
+                        console.log(fbData1);
+                        loginWithFBApi(fbData1);
+                        $ionicLoading.show();
+                    }, function(data) {
+                        console.log(data);
+                    });
+                }
+            }, function(data) {
+                console.log(data);
+            });
+        };
+
+        function loginWithFBApi(fbData) {
+            timeStorage.set('userEmail', fbData.email, 1);
+            var query = loginFactory.save({
+                action_type: 'facebook',
+                social_id: fbData.id,
+                platform: devicePlatform,
+                token: $localStorage.gcmToken,
+                action: 'login_register',
+                device_id: deviceUUID,
+                email: fbData.email,
+                name: fbData.name,
+                currentTimestamp: _.now(),
+                password: '',
+                profile_image: 'http://graph.facebook.com/' + fbData.id + '/picture?type=large'
+            });
+            query.$promise.then(function(data) {
+                $ionicLoading.hide();
+                console.log(data);
+                tostService.notify('Welcome "' + data.data.name + '"', 'top');
+                timeStorage.set('userEmail', fbData.email, 1);
+                timeStorage.set('userData', data, 1);
+                // lastUsesTimeService.updateTime();
+                $state.go('app.chats');
+                $ionicHistory.nextViewOptions({
+                    historyRoot: true,
+                    disableBack: true
+                });
+            });
+        }
+        ;
+    }
+})();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('loginFactory', loginFactory);
+
+   function loginFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/users/register_login/:action_type/:action/:social_id/:platform/:device_id/:token/:email/:password', {},{});
+   };
+})();
+
+(function() {
+    'use strict';
+
+    angular.module('chattapp')
             .controller('menuController', menuController);
 
     function menuController($scope, $ionicPopover, socketService, $ionicPlatform, $cordovaGeolocation, $ionicHistory, tostService, $localStorage, Onsuccess, $state, timeStorage, $rootScope) {
@@ -27467,113 +27569,4 @@ angular.module('chattapp').directive('isFocused', function($timeout) {
             $state.go('login');
         };
     }
-})();
-(function() {
-    'use strict';
-
-    angular.module('chattapp')
-            .controller('loginController', loginController);
-
-    function loginController($state, loginFactory, timeStorage, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService, $ionicLoading) {
-        var self = this;
-        var deviceUUID = timeStorage.get('deviceUUID');
-        var devicePlatform = timeStorage.get('devicePlatform');
-        self.googleRegister = function() {
-            var promise = googleLogin.startLogin();
-            promise.then(function(googleData) {
-                $ionicLoading.show();
-                console.log(googleData);
-                timeStorage.set('userEmail', googleData.email, 1);
-                var query = loginFactory.save({
-                    action_type: 'google',
-                    social_id: googleData.google_id,
-                    platform: devicePlatform,
-                    token: $localStorage.gcmToken,
-                    action: 'login_register',
-                    device_id: deviceUUID,
-                    email: googleData.email,
-                    name: googleData.name,
-                    currentTimestamp: _.now(),
-                    password: '',
-                    profile_image: googleData.picture,
-                    // location: position
-                });
-                query.$promise.then(function(data) {
-                    $ionicLoading.hide();
-                    console.log(data);
-                    tostService.notify('Welcome "' + data.data.name + '"', 'top');
-                    timeStorage.set('userEmail', googleData.email, 1);
-                    timeStorage.set('userData', data, 1);
-                    // lastUsesTimeService.updateTime();
-                    $state.go('app.chats');
-                    $ionicHistory.nextViewOptions({
-                        historyRoot: true,
-                        disableBack: true
-                    });
-                });
-            }, function(data) {
-                console.log(data);
-            });
-        };
-        self.facebookRegister = function() {
-            facebookLogin.login().then(function(fbData) {
-                console.log(fbData);
-                if (fbData.id) {
-                    loginWithFBApi(fbData);
-                    $ionicLoading.show();
-                }
-                if (fbData == 'unknown') {
-                    facebookLogin.fbLoginSuccess().then(function(fbData1) {
-                        console.log(fbData1);
-                        loginWithFBApi(fbData1);
-                        $ionicLoading.show();
-                    }, function(data) {
-                        console.log(data);
-                    });
-                }
-            }, function(data) {
-                console.log(data);
-            });
-        };
-
-        function loginWithFBApi(fbData) {
-            timeStorage.set('userEmail', fbData.email, 1);
-            var query = loginFactory.save({
-                action_type: 'facebook',
-                social_id: fbData.id,
-                platform: devicePlatform,
-                token: $localStorage.gcmToken,
-                action: 'login_register',
-                device_id: deviceUUID,
-                email: fbData.email,
-                name: fbData.name,
-                currentTimestamp: _.now(),
-                password: '',
-                profile_image: 'http://graph.facebook.com/' + fbData.id + '/picture?type=large'
-            });
-            query.$promise.then(function(data) {
-                $ionicLoading.hide();
-                console.log(data);
-                tostService.notify('Welcome "' + data.data.name + '"', 'top');
-                timeStorage.set('userEmail', fbData.email, 1);
-                timeStorage.set('userData', data, 1);
-                // lastUsesTimeService.updateTime();
-                $state.go('app.chats');
-                $ionicHistory.nextViewOptions({
-                    historyRoot: true,
-                    disableBack: true
-                });
-            });
-        }
-        ;
-    }
-})();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('loginFactory', loginFactory);
-
-   function loginFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/users/register_login/:action_type/:action/:social_id/:platform/:device_id/:token/:email/:password', {},{});
-   };
 })();
