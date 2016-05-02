@@ -44,6 +44,7 @@
 
         var focus = 0;
         function inputUp() {
+            console.log('hello');
             inputChanged = 0;
             if ($scope.isFocused == 'focusOut' && focus == 0) {
                 focus++;

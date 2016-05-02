@@ -86268,6 +86268,11 @@ img.img-circle.mycl {
   width: 100%;
   padding: 40px 0 0 0;
 }
+
+.sendImage {
+  width: 200px;
+  height: 180px;
+}
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
