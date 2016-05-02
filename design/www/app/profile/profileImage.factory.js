@@ -21,6 +21,6 @@
             return def.promise;
         };
         return image;
-    }
-    ;
+    };
+        
 })();

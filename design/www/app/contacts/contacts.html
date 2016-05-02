@@ -1,4 +1,4 @@
-<ion-view view-title="Search" id="background" hide-back-button="true">
+<ion-view view-title="Location" id="background" hide-back-button="true">
   <ion-header-bar class='bar-stable'>
      <p class="title">CONTACTS
      <button class="button button-icon ion-android-more-vertical pull-right" style="margin-top: 5px;" ng-click="menu.popover.show($event)"></button>
@@ -20,7 +20,9 @@
                <img class="avatar" ng-src="{{contact.pic}}">
                <i class="fa fa-circle user-status {{contact.status == 'online' && 'online' || '' }}{{contact.status == 'away' && 'away' || '' }}{{contact.status == 'offline' && 'offline' || '' }}"></i>
                <h3>{{contact.name}} <span class="fa fa-spin fa-spinner" ng-show="contacts.spinnerIndex==$index"></span></h3>
+               <p class="lastSeen" >{{contact.geo_city}}<span class="lastSeen" ng-if="contact.geo_state != ''">, </span>{{contact.geo_state}}</p>
                <p class="lastSeen" ng-if="contact.lastSeen != 'Invalid date'">{{contact.lastSeen}}</p>
+               <p class="distance">{{contact.distance_from_logged_user}}</p>
             </a>
          </div>
       </div>

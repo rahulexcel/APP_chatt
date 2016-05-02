@@ -36,6 +36,11 @@
             "type":"referencesMany",
             "model":"user",
             "foreignKey":"friends"
+        },
+        "blocked_users": {
+            "type":"referencesMany",
+            "model":"user",
+            "foreignKey":"blocked_users"
         }
     },
     "acls": [{

@@ -6,7 +6,7 @@
 
     function chatPageController($ionicHistory, $scope, $localStorage) {
         $scope.focusOut = function() {
-            $scope.isFocused = 'focusOut'
+            $scope.isFocused = 'focusOut';
         };
         $scope.height = screen.height;
         if ($localStorage['bgImage']) {

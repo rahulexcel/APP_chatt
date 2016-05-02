@@ -86268,6 +86268,11 @@ img.img-circle.mycl {
   width: 100%;
   padding: 40px 0 0 0;
 }
+
+.sendImage {
+  width: 200px;
+  height: 180px;
+}
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
@@ -98065,6 +98070,13 @@ a.active {
   font-style: italic!important;
 }
 
+.distance {
+  position: absolute;
+  left: 15px!important;
+  top: 60px!important;
+  font-size: 12px!important;
+}
+
 .chat-page-list {
   padding-top: 10px;
 }
@@ -98080,6 +98092,14 @@ a.active {
   top: 16px;
   font-size: 30px!important;
   color: #ff3232!important;
+}
+
+.unblock-icon {
+  position: absolute;
+  right: 46px;
+  top: 16px;
+  font-size: 30px!important;
+  color: green!important;
 }
 
 .addingroup-icon {

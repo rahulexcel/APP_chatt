@@ -13,6 +13,8 @@
         <button ng-if="chatPageHeader.id" class="button button-icon ion-android-more-vertical pull-right popover-menu-btn" ng-click="chatPageHeader.openPopover($event)"></button>
         <button ng-if="!chatPageHeader.id" class="button button-icon ion-android-more-vertical pull-right popover-menu-btn" ng-click="chatPageHeader.openGroupPopover($event)"></button>
     </div>
+    <img id="image" src="" style="display:none;width:100%;">
+   
 </div> 
 
 <script id="infoModel.html" type="text/ng-template">
@@ -52,9 +54,9 @@
                 <div class="m-b m-t-sm h4">
                     <ul class="list user-container">
                       <li class="item item-toggle">
-                         Mute Notifications
+                         Notifications
                          <label class="toggle toggle-balanced">
-                           <input type="checkbox" ng-model="chatPageHeader.muteNotifications">
+                           <input type="checkbox" ng-model="chatPageHeader.muteNotifications" ng-change="chatPageHeader.mute()">
                            <div class="track">
                              <div class="handle"></div>
                            </div>

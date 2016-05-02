@@ -6,11 +6,11 @@
     <ion-refresher pulling-text="Pull to refresh" on-refresh="chatPageCenter.doRefresh()">
     </ion-refresher>
     <div class="list chat-page-list">
-        <div class="item {{(msg.user_id == chatPageCenter.user_id && msg.message_type != 'room_alert_message') && 'right-chat' || 'left-chat' }} {{msg.message_type == 'room_alert_message' && 'alert-message'|| '' }}" ng-repeat="msg in chatPageCenter.displayChatMessages| orderBy:'timeStamp'">
+        <div class="item {{(msg.user_id == chatPageCenter.user_id && msg.message_type != 'room_alert_message') && 'right-chat' || 'left-chat' }} {{msg.message_type == 'room_alert_message' && 'alert-message'|| '' }}" ng-repeat="msg in chatPageCenter.displayChatMessages | orderBy:'timeStamp'">
             <img class="avatar" ng-src="{{msg.image}}">
             <div class="{{msg.user_id == chatPageCenter.user_id && 'bubble-blue'|| 'bubble-yellow' }}">
                 <p class="lastSeen message-user-name" ng-if="chatPageCenter.isPublicRoom && msg.message_type != 'room_alert_message'">{{msg.name}}</p>
-                <p ng-bind-html="msg.message"></p>
+                <p ng-bind-html="msg.message" ng-click="imgDownload(msg.user_id,chatPageCenter.user_id,msg.message)"></p>
                 <p class="message-timing" ng-if="msg.message_type != 'room_alert_message'">{{msg.messageTime}}</p>
                 <p class="chat-time lastSeen"> <span class="message-timing1">{{msg.messageTime}}</span> <i class="{{msg.message_status == 'sent' && 'sent'|| '' }}{{msg.message_status == 'post' && 'post'|| '' }}{{msg.message_status == 'seen' && 'seen'|| '' }}{{msg.user_id == chatPageCenter.user_id && ' fa fa-circle'|| ' ' }}"></i></p>
             </div>

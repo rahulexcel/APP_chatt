@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    angular.module('chattapp', ['ionic', 'ngStorage','ngFileUpload','ngImgCrop', 'ngResource','GoogleLoginService', 'facebookLoginService', 'ngMessages', 'ngSanitize', 'emojiApp'])
+    angular.module('chattapp', ['ionic', 'ngStorage','ngFileUpload','ngImgCrop', 'ngResource','GoogleLoginService', 'facebookLoginService', 'ngMessages', 'ngSanitize', 'emojiApp', 'ngCordova'])
 
     .config(function($stateProvider, $urlRouterProvider) {
         $stateProvider
@@ -112,5 +112,4 @@
         // if none of the above states are matched, use this as the fallback
         // $urlRouterProvider.otherwise('/login');
     });
-
 })();
