@@ -16,6 +16,7 @@
                     <span class="badge blue-badge" ng-if="chat.unreadMessage > 0">{{chat.unreadMessage}}</span>
                     <p class="time lastSeen" ng-show="chat.user_data.geo_city != undefined || chat.user_data.geo_state !=undefined">{{chat.user_data.geo_city}}<span class="lastSeen" ng-if="chat.user_data.geo_state != ''">, </span>{{chat.user_data.geo_state}}</p>
                     <p class="time lastSeen">{{chat.user_data.last_seen}}</p>
+                    <p class="distance">{{chat.user_data.distance}}</p>
                 </a>
             </div>
         </div>

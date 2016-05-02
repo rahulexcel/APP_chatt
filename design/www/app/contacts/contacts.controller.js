@@ -4,7 +4,7 @@
     angular.module('chattapp')
             .controller('contactsController', contactsController);
 
-    function contactsController($scope, contactsFactory, $filter, contactsService, $ionicLoading, timeStorage, $localStorage, $state, socketService, $ionicModal, getUserProfileFactory, $cordovaGeolocation) {
+    function contactsController($scope, contactsFactory, $filter, contactsService, $ionicLoading, timeStorage, $localStorage, $state, socketService, $ionicModal, getUserProfileFactory, $cordovaGeolocation, timeZoneService) {
         delete $localStorage.chatWithUserData;
         var self = this;
         var userData = timeStorage.get('userData');
@@ -14,10 +14,12 @@
              window.plugins.toast.showShortTop('Connect to come online');
         }
         else {
+            self.lodingSpinner=true;
             contactsService.listUsers();
         }
         $scope.$on('updatedlistUsers', function(event, response) {
             self.displaycontacts = response.data;
+            self.lodingSpinner=false;
             $scope.$evalAsync();
         });
         $scope.$on('now_device_is_online', function(event, response) {
@@ -64,12 +66,7 @@
                 else {
                     self.displayUserProfileImage = "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg";
                 }
-                var lastOnline = (_.now() - data.data.last_seen) / 1000;
-                if (lastOnline > 86400) {
-                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("MMMM Do YYYY, h:mm a");
-                } else {
-                    self.displayUserProfileLastSeen = moment(parseInt(data.data.last_seen)).format("h:mm a");
-                }
+                self.displayUserProfileLastSeen=moment.unix(data.data.last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
                 self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
                 self.displayUserProfilePublicRooms = data.data.user_public_rooms;
                 self.displayUserProfileStatus = data.data.profile_status;

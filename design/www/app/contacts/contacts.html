@@ -7,10 +7,11 @@
      </p>
   </ion-header-bar>
    <ion-content scroll="true" class="has-footer">
+      <div class="spin" ng-show="contacts.lodingSpinner"><ion-spinner icon="spiral" class="spinner-positive"></ion-spinner></div>
       <ion-list >
-            <ion-item ng-hide="contacts.displaycontacts.length > 0" class="noItem" >
+            <ion-item ng-hide="contacts.displaycontacts.length > 0 " class="noItem" >
                 <div class="empty" >
-                  <div class='nothing'>'No users found!'</div>
+                  <div class='nothing' ng-hide="contacts.lodingSpinner">'No users found!'</div>
               </div>
           </ion-item>
       </ion-list>
@@ -22,6 +23,7 @@
                <h3>{{contact.name}} <span class="fa fa-spin fa-spinner" ng-show="contacts.spinnerIndex==$index"></span></h3>
                <p class="lastSeen" >{{contact.geo_city}}<span class="lastSeen" ng-if="contact.geo_state != ''">, </span>{{contact.geo_state}}</p>
                <p class="lastSeen" ng-if="contact.lastSeen != 'Invalid date'">{{contact.lastSeen}}</p>
+               <p class="lastSeen" ng-if="contact.geo_state =='' && contact.geo_city== ''">&nbsp</p>
                <p class="distance">{{contact.distance_from_logged_user}}</p>
             </a>
          </div>
