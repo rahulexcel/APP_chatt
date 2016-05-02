@@ -56,7 +56,6 @@
                 currentTimestamp: _.now()
             });
             query.$promise.then(function(data) {
-                console.log(data);
                 self.spinnerIndex = -1;
                 self.displayUserProfileName = data.data.name;
                 self.displayUserProfileId = data.data.user_id;
