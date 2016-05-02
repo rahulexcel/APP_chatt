@@ -494,17 +494,13 @@ module.exports = function (User) {
                                 if( typeof user.geo_location != 'undefined' && user.geo_location.length == 2 ){
                                     var user_long = user.geo_location[0];
                                     var user_lat = user.geo_location[1];
-                                    where.geo_location = { geoWithin: { $centerSphere: [ [ user_long, user_lat ], users_withn_distance / 3963.2 ] } } 
-                                    
-                                    
-                                    //where.geo_location = { nearSphere: { $geometry: [ [ user_long, user_lat ], users_withn_distance / 3963.2 ] } } 
+                                    where.geo_location = { geoWithin: { $centerSphere: [ [ user_long, user_lat ], users_withn_distance / 3963.2 ] } };
                                 }
-                                
                                 User.find({
                                     where: where,
                                     limit: limit,
                                     skip: num * limit,
-                                    //order: 'last_seen DESC'
+                                    //order: 'last_seen DESC',
                                 }, function (err, result) {
                                     if (err) {
                                         callback(null, 0, 'Try Again', err);
@@ -541,7 +537,9 @@ module.exports = function (User) {
                                                 if( geo_long_logged_user != '' && geo_lat_logged_user != '' &&  geo_long_user != '' && geo_lat_user != '' ){
                                                     distance_from_logged_user = UTIL.get_distance( geo_lat_logged_user, geo_long_logged_user, geo_lat_user, geo_long_user );
                                                 }
-                                                
+                                                if( distance_from_logged_user != ''){
+                                                            distance_from_logged_user = distance_from_logged_user + ' Km';
+                                                        }
                                                 
                                                 
                                                 var aa = {
@@ -562,7 +560,7 @@ module.exports = function (User) {
                                                     geo_address : geo_address,
                                                     geo_country : geo_country,
                                                     geo_state : geo_state,
-                                                    distance_from_logged_user : distance_from_logged_user + ' Km'
+                                                    distance_from_logged_user : distance_from_logged_user
                                                     //distance_from_logged_user : distance_from_logged_user + 'Km Away from you'
                                                 });
                                             });
