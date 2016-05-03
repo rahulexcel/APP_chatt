@@ -268,7 +268,7 @@ module.exports = function (User) {
                     {arg: 'name', type: 'string'},
                     {arg: 'password', type: 'string'},
                     {arg: 'profile_image', type: 'string'},
-                    {arg: 'gender', type: 'stringlist'},
+                    {arg: 'gender', type: 'string'},
                     {arg: 'dob', type: 'string'},
                     {arg: 'currentTimestamp', type: 'number'}
                 ],
