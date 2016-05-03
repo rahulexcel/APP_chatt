@@ -594,12 +594,12 @@ module.exports = function (Room) {
                                 "include": [{
                                     relation: 'room_owner', 
                                     scope: {
-                                        fields: ['name','profile_image','last_seen','status','geo_city','geo_state','geo_country','geo_address','geo_location'],
+                                        fields: ['name','profile_image','last_seen','status','geo_city','geo_state','geo_country','geo_address','geo_location','gender','dob'],
                                     }
                                 },{
                                     relation: 'room_users', 
                                     scope: {
-                                        fields: ['name','profile_image','last_seen','status','geo_city','geo_state','geo_country','geo_address','geo_location'],
+                                        fields: ['name','profile_image','last_seen','status','geo_city','geo_state','geo_country','geo_address','geo_location','gender','dob'],
                                     }
                                 }]
                             },function (err, result) {
@@ -658,7 +658,9 @@ module.exports = function (Room) {
                                                             'geo_state' : k1_user.geo_state,
                                                             'geo_country' : k1_user.geo_country,
                                                             'geo_address' : k1_user.geo_address,
-                                                            'distance_from_logged_user' : distance_from_logged_user
+                                                            'distance_from_logged_user' : distance_from_logged_user,
+                                                            'dob' : k1_user.dob,
+                                                            'gender' : k1_user.gender
                                                         }
                                                     }
                                                 }
