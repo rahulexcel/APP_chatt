@@ -13,32 +13,33 @@
             promise.then(function(googleData) {
                 $ionicLoading.show();
                 console.log(googleData);
-                timeStorage.set('userEmail', googleData.email, 1);
-                var query = loginFactory.save({
-                    action_type: 'google',
-                    social_id: googleData.google_id,
-                    platform: devicePlatform,
-                    token: $localStorage.gcmToken,
-                    action: 'login_register',
-                    device_id: deviceUUID,
-                    email: googleData.email,
-                    name: googleData.name,
-                    currentTimestamp: _.now(),
-                    password: '',
-                    profile_image: googleData.picture,
-                    // location: position
-                });
-                query.$promise.then(function(data) {
-                    $ionicLoading.hide();
-                    console.log(data);
-                    tostService.notify('Welcome "' + data.data.name + '"', 'top');
+                googleLogin.getUserFullDetails(googleData.google_id).then(function(userFullDetails){
                     timeStorage.set('userEmail', googleData.email, 1);
-                    timeStorage.set('userData', data, 1);
-                    // lastUsesTimeService.updateTime();
-                    $state.go('app.chats');
-                    $ionicHistory.nextViewOptions({
-                        historyRoot: true,
-                        disableBack: true
+                    var query = loginFactory.save({
+                        action_type: 'google',
+                        social_id: googleData.google_id,
+                        platform: devicePlatform,
+                        token: $localStorage.gcmToken,
+                        action: 'login_register',
+                        device_id: deviceUUID,
+                        email: googleData.email,
+                        name: googleData.name,
+                        currentTimestamp: _.now(),
+                        password: '',
+                        profile_image: googleData.picture,
+                        gender:googleData.gender,
+                        dob:userFullDetails.birthday
+                    });
+                    query.$promise.then(function(data) {
+                        $ionicLoading.hide();
+                        tostService.notify('Welcome "' + data.data.name + '"', 'top');
+                        timeStorage.set('userEmail', googleData.email, 1);
+                        timeStorage.set('userData', data, 1);
+                        $state.go('app.chats');
+                        $ionicHistory.nextViewOptions({
+                            historyRoot: true,
+                            disableBack: true
+                        });
                     });
                 });
             }, function(data) {
@@ -47,14 +48,12 @@
         };
         self.facebookRegister = function() {
             facebookLogin.login().then(function(fbData) {
-                console.log(fbData);
                 if (fbData.id) {
                     loginWithFBApi(fbData);
                     $ionicLoading.show();
                 }
                 if (fbData == 'unknown') {
                     facebookLogin.fbLoginSuccess().then(function(fbData1) {
-                        console.log(fbData1);
                         loginWithFBApi(fbData1);
                         $ionicLoading.show();
                     }, function(data) {
@@ -79,11 +78,12 @@
                 name: fbData.name,
                 currentTimestamp: _.now(),
                 password: '',
-                profile_image: 'http://graph.facebook.com/' + fbData.id + '/picture?type=large'
+                profile_image: 'http://graph.facebook.com/' + fbData.id + '/picture?type=large',
+                gender:fbData.gender,
+                dob:''
             });
             query.$promise.then(function(data) {
                 $ionicLoading.hide();
-                console.log(data);
                 tostService.notify('Welcome "' + data.data.name + '"', 'top');
                 timeStorage.set('userEmail', fbData.email, 1);
                 timeStorage.set('userData', data, 1);

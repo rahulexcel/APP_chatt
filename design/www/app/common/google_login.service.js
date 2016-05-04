@@ -48,8 +48,8 @@ googleLoginService.factory('timeStorage', ['$localStorage', function($localStora
 
 
 googleLoginService.factory('googleLogin', [
-    '$http', '$q', '$interval', '$log', 'timeStorage',
-    function($http, $q, $interval, $log, timeStorage) {
+    '$http', '$q', '$interval', '$log', 'timeStorage', 'Configurations',
+    function($http, $q, $interval, $log, timeStorage, Configurations) {
         var service = {};
         service.access_token = false;
         service.redirect_url = 'http://localhost';
@@ -196,6 +196,23 @@ googleLoginService.factory('googleLogin', [
             http.then(function(data) {
                 console.log(data);
             });
+        };
+        service.getUserFullDetails = function(userId) {
+            var def = $q.defer();
+            var http = $http({
+                url: 'https://www.googleapis.com/plus/v1/people/'+userId,
+                method: 'GET',
+                params: {
+                    key: Configurations.googleApiKey
+                }
+            });
+            http.then(function(data) {
+                def.resolve(data.data);
+            }, function(data) {
+                $log.error(data);
+                def.reject(data.error);
+            });
+            return def.promise;
         };
         service.startLogin = function() {
             var def = $q.defer();
