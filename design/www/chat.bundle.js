@@ -24630,7 +24630,7 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
                 $scope.$evalAsync();
                 inputChangedPromise = $timeout(function() {
                     self.tempMessage = [];
-                }, 6000);
+                }, 2000);
             }
         });
         $scope.$on('now_device_is_online', function(event, response) {
@@ -24817,32 +24817,23 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
         var inputChanged = 0;
         var i = 0;
         var interval;
+        var message='';
         var inputChangedPromise;
+        var debounce = _.debounce(fireSocketEvent, 100, false);
         function writingMessage() {
-            if (inputChanged == 0) {
-                socketService.writingMessage($stateParams.roomId);
-                inputChanged = 1;
-            }
-            if (inputChangedPromise) {
-                $timeout.cancel(inputChangedPromise);
-            }
-            inputChangedPromise = $timeout(function() {
-                socketService.writingMessage($stateParams.roomId);
-                $interval.cancel(interval);
-                i = 0;
-                inputChanged = 1;
-            }, 1000);
-            if (i == 0) {
-                interval = $interval(function() {
-                    socketService.writingMessage($stateParams.roomId);
-                }, 4000);
-                i = 1;
+            if (message != $scope.emojiMessage.rawhtml) {
+            message=$scope.emojiMessage.rawhtml;  
+            debounce();
             }
         };
+        function fireSocketEvent(){
+            socketService.writingMessage($stateParams.roomId);
+        }
         document.addEventListener('focusIn', inputUp, false);
         document.addEventListener('focusOut', inputDown, false);
         document.addEventListener('change', writingMessage, false);
     }
+
 })();
  (function() {
      'use strict';
@@ -25678,7 +25669,7 @@ var service = {};
                     $localStorage.lat=lat;
                     $localStorage.lng=lang;
                    }, function(err) {
-                    console.log(err);
+                    //console.log(err);
                    //error process
                    });
                    }, 1000);
@@ -26452,6 +26443,7 @@ angular.module('chattapp').directive('isFocused', function($timeout) {
                     socket.emit('APP_SOCKET_EMIT', 'do_logout', {accessToken: userData.data.access_token, currentTimestamp: _.now()});
                 },
                 service.writingMessage = function(roomId) {
+                    console.log('typing');
                     var userData = timeStorage.get('userData');
                     socket.emit('APP_SOCKET_EMIT', 'room_user_typing', {user_id: userData.data.user_id, name: userData.data.name, room_id: roomId});
                 },
@@ -27401,6 +27393,32 @@ angular.module('chattapp').directive('isFocused', function($timeout) {
 })();
 
 (function() {
+    'use strict';
+
+    angular.module('chattapp')
+            .controller('settingController', settingController);
+
+    function settingController(socketService, timeStorage, $state) {
+        var self = this;
+//        self.version='';
+        document.addEventListener("deviceready", function() {
+            self.version = AppVersion.version;
+        });
+        self.logout = function() {
+            socketService.logout();
+            timeStorage.remove('google_access_token');
+            timeStorage.remove('userEmail');
+            timeStorage.remove('userData');
+            timeStorage.remove('displayPrivateChats');
+            timeStorage.remove('listUsers');
+            timeStorage.remove('chatWithUserData');
+            timeStorage.remove('displayPublicChats');
+            timeStorage.remove('profile_data');
+            $state.go('login');
+        };
+    }
+})();
+(function() {
    'use strict';
    angular.module('chattapp')
        .factory('getPublicRoomsFactory', getPublicRoomsFactory);
@@ -27597,31 +27615,5 @@ angular.module('chattapp').directive('isFocused', function($timeout) {
             'Private'
         ];
         self.userGroupType = 'Public';
-    }
-})();
-(function() {
-    'use strict';
-
-    angular.module('chattapp')
-            .controller('settingController', settingController);
-
-    function settingController(socketService, timeStorage, $state) {
-        var self = this;
-//        self.version='';
-        document.addEventListener("deviceready", function() {
-            self.version = AppVersion.version;
-        });
-        self.logout = function() {
-            socketService.logout();
-            timeStorage.remove('google_access_token');
-            timeStorage.remove('userEmail');
-            timeStorage.remove('userData');
-            timeStorage.remove('displayPrivateChats');
-            timeStorage.remove('listUsers');
-            timeStorage.remove('chatWithUserData');
-            timeStorage.remove('displayPublicChats');
-            timeStorage.remove('profile_data');
-            $state.go('login');
-        };
     }
 })();
