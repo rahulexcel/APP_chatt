@@ -1,6 +1,15 @@
 #background{
     background-color: #3F51B5 !important;
 }
+/*#messageInput{
+    border: none;
+    color: transparent;
+    display: inline-block;
+    text-shadow: 0 0 0 gray;
+    &:focus {
+        outline: none;
+    }
+}*/
 .white{
     color: #fff;
 }

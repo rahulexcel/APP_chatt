@@ -83,7 +83,7 @@
                 $scope.$evalAsync();
                 inputChangedPromise = $timeout(function() {
                     self.tempMessage = [];
-                }, 6000);
+                }, 2000);
             }
         });
         $scope.$on('now_device_is_online', function(event, response) {

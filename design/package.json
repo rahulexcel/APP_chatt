@@ -23,10 +23,6 @@
     "cordova-plugin-splashscreen",
     "cordova-plugin-statusbar",
     "ionic-plugin-keyboard",
-    {
-      "locator": "/var/www/html/facebook_plugin",
-      "id": "phonegap-facebook-plugin"
-    },
     "cordova-plugin-network-information",
     {
       "locator": "https://github.com/litehelpers/cordova-sqlite-ext.git",

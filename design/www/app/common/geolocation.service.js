@@ -16,7 +16,7 @@
                     $localStorage.lat=lat;
                     $localStorage.lng=lang;
                    }, function(err) {
-                    console.log(err);
+                    //console.log(err);
                    //error process
                    });
                    }, 1000);

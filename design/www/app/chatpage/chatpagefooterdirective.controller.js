@@ -68,30 +68,21 @@
         var inputChanged = 0;
         var i = 0;
         var interval;
+        var message='';
         var inputChangedPromise;
+        var debounce = _.debounce(fireSocketEvent, 100, false);
         function writingMessage() {
-            if (inputChanged == 0) {
-                socketService.writingMessage($stateParams.roomId);
-                inputChanged = 1;
-            }
-            if (inputChangedPromise) {
-                $timeout.cancel(inputChangedPromise);
-            }
-            inputChangedPromise = $timeout(function() {
-                socketService.writingMessage($stateParams.roomId);
-                $interval.cancel(interval);
-                i = 0;
-                inputChanged = 1;
-            }, 1000);
-            if (i == 0) {
-                interval = $interval(function() {
-                    socketService.writingMessage($stateParams.roomId);
-                }, 4000);
-                i = 1;
+            if (message != $scope.emojiMessage.rawhtml) {
+            message=$scope.emojiMessage.rawhtml;  
+            debounce();
             }
         };
+        function fireSocketEvent(){
+            socketService.writingMessage($stateParams.roomId);
+        }
         document.addEventListener('focusIn', inputUp, false);
         document.addEventListener('focusOut', inputDown, false);
         document.addEventListener('change', writingMessage, false);
     }
+
 })();
