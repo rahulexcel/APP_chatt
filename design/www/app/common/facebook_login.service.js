@@ -30,7 +30,7 @@ var service = {};
             };
             service.getFacebookProfileInfo = function(authResponse) {
                 var info = $q.defer();
-                facebookConnectPlugin.api('/me?fields=email,name&access_token=' + authResponse.accessToken, null,
+                facebookConnectPlugin.api('/me?fields=email,name,gender&access_token=' + authResponse.accessToken, null,
                     function(response) {
                         console.log(response);
                         response.accessToken = authResponse.accessToken;

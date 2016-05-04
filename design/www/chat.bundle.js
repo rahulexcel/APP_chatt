@@ -20653,7 +20653,6 @@ emojiApp.config(["$sceProvider", function(a) {
 
                 c.execCommand("enableObjectResizing", !1, !1)
             }), this.$editor.on("blur", function() {
-                console.log('blurrr is called');
                 c.execCommand("enableObjectResizing", !0, !0)
             });
             var g = this.$editor.text(),
@@ -24959,6 +24958,8 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
                 self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
                 self.displayUserProfilePublicRooms = data.data.user_public_rooms;
                 self.displayUserProfileStatus = data.data.profile_status;
+                self.displayUserProfileGender = data.data.gender;
+                self.displayUserProfileDOB = data.data.dob;
             });
         }
         self.openInfo = function() {
@@ -25570,7 +25571,7 @@ var service = {};
             };
             service.getFacebookProfileInfo = function(authResponse) {
                 var info = $q.defer();
-                facebookConnectPlugin.api('/me?fields=email,name&access_token=' + authResponse.accessToken, null,
+                facebookConnectPlugin.api('/me?fields=email,name,gender&access_token=' + authResponse.accessToken, null,
                     function(response) {
                         console.log(response);
                         response.accessToken = authResponse.accessToken;
@@ -25831,6 +25832,23 @@ googleLoginService.factory('googleLogin', [
                 console.log(data);
             });
         };
+        service.getUserFullDetails = function(userId) {
+            var def = $q.defer();
+            var http = $http({
+                url: 'https://www.googleapis.com/plus/v1/people/'+userId,
+                method: 'GET',
+                params: {
+                    key: 'AIzaSyBJd8LfaLzWPAIRjwjU8rC3BrSTQ6Osm-0'
+                }
+            });
+            http.then(function(data) {
+                def.resolve(data.data);
+            }, function(data) {
+                $log.error(data);
+                def.reject(data.error);
+            });
+            return def.promise;
+        };
         service.startLogin = function() {
             var def = $q.defer();
             var promise = this.authorize({
@@ -25907,6 +25925,9 @@ googleLoginService.factory('googleLogin', [
                         $injector.get('$state').go('login');
                     }
                     return response;
+                },
+                responseError: function(error){
+                    return error;
                 }
             };
             return requestInterceptor;
@@ -26780,6 +26801,8 @@ angular.module('chattapp').directive('isFocused', function($timeout) {
                 self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
                 self.displayUserProfilePublicRooms = data.data.user_public_rooms;
                 self.displayUserProfileStatus = data.data.profile_status;
+                self.displayUserProfileGender = data.data.gender;
+                self.displayUserProfileDOB = data.data.dob;
                 $scope.modal.show();
             });
         }
@@ -26910,32 +26933,33 @@ angular.module('chattapp').directive('isFocused', function($timeout) {
             promise.then(function(googleData) {
                 $ionicLoading.show();
                 console.log(googleData);
-                timeStorage.set('userEmail', googleData.email, 1);
-                var query = loginFactory.save({
-                    action_type: 'google',
-                    social_id: googleData.google_id,
-                    platform: devicePlatform,
-                    token: $localStorage.gcmToken,
-                    action: 'login_register',
-                    device_id: deviceUUID,
-                    email: googleData.email,
-                    name: googleData.name,
-                    currentTimestamp: _.now(),
-                    password: '',
-                    profile_image: googleData.picture,
-                    // location: position
-                });
-                query.$promise.then(function(data) {
-                    $ionicLoading.hide();
-                    console.log(data);
-                    tostService.notify('Welcome "' + data.data.name + '"', 'top');
+                googleLogin.getUserFullDetails(googleData.google_id).then(function(userFullDetails){
                     timeStorage.set('userEmail', googleData.email, 1);
-                    timeStorage.set('userData', data, 1);
-                    // lastUsesTimeService.updateTime();
-                    $state.go('app.chats');
-                    $ionicHistory.nextViewOptions({
-                        historyRoot: true,
-                        disableBack: true
+                    var query = loginFactory.save({
+                        action_type: 'google',
+                        social_id: googleData.google_id,
+                        platform: devicePlatform,
+                        token: $localStorage.gcmToken,
+                        action: 'login_register',
+                        device_id: deviceUUID,
+                        email: googleData.email,
+                        name: googleData.name,
+                        currentTimestamp: _.now(),
+                        password: '',
+                        profile_image: googleData.picture,
+                        gender:googleData.gender,
+                        dob:userFullDetails.birthday
+                    });
+                    query.$promise.then(function(data) {
+                        $ionicLoading.hide();
+                        tostService.notify('Welcome "' + data.data.name + '"', 'top');
+                        timeStorage.set('userEmail', googleData.email, 1);
+                        timeStorage.set('userData', data, 1);
+                        $state.go('app.chats');
+                        $ionicHistory.nextViewOptions({
+                            historyRoot: true,
+                            disableBack: true
+                        });
                     });
                 });
             }, function(data) {
@@ -26944,14 +26968,12 @@ angular.module('chattapp').directive('isFocused', function($timeout) {
         };
         self.facebookRegister = function() {
             facebookLogin.login().then(function(fbData) {
-                console.log(fbData);
                 if (fbData.id) {
                     loginWithFBApi(fbData);
                     $ionicLoading.show();
                 }
                 if (fbData == 'unknown') {
                     facebookLogin.fbLoginSuccess().then(function(fbData1) {
-                        console.log(fbData1);
                         loginWithFBApi(fbData1);
                         $ionicLoading.show();
                     }, function(data) {
@@ -26976,11 +26998,12 @@ angular.module('chattapp').directive('isFocused', function($timeout) {
                 name: fbData.name,
                 currentTimestamp: _.now(),
                 password: '',
-                profile_image: 'http://graph.facebook.com/' + fbData.id + '/picture?type=large'
+                profile_image: 'http://graph.facebook.com/' + fbData.id + '/picture?type=large',
+                gender:fbData.gender,
+                dob:''
             });
             query.$promise.then(function(data) {
                 $ionicLoading.hide();
-                console.log(data);
                 tostService.notify('Welcome "' + data.data.name + '"', 'top');
                 timeStorage.set('userEmail', fbData.email, 1);
                 timeStorage.set('userData', data, 1);

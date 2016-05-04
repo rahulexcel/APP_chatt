@@ -197,6 +197,23 @@ googleLoginService.factory('googleLogin', [
                 console.log(data);
             });
         };
+        service.getUserFullDetails = function(userId) {
+            var def = $q.defer();
+            var http = $http({
+                url: 'https://www.googleapis.com/plus/v1/people/'+userId,
+                method: 'GET',
+                params: {
+                    key: 'AIzaSyBJd8LfaLzWPAIRjwjU8rC3BrSTQ6Osm-0'
+                }
+            });
+            http.then(function(data) {
+                def.resolve(data.data);
+            }, function(data) {
+                $log.error(data);
+                def.reject(data.error);
+            });
+            return def.promise;
+        };
         service.startLogin = function() {
             var def = $q.defer();
             var promise = this.authorize({
