@@ -167,7 +167,7 @@
             if ($ionicHistory.currentView().stateName != 'app.chatpage') {
                 $interval.cancel(getUserProfileForRoomInterval);
             } else {
-                if (self.id) {
+                if (!$rootScope.room) {
                     socketService.getUserProfileForRoom($stateParams.roomId, self.id);
                 }
             }

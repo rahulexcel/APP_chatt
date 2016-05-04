@@ -40,6 +40,8 @@
                             historyRoot: true,
                             disableBack: true
                         });
+                    },function(error) {
+                    tostService.notify('Error Occured . Try Again !!!', 'top'); 
                     });
                 });
             }, function(data) {

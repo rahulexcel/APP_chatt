@@ -65,12 +65,8 @@
             $interval.cancel(interval);
             $ionicScrollDelegate.resize();
         };
-        var inputChanged = 0;
-        var i = 0;
-        var interval;
         var message='';
-        var inputChangedPromise;
-        var debounce = _.debounce(fireSocketEvent, 100, false);
+        var debounce = _.debounce(fireSocketEvent, 0, false);
         function writingMessage() {
             if (message != $scope.emojiMessage.rawhtml) {
             message=$scope.emojiMessage.rawhtml;  
