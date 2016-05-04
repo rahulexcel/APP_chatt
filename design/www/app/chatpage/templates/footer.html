@@ -7,7 +7,7 @@
 
 <ion-footer-bar class='bar bar-stable' keyboard-attach>
     <div emoji-form emoji-message="emojiMessage" style="min-width: 80%;">
-        <textarea is-focused id="messageInput" ng-model="emojiMessage.messagetext" on-focus="chatPageFooter.inputUp()" on-blur="chatPageFooter.inputDown()" trigger="{{isFocused}}" ng-change="chatPageFooter.writingMessage()"></textarea>
+        <textarea id="messageInput"  ng-model="emojiMessage.messagetext"  ng-change="chatPageFooter.writingMessage()"></textarea>
         <button id="emojibtn">
             <i class="icon icon-emoji"></i>
         </button>
@@ -15,4 +15,4 @@
             <i class='icon ion-paper-airplane'></i>
         </button>
     </div>
-</ion-fotter-bar>
+</ion-footer-bar>
