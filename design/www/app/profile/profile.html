@@ -50,6 +50,12 @@
                 <div class="item item-icon-right" ng-if="profile.displayprofile.user_blocked_users > 0">
                     <span>My Blocked Users</span><span class="pull-right">{{profile.displayprofile.user_blocked_users}}</span>
                 </div>
+                <div class="item item-icon-right" ng-if="profile.displayprofile.gender">
+                    <span>Gender</span><span class="pull-right">{{profile.displayprofile.gender}}</span>
+                </div>
+                <div class="item item-icon-right" ng-if="profile.displayprofile.dob">
+                    <span>DOB</span><span class="pull-right">{{profile.displayprofile.dob}}</span>
+                </div>
             </div>
             <div class="list" id="chats" ng-hide="profile.lodingSpinner">
                 <div class="user-container" ng-repeat="blockUser in profile.blockedUser">

@@ -40,12 +40,12 @@
         <splash density="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
     </platform>
     <icon src="resources/android/icon/drawable-xhdpi-icon.png" />
+    <branch-config>
+        <android-prefix value="/TaOn" />
+        <host name="bnc.lt" scheme="https" />
+    </branch-config>
     <plugin name="cordova-plugin-facebook4" spec="https://github.com/jeduan/cordova-plugin-facebook4.git">
         <variable name="APP_ID" value="1589303144719465" />
         <variable name="APP_NAME" value="Chatt App" />
     </plugin>
-    <branch-config>
-    <android-prefix value="/TaOn" />
-    <host name="bnc.lt" scheme="https" />
-    </branch-config>
 </widget>

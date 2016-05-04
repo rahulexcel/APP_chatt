@@ -564,6 +564,7 @@ module.exports = function (Room) {
                     callback(null, 0, 'UnAuthorized', {});
                 }else{
                     var userId = accessToken.userId
+                    var access_token_userid = userId;
                     var logged_user_id = userId;
                     userId = new ObjectID( userId );
                     
@@ -577,96 +578,126 @@ module.exports = function (Room) {
                             room_type : room_type,
                         }
                     }
-                    
-                    Room.find({
-                        "where": wh,
-                        "order": 'last_message_received_time DESC',
-                        "include": [{
-                            relation: 'room_owner', 
-                            scope: {
-                                fields: ['name','profile_image','last_seen','status','geo_city','geo_state','geo_country','geo_address'],
+                    User.findById(access_token_userid, function (err, user) {
+                        if (err) {
+                            callback(null, 0, 'UnAuthorized 1', err);
+                        } else {
+                            var geo_long_logged_user = geo_lat_logged_user = '';
+                            if( typeof user.geo_location != 'undefined' && user.geo_location.length == 2 ){
+                                geo_long_logged_user = user.geo_location[0];
+                                geo_lat_logged_user = user.geo_location[1];
                             }
-                        },{
-                            relation: 'room_users', 
-                            scope: {
-                                fields: ['name','profile_image','last_seen','status','geo_city','geo_state','geo_country','geo_address'],
-                            }
-                        }]
-                    },function (err, result) {
-                        if( err ){
-                            callback(null, 0, 'try again', {});
-                        }else{
-                            if( result.length > 0 ){
-                                var new_result = [];
-                                for( var k in result ){
-                                    kr = result[k];
-                                    kr = kr.toJSON();
-                                    kr_room_type = kr.room_type;
-                                    kr_room_users = kr.room_users
-                                    
-                                    var show_details_for_list = {};
-                                    if( kr_room_type == 'private' ){
-                                        for( var k1 in kr_room_users ){
-                                            k1_user = kr_room_users[k1];
-                                            k1_user_id = k1_user.id;
-                                            if( logged_user_id.toString() != k1_user_id.toString() ){
-                                                
-                                                
-                                                var k1_user_status = k1_user.status;
-                                                var k1_user_last_seen = k1_user.last_seen;
-                                                var aa = {
-                                                    status : k1_user_status,
-                                                    last_seen : k1_user_last_seen
+                            
+                            Room.find({
+                                "where": wh,
+                                "order": 'last_message_received_time DESC',
+                                "include": [{
+                                    relation: 'room_owner', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen','status','geo_city','geo_state','geo_country','geo_address','geo_location','gender','dob'],
+                                    }
+                                },{
+                                    relation: 'room_users', 
+                                    scope: {
+                                        fields: ['name','profile_image','last_seen','status','geo_city','geo_state','geo_country','geo_address','geo_location','gender','dob'],
+                                    }
+                                }]
+                            },function (err, result) {
+                                if( err ){
+                                    callback(null, 0, 'try again', {});
+                                }else{
+                                    if( result.length > 0 ){
+                                        var new_result = [];
+                                        for( var k in result ){
+                                            kr = result[k];
+                                            kr = kr.toJSON();
+                                            kr_room_type = kr.room_type;
+                                            kr_room_users = kr.room_users
+
+                                            var show_details_for_list = {};
+                                            if( kr_room_type == 'private' ){
+                                                for( var k1 in kr_room_users ){
+                                                    k1_user = kr_room_users[k1];
+                                                    k1_user_id = k1_user.id;
+                                                    if( logged_user_id.toString() != k1_user_id.toString() ){
+
+
+                                                        var k1_user_status = k1_user.status;
+                                                        var k1_user_last_seen = k1_user.last_seen;
+                                                        var aa = {
+                                                            status : k1_user_status,
+                                                            last_seen : k1_user_last_seen
+                                                        }
+                                                        user_status = '';
+                                                        User.FN_get_user_status( aa, function(s){
+                                                            user_status = s
+                                                        });
+
+
+                                                        var geo_long_user = geo_lat_user = '';
+                                                        if( typeof k1_user.geo_location != 'undefined' && k1_user.geo_location.length == 2 ){
+                                                            geo_long_user = k1_user.geo_location[0];
+                                                            geo_lat_user = k1_user.geo_location[1];
+                                                        }
+
+                                                        var distance_from_logged_user = '';
+
+                                                        if( geo_long_logged_user != '' && geo_lat_logged_user != '' &&  geo_long_user != '' && geo_lat_user != '' ){
+                                                            distance_from_logged_user = UTIL.get_distance( geo_lat_logged_user, geo_long_logged_user, geo_lat_user, geo_long_user );
+                                                        }
+                                                        if( distance_from_logged_user != ''){
+                                                            distance_from_logged_user = distance_from_logged_user + ' Km';
+                                                        }
+                                                        show_details_for_list = {
+                                                            'user_id' : k1_user.id,
+                                                            'icon' : k1_user.profile_image,
+                                                            'main_text' : k1_user.name,
+                                                            'sub_text' : k1_user.last_seen,
+                                                            'user_status' : user_status,
+                                                            'geo_city' : k1_user.geo_city,
+                                                            'geo_state' : k1_user.geo_state,
+                                                            'geo_country' : k1_user.geo_country,
+                                                            'geo_address' : k1_user.geo_address,
+                                                            'distance_from_logged_user' : distance_from_logged_user,
+                                                            'dob' : k1_user.dob,
+                                                            'gender' : k1_user.gender
+                                                        }
+                                                    }
                                                 }
-                                                user_status = '';
-                                                User.FN_get_user_status( aa, function(s){
-                                                    user_status = s
-                                                });
+                                            }else if( kr_room_type == 'public' ){
+                                                var kr_room_name = kr.room_name;
+                                                var kr_room_description = kr.room_description;
+                                                if( kr_room_name.length > 20 ){
+                                                    kr_room_name = kr_room_name.slice(0,20) + '....';
+                                                }
+                                                if( kr_room_description.length > 20 ){
+                                                    kr_room_description = kr_room_description.slice(0,20) + '....';
+                                                }
                                                 show_details_for_list = {
-                                                    'user_id' : k1_user.id,
-                                                    'icon' : k1_user.profile_image,
-                                                    'main_text' : k1_user.name,
-                                                    'sub_text' : k1_user.last_seen,
-                                                    'user_status' : user_status,
-                                                    'geo_city' : k1_user.geo_city,
-                                                    'geo_state' : k1_user.geo_state,
-                                                    'geo_country' : k1_user.geo_country,
-                                                    'geo_address' : k1_user.geo_address
+                                                    'icon' : kr.room_image,
+                                                    'main_text' : kr_room_name,
+                                                    'sub_text' : kr_room_description,
                                                 }
                                             }
+                                            kr.show_details_for_list = show_details_for_list;
+
+                                            if( typeof kr.is_deleted != 'undefined' && kr.is_deleted == 1 ){
+
+                                            }else{
+                                                new_result.push( kr );
+                                            }
                                         }
-                                    }else if( kr_room_type == 'public' ){
-                                        var kr_room_name = kr.room_name;
-                                        var kr_room_description = kr.room_description;
-                                        if( kr_room_name.length > 20 ){
-                                            kr_room_name = kr_room_name.slice(0,20) + '....';
-                                        }
-                                        if( kr_room_description.length > 20 ){
-                                            kr_room_description = kr_room_description.slice(0,20) + '....';
-                                        }
-                                        show_details_for_list = {
-                                            'icon' : kr.room_image,
-                                            'main_text' : kr_room_name,
-                                            'sub_text' : kr_room_description,
-                                        }
-                                    }
-                                    kr.show_details_for_list = show_details_for_list;
-                                    
-                                    if( typeof kr.is_deleted != 'undefined' && kr.is_deleted == 1 ){
-                                        
+                                        var data = {
+                                            'rooms' : new_result
+                                        };
+                                        callback( null, 1, 'Rooms found', data );
                                     }else{
-                                        new_result.push( kr );
+                                        callback( null, 0, 'No rooms found', {} );
                                     }
                                 }
-                                var data = {
-                                    'rooms' : new_result
-                                };
-                                callback( null, 1, 'Rooms found', data );
-                            }else{
-                                callback( null, 0, 'No rooms found', {} );
-                            }
+                            });
                         }
-                    });
+                    })
                 }
             }
         });

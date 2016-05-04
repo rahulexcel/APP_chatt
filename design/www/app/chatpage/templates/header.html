@@ -110,6 +110,8 @@
             <div class="clearfix"></div>
             <p class="pad-5"><span>Private Rooms</span><span class="pull-right">{{chatPageHeader.displayUserProfilePrivateRooms}}</span></p>
             <p class="pad-5"><span>Public Rooms</span><span class="pull-right">{{chatPageHeader.displayUserProfilePublicRooms}}</span></p>
+            <p class="pad-5" ng-if="chatPageHeader.displayUserProfileGender"><span>Gender</span><span class="pull-right">{{chatPageHeader.displayUserProfileGender}}</span></p>
+            <p class="pad-5" ng-if="chatPageHeader.displayUserProfileDOB"><span>DOB</span><span class="pull-right">{{chatPageHeader.displayUserProfileDOB}}</span></p>
         </div>
         </ion-content>
     </div>                

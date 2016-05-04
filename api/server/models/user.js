@@ -79,7 +79,7 @@ module.exports = function (User) {
     
     
     //********************************* START REGISTER AND LOGIN **********************************
-    User.register_login = function (action, action_type, social_id, platform, device_id, token, email_id, name, password, profile_image, currentTimestamp, callback) {
+    User.register_login = function (action, action_type, social_id, platform, device_id, token, email_id, name, password, profile_image, gender, dob, currentTimestamp, callback) {
         var LIFE_OF_ACCESS_TOKEN = 60 * 60 * 24 * 1000;
         if (action && action_type && email_id) {
             if (typeof name == 'undefined' || name == '') {
@@ -209,7 +209,9 @@ module.exports = function (User) {
                                     registration_date_time: UTIL.currentDateTimeDay(currentTimestamp),
                                     profile_image: profile_image,
                                     profile_status: '',
-                                    room_background_image : ''
+                                    room_background_image : '',
+                                    gender : gender,
+                                    dob : dob,
                                 }, function (err, user) {
                                     if (err) {
                                         callback(null, 0, err, {});
@@ -266,6 +268,8 @@ module.exports = function (User) {
                     {arg: 'name', type: 'string'},
                     {arg: 'password', type: 'string'},
                     {arg: 'profile_image', type: 'string'},
+                    {arg: 'gender', type: 'string'},
+                    {arg: 'dob', type: 'string'},
                     {arg: 'currentTimestamp', type: 'number'}
                 ],
                 returns: [
@@ -494,17 +498,13 @@ module.exports = function (User) {
                                 if( typeof user.geo_location != 'undefined' && user.geo_location.length == 2 ){
                                     var user_long = user.geo_location[0];
                                     var user_lat = user.geo_location[1];
-                                    where.geo_location = { geoWithin: { $centerSphere: [ [ user_long, user_lat ], users_withn_distance / 3963.2 ] } } 
-                                    
-                                    
-                                    //where.geo_location = { nearSphere: { $geometry: [ [ user_long, user_lat ], users_withn_distance / 3963.2 ] } } 
+                                    where.geo_location = { geoWithin: { $centerSphere: [ [ user_long, user_lat ], users_withn_distance / 3963.2 ] } };
                                 }
-                                
                                 User.find({
                                     where: where,
                                     limit: limit,
                                     skip: num * limit,
-                                    //order: 'last_seen DESC'
+                                    //order: 'last_seen DESC',
                                 }, function (err, result) {
                                     if (err) {
                                         callback(null, 0, 'Try Again', err);
@@ -518,6 +518,13 @@ module.exports = function (User) {
                                                 var pic = value.profile_image;
                                                 var lastSeen = value.last_seen;
                                                 var geo_city = geo_address = geo_state = geo_country = '';
+                                                var gender = dob = '';
+                                                if( typeof value.gender != 'undefined' ){
+                                                    gender = value.gender;
+                                                }
+                                                if( typeof value.dob != 'undefined' ){
+                                                    dob = value.dob;
+                                                }
                                                 if( typeof value.geo_city != 'undefined' ){
                                                     geo_city = value.geo_city;
                                                 }
@@ -541,7 +548,9 @@ module.exports = function (User) {
                                                 if( geo_long_logged_user != '' && geo_lat_logged_user != '' &&  geo_long_user != '' && geo_lat_user != '' ){
                                                     distance_from_logged_user = UTIL.get_distance( geo_lat_logged_user, geo_long_logged_user, geo_lat_user, geo_long_user );
                                                 }
-                                                
+                                                if( distance_from_logged_user != ''){
+                                                            distance_from_logged_user = distance_from_logged_user + ' Km';
+                                                        }
                                                 
                                                 
                                                 var aa = {
@@ -554,6 +563,8 @@ module.exports = function (User) {
                                                 });
                                                 userInfo.push({
                                                     name: userName, 
+                                                    gender : gender,
+                                                    dob : dob,
                                                     id: userId, 
                                                     pic: pic, 
                                                     lastSeen: lastSeen, 
@@ -562,7 +573,7 @@ module.exports = function (User) {
                                                     geo_address : geo_address,
                                                     geo_country : geo_country,
                                                     geo_state : geo_state,
-                                                    distance_from_logged_user : distance_from_logged_user + ' Km'
+                                                    distance_from_logged_user : distance_from_logged_user
                                                     //distance_from_logged_user : distance_from_logged_user + 'Km Away from you'
                                                 });
                                             });
@@ -719,7 +730,9 @@ module.exports = function (User) {
                                         'user_private_rooms' : user_private_rooms,
                                         'user_public_rooms' : user_public_rooms,
                                         'user_blocked_users' : blocked_users.length,
-                                        'blocked_users' : blocked_users
+                                        'blocked_users' : blocked_users,
+                                        'gender' : user.gender,
+                                        'dob' : user.dob
                                     }
                                     callback(null, 1, 'User profile details', USER_PROFILE);
                                 }
@@ -808,7 +821,9 @@ module.exports = function (User) {
                                             'last_seen' : user.last_seen,
                                             'user_private_rooms' : user_private_rooms,
                                             'user_public_rooms' : user_public_rooms,
-                                            'status' : status
+                                            'status' : status,
+                                            'gender' : user.gender,
+                                            'dob' : user.dob
                                         }
                                         callback(null, 1, 'User profile details', USER_PROFILE);
                                     }

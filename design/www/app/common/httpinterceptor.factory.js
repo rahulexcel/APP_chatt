@@ -48,6 +48,9 @@
                         $injector.get('$state').go('login');
                     }
                     return response;
+                },
+                responseError: function(error){
+                    return error;
                 }
             };
             return requestInterceptor;
