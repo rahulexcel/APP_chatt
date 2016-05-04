@@ -199,7 +199,7 @@ module.exports = function (User) {
                                     social_id: social_id,
                                     platform: platform,
                                     device_id: '',
-                                    token: '',
+                                    token: token,
                                     email: email_id,
                                     name: name,
                                     password: password,
