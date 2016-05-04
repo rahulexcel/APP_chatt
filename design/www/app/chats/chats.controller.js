@@ -5,7 +5,7 @@
         .controller('chatsController', chatsController);
 
 
-    function chatsController($scope, chatsFactory, timeStorage, chatsService, $state, socketService, $interval, $ionicHistory, timeZoneService) {
+    function chatsController($rootScope, $scope, chatsFactory, timeStorage, chatsService, $state, socketService, $interval, $ionicHistory, timeZoneService) {
 
             var self = this;
            
@@ -38,9 +38,11 @@
                 }
                 timeStorage.set('chatWithUserData', clickRoomUserData, 1);
                 if(roomData.user_data.id){
+                    $rootScope.room=false;
                     socketService.create_room(roomData.user_data.id);
                     $state.go('app.chatpage', {roomId:roomData.room_id});
                 } else{
+                    $rootScope.room=true;
                     socket.emit('APP_SOCKET_EMIT', 'room_open', { accessToken: userData.data.access_token, room_id: roomData.room_id, currentTimestamp: _.now() });
                     $state.go('app.chatpage', {roomId:roomData.room_id});
                 }
