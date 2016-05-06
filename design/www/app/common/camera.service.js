@@ -42,6 +42,7 @@
                         sourceType: index
                     });
                     function onSuccess(imageData) {
+                        console.log(imageData);
                         q.resolve(imageData);
                     }
                     function onFail(message) {

@@ -1,12 +1,15 @@
 <ion-popover-view>
-  <ion-content>
-    <div class="list">
-      <a class="item" ng-click="chatPageHeader.attachImage(); openAttachFilePopover.hide()">
-        Camera
-      </a>
-      <a class="item" ng-click="openAttachFilePopover.hide()">
-        File
-      </a>
-    </div>
-  </ion-content>
+    <ion-content>
+        <div class="list">
+            <a class="item" ng-click="chatPageHeader.attachImage();
+                openAttachFilePopover.hide()">
+                Camera
+            </a>
+            <a ngf-select ng-model="chatPageHeader.picFile" accept="image/*" ngf-change="chatPageHeader.attachImage($files);" class="item"  
+               ng-click="openAttachFilePopover.hide()">
+                Gallery
+            </a>
+        </div>
+        </div>
+    </ion-content>
 </ion-popover-view>

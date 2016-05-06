@@ -6889,7 +6889,7 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
 })(window, window.angular);
 
 /*!
- * jQuery JavaScript Library v2.2.3
+ * jQuery JavaScript Library v2.2.2
  * http://jquery.com/
  *
  * Includes Sizzle.js
@@ -6899,7 +6899,7 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2016-04-05T19:26Z
+ * Date: 2016-03-17T17:51Z
  */
 
 (function( global, factory ) {
@@ -6955,7 +6955,7 @@ var support = {};
 
 
 var
-	version = "2.2.3",
+	version = "2.2.2",
 
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {
@@ -16365,7 +16365,7 @@ jQuery.fn.load = function( url, params, callback ) {
 		// If it fails, this function gets "jqXHR", "status", "error"
 		} ).always( callback && function( jqXHR, status ) {
 			self.each( function() {
-				callback.apply( this, response || [ jqXHR.responseText, status, jqXHR ] );
+				callback.apply( self, response || [ jqXHR.responseText, status, jqXHR ] );
 			} );
 		} );
 	}
@@ -20653,6 +20653,7 @@ emojiApp.config(["$sceProvider", function(a) {
 
                 c.execCommand("enableObjectResizing", !1, !1)
             }), this.$editor.on("blur", function() {
+                console.log('blurrr is called');
                 c.execCommand("enableObjectResizing", !0, !0)
             });
             var g = this.$editor.text(),
@@ -24256,7 +24257,7 @@ Zn._=Jn):Vn._=Jn}).call(this);
 (function() {
     'use strict';
 
-    angular.module('chattapp', ['ionic', 'ngStorage','ngFileUpload','ngImgCrop', 'ngResource','GoogleLoginService', 'facebookLoginService', 'ngMessages', 'ngSanitize', 'emojiApp', 'ngCordova'])
+    angular.module('chattapp', ['ionic', 'ngStorage','ngFileUpload','ngFileUpload','ngImgCrop', 'ngResource','GoogleLoginService', 'facebookLoginService', 'ngMessages', 'ngSanitize', 'emojiApp', 'ngCordova'])
 
     .config(function($stateProvider, $urlRouterProvider) {
         $stateProvider
@@ -24860,7 +24861,7 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
     angular.module('chattapp')
             .controller('chatPageHeaderDirectiveController', chatPageHeaderDirectiveController);
 
-    function chatPageHeaderDirectiveController($state, timeStorage,$rootScope,$ionicScrollDelegate, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService, sqliteService, $ionicLoading) {
+    function chatPageHeaderDirectiveController($state, timeStorage, $rootScope, $ionicScrollDelegate, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService, sqliteService, $ionicLoading) {
 
         var self = this;
         self.leaveGroupSpinner = false;
@@ -24942,7 +24943,7 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
                 else {
                     self.displayUserProfileImage = "img/user.png";
                 }
-                self.displayUserProfileLastSeen=moment.unix(data.data.last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
+                self.displayUserProfileLastSeen = moment.unix(data.data.last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
                 self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
                 self.displayUserProfilePublicRooms = data.data.user_public_rooms;
                 self.displayUserProfileStatus = data.data.profile_status;
@@ -25082,59 +25083,79 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
             }
             return buf;
         }
-         var userData = timeStorage.get('userData');
-        self.attachImage = function() {
-           cameraService.changePic().then(function(imageData) {
-                      $ionicLoading.show({template: 'Image Uploading...'});
-                      var img = "data:image/jpeg;base64,"+imageData;
-                      var imageBase64 = img.replace(/^data:image\/(png|jpeg);base64,/, "");
-                      var binary = fixBinary(atob(imageBase64));
-                      var blob = new Blob([binary], {type: 'image/png', name: 'png'});
-                      blob.name = 'png';
-                      blob.$ngfName = 'png';
-                      $scope.imagesample = img;
-                      //self.localImage(img);
-                      var query = profileImageFactory.upload({
-                          file: blob,
-                          currentTimestamp: Date.now(),
-                          append_data: {room_id: $stateParams.roomId, file_type: 'room_file', accessToken: timeStorage.get('userData').data.access_token}
-                      });
-                      query.then(function(data) {
-                          if (data.data.status == 1) {
-  
-                              var currentTimeStamp = _.now();
-                              socketService.roomOpen($stateParams.roomId);
-                              sqliteService.saveMessageInDb("<img class='sendImage' src=" + data.data.data.url + ">", 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId) {
-                                  if (timeStorage.get('network')) {
-                                  } else {
-                                      socketService.room_message(lastInsertId, $stateParams.roomId, "<img class='sendImage' src=" + data.data.data.url + ">", currentTimeStamp);
-                                  }
-                                  $ionicLoading.hide();
-                                  var currentMessage = {
-                                      "id": lastInsertId,
-                                      "image": userData.data.profile_image,
-                                      "message": "<img class='sendImage' src=" + data.data.data.url + ">",
-                                      "messageTime": moment(currentTimeStamp).format("hh:mm a"),
-                                      "timeStamp": currentTimeStamp,
-                                      "name": userData.data.name,
-                                      "user_id": userData.data.user_id,
-                                      "message_status": 'post'
-                                  };
-  
-                                  $rootScope.$broadcast('displayChatMessages', {data: currentMessage});
-                                  $ionicScrollDelegate.scrollBottom(false);
-                              }, 100);
-  
-  
-                          } else {
-                              window.plugins.toast.showShortTop('Image not upload');
-                          }
-                      });
-                  }, function(err) {
-                      $ionicLoading.hide();
-                });
-        };
 
+        var userData = timeStorage.get('userData');
+        function onSuccess(imageData) {
+            $ionicLoading.show({template: 'Image Uploading...'});
+            var img = "data:image/jpeg;base64," + imageData;
+            var imageBase64 = img.replace(/^data:image\/(png|jpeg);base64,/, "");
+            var binary = fixBinary(atob(imageBase64));
+            var blob = new Blob([binary], {type: 'image/png', name: 'png'});
+            blob.name = 'png';
+            blob.$ngfName = 'png';
+            $scope.imagesample = img;
+            self.imagesend(blob);
+        }
+        ;
+        function onFail(message) {
+            $ionicLoading.hide();
+        }
+        ;
+        self.attachImage = function(file) {
+            if (file) {
+                var filedata = file[0];
+                self.imagesend(filedata);
+                $ionicLoading.show({template: 'Image Uploading...'});
+            } else {
+
+                navigator.camera.getPicture(onSuccess, onFail, {
+                    quality: 100,
+                    destinationType: Camera.DestinationType.DATA_URL,
+                    correctOrientation: true,
+                    // allowEdit: true,
+                    sourceType: Camera.PictureSourceType.CAMERA
+                });
+
+            }
+        };
+        self.imagesend = function(filedata) {
+            var query = profileImageFactory.upload({
+                file: filedata,
+                currentTimestamp: Date.now(),
+                append_data: {room_id: $stateParams.roomId, file_type: 'room_file', accessToken: timeStorage.get('userData').data.access_token}
+            });
+            query.then(function(data) {
+                if (data.data.status == 1) {
+
+                    var currentTimeStamp = _.now();
+                    socketService.roomOpen($stateParams.roomId);
+                    sqliteService.saveMessageInDb("<img class='sendImage' src=" + data.data.data.url + ">", 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId) {
+                        if (timeStorage.get('network')) {
+                        } else {
+                            socketService.room_message(lastInsertId, $stateParams.roomId, "<img class='sendImage' src=" + data.data.data.url + ">", currentTimeStamp);
+                        }
+                        $ionicLoading.hide();
+                        var currentMessage = {
+                            "id": lastInsertId,
+                            "image": userData.data.profile_image,
+                            "message": "<img class='sendImage' src=" + data.data.data.url + ">",
+                            "messageTime": moment(currentTimeStamp).format("hh:mm a"),
+                            "timeStamp": currentTimeStamp,
+                            "name": userData.data.name,
+                            "user_id": userData.data.user_id,
+                            "message_status": 'post'
+                        };
+
+                        $rootScope.$broadcast('displayChatMessages', {data: currentMessage});
+                        $ionicScrollDelegate.scrollBottom(false);
+                    }, 100);
+
+
+                } else {
+                    window.plugins.toast.showShortTop('Image not upload');
+                }
+            });
+        }
         $ionicPopover.fromTemplateUrl('app/chatpage/templates/privateChatPopover.html', {
             scope: $scope,
         }).then(function(popover) {
@@ -25203,12 +25224,11 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
         self.openAttachFilePopover = function($event) {
             $scope.openAttachFilePopover.show($event);
         };
-      
+
         self.inviteInGroup = function() {
             timeStorage.set('inviteInGroupId', $stateParams.roomId, 1);
         };
         self.muteNotifications = true;
-
     }
 })();
 
@@ -25492,6 +25512,7 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
                         sourceType: index
                     });
                     function onSuccess(imageData) {
+                        console.log(imageData);
                         q.resolve(imageData);
                     }
                     function onFail(message) {
@@ -27356,8 +27377,9 @@ angular.module('chattapp').directive('isFocused', function($timeout) {
             return def.promise;
         };
         return image;
-    };
-        
+    }
+    ;
+
 })();
 
 (function() {
