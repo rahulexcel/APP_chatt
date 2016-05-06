@@ -97323,15 +97323,9 @@ img-crop canvas {
   background-color: #3F51B5 !important;
 }
 
-/*#messageInput{
-    border: none;
-    color: transparent;
-    display: inline-block;
-    text-shadow: 0 0 0 gray;
-    &:focus {
-        outline: none;
-    }
-}*/
+.angular-google-map-container {
+  height: 460px;
+}
 
 .white {
   color: #fff;

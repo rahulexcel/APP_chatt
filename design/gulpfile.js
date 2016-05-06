@@ -15,7 +15,10 @@ var paths = {
 var paths = {
     sass: ['./scss/**/*.scss'],
     javascript: [
+        './bower_components/lodash/dist/lodash.min.js',
         './bower_components/ionic/js/ionic.bundle.min.js',
+        './bower_components/angular-simple-logger/dist/angular-simple-logger.js',
+        './bower_components/angular-google-maps/dist/angular-google-maps.min.js',
         './bower_components/moment/moment.js',
         './bower_components/moment-timezone/moment-timezone.js',
         './bower_components/angular-messages/angular-messages.js',
@@ -30,7 +33,7 @@ var paths = {
         './bower_components/jquery/dist/jquery.js',
         './bower_components/angular-sanitize/angular-sanitize.min.js',
         './www/lib/socket.io.js',
-        './bower_components/lodash/dist/lodash.min.js',
+      
         './bower_components/ng-img-crop/compile/minified/ng-img-crop.js',
         './www/app/chatt.route.js',
         './www/app/chatt.run.js',
