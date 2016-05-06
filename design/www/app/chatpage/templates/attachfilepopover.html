@@ -1,4 +1,5 @@
 <ion-popover-view>
+
     <ion-content>
         <div class="list">
             <a class="item" ng-click="chatPageHeader.attachImage();
@@ -9,7 +10,13 @@
                ng-click="openAttachFilePopover.hide()">
                 Gallery
             </a>
+            <a class="item" ng-show="chatPageHeader.shareLocation" ng-click="chatPageHeader.sendLocation();
+                openAttachFilePopover.hide()">
+                Location
+            </a>
         </div>
         </div>
     </ion-content>
+
+
 </ion-popover-view>

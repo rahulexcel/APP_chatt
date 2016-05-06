@@ -4,7 +4,7 @@
     angular.module('chattapp')
             .controller('chatPageFooterDirectiveController', chatPageFooterDirectiveController);
 
-    function chatPageFooterDirectiveController($rootScope, $scope, $ionicPlatform, $state, $timeout, $interval, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, sqliteService, chatpageService) {
+    function chatPageFooterDirectiveController($rootScope, $scope, $ionicPlatform, $state, $timeout, $interval, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, sqliteService, chatpageService, $localStorage) {
         var self = this;
         var userData = timeStorage.get('userData');
         self.image = userData.data.profile_image;
