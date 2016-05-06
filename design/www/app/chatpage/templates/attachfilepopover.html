@@ -7,6 +7,9 @@
       <a class="item" ng-click="openAttachFilePopover.hide()">
         File
       </a>
+      <a class="item" ng-show="chatPageHeader.shareLocation" ng-click="chatPageHeader.sendLocation();openAttachFilePopover.hide()">
+        Location
+      </a>
     </div>
   </ion-content>
 </ion-popover-view>

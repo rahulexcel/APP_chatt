@@ -2,10 +2,10 @@
     'use strict';
 
     angular.module('chattapp')
-            .controller('chatPageCenterDirectiveController', chatPageCenterDirectiveController);
+        .controller('chatPageCenterDirectiveController', chatPageCenterDirectiveController);
 
 
-    function chatPageCenterDirectiveController($scope, $state, $localStorage, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, sqliteService, chatpageService, timeZoneService) {
+    function chatPageCenterDirectiveController($scope, $state, $localStorage, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, $ionicModal, sqliteService, chatpageService, timeZoneService, geoLocation) {
         var self = this;
         var chatWithUserData = timeStorage.get('chatWithUserData');
         self.isPublicRoom = true;
@@ -87,16 +87,22 @@
             }
         });
         $scope.$on('now_device_is_online', function(event, response) {
-            socket.emit('APP_SOCKET_EMIT', 'room_open', {accessToken: userData.data.access_token, room_id: $stateParams.roomId, currentTimestamp: _.now()});
+            socket.emit('APP_SOCKET_EMIT', 'room_open', {
+                accessToken: userData.data.access_token,
+                room_id: $stateParams.roomId,
+                currentTimestamp: _.now()
+            });
             $timeout(function() {
                 roomOpenApi();
             }, 3000);
         });
         sqliteService.getMessageDataFromDB($stateParams.roomId).then(function(response) {
             self.displayChatMessages = response;
+            $localStorage.roomMessageLength = self.displayChatMessages.length;
             $ionicScrollDelegate.scrollBottom(false);
         });
         roomOpenApi();
+
         function roomOpenApi() {
             var query = chatPageFactory.save({
                 accessToken: userData.data.access_token,
@@ -134,50 +140,118 @@
             });
 
         };
-
-
-        $scope.imgDownload = function(msguserId, chatpageID, msg) {
-
-            if (msguserId != chatpageID) {
-                var scripts = document.getElementsByTagName('img');
-                var myScript = scripts[scripts.length - 1];
-                var urlVal = myScript.src;
-                var res = msg.substring(0, 22);
-                var arr = urlVal.split('/');
-                var idname = arr[arr.length - 1];
-
-                ContentSync.download(urlVal, 'chatApp', idname);
-                if (res == "<img class='sendImage'") {
-                    var sync = ContentSync.sync({src: myScript.src, id: idname});
-
-                    sync.on('progress', function(data) {
-
-                    });
-
-                    sync.on('complete', function(data) {
-
-                        window.resolveLocalFileSystemURL("file://" + data.localPath, function(entry) {
-
-                        }, function(error) {
-
-                        });
-                    });
-
-                    sync.on('error', function(e) {
-
-                        // e 
-                    });
-
-                    sync.on('cancel', function() {
-
-                        // triggered if event is cancelled 
-                    });
+        $scope.imgDownload = function(msguserId, chatpageID, msg, index) {
+            var html = $.parseHTML(msg);
+            var value = html[0].getAttribute("value");
+            for (var i = 0; i < value.length; i++) {
+                if (value[i] == ',') {
+                    var lat_index = i;
                 }
-            } else {
-
+                if (value[i] == '}') {
+                    var lng_index = i;
+                }
             }
+            var show = value.substring(0, 5) + value.substring(lat_index, lat_index + 5);
+            var lat = parseFloat(value.substring(5, lat_index));
+            var lng = parseFloat(value.substring(lat_index + 5, lng_index));
+            cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
+                if (!enabled) {
+                    geoLocation.share();
+                } else {
+                    if (show == '{lat:,lng:') {
+                        $scope.map = {
+                            center: {
+                                latitude: lat,
+                                longitude: lng
+                            },
+                            zoom: 15
+                        };
+                        $scope.options = {
+                            scrollwheel: false
+                        };
+                        $scope.coordsUpdates = 0;
+                        $scope.dynamicMoveCtr = 0;
+                        $scope.marker = {
+                            id: 0,
+                            coords: {
+                                latitude: lat,
+                                longitude: lng
+                            },
+                            options: {
+                                draggable: true
+                            },
+                            events: {
+                                dragend: function(marker, eventName, args) {
+                                    $log.log('marker dragend');
+                                    var lat = marker.getPosition().lat();
+                                    var lon = marker.getPosition().lng();
+                                    $log.log(lat);
+                                    $log.log(lon);
 
+                                    $scope.marker.options = {
+                                        draggable: true,
+                                        labelContent: "lat: " + $scope.marker.coords.latitude + ' ' + 'lon: ' + $scope.marker.coords.longitude,
+                                        labelAnchor: "100 0",
+                                        labelClass: "marker-labels"
+                                    };
+                                }
+                            }
+                        };
+                        $scope.$watchCollection("marker.coords", function(newVal, oldVal) {
+                            if (_.isEqual(newVal, oldVal))
+                                return;
+                            $scope.coordsUpdates++;
+                        });
+
+                        $scope.mapUser.show();
+                    } else {
+                        console.log(msg);
+                    }
+                }
+                // if (msguserId != chatpageID) {
+                //     var scripts = document.getElementsByTagName('img');
+                //     var myScript = scripts[scripts.length - 1];
+                //     var urlVal = myScript.src;
+                //     var res = msg.substring(0, 22);
+                //     var arr = urlVal.split('/');
+                //     var idname = arr[arr.length - 1];
+
+                //     ContentSync.download(urlVal, 'chatApp', idname);
+                //     if (res == "<img class='sendImage'") {
+                //         var sync = ContentSync.sync({src: myScript.src, id: idname});
+
+                //         sync.on('progress', function(data) {
+
+                //         });
+
+                //         sync.on('complete', function(data) {
+
+                //             window.resolveLocalFileSystemURL("file://" + data.localPath, function(entry) {
+
+                //             }, function(error) {
+
+                //             });
+                //         });
+
+                //         sync.on('error', function(e) {
+
+                //             // e 
+                //         });
+
+                //         sync.on('cancel', function() {
+
+                //             // triggered if event is cancelled 
+                //         });
+                //     }
+                // } else {
+
+                // }
+            });
         };
+        $ionicModal.fromTemplateUrl('mapUser.html', function($ionicModal) {
+            $scope.mapUser = $ionicModal;
+        }, {
+            scope: $scope
+        });
     }
 })();
-
