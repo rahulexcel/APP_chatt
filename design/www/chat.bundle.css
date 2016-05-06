@@ -47891,8 +47891,6 @@ img.emoji {
 }
 
 .emoji-wysiwyg-editor {
-  color: transparent;
-  text-shadow: 0 0 0 #000;
   padding: 6px;
   -moz-box-sizing: content-box;
   font-size: 12px;
@@ -47910,10 +47908,6 @@ img.emoji {
   transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
   -webkit-user-select: text;
   word-wrap: break-word;
-}
-
-.emoji-wysiwyg-editor:focus {
-  cursor: pointer;
 }
 
 .emoji-wysiwyg-editor img {

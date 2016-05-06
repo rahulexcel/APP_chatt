@@ -40,6 +40,7 @@ var paths = {
         './www/app/chatt.config.js',
         './www/app/chatt.constant.js',
         './bower_components/ngCordova/dist/ng-cordova.min.js',
+        '.bower_components/ng-file-upload/ng-file-upload-all.min.js',
         './www/app/**/*.*.js'
         
     ],
