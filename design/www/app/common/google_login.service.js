@@ -1,50 +1,50 @@
 var googleLoginService = angular.module('GoogleLoginService', ['ngStorage']);
 googleLoginService.factory('timeStorage', ['$localStorage', function($localStorage) {
-    var timeStorage = {};
-    timeStorage.cleanUp = function() {
-        var cur_time = new Date().getTime();
-        for (var i = 0; i < localStorage.length; i++) {
-            var key = localStorage.key(i);
-            if (key.indexOf('_expire') === -1) {
-                var new_key = key + "_expire";
-                var value = localStorage.getItem(new_key);
-                if (value && cur_time > value) {
-                    localStorage.removeItem(key);
-                    localStorage.removeItem(new_key);
+        var timeStorage = {};
+        timeStorage.cleanUp = function() {
+            var cur_time = new Date().getTime();
+            for (var i = 0; i < localStorage.length; i++) {
+                var key = localStorage.key(i);
+                if (key.indexOf('_expire') === -1) {
+                    var new_key = key + "_expire";
+                    var value = localStorage.getItem(new_key);
+                    if (value && cur_time > value) {
+                        localStorage.removeItem(key);
+                        localStorage.removeItem(new_key);
+                    }
                 }
             }
-        }
-    };
-    timeStorage.remove = function(key) {
-        //this.cleanUp();
-        var time_key = key + '_expire';
-        $localStorage[key] = false;
-        $localStorage[time_key] = false;
-    };
-    timeStorage.set = function(key, data, hours) {
-        //this.cleanUp();
-        $localStorage[key] = data;
-        var time_key = key + '_expire';
-        var time = new Date().getTime();
-        time = time + (hours * 1 * 60 * 60 * 1000);
-        $localStorage[time_key] = time;
-    };
-    timeStorage.get = function(key) {
-        //this.cleanUp();
-        var time_key = key + "_expire";
-        if (!$localStorage[time_key]) {
-            return false;
-        }
-        var expire = $localStorage[time_key] * 1;
-        // if (new Date().getTime() > expire) {
-        //     $localStorage[key] = null;
-        //     $localStorage[time_key] = null;
-        //     return false;
-        // }
-        return $localStorage[key];
-    };
-    return timeStorage;
-}]);
+        };
+        timeStorage.remove = function(key) {
+            //this.cleanUp();
+            var time_key = key + '_expire';
+            $localStorage[key] = false;
+            $localStorage[time_key] = false;
+        };
+        timeStorage.set = function(key, data, hours) {
+            //this.cleanUp();
+            $localStorage[key] = data;
+            var time_key = key + '_expire';
+            var time = new Date().getTime();
+            time = time + (hours * 1 * 60 * 60 * 1000);
+            $localStorage[time_key] = time;
+        };
+        timeStorage.get = function(key) {
+            //this.cleanUp();
+            var time_key = key + "_expire";
+            if (!$localStorage[time_key]) {
+                return false;
+            }
+            var expire = $localStorage[time_key] * 1;
+            // if (new Date().getTime() > expire) {
+            //     $localStorage[key] = null;
+            //     $localStorage[time_key] = null;
+            //     return false;
+            // }
+            return $localStorage[key];
+        };
+        return timeStorage;
+    }]);
 
 
 googleLoginService.factory('googleLogin', [
@@ -56,6 +56,10 @@ googleLoginService.factory('googleLogin', [
         service.client_id = '1009675706541-dmc2t32u755as3pms8f6llcrhed8lvt6.apps.googleusercontent.com';
         service.secret = 'BQSLccofHJjg9t-_-w66Q_qc';
         service.scope = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/plus.me';
+//        service.redirect_url = 'http://projects.excellencetechnologies.in:8080/chatApp/';
+//        service.client_id = '49249722713-ekm1v14jmp90r283r08vapu7ktndb7ag.apps.googleusercontent.com';
+//        service.secret = 'YiGvTPyzcf7_IqfuY8sO9WjZ';
+//        service.scope = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/plus.me';
         service.gulp = function(url, name) {
             url = url.substring(url.indexOf('?') + 1, url.length);
 
@@ -122,7 +126,8 @@ googleLoginService.factory('googleLogin', [
                                     });
                                 }
                             }
-                        } catch (e) {}
+                        } catch (e) {
+                        }
                     }, 100);
                 }
             }
@@ -200,7 +205,7 @@ googleLoginService.factory('googleLogin', [
         service.getUserFullDetails = function(userId) {
             var def = $q.defer();
             var http = $http({
-                url: 'https://www.googleapis.com/plus/v1/people/'+userId,
+                url: 'https://www.googleapis.com/plus/v1/people/' + userId,
                 method: 'GET',
                 params: {
                     key: Configurations.googleApiKey
