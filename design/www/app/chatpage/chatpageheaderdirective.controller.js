@@ -90,8 +90,10 @@
                 self.displayUserProfileLastSeenInTimeStamp = data.data.last_seen;
                 if (data.data.profile_image) {
                     self.displayUserProfileImage = data.data.profile_image;
+              
                 } else {
                     self.displayUserProfileImage = "img/user.png";
+              
                 }
                 self.displayUserProfileLastSeen = moment.unix(data.data.last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
                 self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
@@ -421,7 +423,73 @@
             timeStorage.set('inviteInGroupId', $stateParams.roomId, 1);
         };
         self.muteNotifications = true;
+        $scope.myCroppedImage = '';
+        self.editProfilePic = function() {
+            cameraService.changePic().then(function(imageData) {
+                $scope.modal.show();
+                var img = "data:image/jpeg;base64," + imageData;
+                $scope.myimage = img;
+                $ionicLoading.hide();
+            }, function(err) {
+                $ionicLoading.hide();
+                window.plugins.toast.showShortTop('Unable to retrieve image');
+            });
+        };
+        $ionicModal.fromTemplateUrl('app/profile/template/imgCropModal.html', {
+            scope: $scope,
+            animation: 'slide-in-up'
+        }).then(function(modal) {
+            $scope.modal = modal;
+        });
+        $scope.result = function(image) {
+            $scope.myCroppedImage = image;
+        };
+        $scope.imgChange = function() {
+            if ($scope.myCroppedImage || $scope.myBgCroppedImage) {
 
+                var imageData, appenddata;
+                imageData = $scope.myCroppedImage;
+                appenddata = {file_type: 'room_image', room_id: $stateParams.roomId, accessToken: timeStorage.get('userData').data.access_token}
+
+                $scope.startLoading = true;
+                var imageBase64 = imageData.replace(/^data:image\/(png|jpeg);base64,/, "");
+                var binary = fixBinary(atob(imageBase64));
+                var blob = new Blob([binary], {type: 'image/png', name: 'png'});
+                blob.name = 'png';
+                blob.$ngfName = 'png';
+                var query = profileImageFactory.upload({
+                    file: blob,
+                    currentTimestamp: Date.now(),
+                    append_data: appenddata
+                });
+                query.then(function(data) {
+                    if (data.data.status == 1) {
+                        console.log(data);
+                        self.infoImage = data.data.data.url;
+                        $scope.startLoading = false;
+//                        var pr_image = timeStorage.get('userData');
+//                        pr_image.data.profile_image = self.displayprofile.profile_image;
+//                        sqliteService.updateUserProfie(self.displayprofile.profile_image);
+                        $scope.modal.hide();
+
+                    } else {
+                        $scope.startLoading = false;
+                        window.plugins.toast.showShortTop('Image not upload');
+                    }
+                });
+            } else {
+                window.plugins.toast.showShortTop('Please set your pic');
+            }
+        };
+
+        $scope.imgCancel = function() {
+            $scope.modal.hide();
+            $scope.backGroundModal.hide();
+        };
+        $scope.stopLoading = function() {
+            $scope.startLoading = false;
+            $scope.start = false;
+        };
     }
 })();
 
