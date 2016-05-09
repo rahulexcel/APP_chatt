@@ -4,7 +4,7 @@
     angular.module('chattapp')
             .controller('loginController', loginController);
 
-    function loginController($state, loginFactory, timeStorage, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService, $ionicLoading) {
+    function loginController($state, loginFactory, timeStorage,sqliteService, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService, $ionicLoading) {
         var self = this;
         var deviceUUID = timeStorage.get('deviceUUID');
         var devicePlatform = timeStorage.get('devicePlatform');
@@ -31,6 +31,7 @@
                         dob:userFullDetails.birthday
                     });
                     query.$promise.then(function(data) {
+//                        sqliteService.createTable();
                         $ionicLoading.hide();
                         tostService.notify('Welcome "' + data.data.name + '"', 'top');
                         timeStorage.set('userEmail', googleData.email, 1);
@@ -85,6 +86,7 @@
                 dob:''
             });
             query.$promise.then(function(data) {
+                sqliteService.createTable();
                 $ionicLoading.hide();
                 tostService.notify('Welcome "' + data.data.name + '"', 'top');
                 timeStorage.set('userEmail', fbData.email, 1);

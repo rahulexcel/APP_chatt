@@ -311,8 +311,8 @@ a.tab-item:hover{
 .alert-message{
     display: block!important;
     clear: both!important;
-    color: red!important;
-    background-color: #fff!important;
+    color: black !important;
+    /*background-color: #fff!important;*/
     width: 100%!important;
     margin: 0px 0px 10px 0px!important;
     padding: 0px!important;
@@ -369,10 +369,10 @@ a.tab-item:hover{
 .bubble-yellow {
     background-color: #A29E39;
     border-color: #A29E39;
-    border-radius: 0px 5px 5px 5px;
+    border-radius: 5px 5px 5px 5px;
     display: inline-block;
     margin: 0px 10px 0px 10px;
-    padding: 4px 8px;
+    padding: 9px 8px 0 8px;
     vertical-align: top;
 }
 /*.bubble-yellow::before {
@@ -393,10 +393,10 @@ a.tab-item:hover{
 .bubble-blue {
     background-color: #78C9A7;
     border-color: #78C9A7;
-    border-radius: 5px 0px 5px 5px;
+    border-radius: 5px 5px 5px 5px;
     display: inline-block;
     margin: 0px 10px 0px 10px;
-    padding: 4px 8px;
+    padding: 9px 8px 0 8px;
     vertical-align: top;
 }
 /*.bubble-blue::before {
@@ -435,7 +435,7 @@ a.tab-item:hover{
     color: #bbb;
 }
 .bubble-yellow p{
-    padding-left: 4px;
+    /*padding-left: 4px;*/
     color: #fff;
     margin-bottom: 0px;
 }
@@ -459,7 +459,7 @@ a.tab-item:hover{
 }
 .right-chat .bubble-blue p{
     /*text-align: right;*/
-    padding-right: 4px;
+    /*padding-right: 4px;*/
     color: #fff;
     margin-bottom: 0px;
 }

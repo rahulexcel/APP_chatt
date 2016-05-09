@@ -2,7 +2,7 @@
     'use strict';
 
     angular.module('chattapp')
-        .controller('chatPageCenterDirectiveController', chatPageCenterDirectiveController);
+            .controller('chatPageCenterDirectiveController', chatPageCenterDirectiveController);
 
 
     function chatPageCenterDirectiveController($scope, $state, $localStorage, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, $ionicModal, sqliteService, chatpageService, timeZoneService, geoLocation) {
@@ -12,6 +12,8 @@
         if (chatWithUserData.id) {
             self.isPublicRoom = false;
         }
+        $scope.imgDpuser=timeStorage.get('chatWithUserData').pic;
+        console.log('imgurl', $scope.imgDpuser);
         self.height = screen.height;
         if ($localStorage['bgImage']) {
             self.background = $localStorage['bgImage'];
@@ -112,10 +114,12 @@
                 currentTimestamp: _.now()
             });
             query.$promise.then(function(data) {
+                console.log(data);
                 socketService.update_message_status(data.data.messages, $stateParams.roomId);
                 sqliteService.updateDbOnRoomOpen(data.data.messages, $stateParams.roomId).then(function() {
                     sqliteService.getMessageDataFromDB($stateParams.roomId).then(function(response) {
                         self.displayChatMessages = response;
+                        console.log('sdfsdf',self.displayChatMessages);
                         $scope.$evalAsync();
                         $ionicScrollDelegate.scrollBottom(false);
                     });
