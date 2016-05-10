@@ -42,6 +42,7 @@
             self.group = d;
         });
         $scope.logout = function() {
+             socketService.logout();
             timeStorage.remove('google_access_token');
             timeStorage.remove('userEmail');
             timeStorage.remove('userData');
@@ -53,7 +54,7 @@
             timeStorage.remove('bgImage');
             facebookConnectPlugin.logout();
             window.sqlitePlugin.deleteDatabase({name: "chattappDB", location: 1});
-            socketService.logout();
+           
             $state.go('login');
         };
 

@@ -2,9 +2,11 @@
     <ion-nav-buttons side="right">
         <button class="button button-icon ion-android-more-vertical pull-right white" ng-click="profile.openPopover($event)"></button>
     </ion-nav-buttons>
+     <div class="spin" ng-show="profile.lodingSpinner"><ion-spinner icon="spiral" class="spinner-positive"></ion-spinner></div>
     <ion-content id="profile" class="has-header has-footer" ng-click="stopLoading()">
-        <div class="spin" ng-show="profile.lodingSpinner"><ion-spinner icon="spiral" class="spinner-positive"></ion-spinner></div>
+        
         <div style="width:100%;">
+           
             <div class="loadingModal" ng-click="stopLoading()" ng-if="startLoading">
                 <ion-spinner class="icnModal" icon="android"></ion-spinner>
             </div>
