@@ -90,10 +90,10 @@
                 self.displayUserProfileLastSeenInTimeStamp = data.data.last_seen;
                 if (data.data.profile_image) {
                     self.displayUserProfileImage = data.data.profile_image;
-              
+
                 } else {
                     self.displayUserProfileImage = "img/user.png";
-              
+
                 }
                 self.displayUserProfileLastSeen = moment.unix(data.data.last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
                 self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
@@ -409,7 +409,7 @@
         self.addInGroup = function() {
             $state.go('app.addInGroup');
             $scope.popover.hide();
-        }
+        };
         $ionicPopover.fromTemplateUrl('app/chatpage/templates/attachfilepopover.html', {
             scope: $scope,
         }).then(function(popover) {
@@ -418,7 +418,13 @@
         self.openAttachFilePopover = function($event) {
             $scope.openAttachFilePopover.show($event);
         };
-
+        self.closeAttachFilePopover = function() {
+            $scope.openAttachFilePopover.hide();
+        };
+        self.hidePop=function(){
+            
+            $scope.openAttachFilePopover.hide();
+        };
         self.inviteInGroup = function() {
             timeStorage.set('inviteInGroupId', $stateParams.roomId, 1);
         };

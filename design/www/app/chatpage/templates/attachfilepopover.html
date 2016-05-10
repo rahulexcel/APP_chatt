@@ -1,5 +1,5 @@
-<ion-popover-view>
-    <div class="list">
+<ion-popover-view  on-tap="chatPageHeader.hidePop()"> 
+    <div class="list" ng-click="chatPageHeader.hidePop()">
         <a class="item" ng-click="chatPageHeader.attachImage();
             openAttachFilePopover.hide()">
             Camera
@@ -13,5 +13,5 @@
             Location
         </a>
     </div>
-</div>
+
 </ion-popover-view>

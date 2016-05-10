@@ -42,9 +42,6 @@
             self.group = d;
         });
         $scope.logout = function() {
-            window.sqlitePlugin.deleteDatabase({name: "chattappDB", location: 1});
-
-            socketService.logout();
             timeStorage.remove('google_access_token');
             timeStorage.remove('userEmail');
             timeStorage.remove('userData');
@@ -54,10 +51,9 @@
             timeStorage.remove('displayPublicChats');
             timeStorage.remove('profile_data');
             timeStorage.remove('bgImage');
-            if (ionic.Platform.isAndroid()) {
-                facebookConnectPlugin.logout();
-            }
-            ;
+            facebookConnectPlugin.logout();
+            window.sqlitePlugin.deleteDatabase({name: "chattappDB", location: 1});
+            socketService.logout();
             $state.go('login');
         };
 
