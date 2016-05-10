@@ -32,7 +32,7 @@
     <h1 class="title">Create a room</h1>
     <div class="button btn-xs button-clear" ng-click="modal.hide()"><span class="icon ion-close"></span></div>
     </header>
-    <content has-header="true" padding="true">
+    <ion-content class="has-header has-footer" padding="true">
     <div class="p-lg panel md-whiteframe-z1 text-color group-box">
     <form>
     <div class="md-form-group float-label">
@@ -46,7 +46,7 @@
     <button ng-disabled="publicChats.createGroupOption" ng-click="publicChats.createGroup()" class="md-btn md-raised pink btn-block p-h-md">Create</button>
     </form>
     </div>
-    </content>
+    </ion-content>
     </div>
 </script>
 
@@ -56,14 +56,14 @@
     <h1 class="title">{{publicChats.groupNameShort}}</h1>
     <div class="button btn-xs button-clear" ng-click="groupModel.hide()"><span class="icon ion-close"></span></div>
     </header>
-    <content has-header="true" padding="true">
-    <div style="width:100%;" class="pad-top-40">
+    <ion-content class="has-header has-footer" padding="true">
+    <div style="width:100%;" >
     <div class="col-md-12 col-sm-12 col-xs-12 no-pad-left-right">
     <div class="panel panel-card">
-    <div class="r-t pos-rlt" md-ink-ripple style="background:url({{publicChats.groupBackground}}) center center; background-size:cover">
+    <div class="r-t pos-rlt my_profile_bug" md-ink-ripple style="background:url({{publicChats.groupImage}}) center center; background-size:cover">
     <div class="bg-white-overlay r-t">
     <div class="text-center"> 
-    <a href class="w-xs inline">
+    <a href class="w-xs inline marginTop">
     <img id="profileImage" ng-src="{{publicChats.groupImage}}" class="img-circle profile-pic">
     </a>
     </div>
@@ -80,7 +80,7 @@
     <div class="list" id="chats">
     <div class="user-container" ng-repeat="groupUser in publicChats.groupUserList | orderBy:'-last_seen'">
     <a class="item item-avatar hover">
-    <img class="avatar" ng-src="{{groupUser.profile_image}}">
+    <img class="avatar " ng-src="{{groupUser.profile_image}}">
     <i class="fa fa-circle user-status {{groupUser.status == 'online' && 'online' || '' }}{{groupUser.status == 'away' && 'away' || '' }}{{groupUser.status == 'offline' && 'offline' || '' }}"></i>
     <h3>{{groupUser.name}}</h3>
     <h3 class="lastSeen">{{groupUser.last_seen}}</h3>
@@ -93,6 +93,6 @@
     </div>
     </div>
     </div>
-    </content>
+    </ion-content>
     </div>
 </script>

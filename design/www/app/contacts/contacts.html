@@ -1,34 +1,34 @@
 <ion-view view-title="Location" id="background" hide-back-button="true">
-  <ion-header-bar class='bar-stable'>
-     <p class="title">CONTACTS
-     <button class="button button-icon ion-android-more-vertical pull-right" style="margin-top: 5px;" ng-click="menu.popover.show($event)"></button>
-     <button class="button button-icon ion-ios-search-strong pull-right white" style="margin-top: 5px;" ng-click="contacts.searchOpen()"></button>
-     <input type="text" ng-class="contacts.isSearchOpen ? 'search-box-open' : 'search-box-close'">
-     </p>
-  </ion-header-bar>
-   <ion-content scroll="true" class="has-footer">
-      <div class="spin" ng-show="contacts.lodingSpinner"><ion-spinner icon="spiral" class="spinner-positive"></ion-spinner></div>
-      <ion-list >
-            <ion-item ng-hide="contacts.displaycontacts.length > 0 " class="noItem" >
+    <ion-header-bar class='bar-stable'>
+        <p class="title">CONTACTS
+            <button class="button button-icon ion-android-more-vertical pull-right" style="margin-top: 5px;" ng-click="menu.popover.show($event)"></button>
+            <button class="button button-icon ion-ios-search-strong pull-right white" style="margin-top: 5px;" ng-click="contacts.searchOpen()"></button>
+            <input type="text" ng-class="contacts.isSearchOpen ? 'search-box-open' : 'search - box - close'">
+        </p>
+    </ion-header-bar>
+    <ion-content scroll="true" class="has-footer">
+        <div class="spin" ng-show="contacts.lodingSpinner"><ion-spinner icon="spiral" class="spinner-positive"></ion-spinner></div>
+        <ion-list >
+            <ion-item ng-hide="contacts.displaycontacts.length > 0" class="noItem" >
                 <div class="empty" >
-                  <div class='nothing' ng-hide="contacts.lodingSpinner">'No users found!'</div>
-              </div>
-          </ion-item>
-      </ion-list>
-      <div class="list" id="chats">
-         <div class="user-container" ng-repeat="contact in contacts.displaycontacts">
-            <a class="item item-avatar hover item-icon-right" ng-click="contacts.openUserProfile(contact, $index)">
-               <img class="avatar" ng-src="{{contact.pic}}">
-               <i class="fa fa-circle user-status {{contact.status == 'online' && 'online' || '' }}{{contact.status == 'away' && 'away' || '' }}{{contact.status == 'offline' && 'offline' || '' }}"></i>
-               <h3>{{contact.name}} <span class="fa fa-spin fa-spinner" ng-show="contacts.spinnerIndex==$index"></span></h3>
-               <p class="lastSeen" >{{contact.geo_city}}<span class="lastSeen" ng-if="contact.geo_state != ''">, </span>{{contact.geo_state}}</p>
-               <p class="lastSeen" ng-if="contact.lastSeen != 'Invalid date'">{{contact.lastSeen}}</p>
-               <p class="lastSeen" ng-if="contact.geo_state =='' && contact.geo_city== ''">&nbsp</p>
-               <p class="distance"><i class="fa" ng-if="contact.gender" ng-class="{'fa-male': contact.gender== 'male' , 'fa-female': contact.gender == 'female'}" aria-hidden="true"></i> {{contact.distance_from_logged_user}}</p>
-            </a>
-         </div>
-      </div>
-   </ion-content>
+                    <div class='nothing' ng-hide="contacts.lodingSpinner">'No users found!'</div>
+                </div>
+            </ion-item>
+        </ion-list>
+        <div class="list" id="chats">
+            <div class="user-container" ng-repeat="contact in contacts.displaycontacts">
+                <a class="item item-avatar hover item-icon-right" ng-click="contacts.openUserProfile(contact, $index)">
+                    <img class="avatar" ng-src="{{contact.pic}}">
+                    <i class="fa fa-circle user-status {{contact.status == 'online' && 'online'|| '' }}{{contact.status == 'away' && 'away'|| '' }}{{contact.status == 'offline' && 'offline'|| '' }}"></i>
+                    <h3>{{contact.name}} <span class="fa fa-spin fa-spinner" ng-show="contacts.spinnerIndex == $index"></span></h3>
+                    <p class="lastSeen" >{{contact.geo_city}}<span class="lastSeen" ng-if="contact.geo_state != ''">, </span>{{contact.geo_state}}</p>
+                    <p class="lastSeen" ng-if="contact.lastSeen != 'Invalid date'">{{contact.lastSeen}}</p>
+                    <p class="lastSeen" ng-if="contact.geo_state == '' && contact.geo_city == ''">&nbsp</p>
+                    <p class="distance"><i class="fa" ng-if="contact.gender" ng-class="{'fa-male': contact.gender == 'male' , 'fa-female': contact.gender == 'female'}" aria-hidden="true"></i> {{contact.distance_from_logged_user}}</p>
+                </a>
+            </div>
+        </div>
+    </ion-content>
 </ion-view>
 <script id="contactUser.html" type="text/ng-template">
    <div class="modal">
@@ -41,16 +41,19 @@
     <div style="width:100%;">
             <div class="col-md-12 col-sm-12 col-xs-12 no-pad-left-right">
                 <div class="panel panel-card mypanel">
-                    <div class="r-t pos-rlt" md-ink-ripple style="background:url({{contacts.displayUserProfileImage}})  center; background-size:cover;background-repeat: no-repeat;height:250px;">
-                        <div class="bg-white-overlay text-center r-t" style="padding-top: 10px;height: 250px">
+                    <div class="r-t pos-rlt my_profile_bug" md-ink-ripple style="background:url({{contacts.displayUserProfileImage}})  center; background-size:cover;background-repeat: no-repeat;height:250px;">
+                        <div class="bg-white-overlay text-center r-t my_bg_backdrop" style="padding-top: 10px;height: 250px">
                             <a href class="w-xs inline myim" >
                                 <img id="profileImage" ng-src="{{contacts.displayUserProfileImage}}" class="img-circle profile-pic">
                             </a>
                             <div class="m-b m-t-sm h2">
                                 <span class="">{{contacts.displayUserProfileName}}</span>
                             </div>
-                          <div class="m-b m-t-sm h4" >
+                          <div class="m-b m-t-sm h4" ng-if="contacts.displayUserProfileStatus">
                                 <span class="">{{contacts.displayUserProfileStatus}}</span>
+                          </div>
+                         <div class="m-b m-t-sm h4" ng-if="!contacts.displayUserProfileStatus">
+                                <span class="">Hey ! I am using ChatApp</span>
                           </div>
                         </div>
                     </div>
