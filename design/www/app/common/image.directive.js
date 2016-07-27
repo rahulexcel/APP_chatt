@@ -55,7 +55,7 @@
                                 var firstLetter = name.charAt(0).toUpperCase();
                             }
                             var color = Configurations.color;
-                            element.replaceWith("<button style='background:" + color[firstLetter.toLowerCase()] + "' class='no-image " + chatPageClass + "'><i class='i-24 white'>" + firstLetter + "</i><div class='md-ripple-container'></div></button>");
+                            element.replaceWith("<button style='background:" + color[firstLetter.toLowerCase()] + "' class='no-image " + chatPageClass + "'><i class='white'>" + firstLetter + "</i><div class='md-ripple-container'></div></button>");
                         }
                     }
                 }

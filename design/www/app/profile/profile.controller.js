@@ -124,7 +124,7 @@
 
         $scope.imgChange = function(imageType) {
             if ($scope.myCroppedImage || $scope.myBgCroppedImage) {
-              
+                
                 var imageData, appenddata;
                 if (imageType == "bgImage") {
                     imageData = $scope.myBgCroppedImage;

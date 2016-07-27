@@ -45,7 +45,7 @@
         var focus = 0;
         function inputUp() {
           
-            inputChanged = 0;
+            var inputChanged = 0;
             if ($scope.isFocused == 'focusOut' && focus == 0) {
                 focus++;
              
@@ -56,14 +56,18 @@
                 focus--;
             }
 
-            i = 0;
+            var i = 0;
             $timeout(function() {
+                console.log('scroll');
                 $ionicScrollDelegate.scrollBottom(false);
+                $scope.$apply();
             }, 300);
         };
         function inputDown() {
-            $interval.cancel(interval);
+            console.log('scroll2');
+            // $interval.cancel(interval);
             $ionicScrollDelegate.resize();
+            $scope.$apply();
         };
         var message='';
         var debounce = _.debounce(fireSocketEvent, 0, false);

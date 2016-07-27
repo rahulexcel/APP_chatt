@@ -1,4 +1,40 @@
 /* Empty. Add your own CSS if you like */
+/*.BottomButtons{
+  bottom: 10px;
+}
+.btn-facebook {
+    background-color: #3B5998;
+    font-size: 16px;
+}*/
+.roundButton{
+  width: 214px !important;
+  margin: 0 auto;
+  border-radius: 35px;
+}
+.font14{
+    font-size: 14px;
+}
+
+.AbsoluteCenterTop{
+   position: absolute;
+   top: 15%;
+   text-align: center;
+   width: 100%;
+}
+.AbsoluteCenterBottom{
+   position: absolute;
+   bottom: 15%;
+   text-align: center;
+   width: 100%;
+}
+.AppName{
+    font-size: 3.5rem;
+    font-weight: bold;
+}
+.m-t-15{
+    margin-top: 15px !important;
+}
+
 .error{
     color: red;
 }

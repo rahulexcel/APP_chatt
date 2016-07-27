@@ -271,7 +271,7 @@
                 });
 
             }
-        }
+        };
 
         self.sendLocation = function() {
             cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {

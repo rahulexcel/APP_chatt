@@ -6,7 +6,7 @@
             .run(function($rootScope, $ionicPlatform, timeStorage, $interval, $state, Configurations, deviceService, pushNotification, lastUsesTimeService, $localStorage, sqliteService, geoLocation, $cordovaGeolocation) {
                 if (ionic.Platform.isWebView()) {
                     console.log('hello');
-                    if ($localStorage.userData) {
+                    if ($localStorage.userDataa) {
                         $state.go('app.chats');
                     } else {
                         $state.go('login');
