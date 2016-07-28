@@ -1,5 +1,5 @@
 {
-  "name": "Excellence Chat App",
+ "name": "Excellence Chat App",
   "private": "true",
   "devDependencies": {
     "angular": "1.4.8",
