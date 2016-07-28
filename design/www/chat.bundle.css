@@ -86134,6 +86134,47 @@ a.dark {
 }
 /* Empty. Add your own CSS if you like */
 
+/*.BottomButtons{
+  bottom: 10px;
+}
+.btn-facebook {
+    background-color: #3B5998;
+    font-size: 16px;
+}*/
+
+.roundButton {
+  width: 214px !important;
+  margin: 0 auto;
+  border-radius: 35px;
+}
+
+.font14 {
+  font-size: 14px;
+}
+
+.AbsoluteCenterTop {
+  position: absolute;
+  top: 15%;
+  text-align: center;
+  width: 100%;
+}
+
+.AbsoluteCenterBottom {
+  position: absolute;
+  bottom: 10%;
+  text-align: center;
+  width: 100%;
+}
+
+.AppName {
+  font-size: 3.5rem;
+  font-weight: bold;
+}
+
+.m-t-20 {
+  margin-top: 20px !important;
+}
+
 .error {
   color: red;
 }
@@ -97342,7 +97383,16 @@ img-crop canvas {
   -webkit-tap-highlight-color: transparent;
 }
 #background {
-  background-color: #3F51B5 !important;
+  background-image: url("http://favim.com/orig/201106/09/branch-light-nature-photography-pine-snow-Favim.com-69972.jpg");
+  background: tranparentColor;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  margin: 0 auto;
+  padding-top: 1px;
 }
 
 .angular-google-map-container {
