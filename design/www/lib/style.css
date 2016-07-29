@@ -1,3 +1,16 @@
+#MainPage{
+    background-image: url(http://favim.com/orig/201106/09/branch-light-nature-photography-pine-snow-Favim.com-69972.jpg);
+    background: tranparentColor;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    margin: 0 auto;
+    padding-top: 1px;
+}
+
 #background{
     background-color: #3F51B5 !important;
 }
@@ -14,7 +27,7 @@
     color: #fff!important;
 }
 .back-button{
-    color: #fff!important;	
+    color: #fff!important;  
 }
 .sent{
     color: #FFA500!important;
@@ -52,7 +65,7 @@
     position: absolute;
     top: 40px;
     font-size: 12px;
-    left: 48px;	
+    left: 48px; 
 }
 .chatPageheader{
     position: static;
@@ -253,11 +266,11 @@
     display: inline-block;
 }
 .bar {
-    background-color: #3F51B5!important;
-    /*border-bottom: 1px solid #3F51B5!important;*/
+    background-color: #fff!important;
+    border-bottom: 1px solid #ddd!important;
 }
 .title{
-    color: #fff!important;
+   font-size: 24px !important;
 }
 .ion-navicon{
     color: #fff!important;
@@ -281,11 +294,9 @@
 }
 
 /*Menu css*/
-.tabs-icon-color{
-    color: #fff;
-}
+
 a.tab-item {
-    color: #fff;
+    color: rgb(68, 68, 68);
 }
 a.tab-item:hover{
     text-decoration: none;
@@ -488,7 +499,7 @@ a.tab-item:hover{
     min-height:40px;
 }
 .text-box{
-    margin-top:3px;	
+    margin-top:3px; 
     /*width: 6em;*/
     /*height: 2em;*/
     word-wrap: break-word;
@@ -606,7 +617,7 @@ a.active{
     margin-top: 30%;
 }
 .chatuser-profile .m-t-sm{
-    margin-top: 5%;	
+    margin-top: 5%; 
 }
 .lastSeen{
     font-size: 12px!important;
@@ -800,7 +811,7 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
     margin-left: 5px;
 }
 .act{
-    color:#fff;
+    color: blue !important;
     opacity:1;
 }
 .myhide{
