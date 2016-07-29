@@ -12,9 +12,9 @@
   </ion-side-menu-content>
 </ion-side-menus>
 
-<div class="tabs tabs-icon-top" id="background" ng-class="{'myhide':show==true}">
+<div class="tabs tabs-icon-top"  ng-class="{'myhide':show==true}">
     <a class="tab-item" ng-class="{'act':menu.chattab==true}"  href="#/app/chats">
-        <i class="icon ion-chatbubble tabs-icon-color"></i> Chats
+        <i class="icon ion-chatbubble tabs-icon-color"  ng-class="{'act':menu.chattab==true}"></i> Chats
     </a>
     <a class="tab-item" nav-direction="swap" ng-class="{'act':menu.group==true}" ng-click="menu.search('app.publicChats')">
         <i class="icon ion-person-stalker tabs-icon-color"></i> Rooms

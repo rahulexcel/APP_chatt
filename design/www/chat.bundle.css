@@ -97382,7 +97382,7 @@ img-crop canvas {
   outline: 0;
   -webkit-tap-highlight-color: transparent;
 }
-#background {
+#MainPage {
   background-image: url("http://favim.com/orig/201106/09/branch-light-nature-photography-pine-snow-Favim.com-69972.jpg");
   background: tranparentColor;
   background-repeat: no-repeat;
@@ -97393,6 +97393,10 @@ img-crop canvas {
   z-index: 2;
   margin: 0 auto;
   padding-top: 1px;
+}
+
+#background {
+  background-color: #3F51B5 !important;
 }
 
 .angular-google-map-container {
@@ -97718,12 +97722,12 @@ img-crop canvas {
 }
 
 .bar {
-  background-color: #3F51B5!important;
-  /*border-bottom: 1px solid #3F51B5!important;*/
+  background-color: #fff!important;
+  border-bottom: 1px solid #ddd!important;
 }
 
 .title {
-  color: #fff!important;
+  font-size: 24px !important;
 }
 
 .ion-navicon {
@@ -97753,12 +97757,8 @@ img-crop canvas {
 
 /*Menu css*/
 
-.tabs-icon-color {
-  color: #fff;
-}
-
 a.tab-item {
-  color: #fff;
+  color: rgb(68, 68, 68);
 }
 
 a.tab-item:hover {
@@ -98402,7 +98402,7 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
 }
 
 .act {
-  color: #fff;
+  color: blue !important;
   opacity: 1;
 }
 
