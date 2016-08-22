@@ -35,7 +35,7 @@
                     $rootScope.$broadcast('displayChatMessages', {data: currentMessage});
                     $ionicScrollDelegate.scrollBottom(false);
                     $scope.emojiMessage = {};
-                    $interval.cancel(interval);
+                    // $interval.cancel(interval);
                     $timeout.cancel(inputChangedPromise);
                 }, 100);
                 $ionicScrollDelegate.scrollBottom(false);

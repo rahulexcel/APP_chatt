@@ -20,11 +20,11 @@
                 <a class="item item-avatar hover item-icon-right" ng-click="contacts.openUserProfile(contact, $index)">
                     <img class="avatar" ng-src="{{contact.pic}}">
                     <i class="fa fa-circle user-status {{contact.status == 'online' && 'online'|| '' }}{{contact.status == 'away' && 'away'|| '' }}{{contact.status == 'offline' && 'offline'|| '' }}"></i>
-                    <h3>{{contact.name}} <span class="fa fa-spin fa-spinner" ng-show="contacts.spinnerIndex == $index"></span></h3>
-                    <p class="lastSeen" >{{contact.geo_city}}<span class="lastSeen" ng-if="contact.geo_state != ''">, </span>{{contact.geo_state}}</p>
-                    <p class="lastSeen" ng-if="contact.lastSeen != 'Invalid date'">{{contact.lastSeen}}</p>
+                    <h2  class="ChatUserName">{{contact.name}} <span class="fa fa-spin fa-spinner" ng-show="contacts.spinnerIndex == $index"></span></h2>
+                    <p>{{contact.geo_city}}<span class="lastSeen" ng-if="contact.geo_state != ''">, </span>{{contact.geo_state}}</p>
+                    <p class='TimeDistanceText' ng-if="contact.lastSeen != 'Invalid date'">{{contact.lastSeen}}<br/>{{contact.distance_from_logged_user}}<span ng-if='contact.distance_from_logged_user'>s from you</span></p>
                     <p class="lastSeen" ng-if="contact.geo_state == '' && contact.geo_city == ''">&nbsp</p>
-                    <p class="distance"><i class="fa" ng-if="contact.gender" ng-class="{'fa-male': contact.gender == 'male' , 'fa-female': contact.gender == 'female'}" aria-hidden="true"></i> {{contact.distance_from_logged_user}}</p>
+                    <p> </p>
                 </a>
             </div>
         </div>

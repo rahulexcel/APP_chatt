@@ -100,6 +100,7 @@
         });
         sqliteService.getMessageDataFromDB($stateParams.roomId).then(function(response) {
             self.displayChatMessages = response;
+            console.log(self.displayChatMessages)
             $localStorage.roomMessageLength = self.displayChatMessages.length;
             $ionicScrollDelegate.scrollBottom(false);
         });

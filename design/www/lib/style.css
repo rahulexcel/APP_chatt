@@ -1,5 +1,4 @@
 #MainPage{
-    background-image: url(http://favim.com/orig/201106/09/branch-light-nature-photography-pine-snow-Favim.com-69972.jpg);
     background: tranparentColor;
     background-repeat: no-repeat;
     background-size: cover;
@@ -10,6 +9,83 @@
     margin: 0 auto;
     padding-top: 1px;
 }
+  
+.clearfix {
+    clear: both;
+}    
+
+
+.bubble{
+    background-color: #F2F2F2;
+    border-radius: 5px;
+    box-shadow: 0 0 6px #B2B2B2;
+    display: inline-block;
+    padding: 10px 18px;
+    position: relative;
+    vertical-align: top;
+}
+
+.bubble::before {
+    background-color: #F2F2F2;
+    content: "\00a0";
+    display: block;
+    height: 16px;
+    position: absolute;
+    top: 11px;
+    transform:             rotate( 29deg ) skew( -35deg );
+        -moz-transform:    rotate( 29deg ) skew( -35deg );
+        -ms-transform:     rotate( 29deg ) skew( -35deg );
+        -o-transform:      rotate( 29deg ) skew( -35deg );
+        -webkit-transform: rotate( 29deg ) skew( -35deg );
+    width:  20px;
+}
+
+.me {
+    float: left;   
+    margin: 5px 45px 5px 20px;
+    background-color: blue;
+    color:#fff;         
+}
+
+.me::before {
+    box-shadow: -2px 2px 2px 0 rgba( 178, 178, 178, .4 );
+    left: -9px;  
+    background-color: blue;         
+}
+.LsText{
+    font-size: 10px;
+
+}
+.chatbubblecontent{
+    font-size: inherit;
+}
+.left{
+    float: left;
+    margin-left: 65px;
+}
+.right{
+    float: right;
+    margin-right: 65px;
+}
+.you {
+    float: right;    
+    margin: 5px 20px 5px 45px;         
+}
+.img-circle {
+    border-radius: 50%;
+}
+.chat button{
+    float: left;
+}
+.you::before {
+    box-shadow: 2px -2px 2px 0 rgba( 178, 178, 178, .4 );
+    right: -9px;    
+}
+.alert-message::before {
+    box-shadow: none !important;
+    background-color: #fff !important;     
+}
+
 
 #background{
     background-color: #3F51B5 !important;
@@ -153,6 +229,12 @@
 :placeholder-shown { /* Standard one last! */
     color: #BDBDBD!important;
 }
+
+.OutlineIcon{
+    -webkit-text-fill-color: transparent !important;
+    -webkit-text-stroke-width: 1px !important;
+    color: blue;
+}
 /*login page css*/
 .login{
     display: table;
@@ -268,6 +350,7 @@
 .bar {
     background-color: #fff!important;
     border-bottom: 1px solid #ddd!important;
+    color: rgb(103, 99, 99);
 }
 .title{
    font-size: 24px !important;
@@ -280,8 +363,17 @@
 }
 .user-container{
     position:relative;
-    border-top: 1px solid #ddd!important;
+    border-top: 1px solid #ddd;
     border-bottom: 1px solid #ddd!important;
+}
+.user-container a:hover{
+    color: rgb(51, 51, 51);
+}
+.user-container a:active{
+    color: rgb(51, 51, 51);
+}
+.NoBorderTop{
+   border-top: none !important;  
 }
 .icon-container{
     position:absolute;
@@ -293,15 +385,30 @@
     left: 10px;
 }
 
+
 /*Menu css*/
 
 a.tab-item {
-    color: rgb(68, 68, 68);
+    color: blue;
 }
 a.tab-item:hover{
     text-decoration: none;
 }
 /*chat page css*/
+.TimeDistanceText{
+    position: absolute;
+    top: 8px;
+    right: 5px;
+    font-size: 10px !important;
+}
+.blue-badge{
+    top: 43px;
+    right: 22px;
+}
+.ChatUserName{
+    max-width: 60%;
+}
+
 .chatpage-header{
     color: #fff!important;
 }
@@ -323,11 +430,12 @@ a.tab-item:hover{
     display: block!important;
     clear: both!important;
     color: black !important;
-    /*background-color: #fff!important;*/
+    background-color: #fff!important;
     width: 100%!important;
     margin: 0px 0px 10px 0px!important;
     padding: 0px!important;
     text-align: center!important;
+    box-shadow: 0 0 0 #fff !important;
 }
 .alert-message button{
     display: none!important;
@@ -378,9 +486,9 @@ a.tab-item:hover{
     width: 40px;
 }
 .bubble-yellow {
-    background-color: #A29E39;
-    border-color: #A29E39;
-    border-radius: 5px 5px 5px 5px;
+    background-color: #ded9d9;
+    border-color: #ded9d9;
+    border-radius: 15px 15px 15px 15px;
     display: inline-block;
     margin: 0px 10px 0px 10px;
     padding: 9px 8px 0 8px;
@@ -402,9 +510,9 @@ a.tab-item:hover{
     width: 12px;
 }*/
 .bubble-blue {
-    background-color: #78C9A7;
-    border-color: #78C9A7;
-    border-radius: 5px 5px 5px 5px;
+    background-color: #1C57FF;
+    border-color: #1C57FF   ;
+     border-radius: 15px 15px 15px 15px;        
     display: inline-block;
     margin: 0px 10px 0px 10px;
     padding: 9px 8px 0 8px;
@@ -447,8 +555,9 @@ a.tab-item:hover{
 }
 .bubble-yellow p{
     /*padding-left: 4px;*/
-    color: #fff;
+    color: #060606;
     margin-bottom: 0px;
+    padding: 3px;
 }
 .right-chat{
     float:right; 
@@ -473,6 +582,7 @@ a.tab-item:hover{
     /*padding-right: 4px;*/
     color: #fff;
     margin-bottom: 0px;
+    padding: 3px;
 }
 .send-msg{
     position: absolute;
@@ -774,7 +884,7 @@ div.spin {
 }
 .popover-menu-btn-file-attach{
     padding-right: 20%!important;
-    color: white!important;
+    color: rgb(103, 99, 99)!important;
 }
 #emojibtn{
     position: absolute;
@@ -787,6 +897,9 @@ div.spin {
 .popover-menu-btn{
     position: absolute;
     right: 32px;
+}
+.GreyColor{
+color: rgb(103, 99, 99) !important;
 }
 .userin{
     width:100%;
@@ -811,9 +924,11 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
     margin-left: 5px;
 }
 .act{
-    color: blue !important;
+    background-color: blue;
+    color: #fff !important;
     opacity:1;
 }
+
 .myhide{
     display:none;
 }
@@ -830,6 +945,8 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
 .blue-badge{
     border-radius: 50%!important;
     background-color: blue;
+    top: 43px !important;
+    right: 22px !important;
 }
 .update-pic-btn{
     border-radius: 0px!important;

@@ -1,7 +1,7 @@
 
 <div>
-    <button ng-click='chatPageHeader.goBack()' class='button back-button buttons button-clear header-item mybt'>
-        <i class='icon ion-ios-arrow-back'></i>
+    <button ng-click='chatPageHeader.goBack()' class='button back-button buttons button-clear header-item mybt '>
+        <i class='icon ion-ios-arrow-back GreyColor'></i>
     </button>
 
     <div class="userin">
@@ -10,8 +10,8 @@
         </div>
         <div class='button button-clear fontC'  ng-click="chatPageHeader.openInfo()"> <div class="chatName">{{chatPageHeader.name}} </div><div class="lastSeen headLast">{{chatPageHeader.lastSeen}}</div></div>
         <button class="button button-icon ion-android-attach pull-right popover-menu-btn-file-attach" ng-click="chatPageHeader.openAttachFilePopover($event)"></button>
-        <button ng-if="chatPageHeader.id" class="button button-icon ion-android-more-vertical pull-right popover-menu-btn" ng-click="chatPageHeader.openPopover($event)"></button>
-        <button ng-if="!chatPageHeader.id" class="button button-icon ion-android-more-vertical pull-right popover-menu-btn" ng-click="chatPageHeader.openGroupPopover($event)"></button>
+        <button ng-if="chatPageHeader.id" class="button button-icon ion-android-more-vertical pull-right popover-menu-btn GreyColor" ng-click="chatPageHeader.openPopover($event)"></button>
+        <button ng-if="!chatPageHeader.id" class="button button-icon ion-android-more-vertical pull-right popover-menu-btn GreyColor" ng-click="chatPageHeader.openGroupPopover($event)"></button>
     </div>
     <img id="image" src="" style="display:none;width:100%;">
 
@@ -19,103 +19,102 @@
 
 <script id="infoModel.html" type="text/ng-template">
     <h1 class="text-center infoModel-spinner"><span class="fa fa-spin fa-spinner" ng-show="chatPageHeader.openModelWithSpinner"></span></h1>
-    <div class="modal" ng-hide="chatPageHeader.openModelWithSpinner">
+<div class="modal" ng-hide="chatPageHeader.openModelWithSpinner">
     <header class="bar bar-header bar-positive">
-    <h1 class="title">{{chatPageHeader.infoNameShort}}</h1>
-    <div class="button btn-xs button-clear" ng-click="infoModel.hide()"><span class="icon ion-close"></span></div>
+        <h1 class="title">{{chatPageHeader.infoNameShort}}</h1>
+        <div class="button btn-xs button-clear" ng-click="infoModel.hide()"><span class="icon ion-close GreyColor"></span></div>
     </header>
     <ion-content has-header="true" padding="true">
-    <div style="width:100%;" class="pad-top-40">
-    <div class="col-md-12 col-sm-12 col-xs-12 no-pad-left-right">
-    <div class="panel panel-card">
-    <div class="r-t pos-rlt my_profile_bug" md-ink-ripple style="background:url({{chatPageHeader.infoImage}}) center center; background-size:cover">
-    <div class="bg-white-overlay r-t my_bg_backdrop">
-    <div class="text-center "> 
-    <a href class="w-xs inline marginTop">
-    <img id="profileImage" ng-src="{{chatPageHeader.infoImage}}" class="img-circle profile-pic">
-    </a>
-    </div>
-    <div class="camerach" ng-if="chatPageHeader.is_room_owner == 1" ng-click="chatPageHeader.editProfilePic()">
-    change image<span class="mycam_icon ion-ios-camera">
-    </span>
-    </div>
-    <div class="m-b m-t-sm text-center">
-    <h4 class="">{{chatPageHeader.infoName}}</h4>
-    <p class="">{{chatPageHeader.infoDescription}}</p>
-    <p class="lastSeen">Created On: {{chatPageHeader.infoCreatedOn}}</p>
-    </div>
-    <div class="text-center paddingBottom">
-    <a class="btn btn-md btn-danger m-b p-h no-border" ng-if="chatPageHeader.is_room_owner == 1" ng-click="chatPageHeader.deleteRoom()">Delete Room <span class="fa fa-spin fa-spinner" ng-show="chatPageHeader.deleteGroupSpinner"></span></a>
-    <a class="btn btn-md btn-danger m-b p-h no-border" ng-if="chatPageHeader.is_room_owner == 0" ng-click="chatPageHeader.leaveGroup()">Leave Room <span class="fa fa-spin fa-spinner" ng-show="chatPageHeader.leaveGroupSpinner"></span></a>
-    </div>
-    </div>
-    </div>
-    </div>
-    <div class="m-b m-t-sm h4">
-    <ul class="list user-container">
-    <li class="item item-toggle">
-    Notifications
-    <label class="toggle toggle-balanced">
-    <input type="checkbox" ng-model="chatPageHeader.muteNotifications" ng-change="chatPageHeader.mute()">
-    <div class="track">
-    <div class="handle"></div>
-    </div>
-    </label>
-    </li>
-    </ul>
-    <div class="list" id="chats">
-    <div class="user-container" ng-repeat="infoUser in chatPageHeader.infoUserList| orderBy:'-last_seen'">
-    <a class="item item-avatar hover infoModel-button">
-    <img class="avatar" ng-src="{{infoUser.profile_image}}" ng-click="chatPageHeader.infoUserClick(infoUser)">
-    <i class="fa fa-circle user-status {{infoUser.status == 'online' && 'online' || '' }}{{infoUser.status == 'away' && 'away' || '' }}{{infoUser.status == 'offline' && 'offline' || '' }}"></i>
-    <h3 ng-click="chatPageHeader.infoUserClick(infoUser)">{{infoUser.name}}</h3>
-    <h3 class="lastSeen" ng-click="chatPageHeader.infoUserClick(infoUser)">{{infoUser.last_seen}}</h3>
-    <p class="pull-right trash-icon" ng-if="chatPageHeader.is_room_owner == 1" ng-hide="infoUser.owner" ng-click="chatPageHeader.deleteUserFromGroup(infoUser, $index)" ng-class="{'delete-icon-rotate': $index == chatPageHeader.deleteIconRotate}"><i class="fa fa-trash"></i></p>
-    </a>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
+        <div style="width:100%;" class="pad-top-40">
+            <div class="col-md-12 col-sm-12 col-xs-12 no-pad-left-right">
+                <div class="panel panel-card">
+                    <div class="r-t pos-rlt my_profile_bug" md-ink-ripple style="background:url({{chatPageHeader.infoImage}}) center center; background-size:cover">
+                        <div class="bg-white-overlay r-t my_bg_backdrop">
+                            <div class="text-center ">
+                                <a href class="w-xs inline marginTop">
+                                    <img id="profileImage" ng-src="{{chatPageHeader.infoImage}}" class="img-circle profile-pic">
+                                </a>
+                            </div>
+                            <div class="camerach" ng-if="chatPageHeader.is_room_owner == 1" ng-click="chatPageHeader.editProfilePic()">
+                                change image<span class="mycam_icon ion-ios-camera"></span>
+                            </div>
+                            <div class="m-b m-t-sm text-center">
+                                <h4 class="">{{chatPageHeader.infoName}}</h4>
+                                <p class="">{{chatPageHeader.infoDescription}}</p>
+                                <p class="lastSeen">Created On: {{chatPageHeader.infoCreatedOn}}</p>
+                            </div>
+                            <div class="text-center paddingBottom">
+                                <a class="btn btn-md btn-danger m-b p-h no-border" ng-if="chatPageHeader.is_room_owner == 1" ng-click="chatPageHeader.deleteRoom()">Delete Room <span class="fa fa-spin fa-spinner" ng-show="chatPageHeader.deleteGroupSpinner"></span></a>
+                                <a class="btn btn-md btn-danger m-b p-h no-border" ng-if="chatPageHeader.is_room_owner == 0" ng-click="chatPageHeader.leaveGroup()">Leave Room <span class="fa fa-spin fa-spinner" ng-show="chatPageHeader.leaveGroupSpinner"></span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="m-b m-t-sm h4">
+                    <ul class="list user-container">
+                        <li class="item item-toggle">
+                            Notifications
+                            <label class="toggle toggle-balanced">
+                                <input type="checkbox" ng-model="chatPageHeader.muteNotifications" ng-change="chatPageHeader.mute()">
+                                <div class="track">
+                                  <div class="handle"></div>
+                                </div>
+                            </label>
+                        </li>
+                    </ul>
+                    <div class="list" id="chats">
+                        <div class="user-container" ng-repeat="infoUser in chatPageHeader.infoUserList| orderBy:'-last_seen'">
+                            <a class="item item-avatar hover infoModel-button">
+                                <img class="avatar" ng-src="{{infoUser.profile_image}}" ng-click="chatPageHeader.infoUserClick(infoUser)">
+                                <i class="fa fa-circle user-status {{infoUser.status == 'online' && 'online' || '' }}{{infoUser.status == 'away' && 'away' || '' }}{{infoUser.status == 'offline' && 'offline' || '' }}"></i>
+                                <h3 ng-click="chatPageHeader.infoUserClick(infoUser)">{{infoUser.name}}</h3>
+                                <h3 class="lastSeen" ng-click="chatPageHeader.infoUserClick(infoUser)">{{infoUser.last_seen}}</h3>
+                                <p class="pull-right trash-icon" ng-if="chatPageHeader.is_room_owner == 1" ng-hide="infoUser.owner" ng-click="chatPageHeader.deleteUserFromGroup(infoUser, $index)" ng-class="{'delete-icon-rotate': $index == chatPageHeader.deleteIconRotate}"><i class="fa fa-trash"></i></p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </ion-content>
-    </div>
+</div>
 </script>
 <script id="infoModelUser.html" type="text/ng-template">
    <div class="modal">
         <header class="bar bar-header bar-positive">
           <h1 class="title">{{chatPageHeader.displayUserProfileName}}</h1>
-          <div class="button btn-xs button-clear" ng-click="infoModelUser.hide()"><span class="icon ion-close"></span></div>
+          <div class="button btn-xs button-clear" ng-click="infoModelUser.hide()"><span class="icon ion-close GreyColor"></span></div>
         </header>
-        <ion-content class="has-header has-footer">
+       <ion-content class="has-header has-footer">
 
     <div style="width:100%;">
-            <div class="col-md-12 col-sm-12 col-xs-12 no-pad-left-right">
-                <div class="panel panel-card mypanel">
-                    <div class="r-t pos-rlt my_profile_bug" md-ink-ripple style="background:url({{chatPageHeader.displayUserProfileImage}})  center; background-size:cover;background-repeat: no-repeat;height:250px;">
-                        <div class="bg-white-overlay text-center r-t my_bg_backdrop" style="padding-top: 10px;height: 250px">
-                            <a href class="w-xs inline myim" >
-                                <img id="profileImage" ng-src="{{chatPageHeader.displayUserProfileImage}}" class="img-circle profile-pic">
-                            </a>
-                            <div class="m-b m-t-sm h2">
-                                <span class="">{{chatPageHeader.displayUserProfileName}}</span>
-                            </div>
-                          <div class="m-b m-t-sm h4">
-                                <span class="">{{chatPageHeader.displayUserProfileStatus}}</span>
-                          </div>
-                          <div class="m-b m-t-sm h4" ng-if="!chatPageHeader.displayUserProfileStatus">
-                                <span class="">Hey ! I am using ChatApp</span>
-                          </div>
+        <div class="col-md-12 col-sm-12 col-xs-12 no-pad-left-right">
+            <div class="panel panel-card mypanel">
+                <div class="r-t pos-rlt my_profile_bug" md-ink-ripple style="background:url({{chatPageHeader.displayUserProfileImage}})  center; background-size:cover;background-repeat: no-repeat;height:250px;">
+                    <div class="bg-white-overlay text-center r-t my_bg_backdrop" style="padding-top: 10px;height: 250px">
+                        <a href class="w-xs inline myim">
+                            <img id="profileImage" ng-src="{{chatPageHeader.displayUserProfileImage}}" class="img-circle profile-pic">
+                        </a>
+                        <div class="m-b m-t-sm h2">
+                            <span class="">{{chatPageHeader.displayUserProfileName}}</span>
+                        </div>
+                        <div class="m-b m-t-sm h4">
+                            <span class="">{{chatPageHeader.displayUserProfileStatus}}</span>
+                        </div>
+                        <div class="m-b m-t-sm h4" ng-if="!chatPageHeader.displayUserProfileStatus">
+                            <span class="">Hey ! I am using ChatApp</span>
                         </div>
                     </div>
                 </div>
             </div>
-            <p class="pad-top-5 pull-right">last seen: {{chatPageHeader.displayUserProfileLastSeen}}</p>
-            <div class="clearfix"></div>
-            <p class="pad-5"><span>Private Rooms</span><span class="pull-right">{{chatPageHeader.displayUserProfilePrivateRooms}}</span></p>
-            <p class="pad-5"><span>Public Rooms</span><span class="pull-right">{{chatPageHeader.displayUserProfilePublicRooms}}</span></p>
-            <p class="pad-5" ng-if="chatPageHeader.displayUserProfileGender"><span>Gender</span><span class="pull-right">{{chatPageHeader.displayUserProfileGender}}</span></p>
-            <p class="pad-5" ng-if="chatPageHeader.displayUserProfileDOB"><span>DOB</span><span class="pull-right">{{chatPageHeader.displayUserProfileDOB}}</span></p>
         </div>
-        </ion-content>
+        <p class="pad-top-5 pull-right">last seen: {{chatPageHeader.displayUserProfileLastSeen}}</p>
+        <div class="clearfix"></div>
+        <p class="pad-5"><span>Private Rooms</span><span class="pull-right">{{chatPageHeader.displayUserProfilePrivateRooms}}</span></p>
+        <p class="pad-5"><span>Public Rooms</span><span class="pull-right">{{chatPageHeader.displayUserProfilePublicRooms}}</span></p>
+        <p class="pad-5" ng-if="chatPageHeader.displayUserProfileGender"><span>Gender</span><span class="pull-right">{{chatPageHeader.displayUserProfileGender}}</span></p>
+        <p class="pad-5" ng-if="chatPageHeader.displayUserProfileDOB"><span>DOB</span><span class="pull-right">{{chatPageHeader.displayUserProfileDOB}}</span></p>
+    </div>
+</ion-content>
     </div>                
 </script>
