@@ -22,3 +22,59 @@
         </div>
     </ion-content>
 </ion-view>
+<!-- <ion-view view-title="Chats" id="background" hide-back-button="true" >
+    <ion-content class="has-footer" scroll='true'>
+      <md-toolbar layout="row">
+  <h1 class="md-toolbar-tools" layout-align-gt-sm="center">Angular Emoji Picker</h1>
+</md-toolbar>
+<div layout="row" flex>
+  <div layout="column" flex id="content">
+    <md-content layout="column" flex class="md-padding">
+      <form name="blogPost">
+        <md-input-container>
+          <label>Author</label>
+          <input md-maxlength="30" required name="author" ng-model="post.author">
+          <div ng-messages="blogPost.author.$error">
+            <div ng-message="required">This is required.</div>
+            <div ng-message="md-maxlength">The name has to be less than 30 characters long.</div>
+          </div>
+        </md-input-container>
+        <md-input-container>
+          <label>Title</label>
+          <input md-maxlength="50" required name="title" ng-model="post.title">
+          <div ng-messages="blogPost.title.$error">
+            <div ng-message="required">This is required.</div>
+            <div ng-message="md-maxlength">Wow! Wow! Calm down. Why so much letters?</div>
+          </div>
+        </md-input-container>
+        <md-input-container>
+          <label>Message</label>
+          <textarea md-maxlength="150" required ng-model="post.message" columns="1"></textarea>
+          <div ng-messages="blogPost.rate.$error">
+            <div ng-message="required">Hey, write something</div>
+            <div ng-message="md-maxlength">So much to read, man</div>
+          </div>
+        </md-input-container>
+        <section layout="row" layout-sm="row" layout-margin layout-align="center center">
+          <md-button class="md-raised md-default">Post</md-button>
+          <span style="margin: 0 20px;" emoji-picker="post.message" placement="right" title="Emoji" recent-limit="12"></span>
+        </section>
+      </form>
+      <div layout="column">
+        <md-toolbar class="md-warn">
+          <div class="md-toolbar-tools">
+            <h2 class="md-flex">Filter output</h2>
+          </div>
+        </md-toolbar>
+        <md-content layout-padding style="padding: 10px;">
+          <p><strong>Imagify filter</strong>: <span emoji-removable="post.message" ng-bind-html="post.message | imagify"></span></p>
+          <p><strong>Hexify filter</strong>: <span ng-bind-html="post.message | hexify"></span></p>
+          <p><strong>Hexify and unicodify filters</strong>: <span ng-bind-html="post.message | hexify | unicodify"></span></p>
+          <p><strong>Emojify filter</strong>: <span ng-bind-html="post.message | emojify"></span></p>
+        </md-content>
+      </div>
+    </md-content>
+  </div>
+</div>
+    </ion-content>
+</ion-view> -->

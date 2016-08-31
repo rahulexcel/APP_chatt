@@ -160,7 +160,12 @@
             infoApi();
         });
         $scope.$on('got_user_profile_for_room', function(event, data) {
-            self.lastSeen = moment.unix(data.data.data.last_seen).tz(timeZoneService.getTimeZone()).format("hh:mm a");
+            console.log("here");
+            console.log(data.data.data.status)
+            if(data.data.data.status == 'online')
+                self.lastSeen = 'online';
+            else
+                self.lastSeen = 'last seen '+moment.unix(data.data.data.last_seen).tz(timeZoneService.getTimeZone()).format("hh:mm a");
         });
         $ionicModal.fromTemplateUrl('infoModel.html', function($ionicModal) {
             $scope.infoModel = $ionicModal;

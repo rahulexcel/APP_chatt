@@ -44,15 +44,18 @@
       "locator": "phonegap-plugin-push",
       "id": "phonegap-plugin-push"
     },
-    "cordova-plugin-app-event",
-    "cordova-plugin-appversion",
-    "cordova-plugin-camera",
     "cordova-sqlite-storage",
     "cordova-plugin-compat",
     "cordova-plugin-geolocation",
-    "cordova.plugins.diagnostic"
+    "cordova.plugins.diagnostic",
+    "cordova-plugin-app-event",
+    "cordova-plugin-appversion",
+    "cordova-plugin-camera"
   ],
   "cordovaPlatforms": [
-    "android"
+    {
+      "platform": "android",
+      "locator": "browser"
+    }
   ]
 }

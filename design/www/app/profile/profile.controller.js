@@ -41,6 +41,7 @@
         };
         $scope.myCroppedImage = '';
         self.editProfilePic = function() {
+            console.log('aaya')
             cameraService.changePic().then(function(imageData) {
                 $scope.modal.show();
                 var img = "data:image/jpeg;base64," + imageData;

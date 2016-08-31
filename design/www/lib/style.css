@@ -13,7 +13,11 @@
 .clearfix {
     clear: both;
 }    
-
+.status_text{
+    font-size: larger;
+    color: blue;
+    margin-bottom: 20px;
+}
 
 .bubble{
     background-color: #F2F2F2;
@@ -74,6 +78,19 @@
 .img-circle {
     border-radius: 50%;
 }
+#profile .item{
+    border-width: 1px !important;
+    border-style: solid !important;
+    border-color: #ddd !important;
+}
+.profile-pic{
+    display: block;
+    margin: 0 auto;
+    width: 150px;
+    height: 150px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
 .chat button{
     float: left;
 }
@@ -81,11 +98,14 @@
     box-shadow: 2px -2px 2px 0 rgba( 178, 178, 178, .4 );
     right: -9px;    
 }
+.profileOption{
+        font-size: 16px;
+    font-weight: 500;
+}
 .alert-message::before {
     box-shadow: none !important;
     background-color: #fff !important;     
 }
-
 
 #background{
     background-color: #3F51B5 !important;
@@ -327,7 +347,7 @@
     color: #fff;
 }
 .facebook-btn{
-    background: #3A5795!important;
+    background: #1C57FF !important;
     color: #fff;
 }
 #registerPage .main-container .register-form .facebook-btn span{
@@ -336,7 +356,9 @@
 .close-btn{
     color: #fff!important;
 }
-
+ .panel{
+    box-shadow: 0 0px 1px rgba(0,0,0,.05) !important;
+}
 /*Contacts page css*/
 .contacts-header{
     color: #fff!important;
@@ -422,6 +444,9 @@ a.tab-item:hover{
 .chatpage-header img{
     max-width:36px;
     padding-right: 1px;
+}
+.blueColor{
+    color:#387ef5;
 }
 .chatpage-header p span{
     font-size: 10px;
@@ -642,10 +667,7 @@ span.name{
 span.name input{
     border: 1px solid #3F51B5!important;
 }
-.profile-pic{
-    width: 100px;
-    height: 100px;
-}
+
 .no-pad-left-right{
     padding:0;
 }
@@ -675,7 +697,7 @@ span.name input{
 /*Public Chat*/
 .add-public-chat{
     position: absolute;
-    bottom: 60px;
+    bottom: 160px;
     right: 0px;
     z-index: 2;
 }
@@ -924,19 +946,21 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
     margin-left: 5px;
 }
 .act{
-    background-color: blue;
+    background-color: #387ef5;
     color: #fff !important;
     opacity:1;
+}
+.no-pad{
+    padding: 0px !important;
 }
 
 .myhide{
     display:none;
 }
 .chatName{
-    margin:-6px 0 0 0;
-    /*font-weight:0;*/
-    text-align: left;
-    font-size:15px!important;
+   margin: -6px 0 0 0;
+    /* font-weight: 0; */
+    text-align: center;
 }
 .headLast{
     margin: -14px 0 0 0;
@@ -994,12 +1018,12 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
     color: white;
 }
 /*==============================*/
-span.satusedit.ion-android-create {
+/*span.satusedit.ion-android-create {
     padding: 0 0 0 8px;
-}
+}*/
 span.status_edit {
-    margin-left: 8px;
-    border-left: 1px solid;
+   font-weight: inherit;
+    font-size: 13px;
 }
 input#statustxt {
     border: 0;

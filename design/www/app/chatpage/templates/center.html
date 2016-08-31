@@ -7,7 +7,7 @@
     </ion-refresher>
     <div id="map" ></div>
 <div class="chat clearfix"  ng-repeat="msg in chatPageCenter.displayChatMessages| orderBy:'timeStamp'">
-   <img class="img-circle" ng-src="{{msg.image}}" ng-if="msg.user_id == chatPageCenter.user_id && msg.message_type != 'room_alert_message'" style="height: 40px; float:right;">`
+   <img class="img-circle" ng-src="{{msg.image}}" ng-if="msg.user_id == chatPageCenter.user_id && msg.message_type != 'room_alert_message'" style="height: 40px; float:right;">
      <img class="img-circle" ng-src="{{imgDpuser}}" ng-if="msg.user_id != chatPageCenter.user_id && msg.message_type != 'room_alert_message'" style="height: 40px; float:left;">
     <div  class="{{(msg.user_id == chatPageCenter.user_id && msg.message_type != 'room_alert_message') && 'you bubble' || 'me bubble' }} {{msg.message_type == 'room_alert_message' && 'alert-message'|| '' }} ">
     <p class="lastSeen message-user-name" ng-if="chatPageCenter.isPublicRoom && msg.message_type != 'room_alert_message'">{{msg.name}}</p>
@@ -17,26 +17,7 @@
       <p class="chat-time lastSeen" ng-if="msg.message_type !== 'room_alert_message'"> <span class="message-timing1">{{msg.messageTime}}</span> <i class="{{msg.message_status == 'sent' && 'sent'|| '' }}{{msg.message_status == 'post' && 'post'|| '' }}{{msg.message_status == 'seen' && 'seen'|| '' }}{{msg.user_id == chatPageCenter.user_id && ' fa fa-circle'|| ' ' }}"></i></p>
     </p>
     </div>
-  
 </div>
-
-
-
-    <!-- <div class="list chat-page-list">
-        <div class="item {{(msg.user_id == chatPageCenter.user_id && msg.message_type != 'room_alert_message') && 'right-chat' || 'left-chat' }} {{msg.message_type == 'room_alert_message' && 'alert-message'|| '' }}" ng-repeat="msg in chatPageCenter.displayChatMessages| orderBy:'timeStamp'">
-            <img class="avatar" ng-src="{{msg.image}}" ng-if="msg.user_id == chatPageCenter.user_id && msg.message_type != 'room_alert_message'">
-
-            <img class="avatar" src="{{imgDpuser}}" ng-if="msg.user_id != chatPageCenter.user_id && msg.message_type != 'room_alert_message'">
-
-            <div class="{{msg.user_id == chatPageCenter.user_id && 'bubble-blue'|| 'bubble-yellow' }}">
-
-                <p class="lastSeen message-user-name" ng-if="chatPageCenter.isPublicRoom && msg.message_type != 'room_alert_message'">{{msg.name}}</p>
-                <p ng-bind-html="msg.message" class="imgDiv" ng-click="imgDownload(msg.user_id, chatPageCenter.user_id, msg.message, $index)"></p>
-                <p class="message-timing" ng-if="msg.message_type != 'room_alert_message'">{{msg.messageTime}}</p>
-                <p class="chat-time lastSeen"> <span class="message-timing1">{{msg.messageTime}}</span> <i class="{{msg.message_status == 'sent' && 'sent'|| '' }}{{msg.message_status == 'post' && 'post'|| '' }}{{msg.message_status == 'seen' && 'seen'|| '' }}{{msg.user_id == chatPageCenter.user_id && ' fa fa-circle'|| ' ' }}"></i></p>
-            </div>
-        </div>
-    </div> -->
     <div class="alert-message">
         <div>
             <p ng-if="chatPageCenter.tempMessage.length <= 1">{{chatPageCenter.tempMessage[0]}} 
@@ -51,7 +32,7 @@
         
       <ion-header-bar class="bar-stable">
       <h1 class="title">Shared Location</h1>
-      <div class="button btn-xs button-clear" ng-click="mapUser.hide()"><span class="icon ion-close icon-color"></span></div>
+      <div class="button btn-xs button-clear" ng-click="mapUser.hide()"><span class="icon ion-close GreyColor"></span></div>
     </ion-header-bar>
     <ion-content scroll="false">
      <ui-gmap-google-map center='map.center' zoom='map.zoom'>
