@@ -137,7 +137,6 @@
                      });
                  }
                  function error(err) {
-                    console.log(err);
                      q.reject(err);
                  }
                  function success(results) {

@@ -8,7 +8,7 @@
         <div class="button button-clear imgCircle" ng-click='chatPageHeader.openInfo()'>
             <img class='img-circle mycl' ng-src='{{chatPageHeader.image}}'>
         </div>
-        <div class='button button-clear  GreyColor'  ng-click="chatPageHeader.openInfo()"> <div class="chatName">{{chatPageHeader.name}} </div><div class="lastSeen headLast">{{chatPageHeader.lastSeen}}</div></div>
+        <div class='button button-clear GreyColor'  ng-click="chatPageHeader.openInfo()"> <div class="chatName">{{chatPageHeader.name}} </div><div class="lastSeen headLast">{{chatPageHeader.lastSeen}}</div></div>
         <button class="button button-icon ion-android-attach pull-right popover-menu-btn-file-attach" ng-click="chatPageHeader.openAttachFilePopover($event)"></button>
         <button ng-if="chatPageHeader.id" class="button button-icon ion-android-more-vertical pull-right popover-menu-btn GreyColor" ng-click="chatPageHeader.openPopover($event)"></button>
         <button ng-if="!chatPageHeader.id" class="button button-icon ion-android-more-vertical pull-right popover-menu-btn GreyColor" ng-click="chatPageHeader.openGroupPopover($event)"></button>

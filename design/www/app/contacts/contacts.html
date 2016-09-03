@@ -34,42 +34,59 @@
    <div class="modal">
         <header class="bar bar-header bar-positive">
           <h1 class="title GreyColor">{{contacts.displayUserProfileName}}</h1>
-          <div class="button btn-xs button-clear" ng-click="modal.hide()"><span class="icon ion-close"></span></div>
+          <div class="button btn-xs button-clear" ng-click="modal.hide()"><span class="icon ion-close GreyColor"></span></div>
         </header>
-        <ion-content class="has-header has-footer">
+          <ion-content class="has-header has-footer" padding="true">
+                <img id="profileImage" ng-src="{{contacts.displayUserProfileImage}}"  class="img-circle profile-pic" >
+       <ul class="list" id='profile' ng-hide="contacts.lodingSpinner">
 
-    <div style="width:100%;">
-            <div class="col-md-12 col-sm-12 col-xs-12 no-pad-left-right">
-                <div class="panel panel-card mypanel">
-                    <div class="r-t pos-rlt my_profile_bug" md-ink-ripple style="background:url({{contacts.displayUserProfileImage}})  center; background-size:cover;background-repeat: no-repeat;height:250px;">
-                        <div class="bg-white-overlay text-center r-t my_bg_backdrop" style="padding-top: 10px;height: 250px">
-                            <a href class="w-xs inline myim" >
-                                <img id="profileImage" ng-src="{{contacts.displayUserProfileImage}}" class="img-circle profile-pic">
-                            </a>
-                            <div class="m-b m-t-sm h2">
-                                <span class="">{{contacts.displayUserProfileName}}</span>
-                            </div>
-                          <div class="m-b m-t-sm h4" ng-if="contacts.displayUserProfileStatus">
-                                <span class="">{{contacts.displayUserProfileStatus}}</span>
-                          </div>
-                         <div class="m-b m-t-sm h4" ng-if="!contacts.displayUserProfileStatus">
-                                <span class="">Hey ! I am using ChatApp</span>
-                          </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <p class="pad-top-5 pull-right">last seen: {{contacts.displayUserProfileLastSeen}}</p>
-            <div class="clearfix"></div>
-            <p class="pad-5"><span>Private Rooms</span><span class="pull-right">{{contacts.displayUserProfilePrivateRooms}}</span></p>
-            <p class="pad-5"><span>Public Rooms</span><span class="pull-right">{{contacts.displayUserProfilePublicRooms}}</span></p>
-            <p class="pad-5" ng-if="contacts.displayUserProfileGender"><span>Gender</span><span class="pull-right">{{contacts.displayUserProfileGender}}</span></p>
-            <p class="pad-5" ng-if="contacts.displayUserProfileDOB"><span>DOB</span><span class="pull-right">{{contacts.displayUserProfileDOB}}</span></p>
-        </div>
-        </ion-content>
-        <footer class="bar-footer">
-          <a  class="footer-position md-btn md-raised btn-block p-h-md btn-success btn-lg" ng-click="contacts.chatWithUser(contacts.displayUserProfileName, contacts.displayUserProfileId, contacts.displayUserProfileImage, contacts.displayUserProfileLastSeen)">Start Chat <span class="fa fa-spin fa-spinner" ng-show="contacts.startChatspinner"></span></a>
-        </footer>
+            <li class="item item-toggle">
+                NAME
+                <label class="toggle toggle-assertive profileOption">
+      {{contacts.displayUserProfileName}}
+     </label>
+            </li>
+            <li class="item item-toggle">
+                PRIVATE ROOMS
+                <label class="toggle toggle-assertive profileOption">
+       {{contacts.displayUserProfilePrivateRooms}}
+     </label>
+            </li>
+            <li class="item item-toggle">
+                PUBLIC ROOMS
+                <label class="toggle toggle-assertive profileOption">
+      {{contacts.displayUserProfilePublicRooms}}
+     </label>
+            </li>
+            <li class="item item-toggle" ng-if="contacts.displayUserProfileGender">
+                GENDER
+                <label class="toggle toggle-assertive profileOption">
+      {{contacts.displayUserProfileGender}}
+     </label>
+            </li>
+            
+            <li class="item item-toggle" ng-if="contacts.displayUserProfileDOB">
+                DOB
+                <label class="toggle toggle-assertive profileOption">
+      {{contacts.displayUserProfileDOB}}
+     </label>
+            </li>
+            <li class="item item-toggle" style="white-space: normal;" ng-click="profile.status(profile.displayprofile.profile_status, 'Hey ! I am using ChatApp')">
+                STATUS 
+
+                <br/>
+                <span class="status_edit"  ng-if="contacts.displayUserProfileStatus">{{contacts.displayUserProfileStatus}}</span>
+                <span class="status_edit" ng-if="!contacts.displayUserProfileStatus">Hey ! I am using ChatApp</span>
+
+            </li>
+
+        </ul>
+    </ion-content>
+        <ion-footer-bar align-title="left" class="bar-footer no-pad" id="BlueBar">
+              <button class="buttons act font14" style="width: 100%; display: block;"  ng-click="contacts.chatWithUser(contacts.displayUserProfileName, contacts.displayUserProfileId, contacts.displayUserProfileImage, contacts.displayUserProfileLastSeen)">
+    START CHAT <span class="fa fa-spin fa-spinner" ng-show="contacts.startChatspinner"></span>
+   
+  </button>
     </div>
                          
 </script>

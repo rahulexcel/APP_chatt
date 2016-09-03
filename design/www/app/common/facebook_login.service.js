@@ -15,11 +15,9 @@ function facebookLogin($http, $q, $state) {
             var authResponse = response.authResponse;
             service.getFacebookProfileInfo(authResponse)
                     .then(function(profileInfo) {
-                        console.log(profileInfo);
                         profileInfo.accessToken = authResponse.accessToken;
                         def.resolve(profileInfo);
                     }, function(fail) {
-                        console.log('profile info fail', fail);
                         def.reject(fail);
                     });
         }
@@ -32,12 +30,10 @@ function facebookLogin($http, $q, $state) {
         var info = $q.defer();
         facebookConnectPlugin.api('/me?fields=email,name,gender&access_token=' + authResponse.accessToken, null,
                 function(response) {
-                    console.log(response);
                     response.accessToken = authResponse.accessToken;
                     info.resolve(response);
                 },
                 function(response) {
-                    console.log(response);
                     info.reject(response);
                 }
         );
@@ -47,21 +43,18 @@ function facebookLogin($http, $q, $state) {
         var def = $q.defer();
 
         if (window.cordova.platformId == "browser") {
-           facebookConnectPlugin.browserInit('1589303144719465');
+           facebookConnectPlugin.browserInit('442665452611089');
         }
         facebookConnectPlugin.getLoginStatus(function(success) {
             if (success.status === 'connected') {
                 console.log('getLoginStatus', success.status);
                 service.getFacebookProfileInfo(success.authResponse)
                         .then(function(profileInfo) {
-                            console.log(profileInfo);
                             def.resolve(profileInfo);
                         }, function(fail) {
-                            console.log('profile info fail', fail);
                             def.reject(fail);
                         });
             } else {
-                console.log('getLoginStatus', success.status);
                 def.resolve(success.status);
             }
         });

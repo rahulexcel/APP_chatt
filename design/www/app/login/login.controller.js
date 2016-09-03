@@ -12,7 +12,6 @@
             var promise = googleLogin.startLogin();
             promise.then(function(googleData) {
                 $ionicLoading.show();
-                console.log(googleData);
                 googleLogin.getUserFullDetails(googleData.google_id).then(function(userFullDetails){
                     timeStorage.set('userEmail', googleData.email, 1);
                     var query = loginFactory.save({
@@ -31,7 +30,7 @@
                         dob:userFullDetails.birthday
                     });
                     query.$promise.then(function(data) {
-//                        sqliteService.createTable();
+                       sqliteService.createTable();
                         $ionicLoading.hide();
                         tostService.notify('Welcome "' + data.data.name + '"', 'top');
                         timeStorage.set('userEmail', googleData.email, 1);
@@ -46,7 +45,7 @@
                     });
                 });
             }, function(data) {
-                console.log(data);
+                
             });
         };
         self.facebookRegister = function() {

@@ -8,7 +8,6 @@
         this.footerTab = function(callback) {
        
             $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
-             console.log(toState.name);
                 if (toState.name == 'app.chats') {
                     if (callback) {
                         callback(true, false, false, false);

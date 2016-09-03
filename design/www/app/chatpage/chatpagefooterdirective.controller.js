@@ -58,13 +58,11 @@
 
             var i = 0;
             $timeout(function() {
-                console.log('scroll');
                 $ionicScrollDelegate.scrollBottom(false);
                 $scope.$apply();
             }, 300);
         };
         function inputDown() {
-            console.log('scroll2');
             // $interval.cancel(interval);
             $ionicScrollDelegate.resize();
             $scope.$apply();

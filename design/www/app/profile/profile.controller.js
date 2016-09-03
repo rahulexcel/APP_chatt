@@ -41,7 +41,6 @@
         };
         $scope.myCroppedImage = '';
         self.editProfilePic = function() {
-            console.log('aaya')
             cameraService.changePic().then(function(imageData) {
                 $scope.modal.show();
                 var img = "data:image/jpeg;base64," + imageData;
@@ -202,7 +201,6 @@
             $scope.backGroundModal = modal;
         });
         self.unblockUser = function(unblockUseData, index){
-            console.log(index);
             self.clickOnUser = index;
             socketService.unblockUser(unblockUseData);
         };
