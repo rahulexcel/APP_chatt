@@ -54342,6 +54342,12 @@ a.dark {
   margin-top: 20px !important;
 }
 
+.emoji-wysiwyg-editor {
+  font-size: 18px !important;
+  color: rgb(103, 99, 99) !important;
+  text-shadow: none !important;
+}
+
 .error {
   color: red;
 }
@@ -54477,8 +54483,8 @@ img.img-circle.mycl {
 }
 
 .sendImage {
-  width: 200px;
-  height: 180px;
+  width: 117px;
+  height: 137px;
 }
 
 .icon-color {
@@ -65560,6 +65566,10 @@ img-crop canvas {
   padding-top: 1px;
 }
 
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
 .clearfix {
   clear: both;
 }
@@ -65575,16 +65585,15 @@ img-crop canvas {
 }
 
 .bubble {
-  background-color: #F2F2F2;
+  background-color: #E8E8E8;
   border-radius: 27px;
-  box-shadow: 0 0 6px #B2B2B2;
   display: inline-block;
   padding: 10px 18px;
   position: relative;
   vertical-align: top;
   min-width: 85px;
-  text-align: center;
-  max-width: 78%;
+  max-width: 66%;
+  font-size: 16px;
 }
 
 .form-control:focus {
@@ -65598,28 +65607,29 @@ img-crop canvas {
 
 .me {
   float: left;
-  margin: 5px 45px 5px 20px;
+  margin: 5px 37px 5px 7px;
+  border-top-left-radius: 0px;
+  box-shadow: 0 0 6px #B2B2B2;
 }
 
-.me::before {
-  box-shadow: -2px 2px 2px 0 rgba( 178, 178, 178, .4 );
-  left: -9px;
-  transform: rotate( 29deg ) skew( -35deg );
-  -moz-transform: rotate( 29deg ) skew( -35deg );
-  -ms-transform: rotate( 29deg ) skew( -35deg );
-  -o-transform: rotate( 29deg ) skew( -35deg );
-  -webkit-transform: rotate( 29deg ) skew( -35deg );
-  background-color: #F2F2F2;
-  content: "\00a0";
-  display: block;
-  height: 16px;
-  position: absolute;
-  top: 11px;
-  width: 20px;
+.chat .chatPageheader {
+  margin-top: 4px;
+  min-height: 45px;
+  min-width: 45px;
+}
+
+.ImageComes {
+  background: #fff !important;
+  box-shadow: 0 0 6px #B2B2B2;
+  display: inline-block;
 }
 
 .LsText {
   font-size: 10px;
+}
+
+.chat {
+  margin-left: 13px;
 }
 
 .chatbubblecontent {
@@ -65641,7 +65651,7 @@ img-crop canvas {
   clear: both;
   float: left!important;
   clear: both;
-  margin-left: 75px;
+  margin-left: 91px;
   font-size: 10px;
 }
 
@@ -65655,7 +65665,7 @@ img-crop canvas {
 .you {
   float: right;
   margin: 5px 20px 5px 45px;
-  background: -webkit-linear-gradient(#1858EC, #489CA5);
+  background: #1858EC;
   color: #fff;
 }
 
@@ -65683,7 +65693,6 @@ img-crop canvas {
 }
 
 .you::before {
-  box-shadow: 2px -2px 2px 0 rgba( 178, 178, 178, .4 );
   right: -9px;
   background-color: blue;
 }
@@ -66138,13 +66147,15 @@ a.tab-item:hover {
 .alert-message {
   display: block!important;
   clear: both!important;
-  color: black !important;
+  color: rgb(103, 99, 99) !important;
   background-color: #fff!important;
   width: 100%!important;
   margin: 0px 0px 10px 0px!important;
   padding: 0px!important;
   text-align: center!important;
   box-shadow: 0 0 0 #fff !important;
+  max-width: 100% !important;
+  font-size: 10px;
 }
 
 .alert-message button {
@@ -66746,6 +66757,11 @@ img.img-circle.mycl {
 
 button.button.back-button.buttons.button-clear.header-item.mybt {
   margin-left: 5px;
+}
+
+.headerButton {
+  font-size: 33px !important;
+  background-color: #fff !important;
 }
 
 .act {
