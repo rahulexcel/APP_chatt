@@ -1,5 +1,5 @@
 <ion-view view-title="Rooms" id="background" hide-back-button="true">
-    <ion-content class="has-footer">
+    <ion-content class="has-footer" has-bouncing='false'>
     <div class="spin" ng-show="publicChats.lodingSpinner"><ion-spinner icon="spiral" class="spinner-positive"></ion-spinner></div>
         <ion-list >
             <ion-item ng-show="!publicChats.displayPublicChat.length > 0" class="noItem" >
@@ -76,7 +76,7 @@
                                     </div>
     </ion-content>
  <ion-footer-bar align-title="left" class="bar-footer no-pad" id="BlueBar">
-  <button class="buttons act font14" style="width: 100%; display: block;" ng-click="publicChats.joinRoom()">
+  <button class="buttons act font14" style="width: 100%; display: block; border: none;" ng-click="publicChats.joinRoom()">
     JOIN ROOM
    
   </button>
