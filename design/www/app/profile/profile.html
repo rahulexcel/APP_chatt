@@ -9,7 +9,7 @@
             <div class="loadingModal" ng-click="stopLoading()" ng-if="startLoading">
                 <ion-spinner class="icnModal" icon="android"></ion-spinner>
             </div>
-            <div  ng-hide="profile.lodingSpinner" ng-click="profile.editProfilePic()">
+            <div  ng-hide="profile.lodingSpinner" ng-click="profile.editProfilePic()" style="background-image: url({{profile.displayprofile.profile_image}});">
                 <img id="profileImage" src="{{profile.displayprofile.profile_image}}" class="img-circle profile-pic" ng-if="profile.displayprofile.profile_image">
 
                 <img id="profileImage" src="img/user.png" class="img-circle profile-pic" ng-if="!profile.displayprofile.profile_image">
