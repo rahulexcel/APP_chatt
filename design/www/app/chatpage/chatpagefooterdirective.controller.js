@@ -10,22 +10,21 @@
         self.image = userData.data.profile_image;
         self.name = userData.data.name;
         self.user_id = userData.data.user_id;
-        $scope.emojiMessage={};
         self.sendMessage = function() {
-            if ($scope.emojiMessage.rawhtml == '') {
+            if ($scope.messagetext == '') {
             } else {
                 var currentTimeStamp = _.now();
                 socketService.roomOpen($stateParams.roomId);
-                sqliteService.saveMessageInDb($scope.emojiMessage.rawhtml, 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId) {
+                sqliteService.saveMessageInDb($scope.messagetext, 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId) {
                     if (timeStorage.get('network')) {
                     } else {
-                        socketService.room_message(lastInsertId, $stateParams.roomId, $scope.emojiMessage.rawhtml, currentTimeStamp);
+                        socketService.room_message(lastInsertId, $stateParams.roomId, $scope.messagetext, currentTimeStamp);
                     }
 
                     var currentMessage = {
                         "id": lastInsertId,
                         "image": userData.data.profile_image,
-                        "message": $scope.emojiMessage.rawhtml,
+                        "message": $scope.messagetext,
                         "messageTime": moment(currentTimeStamp).format("hh:mm a"),
                         "timeStamp": currentTimeStamp,
                         "name": userData.data.name,
@@ -34,9 +33,7 @@
                     };
                     $rootScope.$broadcast('displayChatMessages', {data: currentMessage});
                     $ionicScrollDelegate.scrollBottom(false);
-                    $scope.emojiMessage = {};
-                    // $interval.cancel(interval);
-                    $timeout.cancel(inputChangedPromise);
+                    $scope.messagetext = '';
                 }, 100);
                 $ionicScrollDelegate.scrollBottom(false);
             }
@@ -63,16 +60,15 @@
             }, 300);
         };
         function inputDown() {
-            // $interval.cancel(interval);
             $ionicScrollDelegate.resize();
             $scope.$apply();
         };
         var message='';
         var debounce = _.debounce(fireSocketEvent, 0, false);
         function writingMessage() {
-            if (message != $scope.emojiMessage.rawhtml) {
-            message=$scope.emojiMessage.rawhtml;  
-            debounce();
+            if (message != $scope.messagetext) {
+                message = $scope.messagetext;  
+                debounce();
             }
         };
         function fireSocketEvent(){
