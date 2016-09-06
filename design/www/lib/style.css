@@ -113,18 +113,26 @@ body{
     border-style: solid !important;
     border-color: #ddd !important;
 }
-.profile-pic{
-    display: block;
-    margin: 0 auto;
-    /* width: 150px; */
-    /* height: 150px; */
-    margin-top: 10px;
-    margin-bottom: 10px;
-    position: fixed;
-    top: 25px;
-    width: 150px;
-    margin: 0 0 0 -75px;
-    left: 50%;
+.profile-pic {
+  display: block;
+  margin: 0 auto;
+  width: 150px;
+  height: 150px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.Myprofile-pic {
+  display: block;
+  margin: 0 auto;
+  /* width: 150px; */
+  /* height: 150px; */
+  margin-top: 10px;
+  margin-bottom: 10px;
+  position: fixed;
+  top: 25px;
+  width: 150px;
+  margin: 0 0 0 -75px;
+  left: 50%;
 }
 .chat button{
     float: left;
