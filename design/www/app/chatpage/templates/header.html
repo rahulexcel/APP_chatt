@@ -4,7 +4,7 @@
   <h1 class="title" ng-click="chatPageHeader.openInfo()">{{chatPageHeader.name}}</h1>
   <div class="button headerButton">
     <button class="button ion-android-attach  GreyColor headerButton" ng-click="chatPageHeader.openAttachFilePopover($event)"></button>
-    <button class="button ion-android-more-vertical GreyColor headerButton" ng-click="chatPageHeader.openPopover($event)"  ng-if="chatPageHeader.id"></button>
+    <button class="button  GreyColor headerButton" ng-click="chatPageHeader.openPopover($event)"  ng-if="chatPageHeader.id"></button>
       <button ng-if="!chatPageHeader.id" class="button  ion-android-more-vertical GreyColor  headerButton" ng-click="chatPageHeader.openGroupPopover($event)"></button>
   </div>
 </div>
