@@ -98253,6 +98253,10 @@ span.name input {
 
 /*Chats Css*/
 
+#chats {
+  padding: 0px!important;
+}
+
 #chats h4 {
   margin-top: 50%;
 }
