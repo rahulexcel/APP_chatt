@@ -50,6 +50,9 @@
     "cordova-sqlite-storage"
   ],
   "cordovaPlatforms": [
-    "android"
+    {
+      "platform": "android",
+      "locator": "browser"
+    }
   ]
 }
