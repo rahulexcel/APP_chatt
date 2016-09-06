@@ -1,21 +1,6 @@
-<!-- <ion-footer-bar class='bar bar-stable' keyboard-attach>
-    <div emoji-form emoji-message="emojiMessage" style="min-width: 80%;">
-        <textarea id="messageInput"  ng-model="emojiMessage.messagetext"  ng-change="chatPageFooter.writingMessage()"></textarea>
-        <button id="emojibtn">
-            <i class="icon ion-android-happy" style="color: blue;"></i>
-        </button>
-        <button class='button button-positive send-msg' ng-click='chatPageFooter.sendMessage()'>
-            <i class='icon ion-paper-airplane'></i>
-        </button>
-    </div>
-</ion-footer-bar> -->
-
 <ion-footer-bar class='bar bar-stable' keyboard-attach>
-    <div emoji-form emoji-message="emojiMessage" style="min-width: 80%;">
-        <textarea id="messageInput"  ng-model="emojiMessage.messagetext"  ng-change="chatPageFooter.writingMessage()" placeholder='Your message' style="font-size: 14px;"></textarea>
-      <!--   <button id="emojibtn">
-            <i class="icon ion-android-happy" style="color: blue;"></i>
-        </button> -->
+    <div style="width: 80%;">
+        <textarea id="messageInput"  ng-model="messagetext"  ng-change="chatPageFooter.writingMessage()" placeholder='Your message' style="font-size: 14px; width:100%; resize: none;"></textarea>
         <div class='send-msg' ng-click='chatPageFooter.sendMessage()'>
             SEND
         </div>

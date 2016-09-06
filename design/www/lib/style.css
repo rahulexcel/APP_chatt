@@ -134,7 +134,7 @@ body{
 }
 
 #background{
-    background-color: #3F51B5 !important;
+    /*background-color: #3F51B5 !important;*/
 }
 .angular-google-map-container { 
     height: 460px; 
