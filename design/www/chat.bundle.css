@@ -65622,6 +65622,8 @@ body {
   background: #fff !important;
   box-shadow: 0 0 6px #B2B2B2;
   display: inline-block;
+  border-radius: 0px !important;
+  padding: 0px 0px !important;
 }
 
 .LsText {
@@ -65651,7 +65653,7 @@ body {
   clear: both;
   float: left!important;
   clear: both;
-  margin-left: 91px;
+  margin-left: 80px;
   font-size: 10px;
 }
 
@@ -66435,7 +66437,7 @@ span.name input {
 
 .add-public-chat {
   position: absolute;
-  bottom: 160px;
+  bottom: 110px;
   right: 0px;
   z-index: 2;
 }
