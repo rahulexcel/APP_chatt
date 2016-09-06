@@ -1,4 +1,4 @@
-<ion-side-menus enable-menu-with-back-views="false" style="background-color: #BDBDBD;">
+<ion-side-menus enable-menu-with-back-views="false">
   <ion-side-menu-content >
     <ion-nav-bar class="bar-stable">
       <ion-nav-back-button>
@@ -12,18 +12,18 @@
   </ion-side-menu-content>
 </ion-side-menus>
 
-<div class="tabs tabs-icon-top" id="background" ng-class="{'myhide':show==true}">
+<div class="tabs tabs-icon-top"  ng-class="{'myhide':show==true}">
     <a class="tab-item" ng-class="{'act':menu.chattab==true}"  href="#/app/chats">
-        <i class="icon ion-chatbubble tabs-icon-color"></i> Chats
+        <i class="icon ion-chatbubble tabs-icon-color OutlineIcon"  ng-class="{'act':menu.chattab==true}"></i> Chats
     </a>
     <a class="tab-item" nav-direction="swap" ng-class="{'act':menu.group==true}" ng-click="menu.search('app.publicChats')">
-        <i class="icon ion-person-stalker tabs-icon-color"></i> Rooms
+        <i class="icon ion-person-stalker tabs-icon-color OutlineIcon" ng-class="{'act':menu.group==true}"></i> Rooms
     </a>
     <a class="tab-item" nav-direction="swap" ng-class="{'act':menu.searchb==true}" ng-click="menu.search('app.contacts')">
-        <i class="icon ion-location tabs-icon-color"></i> Location
+        <i class="icon ion-location tabs-icon-color OutlineIcon" ng-class="{'act':menu.searchb==true}"></i> Location
     </a>
     <a class="tab-item" nav-direction="swap" ng-class="{'act':menu.setting==true}"  href="#/app/profile">
-        <i class="icon ion-person tabs-icon-color"></i> Profile
+        <i class="icon ion-person tabs-icon-color OutlineIcon" ng-class="{'act':menu.setting==true}" ></i> Profile
     </a>
 </div>
 <script id="templates/popover.html" type="text/ng-template">

@@ -5,16 +5,14 @@
 
      function sqliteService($ionicPlatform, $q, timeStorage, timeZoneService) {
          var service = {};
+         var self = this;
          service.createTable = function() {
-                var dbobj = window.sqlitePlugin.openDatabase({
-                     name: "chattappDB"
-                 });
-                 dbobj.transaction(createSchema, errorInSchema, successInSchema);
+                 service.DbConnection().transaction(createSchema, errorInSchema, successInSchema);
                  function createSchema(tx) {
                      tx.executeSql('CREATE TABLE IF NOT EXISTS messages(id INTEGER PRIMARY KEY AUTOINCREMENT, message_id TEXT, message TEXT, message_status TEXT, user_id TEXT, user_name TEXT, user_profile_image TEXT, roomId TEXT, message_type TEXT,  messageTime INTEGER)');
                  }
                  function errorInSchema() {
-                     
+                    
                  }
                  function successInSchema() {
                     
@@ -23,10 +21,7 @@
              service.saveMessageInDb = function(message, message_status, user_id, user_name, user_profile_image, roomId, messageTime) {
                 var q = $q.defer();
                 message = message.replace(/"/g,"\\'");
-                var dbobj = window.sqlitePlugin.openDatabase({
-                     name: "chattappDB"
-                 });
-                 dbobj.transaction(populateDB, error, success);
+                 service.DbConnection().transaction(populateDB, error, success);
                  function populateDB(tx) {
                      tx.executeSql('INSERT INTO messages(message, message_status, user_id, user_name,user_profile_image, roomId, messageTime, message_type) VALUES ("' + message + '","' + message_status + '","' + user_id + '","' + user_name + '", "' + user_profile_image + '", "' + roomId + '", "'+ messageTime +'", "text")',[],function(tx, results){
                         q.resolve(results.insertId);
@@ -41,10 +36,7 @@
                  return q.promise;
              },
              service.updateMessageStatusToSent = function(localMessageId, messageId, messageTime) {
-                var dbobj = window.sqlitePlugin.openDatabase({
-                     name: "chattappDB"
-                 });
-                 dbobj.transaction(populateDB, error, success);
+                 service.DbConnection().transaction(populateDB, error, success);
                  function populateDB(tx) {
                      tx.executeSql("UPDATE messages SET message_id='"+messageId+"', messageTime='"+messageTime+"', message_status='sent' WHERE id="+localMessageId);
                  }
@@ -56,10 +48,7 @@
                  }
              },
              service.updateMessageStatusToSeen = function(messageId) {
-                var dbobj = window.sqlitePlugin.openDatabase({
-                     name: "chattappDB"
-                 });
-                 dbobj.transaction(populateDB, error, success);
+                 service.DbConnection().transaction(populateDB, error, success);
                  function populateDB(tx) {
                      tx.executeSql("UPDATE messages SET message_status= 'seen' WHERE message_id= '"+messageId+"'");
                  }
@@ -72,11 +61,7 @@
              },
                 service.updateUserProfie = function(prifilePic) {
                  var userData = timeStorage.get('userData');
-                     
-                var dbobj = window.sqlitePlugin.openDatabase({
-                     name: "chattappDB"
-                 });
-                 dbobj.transaction(populateDB, error, success);
+                 service.DbConnection().transaction(populateDB, error, success);
                  function populateDB(tx) {
                      tx.executeSql("UPDATE messages SET user_profile_image= '"+prifilePic+"' WHERE user_id= '"+userData.data.user_id+"'");
                  }
@@ -89,10 +74,7 @@
              },
              service.gotNewRoomMessage = function(message, message_id, message_status, message_time, user_name, user_profile_image, room_id, message_type,user_id) {
                 message = message.replace(/"/g,"\\'");
-                var dbobj = window.sqlitePlugin.openDatabase({
-                     name: "chattappDB"
-                 });
-                 dbobj.transaction(populateDB, error, success);
+                 service.DbConnection().transaction(populateDB, error, success);
                  function populateDB(tx) {
                      tx.executeSql('INSERT INTO messages(message, message_status, message_id, user_name,user_profile_image, roomId, messageTime, message_type,user_id) VALUES ("' + message + '","' + message_status + '","' + message_id + '","' + user_name + '", "' + user_profile_image + '", "' + room_id + '", "' + message_time + '", "' + message_type +'","' + user_id +'")',[],function(tx, results){
                        
@@ -133,12 +115,8 @@
                 return q.promise;
              },
              service.getMessageDataFromDB = function(roomId) {
-                
                 var q = $q.defer();
-                var dbobj = window.sqlitePlugin.openDatabase({
-                     name: "chattappDB"
-                 });
-                 dbobj.transaction(populateDB, error, success);
+                 service.DbConnection().transaction(populateDB, error, success);
                  function populateDB(tx) {
                      tx.executeSql("select * from messages WHERE roomId= '"+roomId+"' order by id DESC;",[],function(tx,results){
                         var roomMessages = [];
@@ -159,7 +137,6 @@
                      });
                  }
                  function error(err) {
-                    
                      q.reject(err);
                  }
                  function success(results) {
@@ -168,10 +145,7 @@
                  return q.promise;
              },
              service.deviceIsNowOnline = function() {
-                var dbobj = window.sqlitePlugin.openDatabase({
-                     name: "chattappDB"
-                 });
-                 dbobj.transaction(populateDB, error, success);
+                 service.DbConnection().transaction(populateDB, error, success);
                  function populateDB(tx) {
                      tx.executeSql("select * from messages WHERE message_status='post'",[],function(tx, results){
                         var userData = timeStorage.get('userData');
@@ -190,10 +164,7 @@
                  }
              },
              service.updateMessageStatusToSentWhenAppComesOnline = function(localMessageId) {
-                var dbobj = window.sqlitePlugin.openDatabase({
-                     name: "chattappDB"
-                 });
-                 dbobj.transaction(populateDB, error, success);
+                 service.DbConnection().transaction(populateDB, error, success);
                  function populateDB(tx) {
                      tx.executeSql("UPDATE messages SET message_status='sent' WHERE id="+localMessageId);
                  }
@@ -205,10 +176,7 @@
                  }
              },
              service.leavePrivateChat = function(roomId) {
-                var dbobj = window.sqlitePlugin.openDatabase({
-                     name: "chattappDB"
-                 });
-                 dbobj.transaction(populateDB, error, success);
+                 service.DbConnection().transaction(populateDB, error, success);
                  function populateDB(tx) {
                      tx.executeSql("DELETE from messages WHERE roomid='"+roomId+"'");
                  }
@@ -216,6 +184,17 @@
                  }
                  function success() {
                  }
+             }
+
+             service.DbConnection = function(){
+                 if(window.cordova){ 
+                      var dbobj = window.sqlitePlugin.openDatabase({
+                     name: "chattappDB"
+                 });
+                  }else{
+                    dbobj =  window.openDatabase("chattappDB.db", '1', 'my', 1024 * 1024 * 100); 
+                  }
+                return dbobj;
              }
          return service;
      };

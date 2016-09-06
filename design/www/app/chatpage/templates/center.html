@@ -1,44 +1,44 @@
-<!--<div style="background:url({{chatPageCenter.background}})  center; background-size:cover;background-repeat: no-repeat;color: #3F51B5">-->
 <div>
     <img ng-src="{{chatPageCenter.background}}" class="myImg" style="height:{{height}}px">
 </div>
-<ion-content class="has-footer myContent" ng-click="focusOut()" >
+<ion-content class="has-footer myContent " ng-click="focusOut()" style="margin-bottom:10px;">
     <ion-refresher pulling-text="Pull to refresh" on-refresh="chatPageCenter.doRefresh()">
     </ion-refresher>
-    <div id="map" ></div>
-    <div class="list chat-page-list">
-        <div class="item {{(msg.user_id == chatPageCenter.user_id && msg.message_type != 'room_alert_message') && 'right-chat' || 'left-chat' }} {{msg.message_type == 'room_alert_message' && 'alert-message'|| '' }}" ng-repeat="msg in chatPageCenter.displayChatMessages| orderBy:'timeStamp'">
-            <img class="avatar" ng-src="{{msg.image}}" ng-if="msg.user_id == chatPageCenter.user_id && msg.message_type != 'room_alert_message'">
-            <img class="avatar" src="{{imgDpuser}}" ng-if="msg.user_id != chatPageCenter.user_id && msg.message_type != 'room_alert_message'">
-            <div class="{{msg.user_id == chatPageCenter.user_id && 'bubble-blue'|| 'bubble-yellow' }}">
-                <p class="lastSeen message-user-name" ng-if="chatPageCenter.isPublicRoom && msg.message_type != 'room_alert_message'">{{msg.name}}</p>
-                <p ng-bind-html="msg.message" class="imgDiv" ng-click="imgDownload(msg.user_id, chatPageCenter.user_id, msg.message, $index)"></p>
-                <p class="message-timing" ng-if="msg.message_type != 'room_alert_message'">{{msg.messageTime}}</p>
-                <p class="chat-time lastSeen"> <span class="message-timing1">{{msg.messageTime}}</span> <i class="{{msg.message_status == 'sent' && 'sent'|| '' }}{{msg.message_status == 'post' && 'post'|| '' }}{{msg.message_status == 'seen' && 'seen'|| '' }}{{msg.user_id == chatPageCenter.user_id && ' fa fa-circle'|| ' ' }}"></i></p>
-            </div>
+    <div id="map"></div>
+    <div class="chat clearfix" ng-repeat="msg in chatPageCenter.displayChatMessages| orderBy:'timeStamp'">
+        <img class="img-circle" ng-src="{{imgDpuser}}" ng-if="msg.user_id != chatPageCenter.user_id && msg.message_type != 'room_alert_message'" style="height: 56px; float:left;">
+        <div class="{{(msg.user_id == chatPageCenter.user_id && msg.message_type != 'room_alert_message') && 'you bubble' || 'me bubble' }} {{msg.message_type == 'room_alert_message' && 'alert-message'|| '' }}  {{msg.message.substring(1, 4) == 'img' && 'ImageComes' }} ">
+            <p class="lastSeen message-user-name" ng-if="chatPageCenter.isPublicRoom && msg.message_type != 'room_alert_message' && msg.user_id !== chatPageCenter.user_id">{{msg.name}}</p>
+            <p ng-bind-html="msg.message" ng-click="imgDownload(msg.user_id, chatPageCenter.user_id, msg.message, $index)" style="margin:2px;">
+  
+            </p>
         </div>
+        <p class="{{(msg.user_id == chatPageCenter.user_id && msg.message_type != 'room_alert_message') && 'TimeRight' || 'TimeLeft' }} {{msg.message_type == 'room_alert_message' && 'alert-message'|| '' }} GreyColor" ng-if="msg.message_type !== 'room_alert_message'">
+            <i  style="font-size: 12px;" class="{{msg.message_status == 'sent' && 'sent'|| '' }}{{msg.message_status == 'post' && 'post'|| '' }}{{msg.message_status == 'seen' && 'seen'|| '' }} ion-checkmark-round" ng-if="msg.user_id == chatPageCenter.user_id"></i>
+            <span>{{msg.messageTime}}</span>
+        </p>
     </div>
     <div class="alert-message">
         <div>
-            <p ng-if="chatPageCenter.tempMessage.length <= 1">{{chatPageCenter.tempMessage[0]}} 
+            <p ng-if="chatPageCenter.tempMessage.length <= 1">{{chatPageCenter.tempMessage[0]}}
                 <span ng-if="chatPageCenter.tempMessage.length > 0"> is typing...</span></p>
             <p ng-if="chatPageCenter.tempMessage.length > 1">Multiple people are typing...</p>
         </div>
     </div>
-</div>
+    </div>
 </ion-content>
 <script id="mapUser.html" type="text/ng-template">
-   <div class="modal">
-        
-      <ion-header-bar class="bar-stable">
-      <h1 class="title">Shared Location</h1>
-      <div class="button btn-xs button-clear" ng-click="mapUser.hide()"><span class="icon ion-close icon-color"></span></div>
-    </ion-header-bar>
-    <ion-content scroll="false">
-     <ui-gmap-google-map center='map.center' zoom='map.zoom'>
-     <ui-gmap-marker coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id">
-     </ui-gmap-marker>
-        </ui-gmap-google-map>
-    </ion-content>
-    </div>                
+    <div class="modal">
+
+        <ion-header-bar class="bar-stable">
+            <h1 class="title">Shared Location</h1>
+            <div class="button btn-xs button-clear" ng-click="mapUser.hide()"><span class="icon ion-close GreyColor"></span></div>
+        </ion-header-bar>
+        <ion-content scroll="false">
+            <ui-gmap-google-map center='map.center' zoom='map.zoom'>
+                <ui-gmap-marker coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id">
+                </ui-gmap-marker>
+            </ui-gmap-google-map>
+        </ion-content>
+    </div>
 </script>

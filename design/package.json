@@ -29,10 +29,6 @@
       "id": "cordova-sqlite-ext"
     },
     {
-      "locator": "https://github.com/apache/cordova-plugin-inappbrowser.git",
-      "id": "cordova-plugin-inappbrowser"
-    },
-    {
       "locator": "https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin.git",
       "id": "cordova-plugin-x-toast"
     },
@@ -44,10 +40,13 @@
       "locator": "phonegap-plugin-push",
       "id": "phonegap-plugin-push"
     },
+    "cordova-sqlite-storage",
+    "cordova-plugin-compat",
+    "cordova-plugin-geolocation",
+    "cordova.plugins.diagnostic",
     "cordova-plugin-app-event",
     "cordova-plugin-appversion",
-    "cordova-plugin-camera",
-    "cordova-sqlite-storage"
+    "cordova-plugin-camera"
   ],
   "cordovaPlatforms": [
     {

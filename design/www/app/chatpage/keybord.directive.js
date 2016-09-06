@@ -4,7 +4,6 @@
       return {
         scope: { trigger: '@isFocused' },
         link: function(scope, element) {
-              console.log('hello thsisdasd asdasdasd asdasd');
           scope.$watch('trigger', function(value) {
             
             if(value === "true") {

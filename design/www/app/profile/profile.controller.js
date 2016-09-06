@@ -124,7 +124,7 @@
 
         $scope.imgChange = function(imageType) {
             if ($scope.myCroppedImage || $scope.myBgCroppedImage) {
-              
+                
                 var imageData, appenddata;
                 if (imageType == "bgImage") {
                     imageData = $scope.myBgCroppedImage;
@@ -201,7 +201,6 @@
             $scope.backGroundModal = modal;
         });
         self.unblockUser = function(unblockUseData, index){
-            console.log(index);
             self.clickOnUser = index;
             socketService.unblockUser(unblockUseData);
         };

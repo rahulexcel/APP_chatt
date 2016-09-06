@@ -1,20 +1,15 @@
 <ion-view view-title="Login">
-    <ion-content scroll="false" id="background" class="login">
-        <div class="center-block w-xxl w-auto-xs p-v-md">
-            <div class="app-name">
-                <div class="text-center">
-                    <span class="inline white">CHAT APP</span>
-                </div>
+    <ion-content scroll="false" id="MainPage" class="login" style="  background-image: url(lib/background.png);">
+            <div class="AbsoluteCenterTop AppName">
+                 <span class="inline">CHAT APP</span>
             </div>
-
-            <div class="p-lg panel md-whiteframe-z1 text-color m">
-                <div class="m-b text-sm">
-                </div>
-                <button type="button" class="md-btn md-raised btn-block p-h-md google-btn" ng-click="login.googleRegister()"><span ng-show="login.googleSpinner"><i class="fa fa-spin fa-spinner"></i></span> <span>CONNECT WITH</span> <i class="fa fa-google"></i></button>
-                <button type="button" class="md-btn md-raised btn-block p-h-md facebook-btn" ng-click="login.facebookRegister()"><span ng-show="login.facebookSpinner"><i class="fa fa-spin fa-spinner"></i></span> <span>CONNECT WITH</span> <i class="fa fa-facebook"></i></button>
-                
-            </div>
-        </div>
-        </div>
+            <div class="AbsoluteCenterBottom">
+                 <button class="button button-block button-positive roundButton font14 google-btn"  ng-click="login.googleRegister()">
+                   CONNECT WITH</span> <i class="fa fa-google"></i>
+                </button>
+                <button class="button button-block button-positive roundButton m-t-20 font14 facebook-btn" ng-click="login.facebookRegister()">
+                   CONNECT WITH</span>  <i class="fa fa-facebook"></i>
+                </button>
+            </div> 
     </ion-content>
 </ion-view>

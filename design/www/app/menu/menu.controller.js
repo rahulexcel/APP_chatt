@@ -1,4 +1,4 @@
-(function() {
+    (function() {
     'use strict';
 
     angular.module('chattapp')
@@ -13,15 +13,14 @@
         }).then(function(popover) {
             self.popover = popover;
         });
-        self.search = function(state) {
-
+        self.search = function(state) {     
             if (timeStorage.get('network')) {
-//                window.plugins.toast.showShortTop('You need to online to access this');
-                $state.go(state);
+//               window.plugins.toast.showShortTop('You need to online to access this');
+                 $state.go(state);
             }
             else
             {
-                if (state == 'app.contacts')
+                if (state == 'app.contacts')    
                 {
                     cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
                         if (!enabled)
@@ -42,19 +41,10 @@
             self.group = d;
         });
         $scope.logout = function() {
-             socketService.logout();
-            timeStorage.remove('google_access_token');
-            timeStorage.remove('userEmail');
-            timeStorage.remove('userData');
-            timeStorage.remove('displayPrivateChats');
-            timeStorage.remove('listUsers');
-            timeStorage.remove('chatWithUserData');
-            timeStorage.remove('displayPublicChats');
-            timeStorage.remove('profile_data');
-            timeStorage.remove('bgImage');
+            socketService.logout();
+            $localStorage.$reset();
             facebookConnectPlugin.logout();
             window.sqlitePlugin.deleteDatabase({name: "chattappDB", location: 1});
-           
             $state.go('login');
         };
 

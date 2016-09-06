@@ -11,8 +11,6 @@
             if (type == 'leave_public_group') {
                 $rootScope.$broadcast('leaved_public_group', {data: data});
             }
-            console.log(type);
-            console.log(data);
             if (type == 'sent_message_response') {
                 $rootScope.$broadcast('sentMessagesIds', {data: data.data});
                 sqliteService.updateMessageStatusToSent(data.data.msg_local_id, data.data.message_id, data.data.message_time);
@@ -117,7 +115,6 @@
                         }
                     }
                     if (array.toString() == '') {
-                        console.log('empty');
                     } else {
                         socket.emit('update_message_status', accessToken, roomId, array.toString(), 'seen', _.now());
                         for (var i = 0; i < array.length; i++) {

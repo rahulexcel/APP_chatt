@@ -160,7 +160,10 @@
             infoApi();
         });
         $scope.$on('got_user_profile_for_room', function(event, data) {
-            self.lastSeen = moment.unix(data.data.data.last_seen).tz(timeZoneService.getTimeZone()).format("hh:mm a");
+            if(data.data.data.status == 'online')
+                self.lastSeen = 'online';
+            else
+                self.lastSeen = 'last seen '+moment.unix(data.data.data.last_seen).tz(timeZoneService.getTimeZone()).format("hh:mm a");
         });
         $ionicModal.fromTemplateUrl('infoModel.html', function($ionicModal) {
             $scope.infoModel = $ionicModal;
@@ -271,7 +274,7 @@
                 });
 
             }
-        }
+        };
 
         self.sendLocation = function() {
             cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
@@ -470,7 +473,6 @@
                 });
                 query.then(function(data) {
                     if (data.data.status == 1) {
-                        console.log(data);
                         self.infoImage = data.data.data.url;
                         $scope.startLoading = false;
 //                        var pr_image = timeStorage.get('userData');
