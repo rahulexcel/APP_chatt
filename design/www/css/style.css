@@ -161,8 +161,8 @@ img.img-circle.mycl {
     padding: 40px 0 0 0;
 }
 .sendImage{
-    width: 117px;
-    height: 137px;
+    width: 100%;
+    margin: 0 auto;
 }
 .icon-color{
     color:#fff;

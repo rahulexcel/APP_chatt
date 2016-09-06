@@ -1023,6 +1023,7 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
     font-size: 25px !important;
     padding-top:3px!important;
     background-color: #fff !important;
+    padding-right:0px!important;
 }
 .act{
     background-color: #387ef5;
