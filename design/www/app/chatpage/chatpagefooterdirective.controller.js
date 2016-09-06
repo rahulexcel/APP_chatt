@@ -35,7 +35,7 @@
                     $rootScope.$broadcast('displayChatMessages', {data: currentMessage});
                     $ionicScrollDelegate.scrollBottom(false);
                     $scope.emojiMessage = {};
-                    $interval.cancel(interval);
+                    // $interval.cancel(interval);
                     $timeout.cancel(inputChangedPromise);
                 }, 100);
                 $ionicScrollDelegate.scrollBottom(false);
@@ -58,13 +58,11 @@
 
             var i = 0;
             $timeout(function() {
-                console.log('scroll');
                 $ionicScrollDelegate.scrollBottom(false);
                 $scope.$apply();
             }, 300);
         };
         function inputDown() {
-            console.log('scroll2');
             // $interval.cancel(interval);
             $ionicScrollDelegate.resize();
             $scope.$apply();

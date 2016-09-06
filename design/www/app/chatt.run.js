@@ -3,27 +3,33 @@
 
     angular.module('chattapp')
 
-            .run(function($rootScope, $ionicPlatform, timeStorage, $interval, $state, Configurations, deviceService, pushNotification, lastUsesTimeService, $localStorage, sqliteService, geoLocation, $cordovaGeolocation) {
-                if (ionic.Platform.isWebView()) {
-                    console.log('hello');
-                    if ($localStorage.userDataa) {
-                        $state.go('app.chats');
-                    } else {
-                        $state.go('login');
-                    }
-                }
+            .run(function($rootScope, $ionicPlatform, timeStorage, userValidate, $interval, $state, Configurations, deviceService, pushNotification, lastUsesTimeService, $localStorage, sqliteService, geoLocation, $cordovaGeolocation) {
+                // if (ionic.Platform.isWebView()) {
+                //     if ($localStorage.userDataa) {
+                //         $state.go('app.chats');
+                //     } else {
+                //         $state.go('login');
+                //     }
+                // }
+                userValidate.validUser();
+                // $state.go('login');
+                
                 $ionicPlatform.ready(function() {
+                      sqliteService.createTable();
                     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
                     // for form inputs)
                     if (window.cordova && window.cordova.plugins.Keyboard) {
                         cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
                         cordova.plugins.Keyboard.disableScroll(true);
-
                     }
                     if (window.StatusBar) {
                         // org.apache.cordova.statusbar required
                         StatusBar.styleDefault();
                     }
+                    if (window.cordova.platformId == "browser") {
+                        facebookConnectPlugin.browserInit(442665452611089);  //replace with ur app id
+                    }
+
                 });
                 $rootScope.$on('$stateChangeStart',
                         function(event, toState, toParams, fromState, fromParams, options) {

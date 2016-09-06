@@ -5,7 +5,6 @@
     function pushNotification($http, $q, $log, Configurations, timeStorage, $state, $localStorage) {
         return {
             push: function() {
-                console.log('push is calling');
                 var flag = 0;
                 var android = {
                     "senderID": Configurations.senderID,
@@ -13,7 +12,7 @@
                     "iconColor": "grey",
                     "forceShow": "true"
                 }
-                console.log(android);
+              
                 var push = PushNotification.init({
                     "android": android,
                     "ios": {
@@ -24,14 +23,10 @@
                     "windows": {}
                 });
                 push.on('registration', function(data) {
-                    console.log(data.registrationId);
                     timeStorage.set('gcmToken', data.registrationId)
                 });
                 push.on('notification', function(data) {
-                    console.log(data);
-                    console.log('notification');
                     if (data.additionalData.foreground) {
-                        console.log(data);
                     } else {
                         // data.message,
                         //     data.title,

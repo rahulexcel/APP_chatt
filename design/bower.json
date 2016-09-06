@@ -1,5 +1,5 @@
 {
- "name": "Excellence Chat App",
+  "name": "Excellence Chat App",
   "private": "true",
   "devDependencies": {
     "angular": "1.4.8",
@@ -10,7 +10,6 @@
     "platform.js": "platform#~1.3.1",
     "lodash": "4.6.1",
     "socket.io": "1.4.5",
-    "angular-material": "1.0.6",
     "bootstrap": "3.3.6",
     "moment": "2.10.6",
     "font-awesome": "4.5.0",
@@ -19,9 +18,13 @@
     "jstzdetect": "1.0.6",
     "ng-img-crop": "0.3.2",
     "ngCordova": "0.1.26-alpha",
-    "angular-sanitize":"1.4.3"
+    "angular-sanitize": "1.4.3"
   },
   "dependencies": {
-    "ng-file-upload": "^12.0.4"
+    "ng-file-upload": "^12.0.4",
+    "angular-google-maps": "2.3.2",
+    "angular-mocks": "1.3.x",
+    "angular-ui-bootstrap-bower": "0.13.x",
+    "angular-strap": "2.x"
   }
 }

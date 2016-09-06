@@ -85,12 +85,8 @@ googleLoginService.factory('googleLogin', [
                 var context = this;
 
                 if (ionic.Platform.isWebView()) {
-                    console.log('using in app browser');
                     win.addEventListener('loadstart', function(data) {
-                        console.log('load start');
                         if (data.url.indexOf(context.redirect_url) === 0) {
-                            console.log('redirect url found ' + context.redirect_url);
-                            console.log('window url found ' + data.url);
                             win.close();
                             var url = data.url;
                             var access_code = context.gulp(url, 'code');
@@ -105,12 +101,9 @@ googleLoginService.factory('googleLogin', [
 
                     });
                 } else {
-                    console.log('InAppBrowser not found11');
                     var pollTimer = $interval(function() {
                         try {
-                            console.log("google window url " + win.document.URL);
                             if (win.document.URL.indexOf(context.redirect_url) === 0) {
-                                console.log('redirect url found');
                                 win.close();
                                 $interval.cancel(pollTimer);
                                 pollTimer = false;
@@ -199,7 +192,6 @@ googleLoginService.factory('googleLogin', [
                 }
             });
             http.then(function(data) {
-                console.log(data);
             });
         };
         service.getUserFullDetails = function(userId) {

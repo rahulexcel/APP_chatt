@@ -201,7 +201,6 @@
             $scope.backGroundModal = modal;
         });
         self.unblockUser = function(unblockUseData, index){
-            console.log(index);
             self.clickOnUser = index;
             socketService.unblockUser(unblockUseData);
         };

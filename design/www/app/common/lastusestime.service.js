@@ -32,7 +32,6 @@
                      access_token: access_token
                  });
                  query.$promise.then(function(data) {
-                     console.log(data);
                  });
              }
          return service;
