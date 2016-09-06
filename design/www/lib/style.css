@@ -116,15 +116,15 @@ body{
 .profile-pic{
     display: block;
     margin: 0 auto;
-    /*width: 150px;*/
-    /*height: 150px;*/
+    /* width: 150px; */
+    /* height: 150px; */
     margin-top: 10px;
     margin-bottom: 10px;
     position: fixed;
-    top: 70px;
-    width:20%;
-    margin: 0 0 0 -10%;
-    left:50%;
+    top: 25px;
+    width: 150px;
+    margin: 0 0 0 -75px;
+    left: 50%;
 }
 .chat button{
     float: left;
