@@ -3,7 +3,7 @@
   <button class="button ion-ios-arrow-back GreyColor headerButton" ng-click='chatPageHeader.goBack()' ></button>
   <h1 class="title" ng-click="chatPageHeader.openInfo()">{{chatPageHeader.name}}</h1>
   <div class="button headerButton">
-    <button class="button ion-android-attach  GreyColor headerButton" ng-click="chatPageHeader.openAttachFilePopover($event)"></button>
+    <button class="button ion-android-attach  GreyColor headerButtonAttach" ng-click="chatPageHeader.openAttachFilePopover($event)"></button>
     <button class="button ion-android-more-vertical GreyColor headerButton" ng-click="chatPageHeader.openPopover($event)"  ng-if="chatPageHeader.id"></button>
       <button ng-if="!chatPageHeader.id" class="button  ion-android-more-vertical GreyColor  headerButton" ng-click="chatPageHeader.openGroupPopover($event)"></button>
   </div>

@@ -97749,31 +97749,37 @@ body {
 ::-webkit-input-placeholder {
   /* Safari, Chrome and Opera */
   color: #BDBDBD!important;
+  padding: 6px!important;
 }
 
 :-moz-placeholder {
   /* Firefox 18- */
   color: #BDBDBD!important;
+  padding: 6px!important;
 }
 
 ::-moz-placeholder {
   /* Firefox 19+ */
   color: #BDBDBD!important;
+  padding: 6px!important;
 }
 
 :-ms-input-placeholder {
   /* IE 10+ */
   color: #BDBDBD!important;
+  padding: 6px!important;
 }
 
 ::-ms-input-placeholder {
   /* Edge */
   color: #BDBDBD!important;
+  padding: 6px!important;
 }
 
 :placeholder-shown {
   /* Standard one last! */
   color: #BDBDBD!important;
+  padding: 6px!important;
 }
 
 .OutlineIcon {
@@ -98648,6 +98654,12 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
 
 .headerButton {
   font-size: 33px !important;
+  background-color: #fff !important;
+}
+
+.headerButtonAttach {
+  font-size: 25px !important;
+  padding-top: 3px!important;
   background-color: #fff !important;
 }
 
