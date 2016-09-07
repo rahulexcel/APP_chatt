@@ -137,18 +137,31 @@ body{
   margin-bottom: 10px;
 }
 .Myprofile-pic {
-  display: block;
-  margin: 0 auto;
-  /* width: 150px; */
-  /* height: 150px; */
-  margin-top: 10px;
-  margin-bottom: 10px;
-  position: fixed;
-  top: 25px;
-  width: 150px;
-  margin: 0 0 0 -75px;
-  left: 50%;
+        display: block;
+    margin: 0 auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    position: fixed;
+    top: 20px;
+    width: 117px;
+    margin: 0 0 0 -60px;
+    left: 50%;
+
+    border: 3px solid #fff;
+}  
+#profile{
+    margin-top: -2px;
 }
+.profileName{
+      position: absolute;
+    z-index: 2;
+    width: 400px;
+    margin-left: -71px;
+    left: 50%;
+    font-size: 31px;
+    top: 138px;
+    color: #fff;
+}     
 .chat button{
     float: left;
 }

@@ -9,19 +9,27 @@
             <div class="loadingModal" ng-click="stopLoading()" ng-if="startLoading">
                 <ion-spinner class="icnModal" icon="android"></ion-spinner>
             </div>
-            <div  ng-hide="profile.lodingSpinner" ng-click="profile.editProfilePic()" style="background-image: url({{profile.displayprofile.profile_image}}); background-size:cover;-webkit-filter: blur(6px);-moz-filter: blur(6px);-o-filter: blur(6px);-ms-filter: blur(6px);filter: blur(6px);width:100%;height:200px;">
+            <div  ng-hide="profile.lodingSpinner" ng-click="profile.editProfilePic()" style="background-image: url({{profile.displayprofile.profile_image}}); background-size:cover;-webkit-filter: blur(2px);-moz-filter: blur(6px);-o-filter: blur(6px);-ms-filter: blur(6px);filter: blur(6px);width:100%;height:200px;">
         </div>
          <img ng-hide="profile.lodingSpinner" id="profileImage" src="{{profile.displayprofile.profile_image}}" class="img-circle Myprofile-pic" ng-if="profile.displayprofile.profile_image" ng-click="profile.editProfilePic()">
 
         <img ng-hide="profile.lodingSpinner" id="profileImage" src="img/user.png" class="img-circle profile-pic" ng-if="!profile.displayprofile.profile_image" ng-click="profile.editProfilePic()">
+        <div class="profileName">
+ {{profile.displayprofile.name}}
+  
+</div>
 
         <ul class="list" id='profile' ng-hide="profile.lodingSpinner">
 
-            <li class="item item-toggle">
-                NAME
-                <label class="toggle toggle-assertive profileOption">
-      {{profile.displayprofile.name}}
+            <li class="item item-toggle" style='background: #232323;border-color: black !important; color: #fff;'  ng-click="profile.status(profile.displayprofile.profile_status, 'Hey ! I am using ChatApp')">
+                 <span  ng-if="profile.displayprofile.profile_status">{{profile.displayprofile.profile_status}}</span>
+                <span  ng-if="!profile.displayprofile.profile_status">Hey ! I am using ChatApp</span> <label class="toggle toggle-assertive profileOption">
+      <i class="icon ion-edit OutlineIcon" style="font-size: 18px; color:#fff;"></i>
      </label>
+
+                
+               
+
             </li>
             <li class="item item-toggle">
                 PRIVATE ROOMS
@@ -52,15 +60,6 @@
                 <label class="toggle toggle-assertive profileOption">
       {{profile.displayprofile.dob}}
      </label>
-            </li>
-            <li class="item item-toggle" style="white-space: normal;" ng-click="profile.status(profile.displayprofile.profile_status, 'Hey ! I am using ChatApp')">
-                STATUS <label class="toggle toggle-assertive profileOption">
-      <i class="icon ion-edit OutlineIcon" style="font-size: 18px;"></i>
-     </label>
-
-                <br/>
-                <span class="status_edit" ng-if="profile.displayprofile.profile_status">{{profile.displayprofile.profile_status}}</span>
-                <span class="status_edit" ng-if="!profile.displayprofile.profile_status">Hey ! I am using ChatApp</span>
             </li>
         </ul>
         <div class="list" id="chats" ng-hide="profile.lodingSpinner">
