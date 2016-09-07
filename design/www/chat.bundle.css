@@ -97965,6 +97965,7 @@ body {
 
 .title {
   font-size: 24px !important;
+  font-weight: normal !important;
 }
 
 .ion-navicon {
