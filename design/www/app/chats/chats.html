@@ -15,7 +15,7 @@
                     <h2 class="ChatUserName" ng-class="{'BlueFont': chat.unreadMessage > 0}">{{chat.user_data.name}}</h2>
                     <span class="badge blue-badge" ng-if="chat.unreadMessage > 0">{{chat.unreadMessage}}</span>
                     <p  ng-show="chat.user_data.geo_city != undefined || chat.user_data.geo_state !=undefined">{{chat.user_data.geo_city}}<span class="lastSeen" ng-if="chat.user_data.geo_state != ''">, </span>{{chat.user_data.geo_state}}</p>
-                    <p class='TimeDistanceText'>{{chat.user_data.last_seen}} <br/>{{chat.user_data.distance}}<span ng-if='chat.user_data.distance'>s from you</span></p>
+                    <p class='' ng-class="{'TimeDistanceText': chat.room_type == 'private'}">{{chat.user_data.last_seen}} <br/>{{chat.user_data.distance}}<span ng-if='chat.user_data.distance'>s from you</span></p>
                     <p ></p>
                 </a>
             </div>

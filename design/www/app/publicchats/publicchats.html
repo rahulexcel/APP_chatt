@@ -1,6 +1,6 @@
 <ion-view view-title="Rooms" id="background" hide-back-button="true">
 <ion-nav-buttons side="right">
-        <button class="button button-icon pull-right white GreyColor" ng-click="modal.show()" style="font-size: 23px;">
+        <button class="button button-icon pull-right white createGroupButton" ng-click="modal.show()">
             <i class=" ion-plus-round"></i>
         </button>
     </ion-nav-buttons>
@@ -22,7 +22,7 @@
                 <a class="item item-avatar hover">
                     <img class="avatar" ng-src="{{publicChat.room_image}}">
                     <h2 class="ChatUserName">{{publicChat.show_details_for_list.main_text}} <span class="fa fa-spin fa-spinner" ng-show="publicChats.clickRoomSpinner == $index"></span></h2>
-                    <p class='TimeDistanceText'>{{publicChat.show_details_for_list.sub_text}}</p>
+                    <p class=''>{{publicChat.show_details_for_list.sub_text}}</p>
                 </a>
             </div>
         </div>
