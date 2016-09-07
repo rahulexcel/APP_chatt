@@ -9,6 +9,11 @@
     margin: 0 auto;
     padding-top: 1px;
 }
+.createGroupButton{
+    background-color: #22C064!important;
+    width: 50px; 
+    height: 9px;
+}
 body{
   font-family: 'Roboto', sans-serif;
 }  
@@ -341,7 +346,7 @@ body{
 .OutlineIcon{
     -webkit-text-fill-color: transparent !important;
     -webkit-text-stroke-width: 1px !important;
-    color: #fff;
+    color: blue;
 }
 /*login page css*/
 .login{
@@ -463,9 +468,10 @@ body{
     color: rgb(103, 99, 99);
 }
 .title{
-   font-size: 24px !important;
+   font-size: 20px !important;
    font-weight: normal !important;
 }
+
 .ion-navicon{
     color: #fff!important;
 }
@@ -500,7 +506,7 @@ body{
 /*Menu css*/
 
 a.tab-item {
-    color: #fff;
+    color: blue;
 }
 a.tab-item:hover{
     text-decoration: none;
@@ -1049,13 +1055,8 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
     background-color: #fff !important;
     padding-right:0px!important;
 }
-.myTabs{
-    background: #000;
-    color: #fff;
-    padding: 0px;
-}
 .act{
-    background-color: #217249;
+    background-color: #387ef5;
     color: #fff !important;
     opacity:1;
 }
