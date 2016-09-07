@@ -341,7 +341,7 @@ body{
 .OutlineIcon{
     -webkit-text-fill-color: transparent !important;
     -webkit-text-stroke-width: 1px !important;
-    color: blue;
+    color: #fff;
 }
 /*login page css*/
 .login{
@@ -500,7 +500,7 @@ body{
 /*Menu css*/
 
 a.tab-item {
-    color: blue;
+    color: #fff;
 }
 a.tab-item:hover{
     text-decoration: none;
@@ -1049,8 +1049,13 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
     background-color: #fff !important;
     padding-right:0px!important;
 }
+.myTabs{
+    background: #000;
+    color: #fff;
+    padding: 0px;
+}
 .act{
-    background-color: #387ef5;
+    background-color: #217249;
     color: #fff !important;
     opacity:1;
 }
