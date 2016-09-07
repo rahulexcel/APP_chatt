@@ -1,4 +1,9 @@
 <ion-view view-title="Rooms" id="background" hide-back-button="true">
+<ion-nav-buttons side="right">
+        <button class="button button-icon pull-right white GreyColor" ng-click="modal.show()" style="font-size: 23px;">
+            <i class=" ion-plus-round"></i>
+        </button>
+    </ion-nav-buttons>
     <ion-content class="has-footer" has-bouncing='false'>
     <div class="spin" ng-show="publicChats.lodingSpinner"><ion-spinner icon="spiral" class="spinner-positive"></ion-spinner></div>
         <ion-list >
@@ -22,9 +27,6 @@
             </div>
         </div>
     </ion-content>
-    <div class="md-list-item-left circle green add-public-chat" ng-click="modal.show()">
-        <i class="ion-plus-round"></i>
-    </div>
 </ion-view>
 <script id="modal.html" type="text/ng-template">
    <div class="modal">
