@@ -33,12 +33,22 @@
         }).then(function(popover) {
             self.popover = popover;
         });
+        self.popovershow=false;
         self.openPopover = function($event) {
-            self.popover.show($event);
+            if(!self.popovershow){
+                self.popover.show($event);
+                self.popovershow=true;
+            }else{
+                self.popover.hide();
+                self.popovershow=false;    
+            }
         };
         self.closePopover = function() {
             self.popover.hide();
         };
+        $scope.$on('popover.hidden', function() {
+            self.popovershow=false;
+          });
         $scope.myCroppedImage = '';
         self.editProfilePic = function() {
             cameraService.changePic().then(function(imageData) {
