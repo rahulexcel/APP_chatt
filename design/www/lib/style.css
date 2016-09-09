@@ -320,27 +320,21 @@ body{
 /*Placeholder css*/
 ::-webkit-input-placeholder { /* Safari, Chrome and Opera */
     color: #BDBDBD!important;
-    padding:6px!important;
 }
 :-moz-placeholder { /* Firefox 18- */
     color: #BDBDBD!important;
-    padding:6px!important;
 }
 ::-moz-placeholder { /* Firefox 19+ */
     color: #BDBDBD!important;
-    padding:6px!important;
 }
 :-ms-input-placeholder { /* IE 10+ */
     color: #BDBDBD!important;
-    padding:6px!important;
 }
 ::-ms-input-placeholder { /* Edge */
     color: #BDBDBD!important;
-    padding:6px!important;
 }
 :placeholder-shown { /* Standard one last! */
     color: #BDBDBD!important;
-    padding:6px!important;
 }
 
 .OutlineIcon{
