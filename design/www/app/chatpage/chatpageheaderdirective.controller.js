@@ -4,7 +4,7 @@
     angular.module('chattapp')
             .controller('chatPageHeaderDirectiveController', chatPageHeaderDirectiveController);
 
-    function chatPageHeaderDirectiveController($state, timeStorage, $rootScope, $ionicScrollDelegate, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService, sqliteService, $ionicLoading, geoLocation, $localStorage) {
+    function chatPageHeaderDirectiveController($state, timeStorage, $rootScope, $ionicScrollDelegate, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService, sqliteService, $ionicLoading, geoLocation, $localStorage, Upload) {
         var self = this;
         self.leaveGroupSpinner = false;
         self.deleteGroupSpinner = false;
@@ -240,11 +240,23 @@
             return buf;
         }
 
-
         var userData = timeStorage.get('userData');
         function onSuccess(imageData) {
             $ionicLoading.show({template: 'Image Uploading...'});
             var img = "data:image/jpeg;base64," + imageData;
+            var userData = timeStorage.get('userData');
+            var currentMessage = {
+                "id": 78524,
+                "image": userData.data.profile_image,
+                "message": "<img class='sendImage' src=" + img + ">",
+                "messageTime": moment(_.now()).format("hh:mm a"),
+                "timeStamp": _.now(),
+                "name": userData.data.name,
+                "user_id": userData.data.user_id,
+                "message_status": 'sent'
+            };
+            $rootScope.$broadcast('displayChatMessages', {data: currentMessage});
+            $ionicScrollDelegate.scrollBottom(false);
             var imageBase64 = img.replace(/^data:image\/(png|jpeg);base64,/, "");
             var binary = fixBinary(atob(imageBase64));
             var blob = new Blob([binary], {type: 'image/png', name: 'png'});
@@ -256,23 +268,35 @@
         ;
         function onFail(message) {
             $ionicLoading.hide();
-        }
-        ;
+        };
         self.attachImage = function(file) {
             if (file) {
                 var filedata = file[0];
+                Upload.base64DataUrl(file).then(function(urls){
+                    console.log(urls);
+                    var userData = timeStorage.get('userData');
+                    var currentMessage = {
+                        "id": 785412,
+                        "image": userData.data.profile_image,
+                        "message": "<img class='sendImage' src=" + urls[0] + ">",
+                        "messageTime": moment(_.now()).format("hh:mm a"),
+                        "timeStamp": _.now(),
+                        "name": userData.data.name,
+                        "user_id": userData.data.user_id,
+                        "message_status": 'sent'
+                    };
+                    $rootScope.$broadcast('displayChatMessages', {data: currentMessage});
+                    $ionicScrollDelegate.scrollBottom(false);
+                });
                 self.imagesend(filedata);
-                $ionicLoading.show({template: 'Image Uploading...'});
             } else {
-
                 navigator.camera.getPicture(onSuccess, onFail, {
-                    quality: 100,
+                    quality: 9,
                     destinationType: Camera.DestinationType.DATA_URL,
                     correctOrientation: true,
                     // allowEdit: true,
                     sourceType: Camera.PictureSourceType.CAMERA
                 });
-
             }
         };
 
@@ -323,7 +347,6 @@
             });
             query.then(function(data) {
                 if (data.data.status == 1) {
-
                     var currentTimeStamp = _.now();
                     socketService.roomOpen($stateParams.roomId);
                     sqliteService.saveMessageInDb("<img class='sendImage' src=" + data.data.data.url + ">", 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId) {
@@ -332,19 +355,6 @@
                             socketService.room_message(lastInsertId, $stateParams.roomId, "<img class='sendImage' src=" + data.data.data.url + ">", currentTimeStamp);
                         }
                         $ionicLoading.hide();
-                        var currentMessage = {
-                            "id": lastInsertId,
-                            "image": userData.data.profile_image,
-                            "message": "<img class='sendImage' src=" + data.data.data.url + ">",
-                            "messageTime": moment(currentTimeStamp).format("hh:mm a"),
-                            "timeStamp": currentTimeStamp,
-                            "name": userData.data.name,
-                            "user_id": userData.data.user_id,
-                            "message_status": 'post'
-                        };
-
-                        $rootScope.$broadcast('displayChatMessages', {data: currentMessage});
-                        $ionicScrollDelegate.scrollBottom(false);
                     }, 100);
 
 

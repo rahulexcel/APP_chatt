@@ -62,6 +62,7 @@
         $scope.$on('displayChatMessages', function(event, response) {
             self.displayChatMessages.push(response.data);
             $scope.$evalAsync();
+            $ionicLoading.hide();
         });
         self.tempMessage = [];
         var flag = 0;
