@@ -21097,7 +21097,7 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
             }, 3000);
         });
         sqliteService.getMessageDataFromDB($stateParams.roomId).then(function(response) {
-            self.displayChatMessages = response;
+            self.displayChatMessages = response.reverse();
             console.log(self.displayChatMessages)
             $localStorage.roomMessageLength = self.displayChatMessages.length;
             $ionicScrollDelegate.scrollBottom(false);
@@ -21117,7 +21117,7 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
                 socketService.update_message_status(data.data.messages, $stateParams.roomId);
                 sqliteService.updateDbOnRoomOpen(data.data.messages, $stateParams.roomId).then(function() {
                     sqliteService.getMessageDataFromDB($stateParams.roomId).then(function(response) {
-                        self.displayChatMessages = response;
+                        self.displayChatMessages = response.reverse();
                         console.log('sdfsdf',self.displayChatMessages);
                         $scope.$evalAsync();
                         $ionicScrollDelegate.scrollBottom(false);
