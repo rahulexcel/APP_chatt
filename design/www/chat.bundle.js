@@ -21127,6 +21127,12 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
             $timeout(function() {
                 $ionicScrollDelegate.scrollBottom(false);
             });
+            //for sure message must be send once to server
+            $timeout(function() {
+                if(!timeStorage.get('network')){
+                    sqliteService.deviceIsNowOnline();
+                }
+            }, 5000);
         }
         var doRefreshPageValue = 0;
         self.doRefresh = function() {
@@ -21211,44 +21217,6 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
                         console.log(msg);
                     }
                 }
-                // if (msguserId != chatpageID) {
-                //     var scripts = document.getElementsByTagName('img');
-                //     var myScript = scripts[scripts.length - 1];
-                //     var urlVal = myScript.src;
-                //     var res = msg.substring(0, 22);
-                //     var arr = urlVal.split('/');
-                //     var idname = arr[arr.length - 1];
-
-                //     ContentSync.download(urlVal, 'chatApp', idname);
-                //     if (res == "<img class='sendImage'") {
-                //         var sync = ContentSync.sync({src: myScript.src, id: idname});
-
-                //         sync.on('progress', function(data) {
-
-                //         });
-
-                //         sync.on('complete', function(data) {
-
-                //             window.resolveLocalFileSystemURL("file://" + data.localPath, function(entry) {
-
-                //             }, function(error) {
-
-                //             });
-                //         });
-
-                //         sync.on('error', function(e) {
-
-                //             // e 
-                //         });
-
-                //         sync.on('cancel', function() {
-
-                //             // triggered if event is cancelled 
-                //         });
-                //     }
-                // } else {
-
-                // }
             });
         };
         $ionicModal.fromTemplateUrl('mapUser.html', function($ionicModal) {
