@@ -4,8 +4,8 @@
             openAttachFilePopover.hide()">
             Camera
         </a>
-        <a ngf-select ng-model="chatPageHeader.picFile" accept="image/*" ngf-change="chatPageHeader.attachImage($files);" class="item"  
-           ng-click="openAttachFilePopover.hide()">
+        <a ngf-select ng-model="chatPageHeader.picFile" ngf-resize="{quality: .1, ratio: '1:2'}" accept="image/*" ngf-change="chatPageHeader.attachImage($files); openAttachFilePopover.hide()" class="item"  
+           >
             Gallery
         </a>
         <a class="item" ng-show="chatPageHeader.shareLocation" ng-click="chatPageHeader.sendLocation();
