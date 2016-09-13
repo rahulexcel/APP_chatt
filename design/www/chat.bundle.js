@@ -21309,6 +21309,12 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
             $ionicScrollDelegate.resize();
             $scope.$apply();
         };
+        self.inputFocus = function() {
+            $timeout(function() {
+                $ionicScrollDelegate.scrollBottom(false);
+                $scope.$apply();
+            }, 300);
+        };
         var message='';
         var debounce = _.debounce(fireSocketEvent, 0, false);
         function writingMessage() {
@@ -21869,7 +21875,7 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
         scope: { trigger: '@isFocused' },
         link: function(scope, element) {
           scope.$watch('trigger', function(value) {
-            
+            console.log('hi')
             if(value === "true") {
               $timeout(function() {
                 element[0].focus();
@@ -24015,6 +24021,32 @@ angular.module('chattapp').directive('isFocused', function($timeout) {
 })();
 
 (function() {
+    'use strict';
+
+    angular.module('chattapp')
+            .controller('settingController', settingController);
+
+    function settingController(socketService, timeStorage, $state) {
+        var self = this;
+//        self.version='';
+        document.addEventListener("deviceready", function() {
+            self.version = AppVersion.version;
+        });
+        self.logout = function() {
+            socketService.logout();
+            timeStorage.remove('google_access_token');
+            timeStorage.remove('userEmail');
+            timeStorage.remove('userData');
+            timeStorage.remove('displayPrivateChats');
+            timeStorage.remove('listUsers');
+            timeStorage.remove('chatWithUserData');
+            timeStorage.remove('displayPublicChats');
+            timeStorage.remove('profile_data');
+            $state.go('login');
+        };
+    }
+})();
+(function() {
    'use strict';
    angular.module('chattapp')
        .factory('getPublicRoomsFactory', getPublicRoomsFactory);
@@ -24211,31 +24243,5 @@ angular.module('chattapp').directive('isFocused', function($timeout) {
             'Private'
         ];
         self.userGroupType = 'Public';
-    }
-})();
-(function() {
-    'use strict';
-
-    angular.module('chattapp')
-            .controller('settingController', settingController);
-
-    function settingController(socketService, timeStorage, $state) {
-        var self = this;
-//        self.version='';
-        document.addEventListener("deviceready", function() {
-            self.version = AppVersion.version;
-        });
-        self.logout = function() {
-            socketService.logout();
-            timeStorage.remove('google_access_token');
-            timeStorage.remove('userEmail');
-            timeStorage.remove('userData');
-            timeStorage.remove('displayPrivateChats');
-            timeStorage.remove('listUsers');
-            timeStorage.remove('chatWithUserData');
-            timeStorage.remove('displayPublicChats');
-            timeStorage.remove('profile_data');
-            $state.go('login');
-        };
     }
 })();

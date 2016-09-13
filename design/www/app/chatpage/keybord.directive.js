@@ -5,7 +5,7 @@
         scope: { trigger: '@isFocused' },
         link: function(scope, element) {
           scope.$watch('trigger', function(value) {
-            
+            console.log('hi')
             if(value === "true") {
               $timeout(function() {
                 element[0].focus();
