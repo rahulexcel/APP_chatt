@@ -7,6 +7,7 @@ angular.module('chattapp')
     $ionicConfigProvider.backButton.previousTitleText(false).text(' ');
     $ionicConfigProvider.views.transition('none');
     $ionicConfigProvider.navBar.alignTitle('center');
+    $ionicConfigProvider.views.swipeBackEnabled(false);
 });
 
 })();
