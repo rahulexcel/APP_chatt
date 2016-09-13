@@ -708,6 +708,7 @@ a.tab-item:hover{
     font-weight: bold;
     font-size: 16px;
     padding: 3%;
+    margin-top: 5px;
 }
 .send-msg i{
     padding-right: 7px!important;
