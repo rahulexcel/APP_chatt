@@ -38,18 +38,17 @@
                 $ionicScrollDelegate.scrollBottom(false);
             }
         };
-
         var focus = 0;
-        function inputUp() {
+        self.inputUp = function() {
           
             var inputChanged = 0;
-            if ($scope.isFocused == 'focusOut' && focus == 0) {
+            if ($rootScope.isFocused == 'focusOut' && focus == 0) {
                 focus++;
              
-                $scope.isFocused = false;
+                $rootScope.isFocused = false;
 
             } else {
-                $scope.isFocused = 'foc';
+                $rootScope.isFocused = 'foc';
                 focus--;
             }
 
@@ -59,15 +58,9 @@
                 $scope.$apply();
             }, 300);
         };
-        function inputDown() {
+        self.inputDown = function() {
             $ionicScrollDelegate.resize();
             $scope.$apply();
-        };
-        self.inputFocus = function() {
-            $timeout(function() {
-                $ionicScrollDelegate.scrollBottom(false);
-                $scope.$apply();
-            }, 300);
         };
         var message='';
         var debounce = _.debounce(fireSocketEvent, 0, false);
@@ -80,9 +73,9 @@
         function fireSocketEvent(){
             socketService.writingMessage($stateParams.roomId);
         }
-        document.addEventListener('focusIn', inputUp, false);
-        document.addEventListener('focusOut', inputDown, false);
-        document.addEventListener('change', writingMessage, false);
+        // document.addEventListener('focusIn', inputUp, false);
+        // document.addEventListener('focusOut', inputDown, false);
+        // document.addEventListener('change', writingMessage, false);
     }
 
 })();
