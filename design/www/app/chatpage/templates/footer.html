@@ -1,6 +1,6 @@
 <ion-footer-bar class='bar bar-stable' keyboard-attach style="border:none;">
     <div style="width: 80%; margin-top:6px;">
-        <textarea id="messageInput"  ng-model="messagetext"  ng-change="chatPageFooter.writingMessage()" placeholder='Your message' style="font-size: 14px; width:100%; resize: none; height:30px!important"></textarea>
+        <textarea id="messageInput"  ng-model="messagetext" ng-focus="chatPageFooter.inputFocus()" ng-change="chatPageFooter.writingMessage()" placeholder='Your message' style="font-size: 14px; width:100%; resize: none; height:30px!important"></textarea>
         <div class='send-msg' ng-click='chatPageFooter.sendMessage()'>
             SEND
         </div>

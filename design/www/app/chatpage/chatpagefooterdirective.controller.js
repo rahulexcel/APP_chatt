@@ -63,6 +63,12 @@
             $ionicScrollDelegate.resize();
             $scope.$apply();
         };
+        self.inputFocus = function() {
+            $timeout(function() {
+                $ionicScrollDelegate.scrollBottom(false);
+                $scope.$apply();
+            }, 300);
+        };
         var message='';
         var debounce = _.debounce(fireSocketEvent, 0, false);
         function writingMessage() {
