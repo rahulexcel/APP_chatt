@@ -4,9 +4,9 @@
     angular.module('chattapp')
             .controller('chatPageController', chatPageController);
 
-    function chatPageController($ionicHistory, $scope, $localStorage) {
+    function chatPageController($ionicHistory, $scope, $localStorage, $rootScope) {
         $scope.focusOut = function() {
-            $scope.isFocused = 'focusOut';
+            $rootScope.isFocused = 'focusOut';
         };
         $scope.height = screen.height;
         if ($localStorage['bgImage']) {

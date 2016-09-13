@@ -26,6 +26,7 @@
             self.lastSeen = chatWithUserData.lastSeen;
         }
         self.goBack = function() {
+            $rootScope.isFocused = 'focusOut';
             $state.go('app.chats');
         };
         self.openModelWithSpinner = true;
