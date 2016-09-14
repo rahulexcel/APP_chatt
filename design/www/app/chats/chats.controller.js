@@ -62,7 +62,7 @@
                         if(self.displayChats[i].user_data.id == response.data.user_id){
                             self.displayChats[i].user_data.status = response.data.data.data.status;
                             self.displayChats[i].user_data.last_seenInTimestamp = response.data.data.data.last_seen;
-                            self.displayChats[i].user_data.last_seen = moment.unix(response.data.data.data.last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
+                            self.displayChats[i].user_data.last_seen = moment.unix(response.data.data.data.last_seen).tz(timeZoneService.getTimeZone()).format("Do MMM hh:mm a");
                             $scope.$evalAsync();
                         }
                     }

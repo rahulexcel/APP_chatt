@@ -80,7 +80,7 @@
                 name: fbData.name,
                 currentTimestamp: _.now(),
                 password: '',
-                profile_image: 'http://graph.facebook.com/' + fbData.id + '/picture?type=large',
+                profile_image: 'https://graph.facebook.com/' + fbData.id + '/picture?type=large',
                 gender:fbData.gender,
                 dob:''
             });
