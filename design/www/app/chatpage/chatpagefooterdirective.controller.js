@@ -59,8 +59,8 @@
             }, 300);
         };
         self.inputDown = function() {
-            // $ionicScrollDelegate.resize();
-            // $scope.$apply();
+            $ionicScrollDelegate.resize();
+            $scope.$apply();
         };
         var message='';
         var debounce = _.debounce(fireSocketEvent, 0, false);

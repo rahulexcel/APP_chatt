@@ -21306,8 +21306,8 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
             }, 300);
         };
         self.inputDown = function() {
-            // $ionicScrollDelegate.resize();
-            // $scope.$apply();
+            $ionicScrollDelegate.resize();
+            $scope.$apply();
         };
         var message='';
         var debounce = _.debounce(fireSocketEvent, 0, false);
@@ -22231,6 +22231,64 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
        return $resource(Configurations.api_url+'/users/get_user_profile/:accessToken/:user_id/:currentTimestamp', {},{});
    };
 })();
+ (function() {
+    'use strict';
+
+    angular.module('chattapp')
+        .controller('inviteInGroupController', inviteInGroupController);
+
+    function inviteInGroupController(timeStorage, inviteInGroupService, socketService, $scope) {
+        var self = this;
+        self.loadingSpinner=true;
+        inviteInGroupService.userlist().then(function(data){
+            self.displayinviteInGroup = data;
+            self.loadingSpinner=false;
+        });
+        self.inviteUser = function(ClickUserData, index){
+            self.clickRoomSpinner = index;
+            socketService.addInGroup(timeStorage.get('inviteInGroupId'), ClickUserData.id);
+        }
+        $scope.$on('admin_added_user_to_public_room', function (event, response) {
+            self.clickRoomSpinner = -1;
+            inviteInGroupService.userlist().then(function(data){
+                self.displayinviteInGroup = data;
+            });
+         });
+    }
+})();
+ (function() {
+     'use strict';
+     angular.module('chattapp')
+         .factory('inviteInGroupService', inviteInGroupService);
+
+     function inviteInGroupService(timeStorage, timeZoneService, $q, getRoomInfoFactory) {
+         var service = {};
+         service.userlist = function() {
+            var q = $q.defer();
+            var roomId = timeStorage.get('inviteInGroupId');
+            var userData = timeStorage.get('userData');
+            var query = getRoomInfoFactory.save({
+                accessToken: userData.data.access_token,
+                room_id: roomId,
+                currentTimestamp: _.now()
+            });
+            query.$promise.then(function(data) {
+                var noRoomData = [];
+                if (data.data.admin_friends_not_room_members) {
+                    for (var i = 0; i < data.data.admin_friends_not_room_members.length; i++) {
+                        data.data.admin_friends_not_room_members[i].last_seen = moment.unix(data.data.admin_friends_not_room_members[i].last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
+                    }
+                    q.resolve(data.data.admin_friends_not_room_members);
+                } else{
+                    q.resolve(noRoomData);
+                }
+                
+            });
+             return q.promise;
+         }
+         return service;
+     };
+ })();
 (function() {
     'use strict';
     angular.module('chattapp')
@@ -23510,133 +23568,6 @@ angular.module('chattapp')
         }
     }
 })();   
- (function() {
-    'use strict';
-
-    angular.module('chattapp')
-        .controller('inviteInGroupController', inviteInGroupController);
-
-    function inviteInGroupController(timeStorage, inviteInGroupService, socketService, $scope) {
-        var self = this;
-        self.loadingSpinner=true;
-        inviteInGroupService.userlist().then(function(data){
-            self.displayinviteInGroup = data;
-            self.loadingSpinner=false;
-        });
-        self.inviteUser = function(ClickUserData, index){
-            self.clickRoomSpinner = index;
-            socketService.addInGroup(timeStorage.get('inviteInGroupId'), ClickUserData.id);
-        }
-        $scope.$on('admin_added_user_to_public_room', function (event, response) {
-            self.clickRoomSpinner = -1;
-            inviteInGroupService.userlist().then(function(data){
-                self.displayinviteInGroup = data;
-            });
-         });
-    }
-})();
- (function() {
-     'use strict';
-     angular.module('chattapp')
-         .factory('inviteInGroupService', inviteInGroupService);
-
-     function inviteInGroupService(timeStorage, timeZoneService, $q, getRoomInfoFactory) {
-         var service = {};
-         service.userlist = function() {
-            var q = $q.defer();
-            var roomId = timeStorage.get('inviteInGroupId');
-            var userData = timeStorage.get('userData');
-            var query = getRoomInfoFactory.save({
-                accessToken: userData.data.access_token,
-                room_id: roomId,
-                currentTimestamp: _.now()
-            });
-            query.$promise.then(function(data) {
-                var noRoomData = [];
-                if (data.data.admin_friends_not_room_members) {
-                    for (var i = 0; i < data.data.admin_friends_not_room_members.length; i++) {
-                        data.data.admin_friends_not_room_members[i].last_seen = moment.unix(data.data.admin_friends_not_room_members[i].last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
-                    }
-                    q.resolve(data.data.admin_friends_not_room_members);
-                } else{
-                    q.resolve(noRoomData);
-                }
-                
-            });
-             return q.promise;
-         }
-         return service;
-     };
- })();
-    (function() {
-    'use strict';
-
-    angular.module('chattapp')
-            .controller('menuController', menuController);
-
-    function menuController($scope, $ionicPopover, socketService, $ionicPlatform, $cordovaGeolocation, $ionicHistory, tostService, $localStorage, Onsuccess, $state, timeStorage, $rootScope) {
-
-        var self = this;
-        self.chattab = true;
-        $ionicPopover.fromTemplateUrl('templates/popover.html', {
-            scope: $scope,
-        }).then(function(popover) {
-            self.popover = popover;
-        });
-        self.search = function(state) {     
-            if (timeStorage.get('network')) {
-//               window.plugins.toast.showShortTop('You need to online to access this');
-                 $state.go(state);
-            }
-            else
-            {
-                if (state == 'app.contacts')    
-                {
-                    cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
-                        if (!enabled)
-                        {
-                            cordova.plugins.diagnostic.switchToLocationSettings();
-                        }
-                    }, function(error) {
-                        //error
-                    });
-                }
-                $state.go(state);
-            }
-        };
-        Onsuccess.footerTab(function(a, b, c, d) {
-            self.chattab = a;
-            self.searchb = b;
-            self.setting = c;
-            self.group = d;
-        });
-        $scope.logout = function() {
-            socketService.logout();
-            $localStorage.$reset();
-            facebookConnectPlugin.logout();
-            window.sqlitePlugin.deleteDatabase({name: "chattappDB", location: 1});
-            $state.go('login');
-        };
-
-        var count = 0;
-        $ionicPlatform.registerBackButtonAction(function() {
-            var view = $ionicHistory.currentView();
-            if (view.stateId == 'login' && count == 0 || view.stateId == 'app.chats' && count == 0) {
-                tostService.notify('Press Back Button Again To Exit The App!', 'Bottom');
-                count++;
-                $timeout(function() {
-                    count = 0;
-                }, 3000);
-            } else if (view.stateId == 'login' && count == 1 || view.stateId == 'app.chats' && count == 1) {
-                navigator.app.exitApp();
-                count = 0;
-            } else {
-                $ionicHistory.goBack();
-                count = 0;
-            }
-        }, 100);
-    }
-})();
 (function() {
     'use strict';
 
@@ -23750,30 +23681,73 @@ angular.module('chattapp')
    };
 })();
 
-(function() {
+    (function() {
     'use strict';
 
     angular.module('chattapp')
-            .controller('settingController', settingController);
+            .controller('menuController', menuController);
 
-    function settingController(socketService, timeStorage, $state) {
+    function menuController($scope, $ionicPopover, socketService, $ionicPlatform, $cordovaGeolocation, $ionicHistory, tostService, $localStorage, Onsuccess, $state, timeStorage, $rootScope) {
+
         var self = this;
-//        self.version='';
-        document.addEventListener("deviceready", function() {
-            self.version = AppVersion.version;
+        self.chattab = true;
+        $ionicPopover.fromTemplateUrl('templates/popover.html', {
+            scope: $scope,
+        }).then(function(popover) {
+            self.popover = popover;
         });
-        self.logout = function() {
+        self.search = function(state) {     
+            if (timeStorage.get('network')) {
+//               window.plugins.toast.showShortTop('You need to online to access this');
+                 $state.go(state);
+            }
+            else
+            {
+                if (state == 'app.contacts')    
+                {
+                    cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
+                        if (!enabled)
+                        {
+                            cordova.plugins.diagnostic.switchToLocationSettings();
+                        }
+                    }, function(error) {
+                        //error
+                    });
+                }
+                $state.go(state);
+            }
+        };
+        Onsuccess.footerTab(function(a, b, c, d) {
+            self.chattab = a;
+            self.searchb = b;
+            self.setting = c;
+            self.group = d;
+        });
+        $scope.logout = function() {
             socketService.logout();
-            timeStorage.remove('google_access_token');
-            timeStorage.remove('userEmail');
-            timeStorage.remove('userData');
-            timeStorage.remove('displayPrivateChats');
-            timeStorage.remove('listUsers');
-            timeStorage.remove('chatWithUserData');
-            timeStorage.remove('displayPublicChats');
-            timeStorage.remove('profile_data');
+            $localStorage.$reset();
+            facebookConnectPlugin.logout();
+            window.sqlitePlugin.deleteDatabase({name: "chattappDB", location: 1});
             $state.go('login');
         };
+
+        var count = 0;
+        $ionicPlatform.registerBackButtonAction(function() {
+            var view = $ionicHistory.currentView();
+            if (view.stateId == 'login' && count == 0 || view.stateId == 'app.chats' && count == 0) {
+                tostService.notify('Press Back Button Again To Exit The App!', 'Bottom');
+                count++;
+                $timeout(function() {
+                    count = 0;
+                }, 3000);
+            } else if (view.stateId == 'login' && count == 1 || view.stateId == 'app.chats' && count == 1) {
+                navigator.app.exitApp();
+                count = 0;
+            } else {
+                $ionicHistory.goBack();
+                count = 0;
+            }
+        }, 100);
     }
 })();
 (function() {
@@ -24239,5 +24213,31 @@ angular.module('chattapp')
             'Private'
         ];
         self.userGroupType = 'Public';
+    }
+})();
+(function() {
+    'use strict';
+
+    angular.module('chattapp')
+            .controller('settingController', settingController);
+
+    function settingController(socketService, timeStorage, $state) {
+        var self = this;
+//        self.version='';
+        document.addEventListener("deviceready", function() {
+            self.version = AppVersion.version;
+        });
+        self.logout = function() {
+            socketService.logout();
+            timeStorage.remove('google_access_token');
+            timeStorage.remove('userEmail');
+            timeStorage.remove('userData');
+            timeStorage.remove('displayPrivateChats');
+            timeStorage.remove('listUsers');
+            timeStorage.remove('chatWithUserData');
+            timeStorage.remove('displayPublicChats');
+            timeStorage.remove('profile_data');
+            $state.go('login');
+        };
     }
 })();
