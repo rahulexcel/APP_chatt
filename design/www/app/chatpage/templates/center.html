@@ -1,7 +1,7 @@
-<div>
+<div ng-if="chatPageCenter.background">
     <img ng-src="{{chatPageCenter.background}}" class="myImg" style="height:{{height}}px">
 </div>
-<ion-content class="has-footer myContent " ng-click="focusOut()" style="margin-bottom:10px;">
+<div class="myContent" ng-click="focusOut()" style="margin-bottom:10px;">
     <ion-refresher pulling-text="Pull to refresh" on-refresh="chatPageCenter.doRefresh()">
     </ion-refresher>
     <div id="map"></div>
@@ -25,8 +25,7 @@
             <p ng-if="chatPageCenter.tempMessage.length > 1">Multiple people are typing...</p>
         </div>
     </div>
-    </div>
-</ion-content>
+</div>
 <script id="mapUser.html" type="text/ng-template">
     <div class="modal">
 
