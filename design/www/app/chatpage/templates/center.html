@@ -5,7 +5,7 @@
     <ion-refresher pulling-text="Pull to refresh" on-refresh="chatPageCenter.doRefresh()">
     </ion-refresher>
     <div id="map"></div>
-    <div class="chat clearfix" ng-repeat="msg in chatPageCenter.displayChatMessages">
+    <div class="chat clearfix" ng-repeat="msg in chatPageCenter.displayChatMessages | orderBy:'timeStamp'">
         <img class="img-circle" ng-src="{{imgDpuser}}" ng-if="msg.user_id != chatPageCenter.user_id && msg.message_type != 'room_alert_message'" style="height: 56px; float:left; max-width: 60px;">
         <div class="{{(msg.user_id == chatPageCenter.user_id && msg.message_type != 'room_alert_message') && 'you bubble' || 'me bubble' }} {{msg.message_type == 'room_alert_message' && 'alert-message'|| '' }}  {{msg.message.substring(1, 4) == 'img' && 'ImageComes' }} ">
             <p class="lastSeen message-user-name" ng-if="chatPageCenter.isPublicRoom && msg.message_type != 'room_alert_message' && msg.user_id !== chatPageCenter.user_id">{{msg.name}}</p>
