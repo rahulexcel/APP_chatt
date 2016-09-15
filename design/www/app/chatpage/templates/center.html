@@ -2,8 +2,6 @@
     <img ng-src="{{chatPageCenter.background}}" class="myImg" style="height:{{height}}px">
 </div>
 <div class="myContent" ng-click="focusOut()" style="margin-bottom:10px;">
-    <ion-refresher pulling-text="Pull to refresh" on-refresh="chatPageCenter.doRefresh()">
-    </ion-refresher>
     <div id="map"></div>
     <div class="chat clearfix" ng-repeat="msg in chatPageCenter.displayChatMessages | orderBy:'timeStamp'">
         <img class="img-circle" ng-src="{{imgDpuser}}" ng-if="msg.user_id != chatPageCenter.user_id && msg.message_type != 'room_alert_message'" style="height: 56px; float:left; max-width: 60px;">
