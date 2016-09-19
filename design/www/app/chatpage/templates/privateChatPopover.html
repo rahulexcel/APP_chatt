@@ -1,5 +1,13 @@
 <ion-popover-view>
     <div class="list">
+        <a class="item" ng-click="chatPageHeader.setBackground();
+            popover.hide()">
+            <span ng-if="chatPageHeader.pageBackground == ''">Set</span><span ng-if="chatPageHeader.pageBackground.length > 0">Update</span> Background
+        </a>
+        <a class="item" ng-click="chatPageHeader.removeBackground();
+            popover.hide()" ng-if="chatPageHeader.pageBackground.length > 0">
+            Remove Background
+        </a>
         <a class="item" ng-click="chatPageHeader.leavePrivateChat();
             popover.hide()">
             Leave Chat

@@ -190,7 +190,7 @@
         };
         $scope.bgimage = '';
         $scope.myBgCroppedImage = '';
-        $scope.backGround = function() {
+        $scope.setBackground = function() {
             cameraService.changePic().then(function(imageData) {
                 var img = "data:image/jpeg;base64," + imageData;
                 $scope.backGroundModal.show();

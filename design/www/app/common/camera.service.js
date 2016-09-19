@@ -13,7 +13,7 @@
                     }, {
                         text: '<p class="text-center"><i class="ion-camera"></i> Camera</p>'
                     }],
-                titleText: 'Profile photo',
+                titleText: 'Image',
                 cancelText: 'Cancel',
                 cancel: function() {
                 },
@@ -35,7 +35,7 @@
                 service.getPicture = function(index) {
                     var q = $q.defer();
                     navigator.camera.getPicture(onSuccess, onFail, {
-                        quality: 100,
+                        quality: 30,
                         destinationType: Camera.DestinationType.DATA_URL,
                         correctOrientation: true,
                         // allowEdit: true,
