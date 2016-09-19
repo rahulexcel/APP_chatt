@@ -22,7 +22,9 @@
              $scope.$on('got_room_unread_notification', function (event, response) {
                 chatsService.showUnreadIcon(response).then(function(data){
                     self.displayChats = data;
-                    timeStorage.set('frndDp', data.user_data.profile_image, 3000);
+                    if(data.user_data){
+                        timeStorage.set('frndDp', data.user_data.profile_image, 3000);
+                    }
                     $scope.$evalAsync();
                     socketService.getUserProfile(self.displayChats);
                 });

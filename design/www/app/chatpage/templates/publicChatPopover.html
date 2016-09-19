@@ -4,6 +4,14 @@
             openGroupPopover.hide()">
             Manage Room
         </a>
+        <a class="item" ng-if="chatPageHeader.is_room_owner == 1" ng-click="chatPageHeader.setBackground();
+            openGroupPopover.hide()">
+            <span ng-if="chatPageHeader.pageBackground == ''">Set</span><span ng-if="chatPageHeader.pageBackground.length > 0">Update</span>  Background
+        </a>
+        <a class="item" ng-if="chatPageHeader.is_room_owner == 1 && chatPageHeader.pageBackground.length > 0" ng-click="chatPageHeader.removeBackground();
+            openGroupPopover.hide()">
+            Remove Background
+        </a>
         <a class="item" ng-if="chatPageHeader.is_room_owner == 1" ng-click="chatPageHeader.deleteRoom();
             openGroupPopover.hide()">
             Delete Room

@@ -20932,13 +20932,31 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
     angular.module('chattapp')
             .controller('chatPageController', chatPageController);
 
-    function chatPageController($ionicHistory, $scope, $localStorage, $rootScope) {
+    function chatPageController($ionicHistory, $scope, $localStorage, $rootScope, getRoomInfoFactory, timeStorage, $stateParams) {
         $scope.focusOut = function() {
             $rootScope.isFocused = 'focusOut';
         };
         $scope.height = screen.height;
-        if ($localStorage['bgImage']) {
-            $scope.background = $localStorage['bgImage'];
+        infoApi();
+        $rootScope.background = '';
+        function infoApi() {
+            var userData = timeStorage.get('userData');
+            var query = getRoomInfoFactory.save({
+                accessToken: userData.data.access_token,
+                room_id: $stateParams.roomId,
+                currentTimestamp: _.now()
+            });
+            query.$promise.then(function(data) {
+                // console.log(data);
+                if(data.data.room.room_background){
+                    $rootScope.background = data.data.room.room_background;
+                    $rootScope.$broadcast('pageBackground', {data: data.data.room.room_background});
+
+                } else{
+                    $rootScope.background = '';
+                    $rootScope.$broadcast('pageBackground', {data: ''});
+                }
+            });
         }
     }
 })();
@@ -21352,8 +21370,9 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
     angular.module('chattapp')
             .controller('chatPageHeaderDirectiveController', chatPageHeaderDirectiveController);
 
-    function chatPageHeaderDirectiveController($state, timeStorage, $rootScope, $ionicScrollDelegate, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService, sqliteService, $ionicLoading, geoLocation, $localStorage, Upload) {
+    function chatPageHeaderDirectiveController($state, timeStorage, $rootScope, $ionicScrollDelegate, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService, sqliteService, $ionicLoading, geoLocation, $localStorage, Upload, updateRoomBackgroundImageFactory) {
         var self = this;
+        console.log($rootScope.background);
         self.leaveGroupSpinner = false;
         self.deleteGroupSpinner = false;
         var chatWithUserData = timeStorage.get('chatWithUserData');
@@ -21570,6 +21589,7 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
             self.displayUserProfileName = '';
             self.displayUserProfileId = '';
             self.displayUserProfileLastSeenInTimeStamp = '';
+
             self.displayUserProfileImage = '';
             self.displayUserProfileLastSeen = '';
             self.displayUserProfilePrivateRooms = '';
@@ -21791,17 +21811,44 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
             timeStorage.set('inviteInGroupId', $stateParams.roomId, 1);
         };
         self.muteNotifications = true;
-        $scope.myCroppedImage = '';
-        self.editProfilePic = function() {
+
+        $scope.bgimage = '';
+        $scope.myBgCroppedImage = '';
+        self.setBackground = function() {
             cameraService.changePic().then(function(imageData) {
-                $scope.modal.show();
                 var img = "data:image/jpeg;base64," + imageData;
-                $scope.myimage = img;
+                $scope.backGroundModal.show();
                 $ionicLoading.hide();
+                $scope.bgimage = img;
             }, function(err) {
                 $ionicLoading.hide();
                 window.plugins.toast.showShortTop('Unable to retrieve image');
             });
+        };
+        $scope.imgBg = function(image) {
+            $scope.myBgCroppedImage = image;
+        };
+        $ionicModal.fromTemplateUrl('app/profile/template/backGround.html', {
+            scope: $scope,
+            animation: 'slide-in-up'
+        }).then(function(modal) {
+            $scope.backGroundModal = modal;
+        });
+
+        $scope.myCroppedImage = '';
+        self.editGroupPic = function() {
+            console.log('hi')
+            if(!chatWithUserData.id){
+                cameraService.changePic().then(function(imageData) {
+                    $scope.modal.show();
+                    var img = "data:image/jpeg;base64," + imageData;
+                    $scope.myimage = img;
+                    $ionicLoading.hide();
+                }, function(err) {
+                    $ionicLoading.hide();
+                    window.plugins.toast.showShortTop('Unable to retrieve image');
+                });
+            }
         };
         $ionicModal.fromTemplateUrl('app/profile/template/imgCropModal.html', {
             scope: $scope,
@@ -21812,13 +21859,17 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
         $scope.result = function(image) {
             $scope.myCroppedImage = image;
         };
-        $scope.imgChange = function() {
+        $scope.imgChange = function(imageType) {
             if ($scope.myCroppedImage || $scope.myBgCroppedImage) {
-
+                
                 var imageData, appenddata;
-                imageData = $scope.myCroppedImage;
-                appenddata = {file_type: 'room_image', room_id: $stateParams.roomId, accessToken: timeStorage.get('userData').data.access_token}
-
+                if (imageType == "bgImage") {
+                    imageData = $scope.myBgCroppedImage;
+                    appenddata = {file_type: 'room_background_image', accessToken: timeStorage.get('userData').data.access_token, room_id: $stateParams.roomId}
+                } else {
+                    imageData = $scope.myCroppedImage;
+                    appenddata = {file_type: 'room_image', accessToken: timeStorage.get('userData').data.access_token, room_id: $stateParams.roomId}
+                }
                 $scope.startLoading = true;
                 var imageBase64 = imageData.replace(/^data:image\/(png|jpeg);base64,/, "");
                 var binary = fixBinary(atob(imageBase64));
@@ -21832,13 +21883,29 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
                 });
                 query.then(function(data) {
                     if (data.data.status == 1) {
-                        self.infoImage = data.data.data.url;
-                        $scope.startLoading = false;
-//                        var pr_image = timeStorage.get('userData');
-//                        pr_image.data.profile_image = self.displayprofile.profile_image;
-//                        sqliteService.updateUserProfie(self.displayprofile.profile_image);
-                        $scope.modal.hide();
-
+                        if (data.data.data.container == "images_room_background") {
+                            $rootScope.background = data.data.data.url;
+                            var userData = timeStorage.get('userData');
+                            updateRoomBackgroundImageFactory.save({
+                                accessToken: userData.data.access_token,
+                                room_id: $stateParams.roomId,
+                                currentTimestamp: _.now(),
+                                image_url: data.data.data.url
+                            }).$promise.then(function(res){
+                                $scope.startLoading = false;
+                                $scope.backGroundModal.hide();
+                                window.plugins.toast.showShortTop('Background Set');
+                            }, function(err){
+                                $scope.startLoading = false;
+                                $scope.backGroundModal.hide();
+                                window.plugins.toast.showShortTop('Background Not Set, try again');
+                            });
+                        }
+                        else {
+                            self.infoImage = data.data.data.url;
+                            $scope.startLoading = false;
+                            $scope.modal.hide();
+                        }
                     } else {
                         $scope.startLoading = false;
                         window.plugins.toast.showShortTop('Image not upload');
@@ -21857,6 +21924,23 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
             $scope.startLoading = false;
             $scope.start = false;
         };
+        $scope.$on('pageBackground', function(event, data) {
+            self.pageBackground = data.data;
+        });
+        self.removeBackground = function(){
+            $rootScope.background = '';
+            self.pageBackground = '';
+            var userData = timeStorage.get('userData');
+            updateRoomBackgroundImageFactory.save({
+                accessToken: userData.data.access_token,
+                room_id: $stateParams.roomId,
+                currentTimestamp: _.now(),
+                image_url: ''
+            }).$promise.then(function(res){
+                window.plugins.toast.showShortTop('Background Removed');
+            }, function(err){
+            });
+        }
     }
 })();
 
@@ -21906,6 +21990,15 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
                 return directive;
             });
 })();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('updateRoomBackgroundImageFactory', updateRoomBackgroundImageFactory);
+
+   function updateRoomBackgroundImageFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/rooms/update_room_background_image', {},{});
+   };
+})();
  (function() {
     'use strict';
 
@@ -21930,7 +22023,9 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
              $scope.$on('got_room_unread_notification', function (event, response) {
                 chatsService.showUnreadIcon(response).then(function(data){
                     self.displayChats = data;
-                    timeStorage.set('frndDp', data.user_data.profile_image, 3000);
+                    if(data.user_data){
+                        timeStorage.set('frndDp', data.user_data.profile_image, 3000);
+                    }
                     $scope.$evalAsync();
                     socketService.getUserProfile(self.displayChats);
                 });
@@ -22113,7 +22208,7 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
                     }, {
                         text: '<p class="text-center"><i class="ion-camera"></i> Camera</p>'
                     }],
-                titleText: 'Profile photo',
+                titleText: 'Image',
                 cancelText: 'Cancel',
                 cancel: function() {
                 },
@@ -22135,7 +22230,7 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
                 service.getPicture = function(index) {
                     var q = $q.defer();
                     navigator.camera.getPicture(onSuccess, onFail, {
-                        quality: 100,
+                        quality: 30,
                         destinationType: Camera.DestinationType.DATA_URL,
                         correctOrientation: true,
                         // allowEdit: true,
@@ -23940,7 +24035,7 @@ angular.module('chattapp')
         };
         $scope.bgimage = '';
         $scope.myBgCroppedImage = '';
-        $scope.backGround = function() {
+        $scope.setBackground = function() {
             cameraService.changePic().then(function(imageData) {
                 var img = "data:image/jpeg;base64," + imageData;
                 $scope.backGroundModal.show();
