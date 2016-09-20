@@ -9,6 +9,12 @@
     margin: 0 auto;
     padding-top: 1px;
 }
+.fullViewImage{
+    display:inline-block;
+}
+.fullViewImage .sendImage{
+    max-height: 90%!important;
+}
 .createGroupButton{
     background-color: #22C064!important;
     width: 50px; 
