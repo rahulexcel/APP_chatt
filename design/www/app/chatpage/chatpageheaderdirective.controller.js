@@ -294,7 +294,7 @@
                 self.imagesend(filedata);
             } else {
                 navigator.camera.getPicture(onSuccess, onFail, {
-                    quality: 9,
+                    quality: 50,
                     destinationType: Camera.DestinationType.DATA_URL,
                     correctOrientation: true,
                     // allowEdit: true,
