@@ -21021,7 +21021,7 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
             .controller('chatPageCenterDirectiveController', chatPageCenterDirectiveController);
 
 
-    function chatPageCenterDirectiveController($scope, $state, $localStorage, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, $ionicModal, sqliteService, chatpageService, timeZoneService, geoLocation) {
+    function chatPageCenterDirectiveController($scope, $state, $localStorage, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, $ionicModal, sqliteService, chatpageService, timeZoneService, geoLocation, $cordovaFileTransfer, tostService) {
         var self = this;
         var chatWithUserData = timeStorage.get('chatWithUserData');
         self.isPublicRoom = true;
@@ -21115,7 +21115,7 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
             }, 3000);
         });
         sqliteService.getMessageDataFromDB($stateParams.roomId).then(function(response) {
-            self.displayChatMessages = response;
+            self.displayChatMessages = response.reverse();
             console.log(self.displayChatMessages)
             $localStorage.roomMessageLength = self.displayChatMessages.length;
             $ionicScrollDelegate.scrollBottom(false);
@@ -21134,7 +21134,7 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
                 socketService.update_message_status(data.data.messages, $stateParams.roomId);
                 sqliteService.updateDbOnRoomOpen(data.data.messages, $stateParams.roomId).then(function() {
                     sqliteService.getMessageDataFromDB($stateParams.roomId).then(function(response) {
-                        self.displayChatMessages = response;
+                        self.displayChatMessages = response.reverse();
                         console.log('sdfsdf',self.displayChatMessages);
                         $scope.$evalAsync();
                         $ionicScrollDelegate.scrollBottom(false);
@@ -21167,80 +21167,113 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
 
         };
         $scope.imgDownload = function(msguserId, chatpageID, msg, index) {
+
             var html = $.parseHTML(msg);
             var value = html[0].getAttribute("value");
-            for (var i = 0; i < value.length; i++) {
+            if(value){
+                for (var i = 0; i < value.length; i++) {
                 if (value[i] == ',') {
-                    var lat_index = i;
-                }
-                if (value[i] == '}') {
-                    var lng_index = i;
-                }
-            }
-            var show = value.substring(0, 5) + value.substring(lat_index, lat_index + 5);
-            var lat = parseFloat(value.substring(5, lat_index));
-            var lng = parseFloat(value.substring(lat_index + 5, lng_index));
-            cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
-                if (!enabled) {
-                    geoLocation.share();
-                } else {
-                    if (show == '{lat:,lng:') {
-                        $scope.map = {
-                            center: {
-                                latitude: lat,
-                                longitude: lng
-                            },
-                            zoom: 15
-                        };
-                        $scope.options = {
-                            scrollwheel: false
-                        };
-                        $scope.coordsUpdates = 0;
-                        $scope.dynamicMoveCtr = 0;
-                        $scope.marker = {
-                            id: 0,
-                            coords: {
-                                latitude: lat,
-                                longitude: lng
-                            },
-                            options: {
-                                draggable: true
-                            },
-                            events: {
-                                dragend: function(marker, eventName, args) {
-                                    $log.log('marker dragend');
-                                    var lat = marker.getPosition().lat();
-                                    var lon = marker.getPosition().lng();
-                                    $log.log(lat);
-                                    $log.log(lon);
-
-                                    $scope.marker.options = {
-                                        draggable: true,
-                                        labelContent: "lat: " + $scope.marker.coords.latitude + ' ' + 'lon: ' + $scope.marker.coords.longitude,
-                                        labelAnchor: "100 0",
-                                        labelClass: "marker-labels"
-                                    };
-                                }
-                            }
-                        };
-                        $scope.$watchCollection("marker.coords", function(newVal, oldVal) {
-                            if (_.isEqual(newVal, oldVal))
-                                return;
-                            $scope.coordsUpdates++;
-                        });
-
-                        $scope.mapUser.show();
-                    } else {
-                        console.log(msg);
+                        var lat_index = i;
+                    }
+                    if (value[i] == '}') {
+                        var lng_index = i;
                     }
                 }
-            });
+                var show = value.substring(0, 5) + value.substring(lat_index, lat_index + 5);
+                var lat = parseFloat(value.substring(5, lat_index));
+                var lng = parseFloat(value.substring(lat_index + 5, lng_index));
+                cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
+                    if (!enabled) {
+                        geoLocation.share();
+                    } else {
+                        if (show == '{lat:,lng:') {
+                            $scope.map = {
+                                center: {
+                                    latitude: lat,
+                                    longitude: lng
+                                },
+                                zoom: 15
+                            };
+                            $scope.options = {
+                                scrollwheel: false
+                            };
+                            $scope.coordsUpdates = 0;
+                            $scope.dynamicMoveCtr = 0;
+                            $scope.marker = {
+                                id: 0,
+                                coords: {
+                                    latitude: lat,
+                                    longitude: lng
+                                },
+                                options: {
+                                    draggable: true
+                                },
+                                events: {
+                                    dragend: function(marker, eventName, args) {
+                                        $log.log('marker dragend');
+                                        var lat = marker.getPosition().lat();
+                                        var lon = marker.getPosition().lng();
+                                        $log.log(lat);
+                                        $log.log(lon);
+
+                                        $scope.marker.options = {
+                                            draggable: true,
+                                            labelContent: "lat: " + $scope.marker.coords.latitude + ' ' + 'lon: ' + $scope.marker.coords.longitude,
+                                            labelAnchor: "100 0",
+                                            labelClass: "marker-labels"
+                                        };
+                                    }
+                                }
+                            };
+                            $scope.$watchCollection("marker.coords", function(newVal, oldVal) {
+                                if (_.isEqual(newVal, oldVal))
+                                    return;
+                                $scope.coordsUpdates++;
+                            });
+
+                            $scope.mapUser.show();
+                        } else {
+                            console.log(msg);
+                        }
+                    }
+                });
+            } else{
+                $scope.fullViewImageSrc = msg;
+                $scope.fullViewImage.show();
+            }
         };
         $ionicModal.fromTemplateUrl('mapUser.html', function($ionicModal) {
             $scope.mapUser = $ionicModal;
         }, {
             scope: $scope
         });
+        $ionicModal.fromTemplateUrl('fullViewImage.html', function($ionicModal) {
+            $scope.fullViewImage = $ionicModal;
+        }, {
+            scope: $scope
+        });
+        $scope.fullViewImageDownload = function(data){
+            $scope.fullViewImageDownloadSpiner = true;
+
+            var html = $.parseHTML(data);
+            var url = html[0].getAttribute("src");
+ 
+            // File name only
+            var filename = url.split("/").pop();
+             
+            // Save location
+            var targetPath = cordova.file.externalRootDirectory + '/Download/' + filename;
+            $cordovaFileTransfer.download(url, targetPath, {}, true).then(function (result) {
+                $scope.fullViewImageDownloadSpiner = false;
+                tostService.notify('Image Downloaded', 'top');
+            }, function (error) {
+                $scope.fullViewImageDownloadSpiner = false;
+                tostService.notify('Try Again', 'top');
+            }, function (progress) {
+                // PROGRESS HANDLING GOES HERE
+            });
+
+        }
     }
 })();
  (function() {
@@ -22230,7 +22263,7 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
                 service.getPicture = function(index) {
                     var q = $q.defer();
                     navigator.camera.getPicture(onSuccess, onFail, {
-                        quality: 30,
+                        quality: 100,
                         destinationType: Camera.DestinationType.DATA_URL,
                         correctOrientation: true,
                         // allowEdit: true,
