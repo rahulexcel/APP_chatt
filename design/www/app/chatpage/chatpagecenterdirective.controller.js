@@ -222,6 +222,7 @@
                     }
                 });
             } else{
+                $ionicScrollDelegate.$getByHandle('zoom').zoomTo(1,true);
                 $scope.fullViewImageSrc = msg;
                 $scope.fullViewImage.show();
             }
@@ -244,10 +245,12 @@
  
             // File name only
             var filename = url.split("/").pop();
-             
+             // window.open(url, '_system');
             // Save location
             var targetPath = cordova.file.externalRootDirectory + '/Download/' + filename;
+            console.log(cordova.file);
             $cordovaFileTransfer.download(url, targetPath, {}, true).then(function (result) {
+                refreshMedia.refresh(targetPath);
                 $scope.fullViewImageDownloadSpiner = false;
                 tostService.notify('Image Downloaded', 'top');
             }, function (error) {
@@ -255,8 +258,27 @@
                 tostService.notify('Try Again', 'top');
             }, function (progress) {
                 // PROGRESS HANDLING GOES HERE
+                //  $timeout(function () {
+                //     $scope.downloadProgress = (progress.loaded / progress.total) * 100;
+                // })
             });
 
+        };
+        var zoom = 0;
+        $scope.zoomImage = function(){
+            if(zoom == 0){
+                console.log('zoom in');
+                $timeout(function() {
+                    $ionicScrollDelegate.$getByHandle('zoom').zoomTo(4,true);
+                });
+                zoom = 1;
+            } else{
+                console.log('zoom out');
+                $timeout(function() {
+                    $ionicScrollDelegate.$getByHandle('zoom').zoomTo(1,true);
+                });
+                zoom = 0;
+            }
         }
     }
 })();
