@@ -35,7 +35,7 @@
                 service.getPicture = function(index) {
                     var q = $q.defer();
                     navigator.camera.getPicture(onSuccess, onFail, {
-                        quality: 100,
+                        quality: 50,
                         destinationType: Camera.DestinationType.DATA_URL,
                         correctOrientation: true,
                         // allowEdit: true,

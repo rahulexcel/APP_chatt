@@ -99,8 +99,12 @@
             }, 3000);
         });
         sqliteService.getMessageDataFromDB($stateParams.roomId).then(function(response) {
-            self.displayChatMessages = response.reverse();
-            console.log(self.displayChatMessages)
+            for(var i = 0; i < response.length; i++){
+                if( response[i].message.substr(0, 8) == '<img cla'){
+                    response[i].message = response[i].message.replace('.png','_small.png');
+                }
+            }
+            self.displayChatMessages = response.reverse();            
             $localStorage.roomMessageLength = self.displayChatMessages.length;
             $ionicScrollDelegate.scrollBottom(false);
         });
@@ -118,6 +122,11 @@
                 socketService.update_message_status(data.data.messages, $stateParams.roomId);
                 sqliteService.updateDbOnRoomOpen(data.data.messages, $stateParams.roomId).then(function() {
                     sqliteService.getMessageDataFromDB($stateParams.roomId).then(function(response) {
+                        for(var i = 0; i < response.length; i++){
+                            if( response[i].message.substr(0, 8) == '<img cla'){
+                                response[i].message = response[i].message.replace('.png','_small.png');
+                            }
+                        }
                         self.displayChatMessages = response.reverse();
                         console.log('sdfsdf',self.displayChatMessages);
                         $scope.$evalAsync();
@@ -223,7 +232,7 @@
                 });
             } else{
                 $ionicScrollDelegate.$getByHandle('zoom').zoomTo(1,true);
-                $scope.fullViewImageSrc = msg;
+                $scope.fullViewImageSrc = msg.replace('_small.png','.png');
                 $scope.fullViewImage.show();
             }
         };
