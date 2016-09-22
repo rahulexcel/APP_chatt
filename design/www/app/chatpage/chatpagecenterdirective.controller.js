@@ -24,6 +24,10 @@
         $scope.$on('newRoomMessage', function(event, response) {
             if (response.data.room_id == $stateParams.roomId) {
                 socketService.update_message_status_room_open(response.data.message_id, $stateParams.roomId);
+                if( response.data.message_body.substr(0, 8) == '<img cla'){
+                    response.data.message_body = response.data.message_body.replace('.png','_small.png');
+                    response.data.message_body = response.data.message_body.replace('.jpg','_small.jpg');
+                }
                 self.displayChatMessages.push({
                     "image": response.data.profile_image,
                     "message": response.data.message_body,
@@ -44,6 +48,13 @@
                     self.displayChatMessages[i].id = response.data.message_id;
                     self.displayChatMessages[i].messageTime = moment.unix(response.data.message_time).tz(timeZoneService.getTimeZone()).format("hh:mm a");
                     self.displayChatMessages[i].timeStamp = response.data.message_time;
+                    $scope.$evalAsync();
+                }
+                //only for local Image 
+                if (self.displayChatMessages[i].id == 785412) {
+                    self.displayChatMessages[i].message_status = 'sent';
+                    self.displayChatMessages[i].id = 214587;
+                    $scope.$evalAsync();
                 }
             }
             $scope.$evalAsync();
@@ -53,6 +64,12 @@
                 for (var j = 0; j < response.data.length; j++) {
                     if (self.displayChatMessages[i].id == response.data[j]) {
                         self.displayChatMessages[i].message_status = 'seen';
+                        $scope.$evalAsync();
+                    }
+                    //only for local Image 
+                    if (self.displayChatMessages[i].id == 214587) {
+                        self.displayChatMessages[i].message_status = 'seen';
+                        $scope.$evalAsync();
                     }
                 }
             }
@@ -102,9 +119,11 @@
             for(var i = 0; i < response.length; i++){
                 if( response[i].message.substr(0, 8) == '<img cla'){
                     response[i].message = response[i].message.replace('.png','_small.png');
+                    response[i].message = response[i].message.replace('.jpg','_small.jpg');
                 }
             }
-            self.displayChatMessages = response.reverse();            
+            self.displayChatMessages = response.reverse(); 
+            console.log(self.displayChatMessages); 
             $localStorage.roomMessageLength = self.displayChatMessages.length;
             $ionicScrollDelegate.scrollBottom(false);
         });
@@ -125,10 +144,10 @@
                         for(var i = 0; i < response.length; i++){
                             if( response[i].message.substr(0, 8) == '<img cla'){
                                 response[i].message = response[i].message.replace('.png','_small.png');
+                                response[i].message = response[i].message.replace('.jpg','_small.jpg');
                             }
                         }
                         self.displayChatMessages = response.reverse();
-                        console.log('sdfsdf',self.displayChatMessages);
                         $scope.$evalAsync();
                         $ionicScrollDelegate.scrollBottom(false);
                     });
@@ -232,7 +251,11 @@
                 });
             } else{
                 $ionicScrollDelegate.$getByHandle('zoom').zoomTo(1,true);
-                $scope.fullViewImageSrc = msg.replace('_small.png','.png');
+                if(msg.substr(msg.length - 5) == '.jpg>'){
+                    $scope.fullViewImageSrc = msg.replace('_small.jpg','.jpg');    
+                } else{
+                    $scope.fullViewImageSrc = msg.replace('_small.png','.png');
+                }
                 $scope.fullViewImage.show();
             }
         };
@@ -276,13 +299,11 @@
         var zoom = 0;
         $scope.zoomImage = function(){
             if(zoom == 0){
-                console.log('zoom in');
                 $timeout(function() {
                     $ionicScrollDelegate.$getByHandle('zoom').zoomTo(4,true);
                 });
                 zoom = 1;
             } else{
-                console.log('zoom out');
                 $timeout(function() {
                     $ionicScrollDelegate.$getByHandle('zoom').zoomTo(1,true);
                 });
