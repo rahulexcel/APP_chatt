@@ -21040,6 +21040,10 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
         $scope.$on('newRoomMessage', function(event, response) {
             if (response.data.room_id == $stateParams.roomId) {
                 socketService.update_message_status_room_open(response.data.message_id, $stateParams.roomId);
+                if( response.data.message_body.substr(0, 8) == '<img cla'){
+                    response.data.message_body = response.data.message_body.replace('.png','_small.png');
+                    response.data.message_body = response.data.message_body.replace('.jpg','_small.jpg');
+                }
                 self.displayChatMessages.push({
                     "image": response.data.profile_image,
                     "message": response.data.message_body,
@@ -21060,6 +21064,13 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
                     self.displayChatMessages[i].id = response.data.message_id;
                     self.displayChatMessages[i].messageTime = moment.unix(response.data.message_time).tz(timeZoneService.getTimeZone()).format("hh:mm a");
                     self.displayChatMessages[i].timeStamp = response.data.message_time;
+                    $scope.$evalAsync();
+                }
+                //only for local Image 
+                if (self.displayChatMessages[i].id == 785412) {
+                    self.displayChatMessages[i].message_status = 'sent';
+                    self.displayChatMessages[i].id = 214587;
+                    $scope.$evalAsync();
                 }
             }
             $scope.$evalAsync();
@@ -21069,6 +21080,12 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
                 for (var j = 0; j < response.data.length; j++) {
                     if (self.displayChatMessages[i].id == response.data[j]) {
                         self.displayChatMessages[i].message_status = 'seen';
+                        $scope.$evalAsync();
+                    }
+                    //only for local Image 
+                    if (self.displayChatMessages[i].id == 214587) {
+                        self.displayChatMessages[i].message_status = 'seen';
+                        $scope.$evalAsync();
                     }
                 }
             }
@@ -21118,9 +21135,11 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
             for(var i = 0; i < response.length; i++){
                 if( response[i].message.substr(0, 8) == '<img cla'){
                     response[i].message = response[i].message.replace('.png','_small.png');
+                    response[i].message = response[i].message.replace('.jpg','_small.jpg');
                 }
             }
-            self.displayChatMessages = response.reverse();            
+            self.displayChatMessages = response.reverse(); 
+            console.log(self.displayChatMessages); 
             $localStorage.roomMessageLength = self.displayChatMessages.length;
             $ionicScrollDelegate.scrollBottom(false);
         });
@@ -21141,10 +21160,10 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
                         for(var i = 0; i < response.length; i++){
                             if( response[i].message.substr(0, 8) == '<img cla'){
                                 response[i].message = response[i].message.replace('.png','_small.png');
+                                response[i].message = response[i].message.replace('.jpg','_small.jpg');
                             }
                         }
                         self.displayChatMessages = response.reverse();
-                        console.log('sdfsdf',self.displayChatMessages);
                         $scope.$evalAsync();
                         $ionicScrollDelegate.scrollBottom(false);
                     });
@@ -21248,7 +21267,11 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
                 });
             } else{
                 $ionicScrollDelegate.$getByHandle('zoom').zoomTo(1,true);
-                $scope.fullViewImageSrc = msg.replace('_small.png','.png');
+                if(msg.substr(msg.length - 5) == '.jpg>'){
+                    $scope.fullViewImageSrc = msg.replace('_small.jpg','.jpg');    
+                } else{
+                    $scope.fullViewImageSrc = msg.replace('_small.png','.png');
+                }
                 $scope.fullViewImage.show();
             }
         };
@@ -21436,7 +21459,6 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
 
     function chatPageHeaderDirectiveController($state, timeStorage, $rootScope, $ionicScrollDelegate, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService, sqliteService, $ionicLoading, geoLocation, $localStorage, Upload, updateRoomBackgroundImageFactory) {
         var self = this;
-        console.log($rootScope.background);
         self.leaveGroupSpinner = false;
         self.deleteGroupSpinner = false;
         var chatWithUserData = timeStorage.get('chatWithUserData');
@@ -21679,14 +21701,14 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
             var img = "data:image/jpeg;base64," + imageData;
             var userData = timeStorage.get('userData');
             var currentMessage = {
-                "id": 78524,
+                "id": 785412,
                 "image": userData.data.profile_image,
                 "message": "<img class='sendImage' src=" + img + ">",
                 "messageTime": moment(_.now()).format("hh:mm a"),
                 "timeStamp": _.now(),
                 "name": userData.data.name,
                 "user_id": userData.data.user_id,
-                "message_status": 'sent'
+                "message_status": 'post'
             };
             $rootScope.$broadcast('displayChatMessages', {data: currentMessage});
             $ionicScrollDelegate.scrollBottom(false);
@@ -21716,7 +21738,7 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
                         "timeStamp": _.now(),
                         "name": userData.data.name,
                         "user_id": userData.data.user_id,
-                        "message_status": 'sent'
+                        "message_status": 'post'
                     };
                     $rootScope.$broadcast('displayChatMessages', {data: currentMessage});
                     $ionicScrollDelegate.scrollBottom(false);
@@ -21724,7 +21746,7 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
                 self.imagesend(filedata);
             } else {
                 navigator.camera.getPicture(onSuccess, onFail, {
-                    quality: 50,
+                    quality: 70,
                     destinationType: Camera.DestinationType.DATA_URL,
                     correctOrientation: true,
                     // allowEdit: true,
@@ -21773,28 +21795,30 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
 
 
         self.imagesend = function(filedata) {
-            var query = profileImageFactory.upload({
-                file: filedata,
-                currentTimestamp: Date.now(),
-                append_data: {room_id: $stateParams.roomId, file_type: 'room_file', accessToken: timeStorage.get('userData').data.access_token}
-            });
-            query.then(function(data) {
-                if (data.data.status == 1) {
-                    var currentTimeStamp = _.now();
-                    socketService.roomOpen($stateParams.roomId);
-                    sqliteService.saveMessageInDb("<img class='sendImage' src=" + data.data.data.url + ">", 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId) {
-                        if (timeStorage.get('network')) {
-                        } else {
-                            socketService.room_message(lastInsertId, $stateParams.roomId, "<img class='sendImage' src=" + data.data.data.url + ">", currentTimeStamp);
-                        }
-                        $ionicLoading.hide();
-                    }, 100);
+            if(filedata){
+                var query = profileImageFactory.upload({
+                    file: filedata,
+                    currentTimestamp: Date.now(),
+                    append_data: {room_id: $stateParams.roomId, file_type: 'room_file', accessToken: timeStorage.get('userData').data.access_token}
+                });
+                query.then(function(data) {
+                    if (data.data.status == 1) {
+                        var currentTimeStamp = _.now();
+                        socketService.roomOpen($stateParams.roomId);
+                        sqliteService.saveMessageInDb("<img class='sendImage' src=" + data.data.data.url + ">", 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId) {
+                            if (timeStorage.get('network')) {
+                            } else {
+                                socketService.room_message(lastInsertId, $stateParams.roomId, "<img class='sendImage' src=" + data.data.data.url + ">", currentTimeStamp);
+                            }
+                            $ionicLoading.hide();
+                        }, 100);
 
 
-                } else {
-                    window.plugins.toast.showShortTop('Image not upload');
-                }
-            });
+                    } else {
+                        window.plugins.toast.showShortTop('Image not upload');
+                    }
+                });
+            }
         }
         $ionicPopover.fromTemplateUrl('app/chatpage/templates/privateChatPopover.html', {
             scope: $scope,
@@ -21901,7 +21925,6 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
 
         $scope.myCroppedImage = '';
         self.editGroupPic = function() {
-            console.log('hi')
             if(!chatWithUserData.id){
                 cameraService.changePic().then(function(imageData) {
                     $scope.modal.show();
@@ -22259,137 +22282,6 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
 })();
 (function() {
     'use strict';
-
-    angular.module('chattapp')
-            .controller('contactsController', contactsController);
-
-    function contactsController($scope, contactsFactory, $filter, contactsService, $ionicLoading, timeStorage, $localStorage, $state, socketService, $ionicModal, getUserProfileFactory, $cordovaGeolocation, timeZoneService) {
-        delete $localStorage.chatWithUserData;
-        var self = this;
-        var userData = timeStorage.get('userData');
-        var accessToken = userData.data.access_token;
-
-        if (timeStorage.get('network')) {
-             window.plugins.toast.showShortTop('Connect to come online');
-        }
-        else {
-            self.lodingSpinner=true;
-            contactsService.listUsers();
-        }
-        $scope.$on('updatedlistUsers', function(event, response) {
-            self.displaycontacts = response.data;
-            self.lodingSpinner=false;
-            $scope.$evalAsync();
-        });
-        $scope.$on('now_device_is_online', function(event, response) {
-            contactsService.listUsers();
-        });
-        self.chatWithUser = function(name, id, pic, lastSeen) {
-            self.startChatspinner = true;
-            var chatWithUser = {
-                "name": name,
-                "id": id,
-                "pic": pic,
-                "lastSeen": self.displayUserProfileLastSeenInTimeStamp
-            }
-            timeStorage.set('chatWithUserData', chatWithUser, 1);
-            socketService.create_room(id).then(function(data) {
-                $scope.modal.hide();
-                $state.go('app.chatpage', {roomId: data.data.room_id});
-            });
-        }
-        self.isSearchOpen = false;
-        self.searchOpen = function() {
-            if (self.isSearchOpen) {
-                self.isSearchOpen = false;
-            } else {
-                self.isSearchOpen = true;
-            }
-        }
-        self.openUserProfile = function(clickData, index) {
-            self.spinnerIndex = index;
-            var userData = timeStorage.get('userData');
-            var query = getUserProfileFactory.save({
-                accessToken: userData.data.access_token,
-                user_id: clickData.id,
-                currentTimestamp: _.now()
-            });
-            query.$promise.then(function(data) {
-                self.spinnerIndex = -1;
-                self.displayUserProfileName = data.data.name;
-                self.displayUserProfileId = data.data.user_id;
-                self.displayUserProfileLastSeenInTimeStamp = data.data.last_seen;
-                if (data.data.profile_image) {
-                    self.displayUserProfileImage = data.data.profile_image;
-                }
-                else {
-                    self.displayUserProfileImage = "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg";
-                }
-                self.displayUserProfileLastSeen=moment.unix(data.data.last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
-                self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
-                self.displayUserProfilePublicRooms = data.data.user_public_rooms;
-                self.displayUserProfileStatus = data.data.profile_status;
-                self.displayUserProfileGender = data.data.gender;
-                self.displayUserProfileDOB = data.data.dob;
-                $scope.modal.show();
-            });
-        }
-        $ionicModal.fromTemplateUrl('contactUser.html', function($ionicModal) {
-            $scope.modal = $ionicModal;
-        }, {
-            scope: $scope,
-        });
-    }
-})();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('contactsFactory', contactsFactory);
-
-   function contactsFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/users/list_users', {},{});
-   };
-})();
- (function() {
-     'use strict';
-     angular.module('chattapp')
-         .factory('contactsService', contactsService);
-
-     function contactsService(timeStorage, $rootScope, contactsFactory, timeZoneService) {
-         var service = {};
-         service.listUsers = function() {
-            var userData =  timeStorage.get('userData');
-            var query = contactsFactory.save({
-                 accessToken: userData.data.access_token,
-                 page: 0,
-                 limit:100,
-                 currentTimestamp: _.now()
-             });
-             query.$promise.then(function(data) {
-                 var newData = [];
-                 for(var i = 0; i < data.data.length; i++){
-                    data.data[i].lastSeen = moment.unix(data.data[i].lastSeen).tz(timeZoneService.getTimeZone()).format("Do MMM hh:mm a"),
-                    newData.push(data.data[i]); 
-                 }
-//                 timeStorage.set('listUsers', newData, 1);
-                 $rootScope.$broadcast('updatedlistUsers', { data: newData });
-             });
-         }
-         return service;
-     };
-
- })();
-(function() {
-   'use strict';
-   angular.module('chattapp')
-       .factory('getUserProfileFactory', getUserProfileFactory);
-
-   function getUserProfileFactory($resource, Configurations) {
-       return $resource(Configurations.api_url+'/users/get_user_profile/:accessToken/:user_id/:currentTimestamp', {},{});
-   };
-})();
-(function() {
-    'use strict';
     angular.module('chattapp')
             .factory('cameraService', cameraService);
 
@@ -22425,7 +22317,7 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
                 service.getPicture = function(index) {
                     var q = $q.defer();
                     navigator.camera.getPicture(onSuccess, onFail, {
-                        quality: 50,
+                        quality: 100,
                         destinationType: Camera.DestinationType.DATA_URL,
                         correctOrientation: true,
                         // allowEdit: true,
@@ -23667,6 +23559,137 @@ angular.module('chattapp')
         }
     }
 })();   
+(function() {
+    'use strict';
+
+    angular.module('chattapp')
+            .controller('contactsController', contactsController);
+
+    function contactsController($scope, contactsFactory, $filter, contactsService, $ionicLoading, timeStorage, $localStorage, $state, socketService, $ionicModal, getUserProfileFactory, $cordovaGeolocation, timeZoneService) {
+        delete $localStorage.chatWithUserData;
+        var self = this;
+        var userData = timeStorage.get('userData');
+        var accessToken = userData.data.access_token;
+
+        if (timeStorage.get('network')) {
+             window.plugins.toast.showShortTop('Connect to come online');
+        }
+        else {
+            self.lodingSpinner=true;
+            contactsService.listUsers();
+        }
+        $scope.$on('updatedlistUsers', function(event, response) {
+            self.displaycontacts = response.data;
+            self.lodingSpinner=false;
+            $scope.$evalAsync();
+        });
+        $scope.$on('now_device_is_online', function(event, response) {
+            contactsService.listUsers();
+        });
+        self.chatWithUser = function(name, id, pic, lastSeen) {
+            self.startChatspinner = true;
+            var chatWithUser = {
+                "name": name,
+                "id": id,
+                "pic": pic,
+                "lastSeen": self.displayUserProfileLastSeenInTimeStamp
+            }
+            timeStorage.set('chatWithUserData', chatWithUser, 1);
+            socketService.create_room(id).then(function(data) {
+                $scope.modal.hide();
+                $state.go('app.chatpage', {roomId: data.data.room_id});
+            });
+        }
+        self.isSearchOpen = false;
+        self.searchOpen = function() {
+            if (self.isSearchOpen) {
+                self.isSearchOpen = false;
+            } else {
+                self.isSearchOpen = true;
+            }
+        }
+        self.openUserProfile = function(clickData, index) {
+            self.spinnerIndex = index;
+            var userData = timeStorage.get('userData');
+            var query = getUserProfileFactory.save({
+                accessToken: userData.data.access_token,
+                user_id: clickData.id,
+                currentTimestamp: _.now()
+            });
+            query.$promise.then(function(data) {
+                self.spinnerIndex = -1;
+                self.displayUserProfileName = data.data.name;
+                self.displayUserProfileId = data.data.user_id;
+                self.displayUserProfileLastSeenInTimeStamp = data.data.last_seen;
+                if (data.data.profile_image) {
+                    self.displayUserProfileImage = data.data.profile_image;
+                }
+                else {
+                    self.displayUserProfileImage = "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg";
+                }
+                self.displayUserProfileLastSeen=moment.unix(data.data.last_seen).tz(timeZoneService.getTimeZone()).format("Do MMMM hh:mm a");
+                self.displayUserProfilePrivateRooms = data.data.user_private_rooms;
+                self.displayUserProfilePublicRooms = data.data.user_public_rooms;
+                self.displayUserProfileStatus = data.data.profile_status;
+                self.displayUserProfileGender = data.data.gender;
+                self.displayUserProfileDOB = data.data.dob;
+                $scope.modal.show();
+            });
+        }
+        $ionicModal.fromTemplateUrl('contactUser.html', function($ionicModal) {
+            $scope.modal = $ionicModal;
+        }, {
+            scope: $scope,
+        });
+    }
+})();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('contactsFactory', contactsFactory);
+
+   function contactsFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/users/list_users', {},{});
+   };
+})();
+ (function() {
+     'use strict';
+     angular.module('chattapp')
+         .factory('contactsService', contactsService);
+
+     function contactsService(timeStorage, $rootScope, contactsFactory, timeZoneService) {
+         var service = {};
+         service.listUsers = function() {
+            var userData =  timeStorage.get('userData');
+            var query = contactsFactory.save({
+                 accessToken: userData.data.access_token,
+                 page: 0,
+                 limit:100,
+                 currentTimestamp: _.now()
+             });
+             query.$promise.then(function(data) {
+                 var newData = [];
+                 for(var i = 0; i < data.data.length; i++){
+                    data.data[i].lastSeen = moment.unix(data.data[i].lastSeen).tz(timeZoneService.getTimeZone()).format("Do MMM hh:mm a"),
+                    newData.push(data.data[i]); 
+                 }
+//                 timeStorage.set('listUsers', newData, 1);
+                 $rootScope.$broadcast('updatedlistUsers', { data: newData });
+             });
+         }
+         return service;
+     };
+
+ })();
+(function() {
+   'use strict';
+   angular.module('chattapp')
+       .factory('getUserProfileFactory', getUserProfileFactory);
+
+   function getUserProfileFactory($resource, Configurations) {
+       return $resource(Configurations.api_url+'/users/get_user_profile/:accessToken/:user_id/:currentTimestamp', {},{});
+   };
+})();
  (function() {
     'use strict';
 
@@ -24152,7 +24175,7 @@ angular.module('chattapp')
     angular.module('chattapp')
             .factory('profileImageFactory', profileImageFactory);
 
-    function profileImageFactory($resource, Configurations, Upload, $q) {
+    function profileImageFactory($resource, Configurations, Upload, $q, tostService) {
         var image = {};
         image.upload = function(data) {
             var def = $q.defer();
@@ -24160,12 +24183,15 @@ angular.module('chattapp')
                 url: Configurations.api_url + '/uploads/upload',
                 data: data
             }).then(function(resp) {
+                tostService.notify('Successfully Uploaded', 'top');
                 def.resolve(resp);
             }, function(resp) {
+                tostService.notify('Uploading Failed', 'top');
                 def.reject(resp);
             }, function(evt) {
                 var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                console.log('progress: ' + progressPercentage + '% '); //progress of loading image
+                tostService.notify('Uploading: ' + progressPercentage + '% ', 'top');
+                console.log('Uploaded: ' + progressPercentage + '% '); //progress of loading image
             });
             return def.promise;
         };

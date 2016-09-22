@@ -6,7 +6,6 @@
 
     function chatPageHeaderDirectiveController($state, timeStorage, $rootScope, $ionicScrollDelegate, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService, sqliteService, $ionicLoading, geoLocation, $localStorage, Upload, updateRoomBackgroundImageFactory) {
         var self = this;
-        console.log($rootScope.background);
         self.leaveGroupSpinner = false;
         self.deleteGroupSpinner = false;
         var chatWithUserData = timeStorage.get('chatWithUserData');
@@ -249,14 +248,14 @@
             var img = "data:image/jpeg;base64," + imageData;
             var userData = timeStorage.get('userData');
             var currentMessage = {
-                "id": 78524,
+                "id": 785412,
                 "image": userData.data.profile_image,
                 "message": "<img class='sendImage' src=" + img + ">",
                 "messageTime": moment(_.now()).format("hh:mm a"),
                 "timeStamp": _.now(),
                 "name": userData.data.name,
                 "user_id": userData.data.user_id,
-                "message_status": 'sent'
+                "message_status": 'post'
             };
             $rootScope.$broadcast('displayChatMessages', {data: currentMessage});
             $ionicScrollDelegate.scrollBottom(false);
@@ -286,7 +285,7 @@
                         "timeStamp": _.now(),
                         "name": userData.data.name,
                         "user_id": userData.data.user_id,
-                        "message_status": 'sent'
+                        "message_status": 'post'
                     };
                     $rootScope.$broadcast('displayChatMessages', {data: currentMessage});
                     $ionicScrollDelegate.scrollBottom(false);
@@ -294,7 +293,7 @@
                 self.imagesend(filedata);
             } else {
                 navigator.camera.getPicture(onSuccess, onFail, {
-                    quality: 50,
+                    quality: 70,
                     destinationType: Camera.DestinationType.DATA_URL,
                     correctOrientation: true,
                     // allowEdit: true,
@@ -343,28 +342,30 @@
 
 
         self.imagesend = function(filedata) {
-            var query = profileImageFactory.upload({
-                file: filedata,
-                currentTimestamp: Date.now(),
-                append_data: {room_id: $stateParams.roomId, file_type: 'room_file', accessToken: timeStorage.get('userData').data.access_token}
-            });
-            query.then(function(data) {
-                if (data.data.status == 1) {
-                    var currentTimeStamp = _.now();
-                    socketService.roomOpen($stateParams.roomId);
-                    sqliteService.saveMessageInDb("<img class='sendImage' src=" + data.data.data.url + ">", 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId) {
-                        if (timeStorage.get('network')) {
-                        } else {
-                            socketService.room_message(lastInsertId, $stateParams.roomId, "<img class='sendImage' src=" + data.data.data.url + ">", currentTimeStamp);
-                        }
-                        $ionicLoading.hide();
-                    }, 100);
+            if(filedata){
+                var query = profileImageFactory.upload({
+                    file: filedata,
+                    currentTimestamp: Date.now(),
+                    append_data: {room_id: $stateParams.roomId, file_type: 'room_file', accessToken: timeStorage.get('userData').data.access_token}
+                });
+                query.then(function(data) {
+                    if (data.data.status == 1) {
+                        var currentTimeStamp = _.now();
+                        socketService.roomOpen($stateParams.roomId);
+                        sqliteService.saveMessageInDb("<img class='sendImage' src=" + data.data.data.url + ">", 'post', userData.data.user_id, userData.data.name, userData.data.profile_image, $stateParams.roomId, currentTimeStamp).then(function(lastInsertId) {
+                            if (timeStorage.get('network')) {
+                            } else {
+                                socketService.room_message(lastInsertId, $stateParams.roomId, "<img class='sendImage' src=" + data.data.data.url + ">", currentTimeStamp);
+                            }
+                            $ionicLoading.hide();
+                        }, 100);
 
 
-                } else {
-                    window.plugins.toast.showShortTop('Image not upload');
-                }
-            });
+                    } else {
+                        window.plugins.toast.showShortTop('Image not upload');
+                    }
+                });
+            }
         }
         $ionicPopover.fromTemplateUrl('app/chatpage/templates/privateChatPopover.html', {
             scope: $scope,
@@ -471,7 +472,6 @@
 
         $scope.myCroppedImage = '';
         self.editGroupPic = function() {
-            console.log('hi')
             if(!chatWithUserData.id){
                 cameraService.changePic().then(function(imageData) {
                     $scope.modal.show();
