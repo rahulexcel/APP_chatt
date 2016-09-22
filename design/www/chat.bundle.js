@@ -21285,6 +21285,15 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
         }, {
             scope: $scope
         });
+        if(timeStorage.devicePlatform){
+            if(timeStorage.devicePlatform == 'iOS'){
+                $scope.fullViewImageDownloadButton = false;
+            } else{
+                $scope.fullViewImageDownloadButton = true;
+            }
+        } else{
+            $scope.fullViewImageDownloadButton = true;
+        }
         $scope.fullViewImageDownload = function(data){
             $scope.fullViewImageDownloadSpiner = true;
 
@@ -21315,13 +21324,11 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
         var zoom = 0;
         $scope.zoomImage = function(){
             if(zoom == 0){
-                console.log('zoom in');
                 $timeout(function() {
                     $ionicScrollDelegate.$getByHandle('zoom').zoomTo(4,true);
                 });
                 zoom = 1;
             } else{
-                console.log('zoom out');
                 $timeout(function() {
                     $ionicScrollDelegate.$getByHandle('zoom').zoomTo(1,true);
                 });

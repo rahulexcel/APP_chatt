@@ -122,8 +122,7 @@
                     response[i].message = response[i].message.replace('.jpg','_small.jpg');
                 }
             }
-            self.displayChatMessages = response.reverse(); 
-            console.log(self.displayChatMessages); 
+            self.displayChatMessages = response.reverse();
             $localStorage.roomMessageLength = self.displayChatMessages.length;
             $ionicScrollDelegate.scrollBottom(false);
         });
@@ -269,6 +268,15 @@
         }, {
             scope: $scope
         });
+        if(timeStorage.devicePlatform){
+            if(timeStorage.devicePlatform == 'iOS'){
+                $scope.fullViewImageDownloadButton = false;
+            } else{
+                $scope.fullViewImageDownloadButton = true;
+            }
+        } else{
+            $scope.fullViewImageDownloadButton = true;
+        }
         $scope.fullViewImageDownload = function(data){
             $scope.fullViewImageDownloadSpiner = true;
 
@@ -280,7 +288,6 @@
              // window.open(url, '_system');
             // Save location
             var targetPath = cordova.file.externalRootDirectory + '/Download/' + filename;
-            console.log(cordova.file);
             $cordovaFileTransfer.download(url, targetPath, {}, true).then(function (result) {
                 refreshMedia.refresh(targetPath);
                 $scope.fullViewImageDownloadSpiner = false;
