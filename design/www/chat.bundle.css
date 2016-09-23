@@ -97109,6 +97109,10 @@ img-crop canvas {
   padding-top: 1px;
 }
 
+.platform-ios .fullViewImageDownloadButton {
+  display: none!important;
+}
+
 .fullViewImage {
   display: inline-block;
 }

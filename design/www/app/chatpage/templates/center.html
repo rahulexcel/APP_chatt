@@ -50,7 +50,7 @@
             <ion-scroll overflow-scroll="false" zooming="true" direction="xy" delegate-handle="zoom" style="width: 100%; ">
                 <span ng-bind-html="fullViewImageSrc" class="fullViewImage" on-tap="zoomImage()"></span>
             </ion-scroll>
-            <button ng-if="fullViewImageDownloadButton" class="button button-full button-positive" ng-click="fullViewImageDownload(fullViewImageSrc)" style="position:fixed; bottom:0px; margin:0px;">Download <i class="fa fa-spin fa-spinner" ng-if="fullViewImageDownloadSpiner"></i></button>
+            <button class="button button-full button-positive fullViewImageDownloadButton" ng-click="fullViewImageDownload(fullViewImageSrc)" style="position:fixed; bottom:0px; margin:0px;">Download <i class="fa fa-spin fa-spinner" ng-if="fullViewImageDownloadSpiner"></i></button>
         </ion-content>
     </div>
 </script>

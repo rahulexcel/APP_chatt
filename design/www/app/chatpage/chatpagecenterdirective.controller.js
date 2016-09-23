@@ -268,15 +268,6 @@
         }, {
             scope: $scope
         });
-        if(timeStorage.devicePlatform){
-            if(timeStorage.devicePlatform == 'iOS'){
-                $scope.fullViewImageDownloadButton = false;
-            } else{
-                $scope.fullViewImageDownloadButton = true;
-            }
-        } else{
-            $scope.fullViewImageDownloadButton = true;
-        }
         $scope.fullViewImageDownload = function(data){
             $scope.fullViewImageDownloadSpiner = true;
 
