@@ -275,7 +275,6 @@
             if (file) {
                 var filedata = file[0];
                 Upload.base64DataUrl(file).then(function(urls){
-                    console.log(urls);
                     var userData = timeStorage.get('userData');
                     var currentMessage = {
                         "id": 785412,

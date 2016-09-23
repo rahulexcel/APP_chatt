@@ -11,7 +11,6 @@ angular.module('chattapp')
                     'trigger': '@isFocused',
                 },
                 link: function(scope, element, attr) {
-                    console.log(scope)
                     element.bind('focus', function(e) {
                         if (scope.onFocus) {
                             $timeout(function() {
