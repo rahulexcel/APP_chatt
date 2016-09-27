@@ -357,6 +357,7 @@ body{
     position: absolute;
     width: 100%;
     height: 101%;
+    background-color: #fff;
 }
 .login .center-block{
     display: table-cell;
