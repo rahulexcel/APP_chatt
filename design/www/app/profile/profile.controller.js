@@ -140,7 +140,8 @@
                     imageData = $scope.myBgCroppedImage;
                     appenddata = {file_type: 'room_background_image', accessToken: timeStorage.get('userData').data.access_token}
                 } else {
-                    imageData = $scope.myCroppedImage;
+                    // imageData = $scope.myCroppedImage;
+                    imageData = imageType;
                     appenddata = {file_type: 'profile_image', accessToken: timeStorage.get('userData').data.access_token}
                 }
                 $scope.startLoading = true;
