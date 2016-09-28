@@ -492,12 +492,13 @@
         $scope.result = function(image) {
             $scope.myCroppedImage = image;
         };
-        $scope.imgChange = function(imageType) {
+        $scope.imgChange = function(imageType, cropImageData) {
             if ($scope.myCroppedImage || $scope.myBgCroppedImage) {
                 
                 var imageData, appenddata;
                 if (imageType == "bgImage") {
-                    imageData = $scope.myBgCroppedImage;
+                    // imageData = $scope.myBgCroppedImage;
+                    imageData = cropImageData;
                     appenddata = {file_type: 'room_background_image', accessToken: timeStorage.get('userData').data.access_token, room_id: $stateParams.roomId}
                 } else {
                     imageData = $scope.myCroppedImage;
