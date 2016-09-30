@@ -42,7 +42,15 @@
         });
         $scope.logout = function() {
             socketService.logout();
-            $localStorage.$reset();
+            // $localStorage.$reset();
+            timeStorage.remove('google_access_token');
+            timeStorage.remove('userEmail');
+            timeStorage.remove('userData');
+            timeStorage.remove('displayPrivateChats');
+            timeStorage.remove('listUsers');
+            timeStorage.remove('chatWithUserData');
+            timeStorage.remove('displayPublicChats');
+            timeStorage.remove('profile_data');
             facebookConnectPlugin.logout();
             window.sqlitePlugin.deleteDatabase({name: "chattappDB", location: 1});
             $state.go('login');
