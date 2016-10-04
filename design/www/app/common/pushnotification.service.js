@@ -12,7 +12,6 @@
                     "iconColor": "grey",
                     "forceShow": "true"
                 }
-              
                 var push = PushNotification.init({
                     "android": android,
                     "ios": {
@@ -26,6 +25,7 @@
                     timeStorage.set('gcmToken', data.registrationId)
                 });
                 push.on('notification', function(data) {
+                  console.log('notification data', data);
                     if (data.additionalData.foreground) {
                     } else {
                         // data.message,
@@ -37,10 +37,17 @@
                     }
                     if (data.additionalData.coldstart) {
                         flag = 1;
-                        var chatWithUser = {
-                            name: data.title,
-                            pic: data.additionalData.icon,
-                        }
+                        if(data.title){
+                             var chatWithUser = {
+                                 name: data.title,
+                                 pic: data.additionalData.icon,
+                             }
+                           } else{
+                             var chatWithUser = {
+                                 name: data.additionalData.title,
+                                 pic: data.additionalData.icon,
+                             }
+                           }
                         timeStorage.set('chatWithUserData', chatWithUser, 1);
                         if (data.additionalData.room_id) {
                             $state.go('app.chatpage', {roomId: data.additionalData.room_id});
