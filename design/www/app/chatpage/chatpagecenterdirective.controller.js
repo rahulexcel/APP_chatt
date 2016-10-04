@@ -5,7 +5,7 @@
             .controller('chatPageCenterDirectiveController', chatPageCenterDirectiveController);
 
 
-    function chatPageCenterDirectiveController($scope, $state, $localStorage, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, $ionicModal, sqliteService, chatpageService, timeZoneService, geoLocation, $cordovaFileTransfer, tostService) {
+    function chatPageCenterDirectiveController($scope, $state, $localStorage, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, $ionicModal, sqliteService, chatpageService, timeZoneService, geoLocation, $cordovaFileTransfer, tostService, Configurations) {
         var self = this;
         var chatWithUserData = timeStorage.get('chatWithUserData');
         self.isPublicRoom = true;
@@ -37,6 +37,14 @@
                     "message_type": response.data.message_type,
                 });
                 self.tempMessage = [];
+                //for echo user
+                var chatWithUserData = timeStorage.get('chatWithUserData');
+                if(chatWithUserData.name == Configurations.echoUserName && chatWithUserData.id == Configurations.echoUserId){
+                    for (var i = 0; i < self.displayChatMessages.length; i++) {
+                        self.displayChatMessages[i].message_status = 'seen';
+                        $scope.$evalAsync();
+                    }
+                }
                 $scope.$evalAsync();
                 $ionicScrollDelegate.scrollBottom(false);
             }

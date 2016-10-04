@@ -3,10 +3,12 @@
     angular.module('chattapp')
             .factory('socketService', socketService);
 
-    function socketService($rootScope, $q, timeStorage, sqliteService) {
+    function socketService($rootScope, $q, timeStorage, sqliteService, Configurations) {
         var service = {};
-        var userData = timeStorage.get('userData');
-        var accessToken = userData.data.access_token;
+        if(timeStorage.get('userData')){
+            var userData = timeStorage.get('userData');
+            var accessToken = userData.data.access_token;   
+        }
         socket.on('RESPONSE_APP_SOCKET_EMIT', function(type, data) {
             if (type == 'leave_public_group') {
                 $rootScope.$broadcast('leaved_public_group', {data: data});
@@ -18,6 +20,16 @@
             if (type == 'new_room_message') {
                 sqliteService.gotNewRoomMessage(data.data.message_body, data.data.message_id, data.data.message_status, data.data.message_time, data.data.name, data.data.profile_image, data.data.room_id, data.data.message_type);
                 $rootScope.$broadcast('newRoomMessage', {data: data.data});
+            }
+            //for echo user
+            if (data.type == 'alert') {
+                var chatWithUserData = timeStorage.get('chatWithUserData');
+                if(chatWithUserData.name == Configurations.echoUserName && chatWithUserData.id == Configurations.echoUserId){                    sqliteService.gotNewRoomMessage(data.data.message_body, data.data.message_id, 'seen', data.data.message_time, 'echo', '', data.data.room_id, 'text');
+                    data.data.profile_image = "";
+                    data.data.name = "echo";
+                    data.data.message_status = "seen";
+                    $rootScope.$broadcast('newRoomMessage', {data: data.data});
+                }
             }
             if (type == 'remove_public_room_member') {
                 $rootScope.$broadcast('removed_public_room_member', {data: data.data});

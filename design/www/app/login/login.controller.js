@@ -4,7 +4,7 @@
     angular.module('chattapp')
             .controller('loginController', loginController);
 
-    function loginController($state, loginFactory, timeStorage,sqliteService, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService, $ionicLoading) {
+    function loginController($state, loginFactory, timeStorage,sqliteService, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService, $ionicLoading, loginService) {
         var self = this;
         var deviceUUID = timeStorage.get('deviceUUID');
         var devicePlatform = timeStorage.get('devicePlatform');
@@ -40,6 +40,7 @@
                             historyRoot: true,
                             disableBack: true
                         });
+                        loginService.createEchoUserRoom();
                     },function(error) {
                     tostService.notify('Error Occured . Try Again !!!', 'top'); 
                     });
@@ -96,6 +97,7 @@
                     historyRoot: true,
                     disableBack: true
                 });
+                loginService.createEchoUserRoom();
             });
         }
         ;
