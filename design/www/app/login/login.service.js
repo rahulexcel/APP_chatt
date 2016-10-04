@@ -3,11 +3,11 @@
      angular.module('chattapp')
          .factory('loginService', loginService);
 
-     function loginService($q, timeStorage, socketService) {
+     function loginService($q, timeStorage, socketService, Configurations) {
          var service = {};
          var q = $q.defer();
          service.createEchoUserRoom = function() {
-            socketService.create_room('57f1fc141126f479422b5c77').then(function(data) {
+            socketService.create_room(Configurations.echoUserId).then(function(data) {
             });
          }
          return service;

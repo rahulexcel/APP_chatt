@@ -20900,7 +20900,9 @@ angular.module('chattapp')
                 icon: 'chatt',
                 socketApi: 'http://144.76.34.244:3033',
                 color: {"a": "#FA8072 ", "b": "#00FFFF ", "c": "#7FFFD4 ", "d": "#000000 ", "e": "#0000FF ", "f": "#8A2BE2 ", "g": "#A52A2A ", "h": "#DEB887 ", "i": "#5F9EA0 ", "j": "#7FFF00 ", "k": "#D2691E ", "l": "#DC143C ", "m": "#00008B ", "n": "#008B8B ", "o": "#B8860B ", "p": "#006400 ", "q": "#8B008B ", "r": "#FF8C00 ", "s": "#8B0000 ", "t": "#8FBC8F ", "u": "#483D8B ", "v": "#2F4F4F ", "w": "#9400D3 ", "x": "#FF1493 ", "y": "#696969 ", "z": "#1E90FF ", "0": "#FF00FF ", "1": "#FFD700 ", "2": "#ADFF2F ", "3": "#FF69B4 ", "4": "#4B0082 ", "5": "#7CFC00 ", "6": "#800000 ", "7": "#800080 ", "8": "#FF6347 ", "9": "#6A5ACD "},
-                googleApiKey:'AIzaSyBJd8LfaLzWPAIRjwjU8rC3BrSTQ6Osm-0'
+                googleApiKey:'AIzaSyBJd8LfaLzWPAIRjwjU8rC3BrSTQ6Osm-0',
+                echoUserName:'echo',
+                echoUserId:'57f1fc141126f479422b5c77'
             });
 })();
 /*!
@@ -21021,7 +21023,7 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
             .controller('chatPageCenterDirectiveController', chatPageCenterDirectiveController);
 
 
-    function chatPageCenterDirectiveController($scope, $state, $localStorage, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, $ionicModal, sqliteService, chatpageService, timeZoneService, geoLocation, $cordovaFileTransfer, tostService) {
+    function chatPageCenterDirectiveController($scope, $state, $localStorage, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, $ionicModal, sqliteService, chatpageService, timeZoneService, geoLocation, $cordovaFileTransfer, tostService, Configurations) {
         var self = this;
         var chatWithUserData = timeStorage.get('chatWithUserData');
         self.isPublicRoom = true;
@@ -21055,7 +21057,7 @@ e?o.resolve(e):o.reject(e)},r),o.promise},getAllIds:function(r){var o=e.defer();
                 self.tempMessage = [];
                 //for echo user
                 var chatWithUserData = timeStorage.get('chatWithUserData');
-                if(chatWithUserData.name == "echo" && chatWithUserData.id == "57f1fc141126f479422b5c77"){
+                if(chatWithUserData.name == Configurations.echoUserName && chatWithUserData.id == Configurations.echoUserId){
                     for (var i = 0; i < self.displayChatMessages.length; i++) {
                         self.displayChatMessages[i].message_status = 'seen';
                         $scope.$evalAsync();
@@ -23096,7 +23098,7 @@ angular.module('chattapp')
     angular.module('chattapp')
             .factory('socketService', socketService);
 
-    function socketService($rootScope, $q, timeStorage, sqliteService) {
+    function socketService($rootScope, $q, timeStorage, sqliteService, Configurations) {
         var service = {};
         if(timeStorage.get('userData')){
             var userData = timeStorage.get('userData');
@@ -23117,8 +23119,7 @@ angular.module('chattapp')
             //for echo user
             if (data.type == 'alert') {
                 var chatWithUserData = timeStorage.get('chatWithUserData');
-                if(chatWithUserData.name == "echo" && chatWithUserData.id == "57f1fc141126f479422b5c77"){
-                    sqliteService.gotNewRoomMessage(data.data.message_body, data.data.message_id, 'seen', data.data.message_time, 'echo', '', data.data.room_id, 'text');
+                if(chatWithUserData.name == Configurations.echoUserName && chatWithUserData.id == Configurations.echoUserId){                    sqliteService.gotNewRoomMessage(data.data.message_body, data.data.message_id, 'seen', data.data.message_time, 'echo', '', data.data.room_id, 'text');
                     data.data.profile_image = "";
                     data.data.name = "echo";
                     data.data.message_status = "seen";
@@ -23891,11 +23892,11 @@ angular.module('chattapp')
      angular.module('chattapp')
          .factory('loginService', loginService);
 
-     function loginService($q, timeStorage, socketService) {
+     function loginService($q, timeStorage, socketService, Configurations) {
          var service = {};
          var q = $q.defer();
          service.createEchoUserRoom = function() {
-            socketService.create_room('57f1fc141126f479422b5c77').then(function(data) {
+            socketService.create_room(Configurations.echoUserId).then(function(data) {
             });
          }
          return service;

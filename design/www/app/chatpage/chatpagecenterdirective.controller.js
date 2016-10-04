@@ -5,7 +5,7 @@
             .controller('chatPageCenterDirectiveController', chatPageCenterDirectiveController);
 
 
-    function chatPageCenterDirectiveController($scope, $state, $localStorage, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, $ionicModal, sqliteService, chatpageService, timeZoneService, geoLocation, $cordovaFileTransfer, tostService) {
+    function chatPageCenterDirectiveController($scope, $state, $localStorage, $timeout, $ionicScrollDelegate, chatPageFactory, $ionicLoading, $ionicHistory, timeStorage, socketService, $stateParams, $ionicModal, sqliteService, chatpageService, timeZoneService, geoLocation, $cordovaFileTransfer, tostService, Configurations) {
         var self = this;
         var chatWithUserData = timeStorage.get('chatWithUserData');
         self.isPublicRoom = true;
@@ -39,7 +39,7 @@
                 self.tempMessage = [];
                 //for echo user
                 var chatWithUserData = timeStorage.get('chatWithUserData');
-                if(chatWithUserData.name == "echo" && chatWithUserData.id == "57f1fc141126f479422b5c77"){
+                if(chatWithUserData.name == Configurations.echoUserName && chatWithUserData.id == Configurations.echoUserId){
                     for (var i = 0; i < self.displayChatMessages.length; i++) {
                         self.displayChatMessages[i].message_status = 'seen';
                         $scope.$evalAsync();

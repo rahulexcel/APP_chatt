@@ -3,7 +3,7 @@
     angular.module('chattapp')
             .factory('socketService', socketService);
 
-    function socketService($rootScope, $q, timeStorage, sqliteService) {
+    function socketService($rootScope, $q, timeStorage, sqliteService, Configurations) {
         var service = {};
         if(timeStorage.get('userData')){
             var userData = timeStorage.get('userData');
@@ -24,8 +24,7 @@
             //for echo user
             if (data.type == 'alert') {
                 var chatWithUserData = timeStorage.get('chatWithUserData');
-                if(chatWithUserData.name == "echo" && chatWithUserData.id == "57f1fc141126f479422b5c77"){
-                    sqliteService.gotNewRoomMessage(data.data.message_body, data.data.message_id, 'seen', data.data.message_time, 'echo', '', data.data.room_id, 'text');
+                if(chatWithUserData.name == Configurations.echoUserName && chatWithUserData.id == Configurations.echoUserId){                    sqliteService.gotNewRoomMessage(data.data.message_body, data.data.message_id, 'seen', data.data.message_time, 'echo', '', data.data.room_id, 'text');
                     data.data.profile_image = "";
                     data.data.name = "echo";
                     data.data.message_status = "seen";
