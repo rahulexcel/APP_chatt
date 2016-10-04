@@ -37,6 +37,14 @@
                     "message_type": response.data.message_type,
                 });
                 self.tempMessage = [];
+                //for echo user
+                var chatWithUserData = timeStorage.get('chatWithUserData');
+                if(chatWithUserData.name == "echo" && chatWithUserData.id == "57f1fc141126f479422b5c77"){
+                    for (var i = 0; i < self.displayChatMessages.length; i++) {
+                        self.displayChatMessages[i].message_status = 'seen';
+                        $scope.$evalAsync();
+                    }
+                }
                 $scope.$evalAsync();
                 $ionicScrollDelegate.scrollBottom(false);
             }
