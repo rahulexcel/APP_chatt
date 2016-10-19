@@ -4,7 +4,7 @@
     angular.module('chattapp')
             .controller('loginController', loginController);
 
-    function loginController($state, loginFactory, timeStorage,sqliteService, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService, $ionicLoading, loginService) {
+    function loginController($state, loginFactory, timeStorage,sqliteService, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService, $ionicLoading, loginService, guestloginFactory) {
         var self = this;
         var deviceUUID = timeStorage.get('deviceUUID');
         var devicePlatform = timeStorage.get('devicePlatform');
@@ -35,6 +35,7 @@
                         tostService.notify('Welcome "' + data.data.name + '"', 'top');
                         timeStorage.set('userEmail', googleData.email, 1);
                         timeStorage.set('userData', data, 1);
+                        timeStorage.set('guest', false, 1);
                         $state.go('app.chats');
                         $ionicHistory.nextViewOptions({
                             historyRoot: true,
@@ -91,6 +92,7 @@
                 tostService.notify('Welcome "' + data.data.name + '"', 'top');
                 timeStorage.set('userEmail', fbData.email, 1);
                 timeStorage.set('userData', data, 1);
+                timeStorage.set('guest', false, 1);
                 // lastUsesTimeService.updateTime();
                 $state.go('app.chats');
                 $ionicHistory.nextViewOptions({
@@ -101,5 +103,41 @@
             });
         }
         ;
+        self.guestLogin = function() {
+            $ionicLoading.show();
+            // timeStorage.set('userEmail', googleData.email, 1);
+            var query = guestloginFactory.save({
+                action_type: 'google',
+                social_id: '123456789',
+                platform: devicePlatform,
+                token: $localStorage.gcmToken,
+                action: 'guest_login',
+                device_id: deviceUUID,
+                email: '',
+                name: '',
+                currentTimestamp: _.now(),
+                password: '',
+                profile_image: '',
+                gender: '',
+                dob: ''
+            });
+            query.$promise.then(function(data) {
+                console.log(data);
+               sqliteService.createTable();
+                $ionicLoading.hide();
+                tostService.notify('Welcome "' + data.data.name + '"', 'top');
+                timeStorage.set('userEmail', data.data.email, 1);
+                timeStorage.set('userData', data, 1);
+                timeStorage.set('guest', true, 1);
+                $state.go('app.chats');
+                $ionicHistory.nextViewOptions({
+                    historyRoot: true,
+                    disableBack: true
+                });
+                loginService.createEchoUserRoom();
+            },function(error) {
+                tostService.notify('Error Occured . Try Again !!!', 'top'); 
+            });
+        };
     }
 })();

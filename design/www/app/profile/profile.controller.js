@@ -5,6 +5,7 @@
     function profileController(cameraService, profileImageFactory, $state, $ionicPopover, sqliteService, $ionicLoading, profileFactory, $timeout, $ionicModal, timeStorage, $scope, $filter, $ionicPopup, timeZoneService, socketService, tostService) {
         var self = this;
         self.displayProfile = timeStorage.get('profile_data');
+        self.showLogOut = timeStorage.get('guest');
         document.addEventListener("deviceready", function() {
             $scope.version = AppVersion.version;
         });
