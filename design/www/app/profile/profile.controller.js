@@ -65,6 +65,21 @@
         self.hidepop = function() {
             self.popover.hide();
         };
+        self.publishFB = function(){
+                facebookConnectPlugin.showDialog({
+                    method: "share",
+                    picture:'http://excellencetechnologies.co.in/chatApp/logo.png',
+                    name:'Chatt APP',
+                    message:'Hey There!! I am using chatApp',
+                    caption: 'Chat App - Messenger',
+                    description: 'It’s fun, friendly, and free'
+                  }, function (response) {
+                    console.log(response)
+                  }, function (response) {
+                    console.log(response)
+                  }
+                );
+        };
         $scope.result = function(image) {
             $scope.myCroppedImage = image;
         };

@@ -4,7 +4,7 @@
     angular.module('chattapp')
             .controller('chatPageHeaderDirectiveController', chatPageHeaderDirectiveController);
 
-    function chatPageHeaderDirectiveController($state, timeStorage, $rootScope, $ionicScrollDelegate, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService, sqliteService, $ionicLoading, geoLocation, $localStorage, Upload, updateRoomBackgroundImageFactory) {
+    function chatPageHeaderDirectiveController($state, timeStorage, $rootScope, $ionicScrollDelegate, cameraService, profileImageFactory, $ionicPopover, $scope, $ionicModal, $stateParams, getRoomInfoFactory, socketService, $ionicActionSheet, tostService, $ionicHistory, $interval, chatsService, getUserProfileFactory, timeZoneService, sqliteService, $ionicLoading, geoLocation, $localStorage, Upload, updateRoomBackgroundImageFactory, flagUserFactory) {
         var self = this;
         self.leaveGroupSpinner = false;
         self.deleteGroupSpinner = false;
@@ -574,7 +574,19 @@
                 window.plugins.toast.showShortTop('Background Removed');
             }, function(err){
             });
-        }
+        };
+        self.flagUser = function(friends){
+            var userData = timeStorage.get('userData');
+            $ionicLoading.show();
+            var query = flagUserFactory.save({
+                 flagByUserId: userData.data.user_id,
+                 flagWhomUserId: self.displayUserProfileId
+             });
+             query.$promise.then(function(data) {
+                 window.plugins.toast.showShortTop(data.message);
+                 $ionicLoading.hide();
+             });
+          };
     }
 })();
 
