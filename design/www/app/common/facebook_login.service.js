@@ -28,7 +28,7 @@ function facebookLogin($http, $q, $state) {
     };
     service.getFacebookProfileInfo = function(authResponse) {
         var info = $q.defer();
-        facebookConnectPlugin.api('/me?fields=email,name,gender&access_token=' + authResponse.accessToken, null,
+        facebookConnectPlugin.api('/me?fields=email,friends,name,gender&access_token=' + authResponse.accessToken, null,
                 function(response) {
                     response.accessToken = authResponse.accessToken;
                     info.resolve(response);
@@ -41,7 +41,6 @@ function facebookLogin($http, $q, $state) {
     };
     service.login = function() {
         var def = $q.defer();
-
         if (window.cordova.platformId == "browser") {
            facebookConnectPlugin.browserInit('442665452611089');
         }

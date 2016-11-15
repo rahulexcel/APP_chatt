@@ -17,3 +17,21 @@
             </div> 
     </ion-content>
 </ion-view>
+<script id="startChatt.html" type="text/ng-template">
+  <ion-modal-view>
+    <ion-header-bar>
+      <h1 class="title">Start Chatt</h1>
+      <button class="button button-icon no-pad pull-right white createGroupButton" style="line-height: 0px;" ng-click="startChattCancel()">Skip</button>
+    </ion-header-bar>
+    <ion-content>
+      <div class="list">
+        <ion-checkbox ng-repeat="friend in friends" ng-model="friend.checked" ng-checked="friend.checked">
+        <img style="border-radius: 50%; height: 50px; width: 50px;" ng-src="https://graph.facebook.com/{{friend.id}}/picture?type=small">
+        {{ friend.name }}</ion-checkbox>
+      </div>
+    </ion-content>
+    <ion-footer-bar align-title="left" class="bar-footer" id="BlueBar" style="background-image: none;">
+            <button class="buttons act font14" style="width: 100%; display: block; border: none; border-radius: 18px;" ng-click="startChattWithFBFriends(friends)">Start</button>
+    </ion-footer-bar>
+  </ion-modal-view>
+</script>

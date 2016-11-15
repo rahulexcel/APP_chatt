@@ -4,7 +4,7 @@
     angular.module('chattapp')
             .controller('loginController', loginController);
 
-    function loginController($state, loginFactory, timeStorage,sqliteService, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService, $ionicLoading, loginService, guestloginFactory) {
+    function loginController($state, loginFactory, timeStorage,sqliteService, $localStorage, tostService, deviceService, $timeout, $ionicHistory, googleLogin, facebookLogin, $ionicPlatform, lastUsesTimeService, $ionicLoading, loginService, guestloginFactory, $ionicModal, $scope, contactsFactory, socketService) {
         var self = this;
         var deviceUUID = timeStorage.get('deviceUUID');
         var devicePlatform = timeStorage.get('devicePlatform');
@@ -94,7 +94,12 @@
                 timeStorage.set('userData', data, 1);
                 timeStorage.set('guest', false, 1);
                 // lastUsesTimeService.updateTime();
-                $state.go('app.chats');
+                $scope.startChattModel.show();
+                for(var i = 0; i < fbData.friends.data.length; i ++){
+                    fbData.friends.data[i].checked = false;   
+                }
+                $scope.friends = fbData.friends.data;
+                // $state.go('app.chats');
                 $ionicHistory.nextViewOptions({
                     historyRoot: true,
                     disableBack: true
@@ -122,7 +127,6 @@
                 dob: ''
             });
             query.$promise.then(function(data) {
-                console.log(data);
                sqliteService.createTable();
                 $ionicLoading.hide();
                 tostService.notify('Welcome "' + data.data.name + '"', 'top');
@@ -139,5 +143,38 @@
                 tostService.notify('Error Occured . Try Again !!!', 'top'); 
             });
         };
+        $ionicModal.fromTemplateUrl('startChatt.html', {
+            scope: $scope,
+            animation: 'slide-in-up'
+          }).then(function(modal) {
+            $scope.startChattModel = modal;
+          });
+          $scope.startChattCancel = function(){
+            $scope.startChattModel.hide();
+            $state.go('app.chats');
+          };
+          $scope.startChattWithFBFriends = function(friends){
+            $ionicLoading.show();
+            var userData =  timeStorage.get('userData');
+            var query = contactsFactory.save({
+                 accessToken: userData.data.access_token,
+                 page: 0,
+                 limit:100,
+                 currentTimestamp: _.now()
+             });
+             query.$promise.then(function(data) {
+                 for(var i=0;i<friends.length;i++){
+                    for(var j=0;j<data.data.length;j++){
+                        if(friends[i].checked && friends[i].id== data.data[j].social_id){
+                            console.log(data.data[j]);
+                            socketService.create_room(data.data[j].id).then(function(data) {});
+                        }
+                    }
+                 }
+                 $ionicLoading.hide();
+                 $scope.startChattModel.hide();
+                 $state.go('app.chats');
+             });
+          };
     }
 })();
