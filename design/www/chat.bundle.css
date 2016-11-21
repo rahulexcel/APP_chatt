@@ -97113,6 +97113,10 @@ img-crop canvas {
   display: none!important;
 }
 
+.platform-ios .google-btn {
+  display: none!important;
+}
+
 .fullViewImage {
   display: inline-block;
 }
@@ -98402,6 +98406,13 @@ button.button.back-button.buttons.button-clear.header-item.mybt {
   /*padding-top:3px!important;*/
   background-color: #fff !important;
   padding-right: 0px!important;
+}
+
+.act1 {
+  background-color: transparent;
+  color: #387ef5  !important;
+  opacity: 1;
+  padding: 8px;
 }
 
 .act {
